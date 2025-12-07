@@ -106,7 +106,7 @@ export default function HomePackage() {
           {packages.map((pkg) => (
             <div
               key={pkg.id}
-              className={`bg-base-300 rounded-2xl shadow-md border-b-8 border-b-primary transition-all duration-300 overflow-hidden border border-border-color flex flex-col `}
+              className={`bg-base-300 rounded-xl shadow-md border-b-8 border-b-primary transition-all duration-300 overflow-hidden border border-border-color flex flex-col `}
             >
               {pkg.popular && (
                 <div className="bg-accent text-black text-center py-2 text-sm font-semibold">
