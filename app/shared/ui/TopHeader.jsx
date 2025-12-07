@@ -10,7 +10,7 @@ export default function TopHeader() {
         <a className="hover:text-underline" href="">
           <span className="font-bold">Phone:</span> +61 100 200 200
         </a>
-        <Link href="/login" className="hover:underline">
+        <Link href="/login" className="hover:underline font-semibold">
           Login
         </Link>
       </Container>

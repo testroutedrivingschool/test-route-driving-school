@@ -1,3 +1,4 @@
+"use client";
 export default function OutlineBtn({children, type, onClick}) {
   return (
     <button

@@ -20,6 +20,7 @@
   --color-accent: #fe8f1b;
   --color-base-300: #f3f4f6;
   --color-border-color: #e7e7e9e6;
+  --color-neutral: #808080;
 }
 
 body {
@@ -40,4 +41,34 @@ h6 {
 a,
 button {
   @apply cursor-pointer;
+}
+
+/* Custom Animation */
+
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeUp {
+  animation: fadeUp 1.2s ease-out forwards;
+}
+
+@keyframes slowZoom {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.08);
+  }
+}
+
+.animate-slowZoom {
+  animation: slowZoom 20s ease-out infinite alternate;
 }
