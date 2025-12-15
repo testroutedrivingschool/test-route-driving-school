@@ -1,7 +1,8 @@
+"use client"
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import { useRouter } from "next/navigation";
 import {FaCheck} from "react-icons/fa";
 import {FiChevronRight} from "react-icons/fi";
 
@@ -94,6 +95,7 @@ export const packages = [
 ];
 
 export default function HomePackage() {
+  const router = useRouter()
   return (
     <section className="mt-10 ">
       <Container>
@@ -175,7 +177,7 @@ export default function HomePackage() {
           ))}
         </div>
         <div className="mt-8 flex justify-center">
-          <PrimaryBtn className={`py-4`}>View All Packages</PrimaryBtn>
+          <PrimaryBtn onClick={()=>router.push("/packages")} className={`py-4`}>View All Packages</PrimaryBtn>
         </div>
       </Container>
     </section>

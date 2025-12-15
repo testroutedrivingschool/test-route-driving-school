@@ -2,6 +2,7 @@ import {Montserrat, Open_Sans} from "next/font/google";
 import "./globals.css";
 import Header from "./shared/ui/Header";
 import Footer from "./shared/ui/Footer";
+import TopHeader from "./shared/ui/TopHeader";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -24,6 +25,7 @@ export default function RootLayout({children}) {
       <body
         className={`${montserrat.variable} ${openSans.variable} antialiased`}
       >
+           <TopHeader />
         <Header />
         <main>{children}</main>
         <Footer />

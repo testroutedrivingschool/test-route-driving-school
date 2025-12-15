@@ -2,7 +2,7 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 
 export default function Hero() {
   return (
-    <section className="relative w-full h-[90vh] overflow-hidden">
+    <section className="relative w-full h-screen overflow-hidden">
 
       {/* Background Video with Zoom Animation */}
       <video

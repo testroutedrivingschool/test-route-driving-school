@@ -20,7 +20,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="mt-20 md:mt-25 bg-secondary text-gray-200 pt-12">
+    <footer className=" bg-secondary text-gray-200 pt-12">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
           {/* Column 1: Logo + Description */}
@@ -92,28 +92,28 @@ export default function Footer() {
           {/* Column 4: Newsletter */}
           <div>
             <h3 className="text-white font-semibold mb-4">Newsletter</h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-neutral mb-4">
               Subscribe to our newsletter to get the latest updates and driving
               tips.
             </p>
-            <form className="flex sm:flex-row gap-2">
+            <form className="flex flex-col gap-2">
               <input
                 type="email"
                 placeholder="Your email"
                 className="px-4 py-2 rounded-lg text-white placeholder:text-white w-auto sm:w-auto flex-1 border border-white "
               />
               <div>
-                <PrimaryBtn type={"submit"} className=" sm:w-auto">Subscribe</PrimaryBtn>
+                <PrimaryBtn type={"submit"} className="flex-1 sm:w-auto">Subscribe</PrimaryBtn>
               </div>
             </form>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-700 mt-10"></div>
+        <div className="border-t border-white mt-10"></div>
 
         {/* Copyright */}
-        <p className="text-center text-gray-500 text-sm mt-6">
+        <p className="text-center text-white text-sm mt-6">
           © Test Route Driving School. All rights reserved.
         </p>
       </Container>

@@ -4,8 +4,8 @@ import TopHeader from "./TopHeader";
 
 export default function Header() {
   return (
-    <header>
-      <TopHeader />
+    <header className="sticky top-0 z-99">
+   
       <Navbar />
     </header>
   );

@@ -72,3 +72,20 @@ button {
 .animate-slowZoom {
   animation: slowZoom 20s ease-out infinite alternate;
 }
+
+@keyframes scroll {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+@keyframes moveCar {
+  0% {
+    left: -200px; /* start offscreen */
+  }
+  100% {
+    left: 100%; /* move across container */
+  }
+}
+
+.animate-moveCar {
+  animation: moveCar 10s linear infinite;
+}
