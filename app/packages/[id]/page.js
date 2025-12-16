@@ -36,7 +36,7 @@ export default function PackageDetails() {
 
   return (
     <section className="pb-16">
-      <PageHeroSection title={`${pkg.name}`} />
+      <PageHeroSection title={`${pkg.name}`} subtitle={`Explore Packages`}/>
       <Container className={``}>
           {/* Back Link */}
         <div className="mt-10">

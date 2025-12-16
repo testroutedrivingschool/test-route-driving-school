@@ -3,16 +3,11 @@ import Container from "../shared/ui/Container";
 import SectionHeader from "../shared/ui/SectionHeader";
 import aboutImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import {
-  FaCheckCircle,
   FaCar,
   FaUserGraduate,
   FaShieldAlt,
   FaAward,
   FaUsers,
-  FaGlobe,
-  FaHeadset,
-  FaClipboardCheck,
-  FaClock,
 } from "react-icons/fa";
 import MovingCar from "../shared/MovingCar";
 import Faq from "../shared/Faq";
@@ -45,7 +40,7 @@ export default function About() {
 
   return (
     <>
-      <PageHeroSection title={"About Us"} />
+      <PageHeroSection title={"About Us"} subtitle={`Professional Driving Lessons You Can Trust`}/>
       <section className="pt-16 ">
         <Container>
           {/* Header */}

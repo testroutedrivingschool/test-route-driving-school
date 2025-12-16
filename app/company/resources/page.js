@@ -1,15 +1,15 @@
 import React from "react";
-import SectionHeader from "../shared/ui/SectionHeader";
+import SectionHeader from "../../shared/ui/SectionHeader";
 import {IoDocumentText} from "react-icons/io5";
-import Container from "../shared/ui/Container";
-import Faq from "../shared/Faq";
-import PageHeroSection from "../shared/ui/PageHeroSection";
-import MovingCar from "../shared/MovingCar";
+import Container from "../../shared/ui/Container";
+import Faq from "../../shared/Faq";
+import PageHeroSection from "../../shared/ui/PageHeroSection";
+import MovingCar from "../../shared/MovingCar";
 
 export default function Resources() {
   return (
     <div className="">
-      <PageHeroSection title="Resources"/>
+      <PageHeroSection title="Resources" subtitle={`Discover a collection of valuable tools, guides, and materials designed to support your learning journey. From tips and tutorials to reference materials, our resources are curated to help you gain knowledge, practice effectively, and achieve your goals with confidence.`}/>
       <Container className={`pb-17`}>
         <SectionHeader
           title="Essential Resources for Learner  Drivers"

@@ -265,7 +265,7 @@ export default function Packages() {
 
   return (
     <section className="pb-16">
-      <PageHeroSection title="All Packages" />
+      <PageHeroSection title="All Packages" subtitle={`Explore our range of carefully designed packages tailored to suit every learner’s needs. Whether you’re a beginner or looking to advance your skills, each package offers structured lessons, flexible scheduling, and expert guidance to help you succeed. Find the plan that fits your goals and start progressing with confidence today.`}/>
       <Container>
         <div className="text-center mb-12">
           <SectionHeader

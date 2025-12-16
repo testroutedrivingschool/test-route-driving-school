@@ -23,14 +23,14 @@ export default function GoogleReviewCard() {
                 <div className="relative">
                
                   <div className="relative bg-white p-4 rounded-2xl shadow-md border border-gray-100">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-col md:flex-row items-center gap-2">
                       <Image
                         src={googleLogo}
                         width={50}
                         height={50}
                         alt="Google Logo"
                       />
-                      <span className="font-bold text-gray-900 text-lg">
+                      <span className="text-center md:text-left font-bold text-gray-900 text-lg">
                         Google <br />
                         Reviews
                       </span>

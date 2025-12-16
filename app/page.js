@@ -8,6 +8,8 @@ import Reviews from "./components/Home/Reviews/Reviews";
 import WhatWeOffer from "./components/Home/WhatWeOffer";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import HowItWorks from "./components/Home/HowItWorks/HowItWorks";
+import FindInstructor from "./components/Home/FindInstructor";
+import HomeDrivingJourney from "./components/Home/HomeDrivingJourney";
 
 export default function Home() {
   return (
@@ -18,9 +20,11 @@ export default function Home() {
       <HomePackage />
       <WhyChooseUs />
       <MovingCar />
+      <FindInstructor/>
       <GoogleReviewCard />
       <Reviews />
       <HowItWorks />
+      <HomeDrivingJourney/>
       <Faq />
     </>
   );

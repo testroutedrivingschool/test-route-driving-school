@@ -104,7 +104,7 @@ const filteredSuburbs = instructor.suburbsCovered.filter((suburb) =>
 
   return (
     <>
-    <PageHeroSection title={`${instructor.name}`}/>
+    <PageHeroSection title={`Meet With Our Instructor`} subtitle={`${instructor.name}`}/>
     <section className="py-10">
       <Container>
         <button

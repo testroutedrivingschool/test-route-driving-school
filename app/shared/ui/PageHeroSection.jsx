@@ -1,20 +1,12 @@
 "use client";
 import React from "react";
 import heroImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
-import {FaChevronRight} from "react-icons/fa";
-import {usePathname} from "next/navigation";
+import Container from "./Container";
 
-export default function PageHeroSection({title}) {
-  const pathname =usePathname();
-    const formattedPath = pathname
-    .split("/")                 
-    .filter(Boolean)              
-    .map((segment) =>           
-      segment.charAt(0).toUpperCase() + segment.slice(1)
-    )
-    .join(" / ") || "Home";  
+export default function PageHeroSection({title,subtitle}) {
+  
   return (
-    <section className="relative w-full h-38">
+    <section className="relative w-full min-h-38 py-8">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center"
@@ -26,12 +18,36 @@ export default function PageHeroSection({title}) {
       {/* Replace 'blue-700' with your primary color */}
 
       {/* Centered Title */}
-      <div className="relative z-10 flex flex-col gap-2 items-center justify-center h-full">
-        <h1 className="text-white text-3xl font-bold text-center">{title}</h1>
-        <p className="text-white flex items-center gap-2">
-          Home <FaChevronRight />{" "}
-          {formattedPath}
-        </p>
+      <div className="relative z-10  h-full">
+  <Container className="flex flex-col justify-center h-full pl-8">
+  <h1 className="text-white text-3xl font-bold">
+    {title}
+  </h1>
+
+  <p
+    className="
+      relative
+      mt-3
+      max-w-xl
+      text-base-300
+      pl-6
+      leading-relaxed
+
+      before:content-['']
+      before:absolute
+      before:left-0
+      before:top-1
+      before:h-[95%]
+      before:w-1
+      before:bg-red-500
+      before:rounded-full
+    "
+  >
+    {subtitle}
+  </p>
+</Container>
+
+
       </div>
     </section>
   );

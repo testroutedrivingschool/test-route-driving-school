@@ -31,26 +31,49 @@ const navlinks = [
       },
       {
         id: 3,
-        label: "Driving Test Package ",
-        pathname: "/services/driving-test-package ",
+        label: "Driving Test Package",
+        pathname: "/services/driving-test-package",
       },
       {
         id: 4,
-        label: "Driving Test Package ",
-        pathname: "/services/driving-test-package ",
+        label: "Car Hire for Instructor",
+        pathname: "/services/car-hire-for-instructor",
+      },
+      {
+        id: 5,
+        label: "Parking Package",
+        pathname: "/services/parking-package",
+      },
+      {
+        id: 6,
+        label: "Highway Package",
+        pathname: "/services/highway-package",
+      },
+      {
+        id: 7,
+        label: "Night Driving Lesson",
+        pathname: "/services/night-driving-lesson",
+      },
+      {
+        id: 8,
+        label: "City Driving Package",
+        pathname: "/services/city-driving-package",
       },
     ],
   },
-  {id: 5, label: "Resources", pathname: "/resources"},
-  {id: 6, label: "Package", pathname: "/packages"},
+
+  {id: 5, label: "Package", pathname: "/packages"},
+  {id: 6, label: "Area Covered", pathname: "/area-covered"},
   {
     id: 7,
     label: "Company",
 
     dropdowns: [
-      {id: 1, label: "Blog", pathname: "/blog"},
-      {id: 2, label: "Gallery", pathname: "/gallery"},
-      {id: 3, label: "Testimonials", pathname: "/testimonials"},
+      {id: 1, label: "Resources", pathname: "/company/testimonials"},
+      {id: 2, label: "Gallery", pathname: "/company/gallery"},
+      {id: 3, label: "Testimonials", pathname: "/company/testimonials"},
+      {id: 4, label: "Resources", pathname: "/company/resources"},
+      {id: 5, label: "Contact", pathname: "/company/contact"},
     ],
   },
 ];
@@ -112,27 +135,82 @@ export default function Navbar() {
                 </Link>
 
                 {/* Dropdown */}
-                {item.dropdowns && (
-                  <ul className="w-40 absolute top-full left-0 bg-white shadow-md rounded-md opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-300 z-50">
-                    {item.dropdowns.map((drop) => (
-                      <li key={drop.id}>
-                        <Link
-                          href={drop.pathname}
-                          className="block px-4 py-2 hover:bg-blue-50 text-gray-700 hover:text-primary font-bold"
-                        >
-                          {drop.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                {item.dropdowns && item.label === "Company" && (
+  <div className="absolute top-full left-0 right-0 z-50 opacity-0 invisible group-hover:opacity-100 w-full min-w-40 group-hover:visible  transition-all duration-300">
+    <div className="">
+      <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
+
+        <ul className="grid grid-cols-1  gap-2 py-4">
+          {item.dropdowns.map((drop) => (
+            <li key={drop.id}>
+              <Link
+                href={drop.pathname}
+                className="flex items-start gap-2 px-4 py-2  hover:bg-primary/10 transition-all"
+              >
+                <span className="text-primary mt-1">
+                  <FaAngleRight />
+                </span>
+
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-900 whitespace-nowrap">
+                    {drop.label}
+                  </p>
+              
+                </div>
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+      </div>
+    </div>
+  </div>
+)}
+
+                {item.dropdowns && item.label !== "Company" && (
+  <div className="absolute top-full left-1/2 -translate-x-1/2 z-50
+    w-screen max-w-[95vw] md:max-w-3xl
+    opacity-0 invisible group-hover:opacity-100 group-hover:visible
+    transition-all duration-300">
+
+                    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                      {/* Grid */}
+                      <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {item.dropdowns.map((drop) => (
+                          <li key={drop.id}>
+                            <Link
+                              href={drop.pathname}
+                              className="group flex items-start gap-3 p-3 rounded-xl hover:bg-primary/10 transition-all"
+                            >
+                              {/* Icon */}
+                              <span className="mt-1 text-primary">
+                                <FaAngleRight />
+                              </span>
+
+                              {/* Text */}
+                              <div>
+                                <p className="font-semibold text-gray-800 group-hover:text-primary">
+                                  {drop.label}
+                                </p>
+                                <p className="text-sm text-gray-500">
+                                  Learn more about {drop.label.toLowerCase()}
+                                </p>
+                              </div>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 )}
               </li>
             ))}
           </ul>
+          <div className="flex gap-6 ">
+
           <SecondaryBtn className="hidden md:flex">
             Book Now <FaAngleRight />
           </SecondaryBtn>
-          {/* Mobile Menu Button */}
           <button
             className="lg:hidden text-2xl p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group"
             onClick={() => setOpen(!open)}
@@ -146,6 +224,8 @@ export default function Navbar() {
               )}
             </div>
           </button>
+          </div>
+          {/* Mobile Menu Button */}
         </div>
       </Container>
       {/* Mobile Dropdown */}
@@ -164,7 +244,8 @@ export default function Navbar() {
                 className="flex flex-col border-b border-gray-200"
               >
                 {/* Main Link */}
-                <button
+                <Link
+                  href={item.pathname || "#"}
                   onClick={() =>
                     item.dropdowns ? toggleDropdown(item.id) : setOpen(false)
                   }
@@ -178,7 +259,7 @@ export default function Navbar() {
                       }`}
                     />
                   )}
-                </button>
+                </Link>
 
                 {/* Dropdown Links */}
                 {item.dropdowns && activeDropdown === item.id && (

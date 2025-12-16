@@ -7,7 +7,7 @@ import { FaEye, FaEyeSlash, FaGoogle, FaPhone, FaLock, FaEnvelope, FaUser, FaChe
 import { FiLogIn } from "react-icons/fi";
 import Image from "next/image";
 import PrimaryBtn from "../shared/Buttons/PrimaryBtn";
-
+import googleLogo from "@/app/assets/google-logo.webp"
 export default function Register() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -377,9 +377,9 @@ export default function Register() {
           <div className="space-y-4">
             <button
               onClick={() => handleSocialLogin("google")}
-              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl hover:bg-secondary hover:text-white transition-colors"
             >
-              <FaGoogle className="text-red-500" />
+               <Image src={googleLogo} width={25} height={25} alt="Google Logo"/>
               <span className="font-medium">Continue with Google</span>
             </button>
           </div>
