@@ -109,7 +109,7 @@ export default function HomeDrivingJourney() {
                   <span className="font-semibold">Confident Driver</span>
                 </div>
                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className={`h-full bg-linear-to-r from-accent to-primary rounded-full transition-all duration-1000 ${isVisible ? 'w-3/4' : 'w-0'}`}></div>
+                  <div className={`h-full bg-linear-to-r from-green-500 to-primary rounded-full transition-all duration-1000 ${isVisible ? 'w-3/4' : 'w-0'}`}></div>
                 </div>
                 <p className="text-center text-sm text-blue-200 mt-2">
                   Most students achieve confidence within 15-20 lessons

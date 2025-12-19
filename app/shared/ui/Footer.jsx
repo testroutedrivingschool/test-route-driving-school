@@ -20,7 +20,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className=" bg-secondary text-gray-200 pt-12">
+    <footer className=" bg-secondary text-gray-200 pt-12 pb-4">
       <Container>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
           {/* Column 1: Logo + Description */}

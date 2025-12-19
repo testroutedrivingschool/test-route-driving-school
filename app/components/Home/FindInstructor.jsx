@@ -3,6 +3,7 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
 import Link from "next/link";
 import {useEffect, useState} from "react";
+import { FaArrowRight} from "react-icons/fa";
 
 const locations = [
   "Allawah",
@@ -51,7 +52,7 @@ export default function FindInstructor() {
   const [searchLocationText, setSearchLocationText] = useState("");
   const [searchResultLocation, setSearchResultLocation] = useState([]);
   useEffect(() => {
-    if (searchLocationText.length >0) {
+    if (searchLocationText.length > 0) {
       const filteredLocations = locations.filter((location) =>
         location.toLowerCase().includes(searchLocationText.toLowerCase())
       );
@@ -75,11 +76,11 @@ export default function FindInstructor() {
   };
 
   return (
-    <section className="py-16 bg-base-300">
+    <section className="py-17 bg-base-300">
       <Container>
-        <div className="flex flex-col md:flex-row items-center gap-8">
+        <div className="flex flex-col gap-8">
           {/* Left Column */}
-          <div className="md:w-1/3">
+          <div className="">
             <h2 className="text-3xl font-bold mb-4 text-gray-800">
               Find a driving instructor near you
             </h2>
@@ -103,7 +104,7 @@ export default function FindInstructor() {
               {searchLocationText && searchResultLocation.length > 0
                 ? searchResultLocation.map((loc, idx) => (
                     <Link
-                    href={`/area-covered`}
+                      href={`/area-covered`}
                       key={idx}
                       className="bg-white border border-border-color rounded px-4 py-2 hover:bg-primary/10 cursor-pointer transition block"
                     >
@@ -117,22 +118,16 @@ export default function FindInstructor() {
           </div>
 
           {/* Right Column */}
-          <div className="md:w-2/3 grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2  md:grid-cols-4 gap-3">
             {locations.map((loc) => (
               <button
                 key={loc}
-                className="bg-primary text-white py-3 rounded text-left px-4 shadow hover:scale-105 transition"
+                className="bg-primary text-white py-3 rounded text-left px-4 shadow hover:scale-105 transition flex gap-1 items-center text-sm md:text-base"
               >
-                {loc} &gt;
+                {loc} <FaArrowRight size={15} />
               </button>
             ))}
 
-            <Link
-              href={`/area-covered`}
-              className="col-span-2 border border-gray-400 text-gray-700 py-3 rounded text-center hover:bg-gray-100 font-semibold transition"
-            >
-              SEE ALL LOCATIONS
-            </Link>
           </div>
         </div>
       </Container>

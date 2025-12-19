@@ -23,11 +23,11 @@ export const packages = [
   },
   {
     id: 2,
-    name: "2 Hour Lesson",
+    name: "5 Hour Lesson",
     description: "Comprehensive session for building confidence on the road.",
     regularPrice: "$90",
     discountPrice: "$75",
-    duration: "2 hours",
+    duration: "5 hours",
     features: [
       "Modern dual-controlled vehicle",
       "Pick up from home/work",
@@ -38,7 +38,7 @@ export const packages = [
   },
   {
     id: 3,
-    name: "3 Hour Lesson",
+    name: "10 Hour Lesson",
     description: "Extended practice with varied road conditions.",
     regularPrice: "$130",
     discountPrice: "$110",
@@ -52,7 +52,7 @@ export const packages = [
   },
   {
     id: 4,
-    name: "5 Hour Package",
+    name: "20 Hour Package",
     description: "Perfect for beginners needing extensive practice.",
     regularPrice: "$200",
     discountPrice: "$170",
@@ -97,9 +97,10 @@ export const packages = [
 export default function HomePackage() {
   const router = useRouter()
   return (
-    <section className="mt-10 ">
+    <section className=" bg-base-300 py-17">
       <Container>
         <SectionHeader
+        className={`mt-5!`}
           title="Driving Lesson Packages"
           subtitle="Choose the perfect package for your learning journey. All lessons include certified instructors and modern vehicles."
         />
@@ -108,7 +109,7 @@ export default function HomePackage() {
           {packages.map((pkg) => (
             <div
               key={pkg.id}
-              className={`bg-base-300 rounded-xl shadow-md border-b-8 border-b-primary transition-all duration-300 overflow-hidden border border-border-color flex flex-col `}
+              className={`bg-white rounded-xl shadow-md border-b-8 border-b-primary transition-all duration-300 overflow-hidden border border-border-color flex flex-col `}
             >
               {pkg.popular && (
                 <div className="bg-accent text-black text-center py-2 text-sm font-semibold">

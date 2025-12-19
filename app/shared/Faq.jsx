@@ -56,9 +56,9 @@ export default function Faq() {
   };
 
   return (
-    <section className="bg-base-300 pt-5 pb-16">
+    <section className="bg-base-300  py-16">
       <Container>
-        <SectionHeader title={`Frequently Asked Questions`} subtitle={"Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"}/>
+        <SectionHeader className={`mt-0! `} title={`Frequently Asked Questions`} subtitle={"Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"}/>
 
         <div className="space-y-4">
           {faqData.map((faq, index) => (

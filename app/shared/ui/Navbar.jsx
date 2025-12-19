@@ -1,6 +1,9 @@
 "use client";
 
 import {useState} from "react";
+import {useRef, useEffect} from "react";
+import {FaUserCircle, FaSignOutAlt, FaTachometerAlt} from "react-icons/fa";
+
 import Link from "next/link";
 import Image from "next/image";
 import {FiMenu, FiX, FiChevronRight, FiChevronDown} from "react-icons/fi";
@@ -9,6 +12,9 @@ import {MdKeyboardArrowDown} from "react-icons/md";
 import Container from "./Container";
 import SecondaryBtn from "../Buttons/SecondaryBtn";
 import PrimaryBtn from "../Buttons/PrimaryBtn";
+import useAuth from "@/app/hooks/useAuth";
+import {toast} from "react-toastify";
+import { usePathname } from "next/navigation";
 
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
@@ -79,13 +85,28 @@ const navlinks = [
 ];
 
 export default function Navbar() {
+  const [avatarOpen, setAvatarOpen] = useState(false);
+  const avatarRef = useRef(null);
   const [open, setOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState("/");
+ const pathname = usePathname();
+
   const [activeDropdown, setActiveDropdown] = useState(null);
+
+  const {user, logoutUser} = useAuth();
 
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
   };
+  const handleLogout = () => {
+    logoutUser()
+      .then(() => {
+        toast.success("Logged out successfully");
+      })
+      .catch(() => {
+        toast.error("Failed to log out");
+      });
+  };
+
   return (
     <nav
       className={`sticky top-0 z-50 transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
@@ -102,7 +123,7 @@ export default function Navbar() {
               <Image
                 src="/test-route-driving-school-logo.png"
                 alt="Test Route Driving School Logo"
-                width={80} // default desktop size
+                width={80}
                 height={80}
                 className="object-contain rounded-full transition-all duration-300
                  w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" // responsive sizes
@@ -125,10 +146,11 @@ export default function Navbar() {
                   href={item.pathname || "#"}
                   onClick={() => setActiveLink(item.pathname)}
                   className={`relative py-2 font-bold transition-all duration-300 group flex items-center gap-1  hover:border-primary ${
-                    activeLink === item.pathname
-                      ? "text-primary border-b-3 border-primary"
-                      : "text-gray-700 hover:text-primary border-b-3 border-transparent"
-                  }`}
+  pathname === item.pathname
+    ? "text-primary border-b-3 border-primary"
+    : "text-gray-700 hover:text-primary border-b-3 border-transparent"
+}`}
+
                 >
                   {item.label}{" "}
                   {item.dropdowns && <MdKeyboardArrowDown size={18} />}
@@ -136,43 +158,41 @@ export default function Navbar() {
 
                 {/* Dropdown */}
                 {item.dropdowns && item.label === "Company" && (
-  <div className="absolute top-full left-0 right-0 z-50 opacity-0 invisible group-hover:opacity-100 w-full min-w-40 group-hover:visible  transition-all duration-300">
-    <div className="">
-      <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
+                  <div className="absolute top-full left-0 right-0 z-50 opacity-0 invisible group-hover:opacity-100 w-full min-w-40 group-hover:visible  transition-all duration-300">
+                    <div className="">
+                      <div className="bg-white rounded-2xl shadow-xl border border-gray-100">
+                        <ul className="grid grid-cols-1  gap-2 py-4">
+                          {item.dropdowns.map((drop) => (
+                            <li key={drop.id}>
+                              <Link
+                                href={drop.pathname}
+                                className="flex items-start gap-2 px-4 py-2  hover:bg-primary/10 transition-all"
+                              >
+                                <span className="text-primary mt-1">
+                                  <FaAngleRight />
+                                </span>
 
-        <ul className="grid grid-cols-1  gap-2 py-4">
-          {item.dropdowns.map((drop) => (
-            <li key={drop.id}>
-              <Link
-                href={drop.pathname}
-                className="flex items-start gap-2 px-4 py-2  hover:bg-primary/10 transition-all"
-              >
-                <span className="text-primary mt-1">
-                  <FaAngleRight />
-                </span>
-
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-900 whitespace-nowrap">
-                    {drop.label}
-                  </p>
-              
-                </div>
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-      </div>
-    </div>
-  </div>
-)}
+                                <div className="min-w-0">
+                                  <p className="font-semibold text-gray-900 whitespace-nowrap">
+                                    {drop.label}
+                                  </p>
+                                </div>
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {item.dropdowns && item.label !== "Company" && (
-  <div className="absolute top-full left-1/2 -translate-x-1/2 z-50
+                  <div
+                    className="absolute top-full left-1/2 -translate-x-1/2 z-50
     w-screen max-w-[95vw] md:max-w-3xl
     opacity-0 invisible group-hover:opacity-100 group-hover:visible
-    transition-all duration-300">
-
+    transition-all duration-300"
+                  >
                     <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
                       {/* Grid */}
                       <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -207,23 +227,112 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="flex gap-6 ">
+            {user ? (
+              <div ref={avatarRef} className="relative">
+                {/* Avatar Button */}
+                <button
+                  onClick={() => setAvatarOpen(!avatarOpen)}
+                  className="flex items-center gap-2 focus:outline-none"
+                >
+                  <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 hover:ring-primary/40 transition">
+                    {user.photoURL ? (
+                      <Image
+                        src={user.photoURL}
+                        alt={user.displayName || "User"}
+                        width={48}
+                        height={48}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-primary text-white flex items-center justify-center font-semibold">
+                        {user.displayName?.charAt(0).toUpperCase() || "U"}
+                      </div>
+                    )}
+                  </div>
+                </button>
 
-          <SecondaryBtn className="hidden md:flex">
-            Book Now <FaAngleRight />
-          </SecondaryBtn>
-          <button
-            className="lg:hidden text-2xl p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group"
-            onClick={() => setOpen(!open)}
-            aria-label="Toggle menu"
-          >
-            <div className="relative">
-              {open ? (
-                <FiX className="group-hover:rotate-90 transition-transform duration-300" />
-              ) : (
-                <FiMenu className="group-hover:scale-110 transition-transform duration-300" />
-              )}
-            </div>
-          </button>
+                {/* Dropdown */}
+                <div
+                  className={`absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-xl border border-border-color z-50
+      transition-all duration-200 origin-top-right
+      ${
+        avatarOpen
+          ? "opacity-100 scale-100 translate-y-0"
+          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+      }`}
+                >
+                  {/* User Info */}
+                  <div className="px-4 py-3 border-b border-border-color">
+                    <p className="font-semibold text-gray-900 truncate">
+                      {user.displayName || "User"}
+                    </p>
+                    <p className="text-sm text-gray-500 truncate">
+                      {user.email}
+                    </p>
+                  </div>
+
+                  {/* Links */}
+                  <ul className="py-2">
+                    <li>
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
+                        onClick={() => setAvatarOpen(false)}
+                      >
+                        <FaTachometerAlt className="text-primary" />
+                        Dashboard
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link
+                        href="/profile"
+                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
+                        onClick={() => setAvatarOpen(false)}
+                      >
+                        <FaUserCircle className="text-primary" />
+                        Profile
+                      </Link>
+                    </li>
+                  </ul>
+
+                  {/* Logout */}
+                  <div className="border-t border-border-color">
+                    <button
+                      onClick={() => {
+                        // logout function here
+                        handleLogout();
+                        setAvatarOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition"
+                    >
+                      <FaSignOutAlt />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <Link href="/login" className="inline-block">
+                <SecondaryBtn className="hidden md:flex">
+                  Login <FaAngleRight />
+                </SecondaryBtn>
+              </Link>
+            )}
+
+            <button
+              className="lg:hidden text-2xl p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group"
+              onClick={() => setOpen(!open)}
+              aria-label="Toggle menu"
+            >
+              <div className="relative">
+                {open ? (
+                  <FiX className="group-hover:rotate-90 transition-transform duration-300" />
+                ) : (
+                  <FiMenu className="group-hover:scale-110 transition-transform duration-300" />
+                )}
+              </div>
+            </button>
           </div>
           {/* Mobile Menu Button */}
         </div>

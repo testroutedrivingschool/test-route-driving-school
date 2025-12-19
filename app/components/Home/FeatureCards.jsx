@@ -78,9 +78,10 @@ export default function FeatureCards() {
   }, []);
 
   return (
-    <section ref={sectionRef} className="pt-0 pb-16">
+    <section ref={sectionRef} className="py-17">
       <Container>
         <SectionHeader
+        className={`mt-0!`}
           title="Trusted by Thousands of Drivers"
           subtitle="Years of excellence in driver education with proven results and satisfied students"
         />
@@ -149,38 +150,6 @@ export default function FeatureCards() {
           ))}
         </div>
 
-        {/* Trust Indicators */}
-        <div className="mt-16 pt-8 border-t border-gray-200">
-          <div className="flex flex-wrap justify-center items-center gap-8">
-            <div className="flex items-center gap-3">
-              <FaAward className="text-blue-500 text-xl" />
-              <div>
-                <p className="font-semibold">Licensed & Certified</p>
-                <p className="text-sm text-gray-600">UAE Road Authorities</p>
-              </div>
-            </div>
-
-            <div className="h-8 w-px bg-gray-300 hidden md:block"></div>
-
-            <div className="flex items-center gap-3">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <div>
-                <p className="font-semibold">98% Pass Rate</p>
-                <p className="text-sm text-gray-600">First Attempt Success</p>
-              </div>
-            </div>
-
-            <div className="h-8 w-px bg-gray-300 hidden md:block"></div>
-
-            <div className="flex items-center gap-3">
-              <div className="text-2xl">🚗</div>
-              <div>
-                <p className="font-semibold">Modern Fleet</p>
-                <p className="text-sm text-gray-600">Latest Model Cars</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </Container>
     </section>
   );

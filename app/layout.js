@@ -3,6 +3,9 @@ import "./globals.css";
 import Header from "./shared/ui/Header";
 import Footer from "./shared/ui/Footer";
 import TopHeader from "./shared/ui/TopHeader";
+import AuthProvider from "./context/AuthProvider";
+import { ToastContainer } from "react-toastify";
+import ScrollToTopButton from "./shared/ui/ScrollToTop";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -23,12 +26,18 @@ export default function RootLayout({children}) {
   return (
     <html lang="en">
       <body
+        suppressHydrationWarning
         className={`${montserrat.variable} ${openSans.variable} antialiased`}
       >
-           <TopHeader />
-        <Header />
-        <main>{children}</main>
-        <Footer />
+        <AuthProvider>
+
+          <ToastContainer />
+          <TopHeader />
+          <Header />
+          <main className="min-h-[90vh]">{children}</main>
+          <ScrollToTopButton/>
+          <Footer />
+        </AuthProvider>
       </body>
     </html>
   );

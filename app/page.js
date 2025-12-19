@@ -10,6 +10,8 @@ import WhyChooseUs from "./components/Home/WhyChooseUs";
 import HowItWorks from "./components/Home/HowItWorks/HowItWorks";
 import FindInstructor from "./components/Home/FindInstructor";
 import HomeDrivingJourney from "./components/Home/HomeDrivingJourney";
+import DrivingTestAssessment from "./components/Home/DrivingTestAssessment";
+import DrivingTestPackage from "./components/Home/DrivingTestPackage";
 
 export default function Home() {
   return (
@@ -18,13 +20,15 @@ export default function Home() {
       <FeatureCards />
       <WhatWeOffer />
       <HomePackage />
+      <DrivingTestPackage/>
+      <DrivingTestAssessment/>
       <WhyChooseUs />
       <MovingCar />
       <FindInstructor/>
+      <HomeDrivingJourney/>
       <GoogleReviewCard />
       <Reviews />
       <HowItWorks />
-      <HomeDrivingJourney/>
       <Faq />
     </>
   );

@@ -1,8 +1,10 @@
+"use client"
 import {FaCheck} from "react-icons/fa";
 import Image from "next/image";
 import Container from "@/app/shared/ui/Container";
 import whyChooseImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
+import { useRouter } from "next/navigation";
 export default function WhyChooseUs() {
   const points = [
     {
@@ -31,9 +33,9 @@ export default function WhyChooseUs() {
         "Choose from convenient class schedules that fit your routine.",
     },
   ];
-
+const router = useRouter()
   return (
-    <section className="mt-20 md:mt-25 py-16 bg-gray-50">
+    <section className="mt-10 md:mt-15 mb-5 py-16 ">
       <Container>
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Left Content */}
@@ -64,7 +66,7 @@ export default function WhyChooseUs() {
               ))}
             </ul>
 
-            <SecondaryBtn className={`w-full justify-center`}>
+            <SecondaryBtn onClick={()=>router.push("/about")} className={`w-full justify-center`}>
               Learn More
             </SecondaryBtn>
           </div>

@@ -6,7 +6,7 @@ import Container from "./Container";
 export default function PageHeroSection({title,subtitle}) {
   
   return (
-    <section className="relative w-full min-h-38 py-8">
+    <section className="relative w-full min-h-38 py-10">
       {/* Background Image */}
       <div
         className="absolute inset-0 bg-cover bg-center"

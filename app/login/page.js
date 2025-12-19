@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 import {
   FaEye,
   FaEyeSlash,
@@ -10,24 +10,26 @@ import {
   FaEnvelope,
   FaPhoneAlt,
 } from "react-icons/fa";
-import { FiLogIn } from "react-icons/fi";
+import {FiLogIn} from "react-icons/fi";
 import Image from "next/image";
-import googleLogo from "@/app/assets/google-logo.webp"
+import googleLogo from "@/app/assets/google-logo.webp";
+import useAuth from "../hooks/useAuth";
+import {toast} from "react-toastify";
 export default function Login() {
   const router = useRouter();
+  const {loginWithGoogle, loginUserWithCredential} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMode, setLoginMode] = useState("email"); // "email" or "phone"
+  const [loginMode, setLoginMode] = useState("email"); 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     phone: "",
     otp: "",
-    rememberMe: false,
   });
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const {name, value, type, checked} = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -36,19 +38,31 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      console.log("Login attempt:", formData, "Mode:", loginMode);
-      setIsLoading(false);
-      router.push("/dashboard");
-    }, 1500);
+    loginUserWithCredential(formData.email, formData.password)
+      .then((data) => {
+        toast.success("Log in successfully 🎉");
+        setFormData({
+          email: "",
+          password: "",
+          phone: "",
+          otp: "",
+          rememberMe: false,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Login failed. Please try again.");
+      });
   };
 
-  const handleSocialLogin = (type) => {
-    console.log(`Login with ${type}`);
-    // Implement social login logic here
+  const handleGoogleLogin = () => {
+    loginWithGoogle()
+      .then(() => {
+        toast.success("Log in successfully 🎉");
+      })
+      .catch(() => {
+        toast.error("Google login failed. Please try again.");
+      });
   };
 
   return (
@@ -56,8 +70,16 @@ export default function Login() {
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
         {/* Header */}
         <div className="mb-6 text-center">
-          <Image width={50} height={50} className="mx-auto inline-block" src={`/test-route-driving-school-logo.png`} alt="Test route Driving school"/>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back</h1>
+          <Image
+            width={50}
+            height={50}
+            className="mx-auto inline-block"
+            src={`/test-route-driving-school-logo.png`}
+            alt="Test route Driving school"
+          />
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Welcome Back
+          </h1>
           <p className="text-gray-600">
             Sign in to your account to continue your driving journey
           </p>
@@ -174,7 +196,7 @@ export default function Login() {
                 </div>
               </div>
 
-             <div>
+              <div>
                 <div className="flex justify-between items-center mb-2">
                   <label className="block text-sm font-medium text-gray-700">
                     Password
@@ -252,10 +274,10 @@ export default function Login() {
         {/* Social Login Buttons */}
         <div className="space-y-4">
           <button
-            onClick={() => handleSocialLogin("google")}
+            onClick={() => handleGoogleLogin()}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl hover:bg-secondary hover:text-white transition-colors"
           >
-            <Image src={googleLogo} width={25} height={25} alt="Google Logo"/>
+            <Image src={googleLogo} width={25} height={25} alt="Google Logo" />
             <span className="font-medium">Continue with Google</span>
           </button>
         </div>
