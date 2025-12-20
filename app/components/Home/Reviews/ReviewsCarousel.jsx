@@ -3,6 +3,8 @@
 
 import Image from "next/image";
 import reviewerImg from "@/app/assets/reviewers/john.jpg";
+import reviewerImg2 from "@/app/assets/reviewers/roberts.jpg";
+import reviewerImg3 from "@/app/assets/profile-avatar.png";
 import {Swiper, SwiperSlide} from "swiper/react";
 import {Navigation, Autoplay} from "swiper/modules";
 import {FaStar, FaQuoteLeft} from "react-icons/fa";
@@ -26,7 +28,7 @@ export const reviewsData = [
     id: 2,
     authorName: "Michael Roberts",
     rating: 5,
-    authorImage: reviewerImg,
+    authorImage: reviewerImg2,
     review:
       "Highly professional and helpful. Explained everything clearly and helped me gain confidence on the road.",
     date: "1 month ago",
@@ -36,7 +38,7 @@ export const reviewsData = [
     id: 3,
     authorName: "Emily Nguyen",
     rating: 5,
-    authorImage: reviewerImg,
+    authorImage: reviewerImg3,
     review:
       "The best driving school in the area. The lessons were easy to follow, and the instructor was very supportive.",
     date: "3 weeks ago",
@@ -46,7 +48,7 @@ export const reviewsData = [
     id: 4,
     authorName: "David Patel",
     rating: 5,
-    authorImage: reviewerImg,
+    authorImage: reviewerImg3,
     review:
       "Excellent experience! I loved the structured lessons and positive approach by the instructor.",
     date: "2 months ago",
@@ -56,7 +58,7 @@ export const reviewsData = [
     id: 5,
     authorName: "Martin Gaptil",
     rating: 5,
-    authorImage: reviewerImg,
+    authorImage: reviewerImg3,
     review:
       "Highly recommended! I learned a lot and felt confident before my driving test.",
     date: "1 week ago",

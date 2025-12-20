@@ -79,13 +79,14 @@ button {
 }
 @keyframes moveCar {
   0% {
-    left: -200px; /* start offscreen */
+    transform: translateX(-150px);
   }
   100% {
-    left: 100%; /* move across container */
+    transform: translateX(110vw);
   }
 }
 
 .animate-moveCar {
-  animation: moveCar 10s linear infinite;
+  animation: moveCar 12s linear infinite;
+  will-change: transform;
 }

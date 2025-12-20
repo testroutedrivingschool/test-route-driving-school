@@ -2,6 +2,7 @@ import React from "react";
 import PageHeroSection from "../shared/ui/PageHeroSection";
 import Faq from "../shared/Faq";
 import ServicesCards from "../components/services/ServicesCards";
+import MovingCar from "../shared/MovingCar";
 
 export default function Service() {
   return (
@@ -12,6 +13,7 @@ export default function Service() {
       />
 
       <ServicesCards />
+      <MovingCar/>
       <Faq />
     </div>
   );

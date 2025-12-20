@@ -1,23 +1,25 @@
+"use client"
 import Faq from "@/app/shared/Faq";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import React from "react";
-import ServicePackages from "../components/ServicePackages";
 import Container from "@/app/shared/ui/Container";
 import Link from "next/link";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Image from "next/image";
-import carHireImg from "@/app/assets/car-hire.png";
+import carHireImg from "@/app/assets/car-hire.jpg";
 import {FiArrowRight} from "react-icons/fi";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import WhyChooseUs from "@/app/components/Home/WhyChooseUs";
-import fleet1Img from "@/app/assets/fleet1.jpg";
-import fleet2Img from "@/app/assets/fleet2.webp";
-import fleet3Img from "@/app/assets/fleet3.jpg";
+import fleet1Img from "@/app/assets/fleet1.png";
+import fleet2Img from "@/app/assets/fleet2.png";
+import fleet3Img from "@/app/assets/fleet3.png";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import { toast } from "react-toastify";
+import MovingCar from "@/app/shared/MovingCar";
 const fleets = [
   {
     id: 1,
-    title: "KIA Stonic Build Year 2023",
+    title: "Toyota Avanza",
     price: "100",
     features: [
       "Quatily Dual Brake Installed",
@@ -48,7 +50,7 @@ const fleets = [
   },
   {
     id: 3,
-    title: "Toyota Yaris Cross Hybrid 2023",
+    title: "Toyota Camry",
     price: "110",
     features: [
       "Quatily Dual Brake Installed",
@@ -65,6 +67,9 @@ const fleets = [
 ];
 
 export default function CarHireForInstructor() {
+  const handleBookCar =()=>{
+    return toast.info("We don't have car for rent at this stage.")
+  }
   return (
     <div className="">
       <PageHeroSection
@@ -81,11 +86,12 @@ export default function CarHireForInstructor() {
               <div className="relative rounded-xl overflow-hidden bg-base-300">
                 <Image
                   src={carHireImg}
-                  className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
+                  className="w-full h-120 object-cover transform hover:scale-105 transition-transform duration-700"
                   width={600}
                   height={500}
                   alt="Automatic Driving Lesson with Test Route Driving School"
                 />
+                
               </div>
             </div>
 
@@ -149,9 +155,10 @@ export default function CarHireForInstructor() {
         </Container>
       </section>
 
-      <section>
+      <section className="py-16">
         <Container>
           <SectionHeader
+          className={`mt-0!`}
             title={`Our Fleet`}
             subtitle={
               "A modern and diverse range of vehicles designed for comfort, safety, and an excellent driving experience."
@@ -196,7 +203,7 @@ export default function CarHireForInstructor() {
                   </div>
 
                   {/* CTA Button */}
-                  <button className="mt-4 w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition">
+                  <button onClick={handleBookCar} className="mt-4 w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition">
                     Book This Car
                   </button>
                 </div>
@@ -205,7 +212,7 @@ export default function CarHireForInstructor() {
           </div>
         </Container>
       </section>
-
+<MovingCar/>
       <WhyChooseUs />
 
       <Faq />

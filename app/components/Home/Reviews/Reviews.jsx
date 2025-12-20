@@ -5,8 +5,9 @@ import SectionHeader from "@/app/shared/ui/SectionHeader";
 export default function Reviews() {
   return (
     <section className="py-10 bg-white">
-      <Container>
+      <Container> 
         <SectionHeader
+        className={`mt-5!`}
           title="What Our Students Say"
           subtitle="See why hundreds of learners trust our driving instructors for safe,
             supportive, and confidence–building driving lessons across the area."

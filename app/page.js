@@ -12,6 +12,7 @@ import FindInstructor from "./components/Home/FindInstructor";
 import HomeDrivingJourney from "./components/Home/HomeDrivingJourney";
 import DrivingTestAssessment from "./components/Home/DrivingTestAssessment";
 import DrivingTestPackage from "./components/Home/DrivingTestPackage";
+import BlogSection from "./components/Blogs/BlogSection";
 
 export default function Home() {
   return (
@@ -29,6 +30,7 @@ export default function Home() {
       <GoogleReviewCard />
       <Reviews />
       <HowItWorks />
+      <BlogSection/>
       <Faq />
     </>
   );

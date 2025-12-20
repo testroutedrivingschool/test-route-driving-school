@@ -12,11 +12,11 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import {FiChevronRight} from "react-icons/fi";
-import Image from "next/image";
 import SecondaryBtn from "../shared/Buttons/SecondaryBtn";
 import OutlineBtn from "../shared/Buttons/OutlineBtn";
 import Faq from "../shared/Faq";
 import WhyChooseUs from "../components/Home/WhyChooseUs";
+import MovingCar from "../shared/MovingCar";
 
 const coveredLocations = [
   {name: "Allawah", zone: "South"},
@@ -278,6 +278,7 @@ export default function AreaCovered() {
           
         </Container>
       </section>
+      <MovingCar/>
       <WhyChooseUs/>
       <section className="mb-16">
         <Container>

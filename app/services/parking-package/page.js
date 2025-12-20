@@ -13,6 +13,7 @@ import {
 import {FiArrowRight} from "react-icons/fi";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import WhyChooseUs from "@/app/components/Home/WhyChooseUs";
+import MovingCar from "@/app/shared/MovingCar";
 
 const automaticDrivingPackages = [
   {
@@ -63,7 +64,7 @@ export default function ParkingPackage() {
       {/* Main Content Section */}
       <section className="mt-10 md:mt-15 py-16">
         <Container>
-          <div className="flex flex-col lg:flex-row-reverse items-center gap-10 lg:gap-12">
+          <div className="flex flex-col-reverse lg:flex-row-reverse items-center gap-10 lg:gap-12">
             {/* Image Section */}
             <div className="lg:flex-1 w-full">
               <div className="relative rounded-xl overflow-hidden shadow-2xl">
@@ -160,7 +161,7 @@ export default function ParkingPackage() {
         sectionSubtitle="Choose the perfect package for your learning journey with our structured Parking Package designed for success."
         packages={automaticDrivingPackages}
       />
-
+<MovingCar/>
       <WhyChooseUs />
 
       <Faq />

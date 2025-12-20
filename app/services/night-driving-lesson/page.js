@@ -11,6 +11,7 @@ import { FaCheckCircle,  } from "react-icons/fa";
 import { FiArrowRight } from "react-icons/fi";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import WhyChooseUs from "@/app/components/Home/WhyChooseUs";
+import MovingCar from "@/app/shared/MovingCar";
 
 const automaticDrivingPackages = [
   {
@@ -143,7 +144,7 @@ export default function NightDrivingLesson() {
         sectionSubtitle="Choose the perfect package for your learning journey with our structured Night driving lessons designed for success."
         packages={automaticDrivingPackages}
       />
-
+<MovingCar/>
      <WhyChooseUs/>
 
       <Faq />
