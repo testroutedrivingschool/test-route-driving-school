@@ -1,13 +1,11 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {
   FaEye,
   FaEyeSlash,
-  FaGoogle,
-  FaPhone,
   FaLock,
   FaEnvelope,
   FaUser,
@@ -19,61 +17,98 @@ import PrimaryBtn from "../shared/Buttons/PrimaryBtn";
 import googleLogo from "@/app/assets/google-logo.webp";
 import useAuth from "../hooks/useAuth";
 import {toast} from "react-toastify";
+import axios from "axios";
+import {getFirebaseAuthErrorMessage} from "../utils/firebaseError";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 export default function Register() {
   const router = useRouter();
-  const {loginWithGoogle, signUpUserWithCredential, userProfileUpdate} =
-    useAuth();
+  const {
+    loginWithGoogle,
+    signUpUserWithCredential,
+    userProfileUpdate,
+    sendOtp,
+    verifyOtp,
+  } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("email"); // "email" or "phone"
+
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
     password: "",
     confirmPassword: "",
-    agreeTerms: false,
+    agreeTerms: true,
+    photo: null,
+    photoPreview: null,
   });
-
-  const handleSubmit = (e) => {
+  console.log(formData);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
-    // Validate passwords match
+    setIsLoading(true);
+
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
       setIsLoading(false);
       return;
     }
 
-    // Validate terms agreement
     if (!formData.agreeTerms) {
       toast.error("Please agree to the terms and conditions");
       setIsLoading(false);
       return;
     }
 
-    signUpUserWithCredential(formData.email, formData.password)
-      .then((data) => {
-        userProfileUpdate({displayName: formData.fullName})
-          .then((data) => {
-            toast.success("Registerd successfully 🎉");
-            console.log(data);
-            setFormData({
-              fullName: "",
-              email: "",
-              phone: "",
-              password: "",
-              confirmPassword: "",
-            });
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      })
-      .catch((err) => {
-        console.log(err);
-        toast.error("Login failed. Please try again.");
-      });
+    if (!formData.phone) {
+      toast.error("Phone number is required");
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      let imageUrl = "";
+      if (formData.photo) {
+        const imgbbKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+        const formDataImg = new FormData();
+        formDataImg.append("image", formData.photo);
+
+        const imgbbRes = await axios.post(
+          `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
+          formDataImg
+        );
+
+        imageUrl = imgbbRes.data.data.url;
+      }
+
+      // Store all form data including uploaded image URL
+      const pendingUser = {
+        ...formData,
+        photo: imageUrl, // replace local file with uploaded URL
+      };
+      // ✅ Save form data temporarily
+      sessionStorage.setItem("pendingUser", JSON.stringify(pendingUser));
+      // ✅ Send OTP only
+      await sendOtp(formData.phone);
+      toast.success("OTP sent to your phone");
+      router.push("/register/verify-otp");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send OTP");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        photo: file,
+        photoPreview: URL.createObjectURL(file),
+      }));
+    }
   };
 
   const handleChange = (e) => {
@@ -84,28 +119,29 @@ export default function Register() {
     }));
   };
 
-  const handleGoogleLogin = () => {
-    loginWithGoogle()
-      .then(() => {
-        toast.success("Registerd successfully 🎉");
-      })
-      .catch(() => {
-        toast.error("Google login failed. Please try again.");
-      });
-  };
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await loginWithGoogle();
+      const user = result.user;
 
-  const handlePhoneChange = (e) => {
-    let value = e.target.value.replace(/\D/g, "");
-    if (value.length > 10) value = value.substring(0, 10);
-    if (value.length > 3 && value.length <= 6) {
-      value = `(${value.substring(0, 3)}) ${value.substring(3)}`;
-    } else if (value.length > 6) {
-      value = `(${value.substring(0, 3)}) ${value.substring(
-        3,
-        6
-      )}-${value.substring(6)}`;
+      const userData = {
+        name: user.displayName,
+        email: user.email,
+        phone: user.phoneNumber || "",
+        image: user.photoURL || "",
+        lastLogin: new Date(),
+        role: "user",
+      };
+
+      // Send to your MongoDB API
+      await axios.post("/api/users", userData);
+
+      toast.success("Registered successfully 🎉");
+      router.push("/");
+    } catch (error) {
+      console.error(error);
+      toast.error("Google login failed. Please try again.");
     }
-    setFormData((prev) => ({...prev, phone: value}));
   };
 
   const passwordStrength = () => {
@@ -127,7 +163,7 @@ export default function Register() {
   const strength = passwordStrength();
 
   return (
-    <div className="min-h-screen  flex items-center justify-center p-4 py-12">
+    <div className="min-h-screen  flex items-center justify-center p-4 py-16">
       <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header Section */}
         <div className="p-6 text-center">
@@ -137,8 +173,8 @@ export default function Register() {
           >
             <div className="relative">
               <Image
-                width={80}
-                height={80}
+                width={50}
+                height={50}
                 src="/test-route-driving-school-logo.png"
                 alt="Test Route Driving School"
                 className="rounded-full border-4 border-white/20"
@@ -152,30 +188,6 @@ export default function Register() {
 
         {/* Main Content */}
         <div className="px-6 md:px-8 pb-4">
-          {/* Toggle between Email and Phone login */}
-          <div className="flex justify-center mb-6 gap-4">
-            <button
-              onClick={() => setActiveTab("email")}
-              className={`px-4 py-2 rounded-xl font-medium transition ${
-                activeTab === "email"
-                  ? "bg-primary text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Email Login
-            </button>
-            <button
-              onClick={() => setActiveTab("phone")}
-              className={`px-4 py-2 rounded-xl font-medium transition ${
-                activeTab === "phone"
-                  ? "bg-primary text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
-            >
-              Phone Login
-            </button>
-          </div>
-
           {/* Registration Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Full Name */}
@@ -204,101 +216,79 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Email or Phone based on activeTab */}
-            {activeTab === "email" && (
-              <>
-                {/* Email (Required) */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FaEnvelope className="text-gray-400" />
-                    </div>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      placeholder="you@example.com"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
+            {/* Profile Photo */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Profile Photo
+              </label>
+              <div className="flex items-center gap-4">
+                {formData.photoPreview && (
+                  <Image
+                    width={50}
+                    height={50}
+                    src={formData.photoPreview}
+                    alt="Preview"
+                    className="w-16 h-16 rounded-full object-cover border"
+                  />
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="block text-sm text-gray-600 border p-4 border-border-color font-medium cursor-pointer"
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
 
-                {/* Phone (Optional) */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number{" "}
-                    <span className="text-gray-400">(Optional)</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FaPhone className="text-gray-400" />
-                    </div>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handlePhoneChange}
-                      placeholder="(123) 456-7890"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+            {/* Email (Required) */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <FaEnvelope className="text-gray-400" />
                 </div>
-              </>
-            )}
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="you@example.com"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            {/* Phone & OTP */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
 
-            {activeTab === "phone" && (
-              <>
-                {/* Phone (Required) */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FaPhone className="text-gray-400" />
-                    </div>
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handlePhoneChange}
-                      required
-                      placeholder="(123) 456-7890"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">
-                    We’ll send a verification code to this number
-                  </p>
+              <div className="flex gap-4">
+                <div className="w-3/4">
+                  <PhoneInput
+                    country={"au"}
+                    required
+                    value={formData.phone}
+                    onChange={(phone) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        phone: `+${phone}`,
+                      }))
+                    }
+                    inputStyle={{
+                      width: "100%",
+                      height: "48px",
+                      borderRadius: "12px",
+                    }}
+                  />
+              
                 </div>
-
-                {/* Email (Optional) */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address{" "}
-                    <span className="text-gray-400">(Optional)</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <FaEnvelope className="text-gray-400" />
-                    </div>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      placeholder="you@example.com"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+              </div>
+            </div>
 
             {/* Password */}
             <div>

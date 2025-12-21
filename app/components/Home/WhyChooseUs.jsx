@@ -1,11 +1,11 @@
-"use client"
+"use client";
 import {FaCheck} from "react-icons/fa";
 import Image from "next/image";
 import Container from "@/app/shared/ui/Container";
 import whyChooseImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
-import { useRouter } from "next/navigation";
-export default function WhyChooseUs() {
+import {useRouter} from "next/navigation";
+export default function WhyChooseUs({className}) {
   const points = [
     {
       title: "Expert Driving Instructors",
@@ -33,15 +33,16 @@ export default function WhyChooseUs() {
         "Choose from convenient class schedules that fit your routine.",
     },
   ];
-const router = useRouter()
+  const router = useRouter();
   return (
-    <section className="mt-10 md:mt-15 mb-5 py-16 ">
+    <section className={`py-16 ${className} `}>
       <Container>
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Left Content */}
           <div className="flex flex-col gap-4">
             <h2 className="text-3xl md:text-4xl font-bold ">
-              Why Choose <span className="text-primary">Test Route Driving School?</span> 
+              Why Choose{" "}
+              <span className="text-primary">Test Route Driving School?</span>
             </h2>
             <p className="text-neutral">
               At Bangladesh Driving Training Institute, we provide professional
@@ -66,7 +67,10 @@ const router = useRouter()
               ))}
             </ul>
 
-            <SecondaryBtn onClick={()=>router.push("/about")} className={`w-full justify-center`}>
+            <SecondaryBtn
+              onClick={() => router.push("/about")}
+              className={`w-full justify-center`}
+            >
               Learn More
             </SecondaryBtn>
           </div>

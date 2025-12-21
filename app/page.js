@@ -23,7 +23,7 @@ export default function Home() {
       <HomePackage />
       <DrivingTestPackage/>
       <DrivingTestAssessment/>
-      <WhyChooseUs />
+      <WhyChooseUs className={"bg-base-300"}/>
       <MovingCar />
       <FindInstructor/>
       <HomeDrivingJourney/>

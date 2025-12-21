@@ -13,7 +13,7 @@ import {
 
 export default function DrivingTestPackage() {
   return (
-    <section className="py-20 ">
+    <section className="py-20 bg-base-300">
       <Container>
         <SectionHeader
           title="Driving Test Packages"

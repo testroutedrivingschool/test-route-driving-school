@@ -8,9 +8,9 @@ export default function Footer() {
     {id: 1, label: "Home", href: "/"},
     {id: 2, label: "Instructors", href: "/instructors"},
     {id: 3, label: "Services", href: "/services"},
-    {id: 4, label: "Resources", href: "/resources"},
-    {id: 5, label: "Packages", href: "/package"},
-    {id: 6, label: "Contact", href: "/contact"},
+    {id: 4, label: "Resources", href: "/company/resources"},
+    {id: 5, label: "Packages", href: "/packages"},
+    {id: 6, label: "Contact", href: "/company/contact"},
   ];
 
   const extraLinks = [

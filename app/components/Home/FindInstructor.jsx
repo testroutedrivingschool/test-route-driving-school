@@ -76,7 +76,7 @@ export default function FindInstructor() {
   };
 
   return (
-    <section className="py-17 bg-base-300">
+    <section className="py-17 ">
       <Container>
         <div className="flex flex-col gap-8">
           {/* Left Column */}

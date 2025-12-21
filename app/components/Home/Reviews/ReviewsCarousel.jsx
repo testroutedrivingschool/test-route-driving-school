@@ -16,11 +16,11 @@ import "swiper/css/pagination";
 export const reviewsData = [
   {
     id: 1,
-    authorName: "Harry Thompson",
+    authorName: "Iq",
     rating: 5,
     authorImage: reviewerImg,
     review:
-      "Amazing driving instructors! Very patient and friendly. I passed my test on the first try thanks to their expert guidance.",
+      "My experience has been great ! Instructors were really patient with me and easygoing enough for me to communicate with them about my problems properly. Because of these lessons I am more confident than ever!",
     date: "2 weeks ago",
     lesson: "10-Hour Package",
   },

@@ -1,7 +1,7 @@
 "use client";
 
-import {useState} from "react";
-import {useRef, useEffect} from "react";
+import {useEffect, useState} from "react";
+import {useRef} from "react";
 import {FaUserCircle, FaSignOutAlt, FaTachometerAlt} from "react-icons/fa";
 
 import Link from "next/link";
@@ -14,7 +14,8 @@ import SecondaryBtn from "../Buttons/SecondaryBtn";
 import PrimaryBtn from "../Buttons/PrimaryBtn";
 import useAuth from "@/app/hooks/useAuth";
 import {toast} from "react-toastify";
-import { usePathname } from "next/navigation";
+import {usePathname} from "next/navigation";
+import {getUserByEmail} from "@/app/utils/getUser";
 
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
@@ -88,12 +89,24 @@ export default function Navbar() {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarRef = useRef(null);
   const [open, setOpen] = useState(false);
- const pathname = usePathname();
-
+  const pathname = usePathname();
+  const {user, logoutUser} = useAuth();
+  const [userData, setUserData] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
 
-  const {user, logoutUser} = useAuth();
-
+ useEffect(() => {
+  if (user?.email) {
+    const fetchUserData = async () => {
+      const data = await getUserByEmail(user.email);
+      setUserData(data);
+    };
+    fetchUserData();
+  } else {
+    // 👇 IMPORTANT: clear userData on logout
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setUserData(null);
+  }
+}, [user]);
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
   };
@@ -146,11 +159,10 @@ export default function Navbar() {
                   href={item.pathname || "#"}
                   onClick={() => setActiveLink(item.pathname)}
                   className={`relative py-2 font-bold transition-all duration-300 group flex items-center gap-1  hover:border-primary ${
-  pathname === item.pathname
-    ? "text-primary border-b-3 border-primary"
-    : "text-gray-700 hover:text-primary border-b-3 border-transparent"
-}`}
-
+                    pathname === item.pathname
+                      ? "text-primary border-b-3 border-primary"
+                      : "text-gray-700 hover:text-primary border-b-3 border-transparent"
+                  }`}
                 >
                   {item.label}{" "}
                   {item.dropdowns && <MdKeyboardArrowDown size={18} />}
@@ -227,7 +239,7 @@ export default function Navbar() {
             ))}
           </ul>
           <div className="flex gap-6 ">
-            {user ? (
+            {userData ? (
               <div ref={avatarRef} className="relative">
                 {/* Avatar Button */}
                 <button
@@ -235,17 +247,17 @@ export default function Navbar() {
                   className="flex items-center gap-2 focus:outline-none"
                 >
                   <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 hover:ring-primary/40 transition">
-                    {user.photoURL ? (
+                    {userData.photo ? (
                       <Image
-                        src={user.photoURL}
-                        alt={user.displayName || "User"}
+                        src={userData.photo}
+                        alt={userData.name || "User"}
                         width={48}
                         height={48}
-                        className="object-cover w-full h-full"
+                        className="object-cover object-top w-full h-full"
                       />
                     ) : (
                       <div className="w-full h-full bg-primary text-white flex items-center justify-center font-semibold">
-                        {user.displayName?.charAt(0).toUpperCase() || "U"}
+                        {userData.name?.charAt(0).toUpperCase() || "U"}
                       </div>
                     )}
                   </div>
@@ -264,10 +276,10 @@ export default function Navbar() {
                   {/* User Info */}
                   <div className="px-4 py-3 border-b border-border-color">
                     <p className="font-semibold text-gray-900 truncate">
-                      {user.displayName || "User"}
+                      {userData.name || "User"}
                     </p>
                     <p className="text-sm text-gray-500 truncate">
-                      {user.email}
+                      {userData.email}
                     </p>
                   </div>
 
@@ -321,7 +333,7 @@ export default function Navbar() {
             )}
 
             <button
-              className="lg:hidden text-2xl p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group"
+              className="lg:hidden text-2xl p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group text-black"
               onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
             >

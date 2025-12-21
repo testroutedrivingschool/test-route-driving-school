@@ -15,12 +15,13 @@ import Image from "next/image";
 import googleLogo from "@/app/assets/google-logo.webp";
 import useAuth from "../hooks/useAuth";
 import {toast} from "react-toastify";
+import axios from "axios";
+
 export default function Login() {
   const router = useRouter();
   const {loginWithGoogle, loginUserWithCredential} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [loginMode, setLoginMode] = useState("email"); 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,8 +40,10 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     loginUserWithCredential(formData.email, formData.password)
-      .then((data) => {
+      .then(async (data) => {
         toast.success("Log in successfully 🎉");
+        await axios.patch("/api/users", { email: formData.email });
+
         setFormData({
           email: "",
           password: "",
@@ -66,7 +69,7 @@ export default function Login() {
   };
 
   return (
-    <div className="my-16">
+    <div className="py-16">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
         {/* Header */}
         <div className="mb-6 text-center">
@@ -85,34 +88,11 @@ export default function Login() {
           </p>
         </div>
 
-        {/* Toggle between Email and Phone login */}
-        <div className="flex justify-center mb-6 gap-4">
-          <button
-            onClick={() => setLoginMode("email")}
-            className={`px-4 py-2 rounded-xl font-medium transition ${
-              loginMode === "email"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Email Login
-          </button>
-          <button
-            onClick={() => setLoginMode("phone")}
-            className={`px-4 py-2 rounded-xl font-medium transition ${
-              loginMode === "phone"
-                ? "bg-primary text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Phone Login
-          </button>
-        </div>
+      
 
         {/* Login Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {loginMode === "email" ? (
-            <>
+         
               {/* Email Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -171,74 +151,15 @@ export default function Login() {
                   </button>
                 </div>
               </div>
-            </>
-          ) : (
-            <>
-              {/* Phone Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Phone Number
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaPhoneAlt className="text-gray-400" />
-                  </div>
-                  <input
-                    type="tel"
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    placeholder="+1 234 567 890"
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                    disabled={isLoading}
-                  />
-                </div>
-              </div>
+         
 
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Password
-                  </label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-primary hover:text-blue-800 transition-colors"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <FaLock className="text-gray-400" />
-                  </div>
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    placeholder="Enter your password"
-                    className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
-                    disabled={isLoading}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <FaEyeSlash /> : <FaEye />}
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
+              
 
           {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary text-white font-semibold py-3.5 rounded-xl hover:bg-blue-700 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-white font-semibold py-3.5 rounded-xl hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

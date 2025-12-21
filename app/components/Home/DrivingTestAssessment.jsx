@@ -85,7 +85,7 @@ const packages = [
 
 export default function DrivingTestAssessment() {
   return (
-    <section className="py-17 bg-base-300">
+    <section className="py-17 bg-white">
       <Container>
         <SectionHeader
           title="Driving Test Assessment Packages"
