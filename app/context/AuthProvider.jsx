@@ -11,12 +11,15 @@ import {
   updateProfile,
   RecaptchaVerifier,
   signInWithPhoneNumber,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
 } from "firebase/auth";
 import {auth} from "../libs/firebase/firebase.config";
 
 export default function AuthProvider({children}) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const GoogleProvider = new GoogleAuthProvider();
 
@@ -43,6 +46,28 @@ export default function AuthProvider({children}) {
   const userProfileUpdate = (profileData) => {
     return updateProfile(auth.currentUser, profileData);
   };
+
+const changePassword = async (currentPassword, newPassword) => {
+  if (!auth.currentUser) throw new Error("No logged-in user found");
+
+  try {
+    // Reauthenticate user
+    const credential = EmailAuthProvider.credential(
+      auth.currentUser.email,
+      currentPassword
+    );
+
+    await reauthenticateWithCredential(auth.currentUser, credential);
+
+    // Update password
+    await updatePassword(auth.currentUser, newPassword);
+
+    return { success: true, message: "Password updated successfully!" };
+  } catch (error) {
+    console.error("Password change error:", error);
+    throw new Error(error.message || "Failed to change password");
+  }
+};
 
 // -------------------- OTP / Phone Auth --------------------
 const setupRecaptcha = () => {
@@ -136,6 +161,7 @@ const verifyOtp = async (otp) => {
     userProfileUpdate,
     sendOtp,
     verifyOtp,
+    changePassword
   };
 
   return (

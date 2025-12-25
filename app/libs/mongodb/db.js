@@ -1,6 +1,5 @@
 import clientPromise from "./mongodb";
 
-
 const DB_NAME = "testRouteDB";
 
 export async function getDb() {
@@ -12,4 +11,21 @@ export async function getDb() {
 export async function usersCollection() {
   const db = await getDb();
   return db.collection("users");
+}
+
+export async function packagesCollection() {
+  const db = await getDb();
+  return db.collection("packages");
+}
+export async function reviewsCollection() {
+  const db = await getDb();
+  return db.collection("reviews");
+}
+export async function announcementsCollection() {
+  const db = await getDb();
+  return db.collection("announcements");
+}
+export async function couponsCollection() {
+  const db = await getDb();
+  return db.collection("coupons");
 }

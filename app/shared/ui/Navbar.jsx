@@ -2,13 +2,13 @@
 
 import {useEffect, useState} from "react";
 import {useRef} from "react";
-import {FaUserCircle, FaSignOutAlt, FaTachometerAlt} from "react-icons/fa";
+import { FaSignOutAlt} from "react-icons/fa";
 
 import Link from "next/link";
 import Image from "next/image";
 import {FiMenu, FiX, FiChevronRight, FiChevronDown} from "react-icons/fi";
 import {FaAngleRight} from "react-icons/fa";
-import {MdKeyboardArrowDown} from "react-icons/md";
+import {MdDashboard, MdKeyboardArrowDown} from "react-icons/md";
 import Container from "./Container";
 import SecondaryBtn from "../Buttons/SecondaryBtn";
 import PrimaryBtn from "../Buttons/PrimaryBtn";
@@ -16,6 +16,7 @@ import useAuth from "@/app/hooks/useAuth";
 import {toast} from "react-toastify";
 import {usePathname} from "next/navigation";
 import {getUserByEmail} from "@/app/utils/getUser";
+import { useUserData } from "@/app/hooks/useUserData";
 
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
@@ -85,28 +86,16 @@ const navlinks = [
   },
 ];
 
-export default function Navbar() {
+export default function Navbar({className}) {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarRef = useRef(null);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const {user, logoutUser} = useAuth();
-  const [userData, setUserData] = useState(null);
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const {user, logoutUser} = useAuth();
+  const {data: userData, isLoading} = useUserData();
 
- useEffect(() => {
-  if (user?.email) {
-    const fetchUserData = async () => {
-      const data = await getUserByEmail(user.email);
-      setUserData(data);
-    };
-    fetchUserData();
-  } else {
-    // 👇 IMPORTANT: clear userData on logout
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setUserData(null);
-  }
-}, [user]);
+
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
   };
@@ -122,7 +111,7 @@ export default function Navbar() {
 
   return (
     <nav
-      className={`sticky top-0 z-50 transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
+      className={`${className} z-50 transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
     >
       <Container>
         <div className="flex items-center justify-between ">
@@ -138,8 +127,9 @@ export default function Navbar() {
                 alt="Test Route Driving School Logo"
                 width={80}
                 height={80}
+                loading="eager"
                 className="object-contain rounded-full transition-all duration-300
-                 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" // responsive sizes
+                 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" 
               />
               <div>
                 <h2 className="block font-bold text-primary text-lg md:text-xl leading-4.5">
@@ -246,7 +236,7 @@ export default function Navbar() {
                   onClick={() => setAvatarOpen(!avatarOpen)}
                   className="flex items-center gap-2 focus:outline-none"
                 >
-                  <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 hover:ring-primary/40 transition">
+                  <div className="w-11 h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
                     {userData.photo ? (
                       <Image
                         src={userData.photo}
@@ -291,21 +281,12 @@ export default function Navbar() {
                         className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
                         onClick={() => setAvatarOpen(false)}
                       >
-                        <FaTachometerAlt className="text-primary" />
+                        <MdDashboard  className="text-primary" />
                         Dashboard
                       </Link>
                     </li>
 
-                    <li>
-                      <Link
-                        href="/profile"
-                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
-                        onClick={() => setAvatarOpen(false)}
-                      >
-                        <FaUserCircle className="text-primary" />
-                        Profile
-                      </Link>
-                    </li>
+                    
                   </ul>
 
                   {/* Logout */}

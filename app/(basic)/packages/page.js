@@ -1,0 +1,268 @@
+"use client";
+import { useState } from "react";
+import { FaSearch, FaFilter, FaTimes, FaAngleDown } from "react-icons/fa";
+import { FiChevronRight } from "react-icons/fi";
+import Image from "next/image";
+import Link from "next/link";
+import PageHeroSection from "@/app/shared/ui/PageHeroSection";
+import Container from "@/app/shared/ui/Container";
+import SectionHeader from "@/app/shared/ui/SectionHeader";
+import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
+import { useQuery } from "@tanstack/react-query";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import axios from "axios";
+
+export default function Packages() {
+  const { data: packagesData = [], isLoading } = useQuery({
+    queryKey: ["packages"],
+    queryFn: async () => {
+      const res = await axios.get("/api/packages");
+      return res.data;
+    },
+  });
+
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("default");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedArea, setSelectedArea] = useState("all");
+console.log(packagesData);
+  const areaOptions = [
+    { value: "all", label: "All Areas" },
+    { value: "sydney", label: "Sydney" },
+    { value: "parramatta", label: "Parramatta" },
+    { value: "campbelltown", label: "Campbelltown" },
+    { value: "blacktown", label: "Blacktown" },
+  ];
+
+  const categoryOptions = [
+    { value: "all", label: "All Categories" },
+    { value: "driving-lesson", label: "Driving Lesson" },
+    { value: "vouchers", label: "Vouchers" },
+    { value: "test-package", label: "Test Packages" },
+  ];
+
+  const filteredPackages = packagesData
+    .filter(
+      (pkg) =>
+        pkg.name.toLowerCase().includes(search.toLowerCase()) ||
+        pkg.description.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter((pkg) => {
+      if (selectedCategory === "all") return true;
+      return pkg.category === selectedCategory;
+    })
+    .sort((a, b) => {
+      if (sort === "low") return a.price - b.price;
+      if (sort === "high") return b.price - a.price;
+      if (sort === "popular") return Number(b.popular) - Number(a.popular);
+      return 0;
+    });
+
+  const activeFilters = [
+    selectedCategory !== "all" &&
+      `Category: ${
+        categoryOptions.find((c) => c.value === selectedCategory)?.label
+      }`,
+    selectedArea !== "all" &&
+      `Area: ${areaOptions.find((a) => a.value === selectedArea)?.label}`,
+    sort !== "default" &&
+      `Sort: ${
+        sort === "low"
+          ? "Price Low to High"
+          : sort === "high"
+          ? "Price High to Low"
+          : "Most Popular"
+      }`,
+  ].filter(Boolean);
+
+  const clearAllFilters = () => {
+    setSearch("");
+    setSelectedCategory("all");
+    setSelectedArea("all");
+    setSort("default");
+  };
+
+  if (isLoading) return <LoadingSpinner />;
+
+  return (
+    <section className="pb-16">
+      <PageHeroSection
+        title="All Packages"
+        subtitle="Explore our range of carefully designed packages tailored to suit every learner’s needs. Whether you’re a beginner or looking to advance your skills, each package offers structured lessons, flexible scheduling, and expert guidance to help you succeed. Find the plan that fits your goals and start progressing with confidence today."
+      />
+      <Container>
+        <div className="text-center mb-12">
+          <SectionHeader
+            title="Find Your Perfect Driving Package"
+            subtitle="Choose from our flexible packages designed for every skill level and learning style"
+          />
+        </div>
+
+        {/* Filter Controls */}
+        <div className="mb-8">
+          <div className="bg-white shadow-lg rounded-2xl p-6 border border-border-color">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {/* Search */}
+              <div>
+                <span className="text-primary font-semibold block mb-1">
+                  Search:
+                </span>
+                <div className="relative">
+                  <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search packages..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 border border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition"
+                  />
+                </div>
+              </div>
+
+              {/* Category */}
+              <div>
+                <span className="text-primary font-semibold block mb-1">
+                  Category:
+                </span>
+                <div className="relative">
+                  <FaFilter className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full pl-12 pr-10 py-3 border border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition bg-white appearance-none"
+                  >
+                    {categoryOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Area */}
+              <div>
+                <span className="text-primary font-semibold block mb-1">
+                  Area:
+                </span>
+                <div className="relative">
+                  <select
+                    value={selectedArea}
+                    onChange={(e) => setSelectedArea(e.target.value)}
+                    className="w-full pl-4 pr-10 py-3 border border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition bg-white appearance-none"
+                  >
+                    {areaOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <FaAngleDown className="text-gray-400" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Active Filters */}
+            {activeFilters.length > 0 && (
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <span className="text-sm text-gray-600 font-medium">
+                  Active filters:
+                </span>
+                {activeFilters.map((filter, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center gap-1 bg-primary/10 text-primary px-3 py-1 rounded-full text-sm font-medium"
+                  >
+                    {filter}
+                    <button
+                      onClick={() => {
+                        if (filter.includes("Category"))
+                          setSelectedCategory("all");
+                        else if (filter.includes("Area")) setSelectedArea("all");
+                        else if (filter.includes("Sort")) setSort("default");
+                      }}
+                      className="ml-1 hover:text-blue-900"
+                    >
+                      <FaTimes className="text-xs" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  onClick={clearAllFilters}
+                  className="text-sm text-red-600 hover:text-red-700 font-medium ml-2"
+                >
+                  Clear all
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Results Count */}
+        <div className="mb-6 flex flex-col md:flex-row justify-between items-center text-gray-700 gap-2">
+          <div className="font-semibold">{filteredPackages.length} packages found</div>
+          <div className="text-sm text-gray-500">
+            Showing {Math.min(filteredPackages.length, 8)} of {packagesData.length} total packages
+          </div>
+        </div>
+
+        {/* Packages Grid */}
+        {filteredPackages.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-2xl border border-gray-200">
+            <div className="text-6xl mb-4 animate-bounce">🚗</div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-3">
+              No packages match your criteria
+            </h3>
+            <p className="text-gray-600 max-w-md mx-auto mb-6">
+              Try adjusting your filters or search term to find the perfect driving package.
+            </p>
+            <button
+              onClick={clearAllFilters}
+              className="px-6 py-3 bg-primary text-white font-semibold rounded-xl hover:bg-primary/90 transition inline-flex items-center gap-2"
+            >
+              <FaTimes />
+              Clear All Filters
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredPackages.map((pkg) => (
+              <Link
+                href={`/packages/${pkg._id}`}
+                key={pkg._id}
+                className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden"
+              >
+                <div className="relative w-full h-48">
+                  <Image
+                    src={pkg.packageThumbline}
+                    fill
+                    alt={pkg.name}
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-5">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{pkg.description}</p>
+
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="text-2xl font-bold text-gray-900">${pkg.price}</div>
+                    {pkg.originalPrice && (
+                      <div className="text-gray-400 line-through">${pkg.originalPrice}</div>
+                    )}
+                  </div>
+
+                  <PrimaryBtn className="w-full flex justify-center items-center gap-2">
+                    Book The Package
+                    <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+                  </PrimaryBtn>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </Container>
+    </section>
+  );
+}
