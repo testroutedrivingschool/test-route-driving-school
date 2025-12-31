@@ -134,7 +134,7 @@ export default function Footer() {
                     href="tel: +61 412 018 593"
                   >
                     {" "}
-                    <FaPhoneAlt className="text-primary" />
+                    <FaPhoneAlt size={22} className="text-primary" />
                     <span>+61 412 018 593</span>
                   </a>
                 </li>
@@ -144,13 +144,13 @@ export default function Footer() {
                     className="flex items-center gap-2"
                     href="mailto:testroutedrivingschool@gmail.com"
                   >
-                    <FaEnvelope className="text-primary" />
-                    <span>testroutedrivingschool.com</span>
+                    <FaEnvelope size={22} className="text-primary" />
+                    <span>testroutedrivingschool@gmail.com</span>
                   </a>
                 </li>
 
                 <li className="flex items-center gap-2">
-                  <FaMapMarkerAlt className="text-primary" />
+                  <FaMapMarkerAlt size={22} className="text-primary" />
                   <span>67 Warialda St, Kogarah NSW 2217, Australia</span>
                 </li>
               </ul>
