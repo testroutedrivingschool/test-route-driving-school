@@ -13,11 +13,11 @@ import {
   FiGift,
 } from "react-icons/fi";
 import { GoMegaphone, GoPackage } from "react-icons/go";
-
+import { FaGear } from "react-icons/fa6";
 /* ================= USER ================= */
 export const userSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard"},
-  {id: 2, label: "Profile", icon: <FiUser />, path: "/dashboard/profile"},
+  {id: 2, label: "Profile", icon: <FiUser />, path: "/dashboard/user-profile"},
   {
     id: 3,
     label: "My Bookings",
@@ -93,7 +93,7 @@ export const instructorSidebarLinks = [
     id: 3,
     label: "Bookings",
     icon: <FiCalendar />,
-    path: "/dashboard/bookings",
+    path: "/dashboard/my-bookings",
   },
   {
     id: 4,
@@ -114,9 +114,9 @@ export const instructorSidebarLinks = [
     path: "/dashboard/financial",
   },
   {
-    id: 7,
-    label: "Files",
-    icon: <FiFileText />,
-    path: "/dashboard/files",
-  },
+    id:7,
+    label:"Setting",
+    icon:<FaGear/> ,
+      path: "/dashboard/instructor-setting",
+  }
 ];

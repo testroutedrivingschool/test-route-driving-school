@@ -66,7 +66,7 @@ export default function FeatureCards() {
         const entry = entries[0];
         if (entry.isIntersecting) {
           setStartCount(true);
-          observer.disconnect(); // Run once
+          observer.disconnect(); 
         }
       },
       {threshold: 0.3}
@@ -96,11 +96,11 @@ export default function FeatureCards() {
 
               {/* Main card */}
               <div
-                className={`relative bg-white p-6 rounded-xl shadow-lg border border-border-color hover:shadow-2xl transition-all duration-500 hover:-translate-y-2`}
+                className={`relative bg-white p-6 rounded-xl shadow-lg border border-border-color hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 flex flex-col items-center`}
               >
                 {/* Icon */}
                 <div
-                  className={`w-16 h-16 ${item.bgColor} rounded-2xl flex items-center justify-center mb-6`}
+                  className={`w-16 h-16 ${item.bgColor} rounded-2xl flex items-center justify-center mb-4 `}
                 >
                   <div
                     className={`text-2xl ${item.color

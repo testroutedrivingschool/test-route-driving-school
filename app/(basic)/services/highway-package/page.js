@@ -1,10 +1,7 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.jpg";
-import {
-  FaCheckCircle,
-} from "react-icons/fa";
+import {FaCheckCircle} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
@@ -13,13 +10,14 @@ import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
-import Faq from "@/app/shared/Faq";
+import Faq from "@/app/shared/FaqSection";
 
 const automaticDrivingPackages = [
   {
     id: 1,
     title: "Highway Package 1",
-    description: "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation.",
+    description:
+      "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation.",
     price: "220",
     features: [
       "Automatic Driving Lesson - 7 days a week.  ",
@@ -32,7 +30,8 @@ const automaticDrivingPackages = [
   {
     id: 2,
     title: "Highway Package 2",
-    description: "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation.",
+    description:
+      "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation.",
     price: "255",
     features: [
       "Automatic Driving Lesson - 7 days a week.  ",
@@ -87,7 +86,15 @@ export default function HighwayPackage() {
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
-                Driving on a highway is a whole new level of driving confidence. While city driving teaches you to handle traffic congestion and tight spaces, highway driving builds your skills in speed management, merging, overtaking, and long-distance focus. If you&apos;re searching for a driving school in Sydney that offers highway driving lessons, with experienced instructors and cheap car lessons, look no further than Test Route Driving School—Sydney’s top-rated driving school for learners, test-prep, and refresher courses.
+                Driving on a highway is a whole new level of driving confidence.
+                While city driving teaches you to handle traffic congestion and
+                tight spaces, highway driving builds your skills in speed
+                management, merging, overtaking, and long-distance focus. If
+                you&apos;re searching for a driving school in Sydney that offers
+                highway driving lessons, with experienced instructors and cheap
+                car lessons, look no further than Test Route Driving
+                School—Sydney’s top-rated driving school for learners,
+                test-prep, and refresher courses.
               </p>
               <h3 className="text-lg font-semibold">
                 Why Highway Driving Lesson Is Important
@@ -103,7 +110,7 @@ export default function HighwayPackage() {
                   </div>
                 ))}
               </div>
-           
+
               {/* CTA Buttons */}
               <div className="mt-4 flex flex-col sm:flex-row gap-4">
                 <Link href="/packages" className="group">
@@ -125,19 +132,33 @@ export default function HighwayPackage() {
       </section>
       <section className="py-12 bg-primary/80 text-white">
         <Container>
-                   <h3 className="text-lg md:text-2xl font-semibold">
-                Who Needs Highway Driving Lessons?
-              </h3>
-              <ul className="mt-2 list-disc pl-3 space-y-2">
-                <li className="text-base-300 ">New learners preparing for their P’s test</li>
-                <li className="text-base-300 ">Overseas drivers adapting to Australian road systems</li>
-                <li className="text-base-300 ">Anxious or hesitant drivers who avoid motorways</li>
-                <li className="text-base-300 ">Learners in suburban or rural areas commuting to the city</li>
-              </ul>
-                   <h3 className="mt-4 text-lg md:text-2xl font-semibold">
-              Prepare for Success
-              </h3>
-              <p className="mt-2 max-w-4xl">Don’t leave your driving test to chance. With Test Route Driving School, you’ll receive the support and guidance you need to pass your test with confidence. Contact us today to book your driving test assessment and take the first step towards becoming a licensed driver.</p>
+          <h3 className="text-lg md:text-2xl font-semibold">
+            Who Needs Highway Driving Lessons?
+          </h3>
+          <ul className="mt-2 list-disc pl-3 space-y-2">
+            <li className="text-base-300 ">
+              New learners preparing for their P’s test
+            </li>
+            <li className="text-base-300 ">
+              Overseas drivers adapting to Australian road systems
+            </li>
+            <li className="text-base-300 ">
+              Anxious or hesitant drivers who avoid motorways
+            </li>
+            <li className="text-base-300 ">
+              Learners in suburban or rural areas commuting to the city
+            </li>
+          </ul>
+          <h3 className="mt-4 text-lg md:text-2xl font-semibold">
+            Prepare for Success
+          </h3>
+          <p className="mt-2 max-w-4xl">
+            Don’t leave your driving test to chance. With Test Route Driving
+            School, you’ll receive the support and guidance you need to pass
+            your test with confidence. Contact us today to book your driving
+            test assessment and take the first step towards becoming a licensed
+            driver.
+          </p>
         </Container>
       </section>
 
@@ -147,7 +168,7 @@ export default function HighwayPackage() {
         sectionSubtitle="Choose the perfect package for your learning journey with our structured highway driving lessons designed for success."
         packages={automaticDrivingPackages}
       />
-<MovingCar/>
+      <MovingCar />
       <WhyChooseUs />
 
       <Faq />

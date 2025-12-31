@@ -1,19 +1,19 @@
 "use client";
-import { useState } from "react";
-import { FaSearch, FaFilter, FaTimes, FaAngleDown } from "react-icons/fa";
-import { FiChevronRight } from "react-icons/fi";
+import {useState} from "react";
+import {FaSearch, FaFilter, FaTimes, FaAngleDown} from "react-icons/fa";
+import {FiChevronRight} from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import { useQuery } from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 
 export default function Packages() {
-  const { data: packagesData = [], isLoading } = useQuery({
+  const {data: packagesData = [], isLoading} = useQuery({
     queryKey: ["packages"],
     queryFn: async () => {
       const res = await axios.get("/api/packages");
@@ -25,20 +25,20 @@ export default function Packages() {
   const [sort, setSort] = useState("default");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedArea, setSelectedArea] = useState("all");
-console.log(packagesData);
+
   const areaOptions = [
-    { value: "all", label: "All Areas" },
-    { value: "sydney", label: "Sydney" },
-    { value: "parramatta", label: "Parramatta" },
-    { value: "campbelltown", label: "Campbelltown" },
-    { value: "blacktown", label: "Blacktown" },
+    {value: "all", label: "All Areas"},
+    {value: "sydney", label: "Sydney"},
+    {value: "parramatta", label: "Parramatta"},
+    {value: "campbelltown", label: "Campbelltown"},
+    {value: "blacktown", label: "Blacktown"},
   ];
 
   const categoryOptions = [
-    { value: "all", label: "All Categories" },
-    { value: "driving-lesson", label: "Driving Lesson" },
-    { value: "vouchers", label: "Vouchers" },
-    { value: "test-package", label: "Test Packages" },
+    {value: "all", label: "All Categories"},
+    {value: "driving-lesson", label: "Driving Lesson"},
+    {value: "vouchers", label: "Vouchers"},
+    {value: "test-package", label: "Test Packages"},
   ];
 
   const filteredPackages = packagesData
@@ -180,7 +180,8 @@ console.log(packagesData);
                       onClick={() => {
                         if (filter.includes("Category"))
                           setSelectedCategory("all");
-                        else if (filter.includes("Area")) setSelectedArea("all");
+                        else if (filter.includes("Area"))
+                          setSelectedArea("all");
                         else if (filter.includes("Sort")) setSort("default");
                       }}
                       className="ml-1 hover:text-blue-900"
@@ -202,9 +203,12 @@ console.log(packagesData);
 
         {/* Results Count */}
         <div className="mb-6 flex flex-col md:flex-row justify-between items-center text-gray-700 gap-2">
-          <div className="font-semibold">{filteredPackages.length} packages found</div>
+          <div className="font-semibold">
+            {filteredPackages.length} packages found
+          </div>
           <div className="text-sm text-gray-500">
-            Showing {Math.min(filteredPackages.length, 8)} of {packagesData.length} total packages
+            Showing {Math.min(filteredPackages.length, 8)} of{" "}
+            {packagesData.length} total packages
           </div>
         </div>
 
@@ -216,7 +220,8 @@ console.log(packagesData);
               No packages match your criteria
             </h3>
             <p className="text-gray-600 max-w-md mx-auto mb-6">
-              Try adjusting your filters or search term to find the perfect driving package.
+              Try adjusting your filters or search term to find the perfect
+              driving package.
             </p>
             <button
               onClick={clearAllFilters}
@@ -229,36 +234,52 @@ console.log(packagesData);
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredPackages.map((pkg) => (
-              <Link
-                href={`/packages/${pkg._id}`}
-                key={pkg._id}
-                className="group bg-white rounded-2xl shadow-md hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden"
-              >
-                <div className="relative w-full h-48">
-                  <Image
-                    src={pkg.packageThumbline}
-                    fill
-                    alt={pkg.name}
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-5">
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
-                  <p className="text-gray-600 text-sm mb-4">{pkg.description}</p>
+             <Link
+  href={`/packages/${pkg._id}`}
+  key={pkg._id}
+  className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
+>
+  {/* Image */}
+  <div className="w-full h-60">
+    <Image
+      src={pkg.packageThumbline}
+      alt={pkg.name}
+      width={800}
+      height={800}
+      className="w-full h-full object-cover"
+    />
+  </div>
 
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="text-2xl font-bold text-gray-900">${pkg.price}</div>
-                    {pkg.originalPrice && (
-                      <div className="text-gray-400 line-through">${pkg.originalPrice}</div>
-                    )}
-                  </div>
+  {/* Content */}
+  <div className="p-5 flex flex-col flex-1">
+    {/* Title */}
+    <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
 
-                  <PrimaryBtn className="w-full flex justify-center items-center gap-2">
-                    Book The Package
-                    <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
-                  </PrimaryBtn>
-                </div>
-              </Link>
+    {/* Description */}
+    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+  {pkg.description.length > 60
+    ? pkg.description.slice(0, 60) + "..."
+    : pkg.description}
+    </p>
+
+    {/* Price */}
+    <div className="text-2xl font-bold text-gray-900 mb-4">
+      ${pkg.price}
+      {pkg.originalPrice != 0 && pkg.originalPrice && (
+        <span className="text-gray-400 line-through ml-2">${pkg.originalPrice}</span>
+      )}
+    </div>
+
+    {/* Button */}
+    <PrimaryBtn className="w-full flex justify-center items-center gap-2 mt-auto">
+      Book The Package
+      <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+    </PrimaryBtn>
+  </div>
+</Link>
+
+
+
             ))}
           </div>
         )}

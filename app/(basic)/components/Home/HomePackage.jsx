@@ -97,7 +97,7 @@ export const packages = [
 export default function HomePackage() {
   const router = useRouter()
   return (
-    <section className="  py-17">
+    <section className=" bg-base-300 py-16">
       <Container>
         <SectionHeader
         className={`mt-5!`}
@@ -109,7 +109,7 @@ export default function HomePackage() {
           {packages.map((pkg) => (
             <div
               key={pkg.id}
-              className={`bg-base-300 rounded-xl shadow-md border-b-8 border-b-primary transition-all duration-300 overflow-hidden border border-border-color flex flex-col `}
+              className={`bg-white rounded-xl shadow border-b-8 border-b-primary transition-all duration-300 overflow-hidden border border-border-color flex flex-col `}
             >
               {pkg.popular && (
                 <div className="bg-accent text-black text-center py-2 text-sm font-semibold">

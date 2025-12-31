@@ -1,4 +1,4 @@
-import { defineConfig, globalIgnores } from "eslint/config";
+import {defineConfig, globalIgnores} from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 
 const eslintConfig = defineConfig([
@@ -11,6 +11,12 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // Add custom rules here
+    rules: {
+      "react-hooks/set-state": "off", // disable the warning globally
+    },
+  },
 ]);
 
 export default eslintConfig;

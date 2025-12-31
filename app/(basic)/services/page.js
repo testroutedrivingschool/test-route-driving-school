@@ -1,9 +1,8 @@
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import React from "react";
 import MovingCar from "@/app/shared/MovingCar";
-import Faq from "@/app/shared/Faq";
+import Faq from "@/app/shared/FaqSection";
 import ServicesCards from "../components/services/ServicesCards";
-
 
 export default function Service() {
   return (
@@ -14,7 +13,7 @@ export default function Service() {
       />
 
       <ServicesCards />
-      <MovingCar/>
+      <MovingCar />
       <Faq />
     </div>
   );

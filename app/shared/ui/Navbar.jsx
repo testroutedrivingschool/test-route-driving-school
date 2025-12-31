@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from "react";
 import {useRef} from "react";
-import { FaSignOutAlt} from "react-icons/fa";
+import {FaSignOutAlt} from "react-icons/fa";
 
 import Link from "next/link";
 import Image from "next/image";
@@ -15,9 +15,8 @@ import PrimaryBtn from "../Buttons/PrimaryBtn";
 import useAuth from "@/app/hooks/useAuth";
 import {toast} from "react-toastify";
 import {usePathname} from "next/navigation";
-import {getUserByEmail} from "@/app/utils/getUser";
-import { useUserData } from "@/app/hooks/useUserData";
-
+import {useUserData} from "@/app/hooks/useUserData";
+import {useRouter} from "next/navigation";
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
   {id: 2, label: "About", pathname: "/about"},
@@ -72,8 +71,9 @@ const navlinks = [
 
   {id: 5, label: "Package", pathname: "/packages"},
   {id: 6, label: "Area Covered", pathname: "/area-covered"},
+  {id: 7, label: "FAQ", pathname: "/faq"},
   {
-    id: 7,
+    id: 8,
     label: "Company",
 
     dropdowns: [
@@ -85,6 +85,13 @@ const navlinks = [
     ],
   },
 ];
+const instructorNavLinks = [
+  {id: 1, label: "Home", pathname: "/"},
+  {id: 2, label: "Dashboard", pathname: "/dashboard"},
+  {id: 3, label: "Bookings", pathname: "/dashboard/instructor-bookings"},
+  {id: 4, label: "Sales", pathname: "/dashboard/instructor-sales"},
+  {id: 5, label: "Reports", pathname: "/dashboard/instructor-sales"},
+];
 
 export default function Navbar({className}) {
   const [avatarOpen, setAvatarOpen] = useState(false);
@@ -92,9 +99,12 @@ export default function Navbar({className}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const {user, logoutUser} = useAuth();
+  const {logoutUser} = useAuth();
   const {data: userData, isLoading} = useUserData();
+  const router = useRouter();
+  const isInstructor = userData?.role === "instructor";
 
+  const finalNavLinks = isInstructor ? instructorNavLinks : navlinks;
 
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
@@ -129,7 +139,7 @@ export default function Navbar({className}) {
                 height={80}
                 loading="eager"
                 className="object-contain rounded-full transition-all duration-300
-                 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20" 
+                 w-13 h-13 sm:w-16 sm:h-16 md:w-20 md:h-20"
               />
               <div>
                 <h2 className="block font-bold text-primary text-lg md:text-xl leading-4.5">
@@ -143,7 +153,7 @@ export default function Navbar({className}) {
           </div>
 
           <ul className="hidden lg:flex items-center gap-10">
-            {navlinks.map((item) => (
+            {finalNavLinks.map((item) => (
               <li key={item.id} className="relative group">
                 <Link
                   href={item.pathname || "#"}
@@ -228,7 +238,7 @@ export default function Navbar({className}) {
               </li>
             ))}
           </ul>
-          <div className="flex gap-6 ">
+          <div className="flex gap-4 md:gap-6 ">
             {userData ? (
               <div ref={avatarRef} className="relative">
                 {/* Avatar Button */}
@@ -236,7 +246,7 @@ export default function Navbar({className}) {
                   onClick={() => setAvatarOpen(!avatarOpen)}
                   className="flex items-center gap-2 focus:outline-none"
                 >
-                  <div className="w-11 h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
+                  <div className="w-10 h-10 md:w-11 md:h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
                     {userData.photo ? (
                       <Image
                         src={userData.photo}
@@ -281,12 +291,10 @@ export default function Navbar({className}) {
                         className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
                         onClick={() => setAvatarOpen(false)}
                       >
-                        <MdDashboard  className="text-primary" />
+                        <MdDashboard className="text-primary" />
                         Dashboard
                       </Link>
                     </li>
-
-                    
                   </ul>
 
                   {/* Logout */}
@@ -314,7 +322,7 @@ export default function Navbar({className}) {
             )}
 
             <button
-              className="lg:hidden text-2xl p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group text-black"
+              className="lg:hidden text-2xl p-2 md:p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group text-black"
               onClick={() => setOpen(!open)}
               aria-label="Toggle menu"
             >
@@ -340,7 +348,7 @@ export default function Navbar({className}) {
       >
         <div className="py-4">
           <ul className="flex flex-col gap-0">
-            {navlinks.map((item) => (
+            {finalNavLinks.map((item) => (
               <li
                 key={item.id}
                 className="flex flex-col border-b border-gray-200"
@@ -381,17 +389,34 @@ export default function Navbar({className}) {
                 )}
               </li>
             ))}
-
             {/* Mobile CTA Button */}
-            <li className="mt-4 px-5">
-              <PrimaryBtn
-                onClick={() => setOpen(false)}
-                className="w-full flex justify-center items-center gap-2"
-              >
-                Book a Driving Lesson
-                <FiChevronRight className="group-hover:translate-x-1 transition-transform duration-300" />
-              </PrimaryBtn>
-            </li>
+            {userData ? (
+              <li className="mt-4 px-5">
+                <button
+                  onClick={() => {
+                
+                    handleLogout();
+                  }}
+                  className="w-full flex items-center gap-3 px-4 bg-red-500 rounded border border-transparent  hover:border-red-500 py-2 text-white hover:bg-red-600 transition"
+                >
+                  <FaSignOutAlt />
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <li className="mt-4 px-5">
+                <PrimaryBtn
+                  onClick={() => {
+                    router.push("/login");
+                    setOpen(false);
+                  }}
+                  className="w-full flex justify-center items-center gap-2"
+                >
+                  Login
+                  <FiChevronRight className="group-hover:translate-x-1 transition-transform duration-300" />
+                </PrimaryBtn>
+              </li>
+            )}
           </ul>
         </div>
       </div>

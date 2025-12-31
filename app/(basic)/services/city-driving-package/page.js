@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.jpg";
@@ -11,7 +10,7 @@ import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
-import Faq from "@/app/shared/Faq";
+import Faq from "@/app/shared/FaqSection";
 
 const cityCarDrivingPackages = [
   {
@@ -49,7 +48,7 @@ export default function CityCarDrivingPackage() {
       />
 
       {/* Main Content Section */}
-      <section className="mt-10 md:mt-15 py-16">
+      <section className="mt-10 md:mt-10 py-16">
         <Container>
           <div className="flex flex-col-reverse lg:flex-row-reverse items-center gap-10 lg:gap-12">
             {/* Image Section */}
@@ -84,9 +83,7 @@ export default function CityCarDrivingPackage() {
                 we will encourage drivers to be aware, considerate, and practice
                 safe driving for life.
               </p>
-              <h3 className="text-lg font-semibold">
-                Package Included:
-              </h3>
+              <h3 className="text-lg font-semibold">Package Included:</h3>
               {/* Key Features */}
               <div className="mt-4  space-y-4 mb-8">
                 {features.slice(0, 4).map((feature, index) => (
@@ -144,7 +141,11 @@ export default function CityCarDrivingPackage() {
             Prepare for Success
           </h3>
           <p className="mt-2 max-w-4xl">
-            Don’t leave your driving test to chance. With Right Choice Driving School, you’ll receive the support and guidance you need to pass your test with confidence. Contact us today to book your driving test assessment and take the first step towards becoming a licensed driver.
+            Don’t leave your driving test to chance. With Right Choice Driving
+            School, you’ll receive the support and guidance you need to pass
+            your test with confidence. Contact us today to book your driving
+            test assessment and take the first step towards becoming a licensed
+            driver.
           </p>
         </Container>
       </section>
@@ -155,7 +156,7 @@ export default function CityCarDrivingPackage() {
         sectionSubtitle="Choose the perfect package for your learning journey with our structured City Car driving lessons designed for success."
         packages={cityCarDrivingPackages}
       />
-<MovingCar/>
+      <MovingCar />
       <WhyChooseUs />
 
       <Faq />

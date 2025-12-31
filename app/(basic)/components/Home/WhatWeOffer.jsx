@@ -49,14 +49,12 @@ const services = [
   },
 ];
 
-export default function WhatWeOffer() {
+export default function WhatWeOffer({className}) {
   return (
-    <section className="relative py-20 bg-base-300 overflow-hidden">
-    
-
+    <section className={`relative py-20 bg-white overflow-hidden ${className}`}>
       <Container>
         <SectionHeader
-        className={`mt-0!`}
+          className={`mt-0!`}
           title={`What We Offer`}
           subtitle={` Reliable Services Designed for Your Convenience and Comfort
           `}
@@ -67,10 +65,10 @@ export default function WhatWeOffer() {
             <div
               key={index}
               className="group relative 
-  bg-white 
+  bg-base-300 
    
   rounded-xl p-8 lg:p-12 
-  shadow-xl 
+  shadow 
   transition-all duration-500
    hover:-translate-y-2 border-b-8 border-primary"
             >

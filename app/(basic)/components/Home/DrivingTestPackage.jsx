@@ -4,6 +4,7 @@ import SectionHeader from "@/app/shared/ui/SectionHeader";
 import Image from "next/image";
 import React from "react";
 import testPackageImg1 from "@/app/assets/test-packageimg1.png";
+import testPackageImg2 from "@/app/assets/test-packageimg2.png";
 import {
   FaCheckCircle,
   FaStar,
@@ -13,7 +14,7 @@ import {
 
 export default function DrivingTestPackage() {
   return (
-    <section className="py-20 bg-base-300">
+    <section className="py-20 bg-white">
       <Container>
         <SectionHeader
           title="Driving Test Packages"
@@ -23,7 +24,7 @@ export default function DrivingTestPackage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Package Card 1*/}
-          <div className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+          <div className="group bg-base-300 rounded-xl overflow-hidden shadow hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
             
             {/* Image */}
             <div className="relative h-60 w-full overflow-hidden">
@@ -87,7 +88,7 @@ export default function DrivingTestPackage() {
             {/* Image */}
             <div className="relative h-60 w-full overflow-hidden">
               <Image
-                src={testPackageImg1}
+                src={testPackageImg2}
                 alt="Driving Test Package"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"

@@ -1,0 +1,505 @@
+"use client";
+
+import React, {useEffect, useState} from "react";
+import Image from "next/image";
+import {toast} from "react-toastify";
+import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
+import useAuth from "@/app/hooks/useAuth";
+import axios from "axios";
+import {useQueryClient} from "@tanstack/react-query";
+import {FaEye, FaEyeSlash} from "react-icons/fa";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
+import {useUserData} from "@/app/hooks/useUserData";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import {useRouter} from "next/navigation";
+
+export default function JoinAsInstructor() {
+  const navigate = useRouter();
+  const {signUpUserWithCredential} = useAuth();
+  const queryClient = useQueryClient();
+  const [languagesListState, setLanguagesListState] = useState([
+    "English",
+    "Arabic",
+    "Hindi",
+    "Urdu",
+    "Chinese",
+  ]);
+  const [formData, setFormData] = useState({
+    photo: null,
+    name: "",
+    email: "",
+    password: "",
+    phone: "",
+    dob: "",
+    address: "",
+    abn: "",
+    licencePlate: "",
+    vehicleModel: "",
+    qualifications: "",
+    bio: "",
+
+    languages: [],
+  });
+
+  const {data: user, isLoading} = useUserData();
+  useEffect(() => {
+    if (user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email,
+        name: user.name || "",
+        phone: user.phone || "",
+        dob: user.dateOfBirth || "",
+        address: user.address || "",
+      }));
+    }
+  }, [user]);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const handleChange = (e) => {
+    const {name, value} = e.target;
+    setFormData((prev) => ({...prev, [name]: value}));
+  };
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({...prev, photo: file}));
+    }
+  };
+  const uploadImageToImgBB = async (imageFile) => {
+    const imgFormData = new FormData();
+    imgFormData.append("image", imageFile);
+
+    const res = await fetch(
+      `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
+      {
+        method: "POST",
+        body: imgFormData,
+      }
+    );
+
+    const data = await res.json();
+
+    if (!data.success) {
+      throw new Error("Image upload failed");
+    }
+
+    return data.data.url;
+  };
+
+  const toggleArrayValue = (key, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: prev[key].includes(value)
+        ? prev[key].filter((v) => v !== value)
+        : [...prev[key], value],
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!user) {
+      if (!formData.email || !formData.password) {
+        return toast.error("Email and password are required");
+      }
+    }
+
+    if (!formData.phone) {
+      return toast.error("Phone Number must be provided");
+    }
+    if (!formData.areas.length) {
+      return toast.error("Select at least one suburb area");
+    }
+
+    
+
+    try {
+      let firebaseUser = null;
+
+      if (!user) {
+        firebaseUser = await signUpUserWithCredential(
+          formData.email,
+          formData.password
+        );
+      }
+
+      let photoURL = "";
+      if (formData.photo) {
+        photoURL = await uploadImageToImgBB(formData.photo);
+      }
+      const {password, ...rest} = formData;
+      let instructorData = {};
+
+      // 3️⃣ Prepare instructor data
+      if (!user) {
+        instructorData = {
+          ...rest,
+          photo: photoURL,
+          status: "pending",
+          firebaseUID: firebaseUser?.uid,
+        };
+      } else {
+        instructorData = {
+          ...rest,
+          photo: photoURL,
+          status: "pending",
+        };
+      }
+
+      // 4️⃣ Store in instructors collection
+      await axios.post("/api/instructors", instructorData);
+
+      if (!user) {
+        // New user: create in users collection
+        const userData = {
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          photo: photoURL,
+          provider: "Credential",
+          role: "user",
+          registeredAt: new Date(),
+          lastLogin: new Date(),
+        };
+        await axios.post("/api/users", userData);
+        await queryClient.invalidateQueries({
+          queryKey: ["user", userData.email],
+        });
+      }
+
+      navigate.push("/dashboard");
+      toast.success("Instructor application submitted 🚗");
+    } catch (error) {
+      console.error(error);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+        const message = error.response?.data?.error;
+
+        if (status === 409) {
+          toast.error(
+            message ||
+              "You have already applied as an instructor with this email"
+          );
+          return;
+        }
+
+        if (status === 400) {
+          toast.error(message || "Invalid data submitted");
+          return;
+        }
+      }
+
+      toast.error("Something went wrong. Please try again.");
+    }
+  };
+  if (isLoading) return <LoadingSpinner />;
+  return (
+    <div className="min-h-screen bg-gray-50 flex justify-center items-center py-12">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-2xl shadow max-w-3xl w-full"
+      >
+        <div className="mb-6 text-center">
+          
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            Join As Instructor
+          </h1>
+          <p className="text-gray-600">
+            Join our team of skilled instructors and help learners gain
+            confidence on the road.
+          </p>
+        </div>
+
+        {/* Photo */}
+        <div className="mb-6">
+          <label className="block font-medium mb-2">Profile Photo</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            className="border border-border-color p-2 cursor-pointer"
+          />
+          {formData.photo && (
+            <Image
+              src={URL.createObjectURL(formData.photo)}
+              alt="Preview"
+              width={100}
+              height={100}
+              className="w-15 h-15 mt-3 rounded-full object-cover"
+            />
+          )}
+        </div>
+
+        {/* Basic Info */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <div className="flex flex-col">
+            <label htmlFor="name" className="font-medium mb-1">
+              Full Name
+            </label>
+            <input
+              id="name"
+              name="name"
+              placeholder="Full Name"
+              required
+              value={formData.name}
+              className="input-class"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="email" className="font-medium mb-1">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="input-class"
+              onChange={handleChange}
+              value={formData.email}
+            />
+          </div>
+
+          {!user && (
+            <div className="flex flex-col relative">
+              <label htmlFor="password" className="font-medium mb-1">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Password"
+                className="input-class"
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 top-6.5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <label htmlFor="phone" className="font-medium mb-1">
+              Phone
+            </label>
+            <PhoneInput
+              country={"au"}
+              value={formData.phone}
+              onChange={(phone) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  phone: `+${phone}`,
+                }))
+              }
+              inputStyle={{
+                width: "100%",
+                height: "48px",
+                borderRadius: "12px",
+              }}
+              containerStyle={{width: "100%"}}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="dob" className="font-medium mb-1">
+              Date of Birth
+            </label>
+            <input
+              id="dob"
+              name="dob"
+              required
+              value={formData.dob}
+              type="date"
+              className="input-class"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="address" className="font-medium mb-1">
+              Address
+            </label>
+            <input
+              id="address"
+              name="address"
+              value={formData.address}
+              required
+              placeholder="Address"
+              className="input-class"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="abn" className="font-medium mb-1">
+              ABN
+            </label>
+            <input
+              id="abn"
+              name="abn"
+              placeholder="ABN"
+              className="input-class"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="licencePlate" className="font-medium mb-1">
+              Licence Plate
+            </label>
+            <input
+              id="licencePlate"
+              name="licencePlate"
+              placeholder="Licence Plate"
+              className="input-class"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="vehicleModel" className="font-medium mb-1">
+              Vehicle Model
+            </label>
+            <input
+              id="vehicleModel"
+              name="vehicleModel"
+              placeholder="Vehicle Model"
+              className="input-class"
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* Qualifications */}
+        <div className="mt-6 flex flex-col">
+          <label htmlFor="qualifications" className="font-medium mb-1">
+            Qualifications
+          </label>
+          <input
+            id="qualifications"
+            name="qualifications"
+            placeholder="Driving Instructor Certificate, etc."
+            className="input-class"
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Bio */}
+        <div className="mt-6 flex flex-col">
+          <label htmlFor="bio" className="font-medium mb-1">
+            Short Bio
+          </label>
+          <textarea
+            id="bio"
+            name="bio"
+            rows={4}
+            placeholder="Tell students about your experience..."
+            className="input-class"
+            onChange={handleChange}
+          />
+        </div>
+
+        {/* Languages */}
+        <div className="mt-8">
+          <h3 className="font-semibold mb-3">Languages Spoken</h3>
+
+          <div className="flex flex-wrap gap-4 mb-3">
+            {languagesListState.map((lang) => (
+              <label key={lang} className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={
+                    Array.isArray(formData.languages) &&
+                    formData.languages.includes(lang)
+                  }
+                  onChange={() => toggleArrayValue("languages", lang)}
+                />
+                {lang}
+              </label>
+            ))}
+          </div>
+
+          {/* Button to show custom language input */}
+          {!formData.showCustomLanguage && (
+            <PrimaryBtn
+              type="button"
+              onClick={() =>
+                setFormData((prev) => ({...prev, showCustomLanguage: true}))
+              }
+            >
+              + Others
+            </PrimaryBtn>
+          )}
+
+          {/* Add custom language input */}
+          {formData.showCustomLanguage && (
+            <div className="flex gap-2 items-center mt-2">
+              <input
+                type="text"
+                placeholder="Other language"
+                className="input-class flex-1"
+                value={formData.customLanguage || ""}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    customLanguage: e.target.value,
+                  }))
+                }
+              />
+              <button
+                type="button"
+                className="bg-primary text-white px-3 py-1 rounded"
+                onClick={() => {
+                  const newLang = formData.customLanguage?.trim();
+                  if (!newLang) return;
+
+                  // Add to formData.languages if not exists
+                  if (!formData.languages.includes(newLang)) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      languages: [...prev.languages, newLang],
+                      customLanguage: "",
+                      showCustomLanguage: false,
+                    }));
+                  }
+
+                  // Add to languagesListState if not exists
+                  if (!languagesListState.includes(newLang)) {
+                    setLanguagesListState((prev) => [...prev, newLang]);
+                  } else {
+                    setFormData((prev) => ({
+                      ...prev,
+                      customLanguage: "",
+                      showCustomLanguage: false,
+                    }));
+                  }
+                }}
+              >
+                Add
+              </button>
+            </div>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="w-full mt-10 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
+        >
+          Apply as Instructor
+        </button>
+      </form>
+    </div>
+  );
+}

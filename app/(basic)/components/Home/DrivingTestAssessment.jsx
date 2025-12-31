@@ -85,7 +85,7 @@ const packages = [
 
 export default function DrivingTestAssessment() {
   return (
-    <section className="py-17 bg-white">
+    <section className="py-17 bg-base-300">
       <Container>
         <SectionHeader
           title="Driving Test Assessment Packages"
@@ -99,17 +99,17 @@ export default function DrivingTestAssessment() {
           {packages.map((pkg, index) => (
             <div
               key={index}
-              className={`relative group`}
+              className={`relative group `}
             >
               
               {/* Card */}
               <div
-                className={`h-full bg-white rounded-2xl border-2 
-                 border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col`}
+                className={`h-full bg-white rounded-xl border-2 
+                 border-gray-200 shadow  transition-all duration-500 overflow-hidden flex flex-col`}
               >
                 {/* Header */}
                 <div
-                  className={`p-6 text-center bg-gray-50`}
+                  className={`p-6 text-center bg-primary/10`}
                 >
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-16 h-16 rounded-full bg-white border-2 border-primary flex items-center justify-center">

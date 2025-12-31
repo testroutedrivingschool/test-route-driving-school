@@ -3,8 +3,7 @@ import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import ReviewsCarousel from "../../components/Home/Reviews/ReviewsCarousel";
 import MovingCar from "@/app/shared/MovingCar";
-import Faq from "@/app/shared/Faq";
-
+import Faq from "@/app/shared/FaqSection";
 
 export default function Testimonials() {
   return (
@@ -16,11 +15,11 @@ export default function Testimonials() {
       <section className="py-16">
         <Container>
           <SectionHeader
-          className={`mt-0!`}
+            className={`mt-0!`}
             title="Customer Reviews"
             subtitle="Honest feedback from our students sharing their learning experience, progress, and driving test success with Test Route Driving School."
           />
-           <ReviewsCarousel />
+          <ReviewsCarousel />
         </Container>
       </section>
       <MovingCar />

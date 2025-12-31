@@ -48,7 +48,7 @@ const faqData = [
   },
 ];
 
-export default function Faq() {
+export default function FaqSection({className}) {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleFaq = (index) => {
@@ -56,7 +56,7 @@ export default function Faq() {
   };
 
   return (
-    <section className="bg-base-300  py-16">
+    <section className={`bg-base-300  py-16 ${className}`}>
       <Container>
         <SectionHeader className={`mt-0! `} title={`Frequently Asked Questions`} subtitle={"Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"}/>
 

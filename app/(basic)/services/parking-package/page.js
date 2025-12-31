@@ -1,10 +1,7 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import parkingPackageImg from "@/app/assets/parking-package-img-test-route-driving-school.jpg";
-import {
-  FaCheckCircle,
-} from "react-icons/fa";
+import {FaCheckCircle} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
@@ -13,13 +10,14 @@ import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
-import Faq from "@/app/shared/Faq";
+import Faq from "@/app/shared/FaqSection";
 
 const automaticDrivingPackages = [
   {
     id: 1,
     title: "Highway Driving Lesson 2 Hours",
-    description: "Driving on the highway can be intimidating for new drivers, but it’s an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely.",
+    description:
+      "Driving on the highway can be intimidating for new drivers, but it’s an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely.",
     price: "250",
     features: [
       "Automatic Driving Lesson - 7 days a week.  ",
@@ -32,7 +30,8 @@ const automaticDrivingPackages = [
   {
     id: 2,
     title: "Highway Driving Lesson 3 Hours",
-    description: "Driving on the highway can be intimidating for new drivers, but it's an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely.",
+    description:
+      "Driving on the highway can be intimidating for new drivers, but it's an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely.",
     price: "270",
     features: [
       "Automatic Driving Lesson - 7 days a week.  ",
@@ -110,7 +109,7 @@ export default function ParkingPackage() {
                   </div>
                 ))}
               </div>
-           
+
               {/* CTA Buttons */}
               <div className="mt-4 flex flex-col sm:flex-row gap-4">
                 <Link href="/packages" className="group">
@@ -132,26 +131,38 @@ export default function ParkingPackage() {
       </section>
       <section className="py-16 bg-primary/80 text-white">
         <Container>
-                   <h3 className="text-lg md:text-2xl font-semibold">
-                We provide practical, real-world training in live traffic
-                conditions, including:
-              </h3>
-              <ul className="mt-2 list-disc pl-3 space-y-2">
-                <li className="text-base-300 ">Busy suburban streets</li>
-                <li className="text-base-300 ">Shopping center car parks</li>
-                <li className="text-base-300 ">Narrow side streets</li>
-                <li className="text-base-300 ">Residential and commercial areas </li>
-              </ul>
-                   <h3 className="mt-4 text-lg md:text-2xl font-semibold">
-               Who Can Use This Parking Package?
-              </h3>
-              <ul className="mt-2 list-disc pl-3 space-y-2">
-                <li className="text-base-300 ">Learner drivers preparing for the NSW driving test</li>
-                <li className="text-base-300 ">P-platers wanting to refine their parking skills</li>
-                <li className="text-base-300 ">Overseas license holders adapting to local driving rules</li>
-                <li className="text-base-300 ">Adults returning to driving after a break</li>
-                <li className="text-base-300 ">Anyone who feels nervous about parking in tight or busy areas</li>
-              </ul>
+          <h3 className="text-lg md:text-2xl font-semibold">
+            We provide practical, real-world training in live traffic
+            conditions, including:
+          </h3>
+          <ul className="mt-2 list-disc pl-3 space-y-2">
+            <li className="text-base-300 ">Busy suburban streets</li>
+            <li className="text-base-300 ">Shopping center car parks</li>
+            <li className="text-base-300 ">Narrow side streets</li>
+            <li className="text-base-300 ">
+              Residential and commercial areas{" "}
+            </li>
+          </ul>
+          <h3 className="mt-4 text-lg md:text-2xl font-semibold">
+            Who Can Use This Parking Package?
+          </h3>
+          <ul className="mt-2 list-disc pl-3 space-y-2">
+            <li className="text-base-300 ">
+              Learner drivers preparing for the NSW driving test
+            </li>
+            <li className="text-base-300 ">
+              P-platers wanting to refine their parking skills
+            </li>
+            <li className="text-base-300 ">
+              Overseas license holders adapting to local driving rules
+            </li>
+            <li className="text-base-300 ">
+              Adults returning to driving after a break
+            </li>
+            <li className="text-base-300 ">
+              Anyone who feels nervous about parking in tight or busy areas
+            </li>
+          </ul>
         </Container>
       </section>
 
@@ -161,7 +172,7 @@ export default function ParkingPackage() {
         sectionSubtitle="Choose the perfect package for your learning journey with our structured Parking Package designed for success."
         packages={automaticDrivingPackages}
       />
-<MovingCar/>
+      <MovingCar />
       <WhyChooseUs />
 
       <Faq />

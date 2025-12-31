@@ -21,7 +21,6 @@ export default function ReviewsCarousel() {
       return res.data;
     },
   });
-  console.log(reviewsData);
   if (isLoading) return <LoadingSpinner />;
   if (!reviewsData.length) {
     return (

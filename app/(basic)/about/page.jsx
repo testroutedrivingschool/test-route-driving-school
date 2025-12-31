@@ -1,6 +1,5 @@
 import Image from "next/image";
 
-import aboutImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import {
   FaCar,
   FaUserGraduate,
@@ -13,8 +12,9 @@ import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import WhatWeOffer from "../components/Home/WhatWeOffer";
 import MovingCar from "@/app/shared/MovingCar";
-import Faq from "@/app/shared/Faq";
-
+import Faq from "@/app/shared/FaqSection";
+import aboutImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
+import aboutImg2 from "@/app/assets/about-img2.png";
 
 export default function About() {
   const features = [
@@ -42,7 +42,10 @@ export default function About() {
 
   return (
     <>
-      <PageHeroSection title={"About Us"} subtitle={`Professional Driving Lessons You Can Trust`}/>
+      <PageHeroSection
+        title={"About Us"}
+        subtitle={`Professional Driving Lessons You Can Trust`}
+      />
       <section className="pt-16 ">
         <Container>
           {/* Header */}
@@ -60,14 +63,14 @@ export default function About() {
                 <Image
                   src={aboutImg}
                   alt="Test Route Driving School instructor with student"
-                  className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
-                  width={600}
-                  height={500}
+                  className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                  width={800}
+                  height={800}
                 />
               </div>
 
               {/* Floating Element */}
-              <div className="absolute -bottom-4 -right-4 bg-white p-4 rounded-xl shadow-lg border border-gray-200">
+              <div className="absolute -bottom-4 -right-4 bg-white p-4 rounded-xl shadow-lg border border-border-color">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-100 text-green-600 rounded-lg">
                     <FaUsers className="text-xl" />
@@ -116,7 +119,7 @@ export default function About() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 bg-base-300 rounded-xl border border-gray-100 hover:shadow-md transition-shadow"
+                className="flex items-start gap-3 p-3 bg-base-300 rounded-xl border border-border-color hover:shadow-md transition-shadow"
               >
                 <div className="p-2 bg-white rounded-lg">{feature.icon}</div>
                 <div>
@@ -131,6 +134,67 @@ export default function About() {
             ))}
           </section>
         </Container>
+
+        <section className="py-16 bg-base-300">
+          <Container>
+            <div className="flex flex-col md:flex-row gap-5 md:gap-10 items-center ">
+              {/* Text Content */}
+              <div className="flex-1 space-y-6 ">
+                <h2 className="text-2xl lg:text-4xl font-bold ">
+                  Professional Driving School You <span className="text-primary">Can Trust</span>
+                </h2>
+
+                <p className="text-neutral">
+                  <strong>Test Route Driving School</strong> is a leading
+                  professional driving school dedicated to helping learner
+                  drivers gain confidence, skill, and road awareness. Since our
+                  establishment, we have successfully trained thousands of
+                  students with structured driving lessons designed for
+                  real-world conditions.
+                </p>
+
+                <p className="text-neutral">
+                  Our certified driving instructors focus on safe driving
+                  habits, defensive driving techniques, and exam-ready
+                  preparation. Whether you are a beginner, nervous driver, or
+                  preparing for your driving test, our tailored lesson plans
+                  ensure steady progress at your own pace.
+                </p>
+
+                <p className="text-neutral">
+                  We use modern dual-controlled vehicles and up-to-date teaching
+                  methods to provide a safe, comfortable learning environment.
+                  Our flexible lesson scheduling, affordable packages, and high
+                  first-time pass rate make us a trusted choice for driving
+                  lessons.
+                </p>
+
+                <p className="text-neutral">
+                  At Test Route Driving School, our goal is not just to help you
+                  pass your test — but to become a confident, responsible driver
+                  for life. We take pride in building lifelong road safety
+                  skills that stay with our students long after they earn their
+                  license.
+                </p>
+              </div>
+
+              {/* Image Content */}
+              <div className="flex-1">
+                <div className="rounded-xl overflow-hidden shadow-xl">
+                  <Image
+                    src={aboutImg2}
+                    alt="Professional driving lessons at Test Route Driving School"
+                    className="w-full h-full object-cover"
+                    width={1000}
+                    height={1000}
+                  />
+                </div>
+
+              
+              </div>
+            </div>
+          </Container>
+        </section>
 
         <WhatWeOffer />
 

@@ -40,7 +40,7 @@ export default function WhyChooseUs({className}) {
         <div className="grid md:grid-cols-2 gap-10 items-center">
           {/* Left Content */}
           <div className="flex flex-col gap-4">
-            <h2 className="text-3xl md:text-4xl font-bold ">
+            <h2 className="text-2xl md:text-4xl font-bold ">
               Why Choose{" "}
               <span className="text-primary">Test Route Driving School?</span>
             </h2>

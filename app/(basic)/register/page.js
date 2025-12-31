@@ -175,20 +175,7 @@ export default function Register() {
       <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header Section */}
         <div className="p-6 text-center">
-          <Link
-            href="/"
-            className="inline-flex flex-col items-center gap-3 mb-4"
-          >
-            <div className="relative">
-              <Image
-                width={50}
-                height={50}
-                src="/test-route-driving-school-logo.png"
-                alt="Test Route Driving School"
-                className="rounded-full border-4 border-white/20"
-              />
-            </div>
-          </Link>
+         
 
           <h1 className="text-3xl font-bold mb-2">Create Your Account</h1>
           <p className="text-neutral">Join thousands of successful drivers</p>

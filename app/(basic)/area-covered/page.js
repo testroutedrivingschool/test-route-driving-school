@@ -18,51 +18,12 @@ import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../components/Home/WhyChooseUs";
 import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
-import Faq from "@/app/shared/Faq";
+import Faq from "@/app/shared/FaqSection";
 import Link from "next/link";
+import WhatWeOffer from "../components/Home/WhatWeOffer";
+import { locations } from "@/app/utils/locations";
 
-const coveredLocations = [
-  {name: "Allawah", zone: "South"},
-  {name: "Arncliffe", zone: "South"},
-  {name: "Banksia", zone: "South"},
-  {name: "Bardwell Park", zone: "Inner West"},
-  {name: "Bardwell Valley", zone: "South"},
-  {name: "Beverly Hills", zone: "South West"},
-  {name: "Bexley", zone: "South"},
-  {name: "Bexley North", zone: "South"},
-  {name: "Blakehurst", zone: "South"},
-  {name: "Botany", zone: "East"},
-  {name: "Brighton-Le-Sands", zone: "South"},
-  {name: "Caringbah", zone: "Sutherland"},
-  {name: "Caringbah South", zone: "Sutherland"},
-  {name: "Carlton", zone: "South"},
-  {name: "Carss Park", zone: "South"},
-  {name: "Clemton Park", zone: "Inner West"},
-  {name: "Cronulla", zone: "Sutherland"},
-  {name: "Dolls Point", zone: "South"},
-  {name: "Eastgardens", zone: "East"},
-  {name: "Eastlakes", zone: "East"},
-  {name: "Gymea", zone: "Sutherland"},
-  {name: "Gymea Bay", zone: "Sutherland"},
-  {name: "Hurstville", zone: "South"},
-  {name: "Hurstville Grove", zone: "South"},
-  {name: "Kangaroo Point", zone: "Sutherland"},
-  {name: "Kareela", zone: "Sutherland"},
-  {name: "Kingsgrove", zone: "Inner West"},
-  {name: "Kirrawee", zone: "Sutherland"},
-  {name: "Kogarah", zone: "South"},
-  {name: "Kogarah Bay", zone: "South"},
-  {name: "Kyeemagh", zone: "South"},
-  {name: "Marrickville", zone: "Inner West"},
-  {name: "Mascot", zone: "East"},
-  {name: "Miranda", zone: "Sutherland"},
-  {name: "Monterey", zone: "South"},
-  {name: "Mortdale", zone: "South"},
-  {name: "Pagewood", zone: "East"},
-  {name: "Peakhurst", zone: "South"},
-  {name: "Penshurst", zone: "South"},
-  {name: "Port Botany", zone: "East"},
-];
+const coveredLocations = locations
 
 const zones = [
   {name: "South", count: 18, color: "bg-blue-100 text-blue-700"},
@@ -282,9 +243,45 @@ export default function AreaCovered() {
           </div>
         </Container>
       </section>
+       <section className="mt-10 md:mt-15 py-12 bg-primary/10">
+              <Container>
+                <div className="space-y-4">
+                  <div>
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                         Flexible Automatic Driving Lessons Across Sydney
+                      </h3>
+                      <p className="text-gray-700 text-lg mb-3">
+                        We offer flexible automatic driving lessons across Sydney, including weekdays, evenings, and weekends. Whether you are a student, working professional, or nervous beginner, our instructors tailor each lesson to your learning pace and goals. From city driving and parking to test route practice, we ensure you are fully prepared for both your driving test and independent driving.
+                      </p>
+                    </div>
+      
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                        Flexible Schedules and Tailored Learning Plans
+                      </h3>
+                      <p className="text-gray-700 text-lg mb-3">
+                        We understand that every learner has a unique schedule and
+                        learning pace. That’s why we offer flexible lesson timings
+                        throughout , including evenings and weekends, to accommodate
+                        students, professionals, and busy parents. Our instructors
+                        create customized lesson plans based on your progress,
+                        strengths, and areas that need improvement. With consistent
+                        feedback and practical exercises, you’ll steadily advance your
+                        driving skills while maintaining safety and confidence on the
+                        road. By the end of your course, you’ll not only be ready for
+                        your driving test but also for real-life driving scenarios
+                        with ease.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Container>
+            </section>
       <MovingCar />
-      <WhyChooseUs />
-      <section className="mb-16">
+      <WhatWeOffer/>
+      <WhyChooseUs className={`bg-base-300`}/>
+      <section className="mt-16 mb-16">
         <Container>
           {/* CTA Section */}
           <div className=" bg-primary rounded-xl p-8 text-white text-center">

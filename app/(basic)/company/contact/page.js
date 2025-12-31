@@ -8,6 +8,7 @@ import {
   FaFacebookF,
   FaTwitter,
   FaYoutube,
+  FaGoogle,
 } from "react-icons/fa";
 
 export default function Contact() {
@@ -96,20 +97,13 @@ export default function Contact() {
       </a>
 
       <a
-        href="https://www.x.com"
+        href="https://share.google/TEMTklcOBslyY7zBC"
         target="_blank"
         className="w-11 h-11 flex items-center justify-center rounded-full bg-primary text-white hover:scale-110 transition"
       >
-        <FaTwitter />
+        <FaGoogle />
       </a>
 
-      <a
-        href="https://www.youtube.com"
-        target="_blank"
-        className="w-11 h-11 flex items-center justify-center rounded-full bg-primary text-white hover:scale-110 transition"
-      >
-        <FaYoutube />
-      </a>
     </div>
   </div>
 

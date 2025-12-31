@@ -6,14 +6,15 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import useAuth from "@/app/hooks/useAuth";
 import {getFirebaseAuthErrorMessage} from "@/app/utils/firebaseError";
+import {useQueryClient} from "@tanstack/react-query";
 export default function VerifyOtp() {
+  const queryClient = useQueryClient();
+
   const router = useRouter();
   const {
     verifyOtp,
     signUpUserWithCredential,
     userProfileUpdate,
-    user,
-    setUser,
     sendOtp,
   } = useAuth();
 
@@ -53,15 +54,8 @@ export default function VerifyOtp() {
         photoURL: userData.photo,
       });
 
-      // ✅ Update AuthContext immediately
-      if (setUser) {
-        setUser({
-          ...result.user,
-          displayName: userData.fullName,
-          photoURL: userData.photo,
-        });
-      }
 
+     
       // ✅ Save user to MongoDB
       await axios.post("/api/users", {
         name: userData.fullName,
@@ -72,6 +66,9 @@ export default function VerifyOtp() {
         role: "user",
         registeredAt: new Date(),
         lastLogin: new Date(),
+      });
+ await queryClient.invalidateQueries({
+        queryKey: ["user", userData.email],
       });
 
       sessionStorage.removeItem("pendingUser");

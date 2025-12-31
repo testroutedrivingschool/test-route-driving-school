@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import carHireImg from "@/app/assets/car-hire.jpg";
@@ -6,7 +6,7 @@ import {FiArrowRight} from "react-icons/fi";
 import fleet1Img from "@/app/assets/fleet1.png";
 import fleet2Img from "@/app/assets/fleet2.png";
 import fleet3Img from "@/app/assets/fleet3.png";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
@@ -14,7 +14,8 @@ import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
-import Faq from "@/app/shared/Faq";
+import Faq from "@/app/shared/FaqSection";
+import DrivingTipsSection from "../../components/Home/DrivingTipsSection";
 const fleets = [
   {
     id: 1,
@@ -66,9 +67,9 @@ const fleets = [
 ];
 
 export default function CarHireForInstructor() {
-  const handleBookCar =()=>{
-    return toast.info("We don't have car for rent at this stage.")
-  }
+  const handleBookCar = () => {
+    return toast.info("We don't have car for rent at this stage.");
+  };
   return (
     <div className="">
       <PageHeroSection
@@ -90,7 +91,6 @@ export default function CarHireForInstructor() {
                   height={500}
                   alt="Automatic Driving Lesson with Test Route Driving School"
                 />
-                
               </div>
             </div>
 
@@ -157,7 +157,7 @@ export default function CarHireForInstructor() {
       <section className="py-16">
         <Container>
           <SectionHeader
-          className={`mt-0!`}
+            className={`mt-0!`}
             title={`Our Fleet`}
             subtitle={
               "A modern and diverse range of vehicles designed for comfort, safety, and an excellent driving experience."
@@ -202,7 +202,10 @@ export default function CarHireForInstructor() {
                   </div>
 
                   {/* CTA Button */}
-                  <button onClick={handleBookCar} className="mt-4 w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition">
+                  <button
+                    onClick={handleBookCar}
+                    className="mt-4 w-full bg-primary text-white py-2 rounded-lg hover:bg-primary/90 transition"
+                  >
                     Book This Car
                   </button>
                 </div>
@@ -211,10 +214,49 @@ export default function CarHireForInstructor() {
           </div>
         </Container>
       </section>
-<MovingCar/>
-      <WhyChooseUs />
 
-      <Faq />
+      
+            <section className="mt-5 py-12 bg-primary/10">
+              <Container>
+                <div className="space-y-4">
+                  <div>
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                         Why Instructors Choose Our Dual Brake Car Hire
+                      </h3>
+                      <p className="text-gray-700 text-lg mb-3">
+                        We understand the challenges driving instructors face. Our dual-controlled
+            vehicles are designed to keep your lessons running smoothly, safely,
+            and professionally.
+                      </p>
+                    </div>
+      
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                        Flexible Schedules and Tailored Learning Plans
+                      </h3>
+                      <p className="text-gray-700 text-lg mb-3">
+                        We understand that every learner has a unique schedule and
+                        learning pace. That’s why we offer flexible lesson timings
+                        throughout , including evenings and weekends, to accommodate
+                        students, professionals, and busy parents. Our instructors
+                        create customized lesson plans based on your progress,
+                        strengths, and areas that need improvement. With consistent
+                        feedback and practical exercises, you’ll steadily advance your
+                        driving skills while maintaining safety and confidence on the
+                        road. By the end of your course, you’ll not only be ready for
+                        your driving test but also for real-life driving scenarios
+                        with ease.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </Container>
+            </section>
+      <MovingCar />
+      <WhyChooseUs />
+<DrivingTipsSection/>
+      <Faq  className={`bg-white`}/>
     </div>
   );
 }

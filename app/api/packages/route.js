@@ -47,7 +47,6 @@ export async function POST(req) {
       !duration ||
       !durationNum ||
       !price ||
-      !originalPrice ||
       !description ||
       !features ||
       !category

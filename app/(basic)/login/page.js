@@ -100,13 +100,7 @@ export default function Login() {
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
         {/* Header */}
         <div className="mb-6 text-center">
-          <Image
-            width={50}
-            height={50}
-            className="mx-auto inline-block"
-            src={`/test-route-driving-school-logo.png`}
-            alt="Test route Driving school"
-          />
+          
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
           </h1>

@@ -1,24 +1,45 @@
-import packageImg from "@/app/assets/package1.png"
+import packageImg from "@/app/assets/package1.png";
 export const packagesData = [
   {
-    id: 1,
-    name: "Starter Package",
-    packageImg: packageImg,
-    lessons: 5,
-    duration: "5 Hours",
+    name: "Disability Test Package with 1 hour lesson",
+    packageThumbline: "https://i.ibb.co/Xf18PmCP/package1.png",
+    lessons: 1,
+    duration: "1 Hours",
     durationNum: 5,
-    price: 299,
-    originalPrice: 349,
-    description: "Perfect for beginners starting their driving journey.",
+    price: 290,
+
+    description: "This is the 1 hour Test Package for user",
     features: [
-      "5 driving lessons",
-      "Theory material",
-      "Progress tracking",
-      "Beginner friendly",
+      "Pick up 1 hour before the test.",
+      "45 mins warm-up lesson before the test.",
+      "Use instructor's car for the test.",
+      "Drop-off after the test result is received.",
+      "Please call 24 hours prior to the change or cancel your appointment to avoid the full fees penalty.",
+      "Only for Disability learner driver.",
     ],
-    popular: false,
-    savings: 50,
-    category: "beginner",
+
+    category: "driving-lesson",
+  },
+  {
+    name: "1 hour lesson",
+    packageThumbline: "https://i.ibb.co.com/spdprfQL/1hour-lesson-package.png",
+    lessons: 1,
+    duration: "1 Hours",
+    durationNum: 1,
+    price: 75,
+
+    description:
+      "The 1 Hour Lesson Package is designed to give learner drivers a focused, supportive session to prepare for their driving test.",
+    features: [
+      "Automatic Driving Lesson - 7 days a week.  ",
+      "Pick up and drop off at your desired location.   ",
+      "One-to-one in-vehicle coaching.",
+      "Teaching materials are provided.",
+      "The test car is available at $220 (includes an hour driving lesson before your driving test).",
+      "Please call 24 hours prior to the change or cancel your appointment to avoid the full fees penalty. ",
+    ],
+
+    category: "driving-lesson",
   },
   {
     id: 2,

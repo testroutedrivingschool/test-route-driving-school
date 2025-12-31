@@ -67,10 +67,10 @@ export default function PackageDetails() {
           <div className="flex-1">
             <Image
               src={singlePackage.packageThumbline}
-              width={500}
-              height={500}
+              width={1000}
+              height={1000}
               alt={singlePackage.name}
-              className="rounded-xl shadow-lg w-full"
+              className="rounded-xl shadow w-full h-full object-cover"
             />
           </div>
 
@@ -84,19 +84,30 @@ export default function PackageDetails() {
             {/* Pricing */}
             <div className="flex items-center gap-4 text-gray-900">
               <span className="text-3xl font-bold">${singlePackage.price}</span>
-              <span className="text-lg line-through text-gray-500">
-                ${singlePackage.originalPrice}
-              </span>
-              {singlePackage.savings && (
-                <span className="bg-green-100 text-green-700 px-2 py-1 rounded-lg text-sm">
-                  Save ${singlePackage.savings}
-                </span>
-              )}
+              {singlePackage.originalPrice != 0 &&
+                singlePackage.originalPrice && (
+                  <span className="text-gray-400 line-through ml-2">
+                    ${singlePackage.originalPrice}
+                  </span>
+                )}
             </div>
-
+            {/* Lessons & Duration */}
+            <div className="flex gap-6 text-gray-700">
+              <div>
+                <span className="font-semibold">
+                  Lessons: {singlePackage.lessons}
+                </span>{" "}
+              </div>
+              <div>
+                Duration:{" "}
+                <span className="font-semibold">{singlePackage.duration}</span>
+              </div>
+            </div>
             {/* Features */}
             <div>
-              <h3 className="text-xl font-semibold mb-2">Features</h3>
+              <h3 className="text-xl font-semibold mb-2">
+                This Package included:
+              </h3>
               <ul className="space-y-2">
                 {singlePackage.features.map((feature, idx) => (
                   <li
@@ -110,16 +121,13 @@ export default function PackageDetails() {
               </ul>
             </div>
 
-            {/* Lessons & Duration */}
-            <div className="flex gap-6 text-gray-700">
-              <div>
-                <span className="font-semibold">{singlePackage.lessons}</span>{" "}
-                Lessons
-              </div>
-              <div>
-                Duration:{" "}
-                <span className="font-semibold">{singlePackage.duration}</span>
-              </div>
+            <div>
+              <h3 className="font-bold text-lg">Booking instructions</h3>
+              <ul className="mt-3 list-decimal list-inside space-y-1 text-neutral">
+                <li>1. Add to Cart</li>
+                <li>2. Make Payment</li>
+                <li>3. Choose a time that suits you</li>
+              </ul>
             </div>
             {/* Book Button */}
             <div>
