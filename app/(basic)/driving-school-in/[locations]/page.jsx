@@ -5,7 +5,7 @@ import MovingCar from "@/app/shared/MovingCar";
 import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Image from "next/image";
-import {useParams} from "next/navigation";
+import {notFound, useParams} from "next/navigation";
 import locationImg from "@/app/assets/test-route-driving-school-cover.png";
 import locationImg2 from "@/app/assets/test-lesson-test-route-driving-school.png";
 import WhatWeOffer from "../../components/Home/WhatWeOffer";
@@ -15,6 +15,8 @@ import {IoIosWarning} from "react-icons/io";
 import {FaArrowRotateLeft} from "react-icons/fa6";
 export default function LocationPage() {
   const params = useParams();
+
+  console.log("location");
   const slug = params.locations;
 
   const location = slug

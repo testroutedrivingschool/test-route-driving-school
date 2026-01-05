@@ -19,7 +19,7 @@ export default function TopHeader() {
         {userData && userData.role === "instructor" ? (
           <Link href={`/contact`} className="hover:underline font-semibold">Help</Link>
         ) : (
-          <Link href="/book-now" className="hover:underline font-semibold">
+          <Link href="/bookings" className="hover:underline font-semibold">
             Book Now
           </Link>
         )}

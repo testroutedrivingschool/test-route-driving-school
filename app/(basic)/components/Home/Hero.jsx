@@ -1,6 +1,8 @@
+"use client"
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-
+import { useRouter } from "next/navigation";
 export default function Hero() {
+  const router = useRouter()
   return (
     <section className="relative w-full h-[90vh] overflow-hidden">
 
@@ -34,7 +36,7 @@ export default function Hero() {
         </p>
 
         {/* CTA Button */}
-        <PrimaryBtn className="mt-8 text-lg px-10 py-4 shadow-xl shadow-black/20">
+        <PrimaryBtn onClick={()=>router.push("/bookings")} className="mt-8 text-lg px-10 py-4 shadow-xl shadow-black/20">
           Book Your First Lesson
         </PrimaryBtn>
       </div>

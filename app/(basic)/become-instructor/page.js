@@ -4,10 +4,7 @@ import React, {useEffect, useState} from "react";
 import Image from "next/image";
 import {toast} from "react-toastify";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import useAuth from "@/app/hooks/useAuth";
 import axios from "axios";
-import {useQueryClient} from "@tanstack/react-query";
-import {FaEye, FaEyeSlash} from "react-icons/fa";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {useUserData} from "@/app/hooks/useUserData";
@@ -15,9 +12,14 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {useRouter} from "next/navigation";
 
 export default function JoinAsInstructor() {
+  const {data: user, isLoading} = useUserData();
+
   const navigate = useRouter();
-  const {signUpUserWithCredential} = useAuth();
-  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate.push("/login?redirect=/become-instructor");
+    }
+  }, [user, isLoading, navigate]);
   const [languagesListState, setLanguagesListState] = useState([
     "English",
     "Arabic",
@@ -29,7 +31,6 @@ export default function JoinAsInstructor() {
     photo: null,
     name: "",
     email: "",
-    password: "",
     phone: "",
     dob: "",
     address: "",
@@ -42,7 +43,6 @@ export default function JoinAsInstructor() {
     languages: [],
   });
 
-  const {data: user, isLoading} = useUserData();
   useEffect(() => {
     if (user) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -57,7 +57,6 @@ export default function JoinAsInstructor() {
     }
   }, [user]);
 
-  const [showPassword, setShowPassword] = useState(false);
   const handleChange = (e) => {
     const {name, value} = e.target;
     setFormData((prev) => ({...prev, [name]: value}));
@@ -102,74 +101,28 @@ export default function JoinAsInstructor() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user) {
-      if (!formData.email || !formData.password) {
-        return toast.error("Email and password are required");
-      }
-    }
-
     if (!formData.phone) {
       return toast.error("Phone Number must be provided");
     }
-    if (!formData.areas.length) {
-      return toast.error("Select at least one suburb area");
-    }
 
-    
 
     try {
-      let firebaseUser = null;
 
-      if (!user) {
-        firebaseUser = await signUpUserWithCredential(
-          formData.email,
-          formData.password
-        );
-      }
 
       let photoURL = "";
       if (formData.photo) {
         photoURL = await uploadImageToImgBB(formData.photo);
       }
       const {password, ...rest} = formData;
-      let instructorData = {};
-
-      // 3️⃣ Prepare instructor data
-      if (!user) {
-        instructorData = {
-          ...rest,
-          photo: photoURL,
-          status: "pending",
-          firebaseUID: firebaseUser?.uid,
-        };
-      } else {
-        instructorData = {
-          ...rest,
-          photo: photoURL,
-          status: "pending",
-        };
-      }
+      let instructorData = {
+        ...rest,
+        photo: photoURL,
+        status: "pending",
+        userId:user._id,
+      };
 
       // 4️⃣ Store in instructors collection
       await axios.post("/api/instructors", instructorData);
-
-      if (!user) {
-        // New user: create in users collection
-        const userData = {
-          name: formData.name,
-          email: formData.email,
-          phone: formData.phone,
-          photo: photoURL,
-          provider: "Credential",
-          role: "user",
-          registeredAt: new Date(),
-          lastLogin: new Date(),
-        };
-        await axios.post("/api/users", userData);
-        await queryClient.invalidateQueries({
-          queryKey: ["user", userData.email],
-        });
-      }
 
       navigate.push("/dashboard");
       toast.success("Instructor application submitted 🚗");
@@ -205,7 +158,6 @@ export default function JoinAsInstructor() {
         className="bg-white p-8 rounded-2xl shadow max-w-3xl w-full"
       >
         <div className="mb-6 text-center">
-          
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Join As Instructor
           </h1>
@@ -260,35 +212,15 @@ export default function JoinAsInstructor() {
               id="email"
               name="email"
               type="email"
+              readOnly
               placeholder="Email"
-              className="input-class"
+              className="input-class "
               onChange={handleChange}
               value={formData.email}
             />
           </div>
 
-          {!user && (
-            <div className="flex flex-col relative">
-              <label htmlFor="password" className="font-medium mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-                className="input-class"
-                onChange={handleChange}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 top-6.5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-              >
-                {showPassword ? <FaEyeSlash /> : <FaEye />}
-              </button>
-            </div>
-          )}
+
 
           <div className="flex flex-col">
             <label htmlFor="phone" className="font-medium mb-1">

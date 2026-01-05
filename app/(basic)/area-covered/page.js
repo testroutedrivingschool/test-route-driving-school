@@ -188,7 +188,7 @@ export default function AreaCovered() {
                       return (
                         <Link
                           key={index}
-                          href={`/area-covered/${locSlug}`}
+                          href={`/driving-school-in/${locSlug}`}
                           className="group flex items-center gap-2 p-3 bg-base-300 rounded-lg hover:bg-primary/10 cursor-pointer  border border-transparent transition-all"
                         >
                           <FaMapMarkerAlt className="text-primary " />

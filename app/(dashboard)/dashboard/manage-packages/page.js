@@ -160,7 +160,7 @@ export default function ManagePackages() {
     <div className="">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <h2 className="text-lg md:text-3xl font-bold  flex items-center gap-2">
           <GoPackage />
           Manage Packages
         </h2>
@@ -206,7 +206,7 @@ export default function ManagePackages() {
             <div className="mt-auto flex gap-2 pt-4">
               <button
                 onClick={() => handleEdit(pkg)}
-                className="flex-1 flex items-center justify-center gap-1 border border-primary text-primary py-1.5 rounded-lg hover:bg-blue-500 hover:text-white transition"
+                className="flex-1 flex items-center justify-center gap-1 border border-primary text-primary py-1.5 rounded-lg hover:bg-primary hover:text-white transition"
               >
                 <FaEdit /> Edit
               </button>

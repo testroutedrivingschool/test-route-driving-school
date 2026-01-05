@@ -98,6 +98,7 @@ export async function PATCH(req) {
       languages,
       status,
       emailScheduleTime,
+      services 
     } = body;
 
     if (!email) {
@@ -127,7 +128,7 @@ export async function PATCH(req) {
     if (languages) updateData.languages = languages;
     if (status) updateData.status = status;
     if (emailScheduleTime) updateData.emailScheduleTime = emailScheduleTime;
-
+if(services)  updateData.services = services
     const instructorCol = await instructorsCollection();
 
     const result = await instructorCol.updateOne({email}, {$set: updateData});
@@ -171,7 +172,7 @@ export async function DELETE(req) {
       return NextResponse.json({error: "Instructor not found"}, {status: 404});
     }
 
-    // Optional: delete from Firebase Auth if you store instructor as user
+    
     try {
       const userRecord = await admin.auth().getUserByEmail(email);
       await admin.auth().deleteUser(userRecord.uid);

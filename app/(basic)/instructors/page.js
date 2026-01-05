@@ -16,30 +16,7 @@ const instructors = [
     experience: "15 years of Driving experience",
     image: "/instructor1.png",
   },
-  {
-    id: 2,
-    name: "John Doe",
-    experience: "10 years of Driving experience",
-    image: "/instructor1.png",
-  },
-  {
-    id: 3,
-    name: "Jane Smith",
-    experience: "8 years of Driving experience",
-    image: "/instructor1.png",
-  },
-  {
-    id: 4,
-    name: "Alex Brown",
-    experience: "12 years of Driving experience",
-    image: "/instructor1.png",
-  },
-  {
-    id: 5,
-    name: "Sara Khan",
-    experience: "7 years of Driving experience",
-    image: "/instructor1.png",
-  },
+
 ];
 
 export default function Instructors() {
@@ -66,7 +43,7 @@ export default function Instructors() {
                 <h2 className="text-2xl font-bold mb-2">{inst.name}</h2>
                 <p className="text-gray-700 mb-2">{inst.experience}</p>
                 <div className="flex justify-between gap-2 mt-4">
-                  <PrimaryBtn className={`flex-1 text-center justify-center text-sm font-medium `}>Book Now</PrimaryBtn>
+                  <PrimaryBtn onClick={()=>router.push(`/bookings`)} className={`flex-1 text-center justify-center text-sm font-medium `}>Book Now</PrimaryBtn>
                   <OutlineBtn  className={`flex-1 text-center justify-center text-sm font-medium `} onClick={()=>router.push(`/instructors/${inst.id}`)}>View Profile</OutlineBtn>
              
                 </div>

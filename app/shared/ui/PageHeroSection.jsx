@@ -39,7 +39,7 @@ export default function PageHeroSection({title,subtitle}) {
       before:top-1
       before:h-[95%]
       before:w-1
-      before:bg-red-500
+      before:bg-primary
       before:rounded-full
     "
   >

@@ -73,7 +73,7 @@ const highlightMatch = (name) => {
 
                     return (
                       <Link
-                        href={`/area-covered/${locSlug}`}
+                        href={`/driving-school-in/${locSlug}`}
                         key={idx}
                         className="bg-white border border-border-color rounded px-4 py-2 hover:bg-primary/10 cursor-pointer transition block"
                       >
@@ -98,7 +98,7 @@ const highlightMatch = (name) => {
               return (
                 <Link
                   key={idx}
-                  href={`/area-covered/${locSlug}`}
+                  href={`/driving-school-in/${locSlug}`}
                   className="bg-primary text-white py-3 rounded text-left px-4 shadow hover:scale-105 transition flex gap-1 items-center text-sm md:text-base"
                 >
                   {loc.name} <FaArrowRight size={15} />

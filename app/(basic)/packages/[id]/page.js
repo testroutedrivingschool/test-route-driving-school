@@ -62,9 +62,9 @@ export default function PackageDetails() {
             ← Back to Packages
           </Link>
         </div>
-        <div className="mt-10 flex flex-col lg:flex-row gap-10">
+        <div className="mt-10 flex flex-col lg:flex-row  gap-10">
           {/* Left - Image */}
-          <div className="flex-1">
+          <div className="flex-1 h-[420px] lg:h-[520px]">
             <Image
               src={singlePackage.packageThumbline}
               width={1000}
@@ -114,8 +114,8 @@ export default function PackageDetails() {
                     key={idx}
                     className="flex items-center gap-2 text-gray-700"
                   >
-                    <FaCheckCircle className="text-green-500" />
-                    {feature}
+                    <FaCheckCircle className="w-5 h-5 shrink-0 text-green-500" />
+                    <span>{feature}</span>
                   </li>
                 ))}
               </ul>
@@ -123,7 +123,7 @@ export default function PackageDetails() {
 
             <div>
               <h3 className="font-bold text-lg">Booking instructions</h3>
-              <ul className="mt-3 list-decimal list-inside space-y-1 text-neutral">
+              <ul className="mt-3 list-inside space-y-1 text-neutral">
                 <li>1. Add to Cart</li>
                 <li>2. Make Payment</li>
                 <li>3. Choose a time that suits you</li>
@@ -134,7 +134,7 @@ export default function PackageDetails() {
               <PrimaryBtn
                 onClick={() => {
                   // For now, just navigate to contact or booking page
-                  router.push("/contact");
+                  router.push("/bookings");
                 }}
               >
                 Book This Package <FiChevronRight className="ml-1" />

@@ -12,8 +12,8 @@ import {
   FiCreditCard,
   FiGift,
 } from "react-icons/fi";
-import { GoMegaphone, GoPackage } from "react-icons/go";
-import { FaGear } from "react-icons/fa6";
+import {GoMegaphone, GoPackage} from "react-icons/go";
+import {FaGear} from "react-icons/fa6";
 /* ================= USER ================= */
 export const userSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard"},
@@ -38,6 +38,12 @@ export const userSidebarLinks = [
   },
   {
     id: 6,
+    label: "Announcements",
+    icon: <GoMegaphone />,
+    path: "/dashboard/announcements",
+  },
+  {
+    id: 7,
     label: "Leave Feedback ",
     icon: <FiMessageSquare />,
     path: "/dashboard/feedback",
@@ -51,7 +57,7 @@ export const adminSidebarLinks = [
   {
     id: 3,
     label: "Manage Packages",
-    icon: <GoPackage  />,
+    icon: <GoPackage />,
     path: "/dashboard/manage-packages",
   },
   {
@@ -68,9 +74,9 @@ export const adminSidebarLinks = [
   },
   {
     id: 6,
-    label: "Announcements",
+    label: "Add Announcements",
     icon: <GoMegaphone />,
-    path: "/dashboard/announcements",
+    path: "/dashboard/add-announcements",
   },
   {
     id: 7,
@@ -109,14 +115,26 @@ export const instructorSidebarLinks = [
   },
   {
     id: 6,
+    label: "Manage Service Package",
+    icon: <GoPackage />,
+    path: "/dashboard/instructor-service-pacakge",
+  },
+  {
+    id: 7,
     label: "Financial",
     icon: <FiDollarSign />,
     path: "/dashboard/financial",
   },
   {
-    id:7,
-    label:"Setting",
-    icon:<FaGear/> ,
-      path: "/dashboard/instructor-setting",
-  }
+    id: 8,
+    label: "Announcements",
+    icon: <GoMegaphone />,
+    path: "/dashboard/announcements",
+  },
+  {
+    id: 9,
+    label: "Setting",
+    icon: <FaGear />,
+    path: "/dashboard/instructor-setting",
+  },
 ];

@@ -95,6 +95,7 @@ const instructorNavLinks = [
 
 export default function Navbar({className}) {
   const [avatarOpen, setAvatarOpen] = useState(false);
+
   const avatarRef = useRef(null);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -127,11 +128,7 @@ export default function Navbar({className}) {
         <div className="flex items-center justify-between ">
           {/* Logo */}
           <div className="lg:flex-none flex justify-center lg:justify-start">
-            <Link
-              href="/"
-              className="flex items-center gap-2 group"
-              onClick={() => setActiveLink("/")}
-            >
+            <Link href="/" className="flex items-center gap-2 group">
               <Image
                 src="/test-route-driving-school-logo.png"
                 alt="Test Route Driving School Logo"
@@ -139,13 +136,13 @@ export default function Navbar({className}) {
                 height={80}
                 loading="eager"
                 className="object-contain rounded-full transition-all duration-300
-                 w-13 h-13 sm:w-16 sm:h-16 md:w-20 md:h-20"
+                 w-13 h-13 sm:w-16 sm:h-16 md:w-18 md:h-18"
               />
               <div>
-                <h2 className="block font-bold text-primary text-lg md:text-xl leading-4.5">
+                <h2 className="block font-bold text-primary text-lg md:text-lg leading-4.5">
                   Test Route
                 </h2>
-                <h2 className="block font-black text-primary text-lg md:text-xl ">
+                <h2 className="block font-black text-primary text-lg md:text-lg ">
                   Driving School
                 </h2>
               </div>
@@ -157,8 +154,7 @@ export default function Navbar({className}) {
               <li key={item.id} className="relative group">
                 <Link
                   href={item.pathname || "#"}
-                  onClick={() => setActiveLink(item.pathname)}
-                  className={`relative py-2 font-bold transition-all duration-300 group flex items-center gap-1  hover:border-primary ${
+                  className={`relative py-2 font-semibold lg:font-bold transition-all duration-300 group flex items-center gap-1  hover:border-primary ${
                     pathname === item.pathname
                       ? "text-primary border-b-3 border-primary"
                       : "text-gray-700 hover:text-primary border-b-3 border-transparent"
@@ -185,7 +181,7 @@ export default function Navbar({className}) {
                                 </span>
 
                                 <div className="min-w-0">
-                                  <p className="font-semibold text-gray-900 whitespace-nowrap">
+                                  <p className=" font-semibold text-gray-900 whitespace-nowrap">
                                     {drop.label}
                                   </p>
                                 </div>
@@ -394,7 +390,6 @@ export default function Navbar({className}) {
               <li className="mt-4 px-5">
                 <button
                   onClick={() => {
-                
                     handleLogout();
                   }}
                   className="w-full flex items-center gap-3 px-4 bg-red-500 rounded border border-transparent  hover:border-red-500 py-2 text-white hover:bg-red-600 transition"

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import React, {useState, useEffect} from "react";
@@ -22,14 +23,16 @@ const dayShort = [
 ];
 
 export default function Suburbs() {
-  const {user} = useAuth();
-  const [suburbs, setSuburbs] = useState([]);
-  const [selectedSuburb, setSelectedSuburb] = useState(null);
-  const [search, setSearch] = useState("");
-  const [showActiveOnly, setShowActiveOnly] = useState(false);
-  const [loaded, setLoaded] = useState(false);
+    const { user } = useAuth();
+  const { data: suburbs = [], isLoading: isSuburbsLocations } = useQuery({
+    queryKey: ["locations"],
+    queryFn: async () => {
+      const res = await axios.get("/api/locations");
+      return res.data;
+    },
+  });
 
-  const {data: instructorData = {}, isLoading} = useQuery({
+  const { data: instructorData = {}, isLoading: isInstructorLoading } = useQuery({
     queryKey: ["instructor", user?.email],
     queryFn: async () => {
       const res = await axios.get(`/api/instructors?email=${user.email}`);
@@ -38,44 +41,49 @@ export default function Suburbs() {
     enabled: !!user?.email,
   });
 
+  const [suburbsData, setSuburbsData] = useState([]);
+  const [selectedSuburb, setSelectedSuburb] = useState(null);
+  const [search, setSearch] = useState("");
+  const [showActiveOnly, setShowActiveOnly] = useState(false);
+
+  // Initialize suburbsData after fetching
   useEffect(() => {
-    if (!isLoading && instructorData && !loaded) {
-      const initialSuburbs = locations.map((loc) => {
-        const suburbData = instructorData.suburbs?.find((s) => s.name === loc);
+  if (!isSuburbsLocations && !isInstructorLoading && suburbs.length && !suburbsData.length) {
+    const initialSuburbs = suburbs.map((loc) => {
+      const name = loc.name; // <-- get the name string
+      const suburbData = instructorData.suburbs?.find((s) => s.name === name);
 
-        return {
-          name: loc,
-          active: suburbData ? suburbData.availableDays.length > 0 : false,
-          availableDays: suburbData ? suburbData.availableDays : [],
-        };
-      });
+      return {
+        name,
+        active: suburbData ? suburbData.availableDays.length > 0 : false,
+        availableDays: suburbData ? [...suburbData.availableDays] : [],
+      };
+    });
+    setSuburbsData(initialSuburbs);
+  }
+}, [suburbs, instructorData, isSuburbsLocations, isInstructorLoading, suburbsData.length]);
 
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSuburbs(initialSuburbs);
-      setLoaded(true);
-    }
-  }, [instructorData, isLoading, loaded]);
 
   const toggleActive = (index) => {
-    const newSuburbs = [...suburbs];
+    const newSuburbs = [...suburbsData];
     newSuburbs[index].active = !newSuburbs[index].active;
-    setSuburbs(newSuburbs);
+    setSuburbsData(newSuburbs);
   };
 
   const toggleDay = (subIndex, day) => {
-    const newSuburbs = [...suburbs];
+    const newSuburbs = [...suburbsData];
     const availDays = newSuburbs[subIndex].availableDays;
     if (availDays.includes(day)) {
       newSuburbs[subIndex].availableDays = availDays.filter((d) => d !== day);
     } else {
       newSuburbs[subIndex].availableDays.push(day);
     }
-    setSuburbs(newSuburbs);
+    setSuburbsData(newSuburbs);
   };
 
   const handleSave = async () => {
     try {
-      const activeSuburbs = suburbs
+      const activeSuburbs = suburbsData
         .filter((s) => s.active)
         .map((s) => ({
           name: s.name,
@@ -94,14 +102,16 @@ export default function Suburbs() {
     }
   };
 
-  // ✅ filter by search and active-only toggle
-  const filteredSuburbs = suburbs.filter((s) => {
-    const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
-    const matchesActive = showActiveOnly ? s.active : true;
-    return matchesSearch && matchesActive;
-  });
+  // Filtered view
+const filteredSuburbs = suburbsData.filter((s) => {
+  const matchesSearch = s.name.toLowerCase().includes(search.toLowerCase());
+  const matchesActive = showActiveOnly ? s.active : true;
+  return matchesSearch && matchesActive;
+});
 
-  if (isLoading) return <LoadingSpinner />;
+
+  if (isInstructorLoading || isSuburbsLocations || !suburbsData.length) return <LoadingSpinner />;
+
 
   return (
     <div className="min-h-screen">
@@ -146,7 +156,7 @@ export default function Suburbs() {
             </thead>
             <tbody className="divide-y divide-gray-200">
               {filteredSuburbs.map((suburb, index) => (
-                <tr key={suburb.name} className="hover:bg-gray-50 transition-colors">
+                <tr key={index} className="hover:bg-gray-50 transition-colors">
                   <td className="py-4 px-6 text-center">
                     <input
                       type="checkbox"

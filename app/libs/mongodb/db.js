@@ -25,6 +25,10 @@ export async function reviewsCollection() {
   const db = await getDb();
   return db.collection("reviews");
 }
+export async function locationsCollection() {
+  const db = await getDb();
+  return db.collection("locations");
+}
 export async function announcementsCollection() {
   const db = await getDb();
   return db.collection("announcements");

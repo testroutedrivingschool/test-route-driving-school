@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import Container from "@/app/shared/ui/Container";
-import PrimaryBtn from "../Buttons/PrimaryBtn";
+
 import {useUserData} from "@/app/hooks/useUserData";
 import LoadingSpinner from "./LoadingSpinner";
 import {
@@ -19,14 +19,13 @@ export default function Footer() {
     {id: 1, label: "Home", href: "/"},
     {id: 2, label: "Instructors", href: "/instructors"},
     {id: 3, label: "Services", href: "/services"},
-    {id: 4, label: "Resources", href: "/company/resources"},
-    {id: 5, label: "Packages", href: "/packages"},
-    {id: 6, label: "FAQ", href: "/faq"},
-    {id: 7, label: "Contact", href: "/company/contact"},
+    {id: 4, label: "Packages", href: "/packages"},
+    {id: 5, label: "FAQ", href: "/faq"},
+    {id: 6, label: "Contact", href: "/company/contact"},
   ];
 
   const extraLinks = [
-    {id: 1, label: "Terms & Conditions", href: "/terms"},
+    {id: 1, label: "Terms of Service", href: "/terms"},
     {id: 2, label: "Privacy Policy", href: "/privacy"},
     {id: 3, label: "Return & Refund Policy", href: "/return-refund"},
   ];
@@ -34,7 +33,7 @@ export default function Footer() {
   return (
     <footer className=" bg-secondary text-gray-200 pt-12 pb-4">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 md:gap-6">
           {/* Column 1: Logo + Description */}
           <div className="flex flex-col items-start gap-3">
             <Link href="/" className="flex items-center gap-3">
@@ -52,11 +51,11 @@ export default function Footer() {
                 </h2>
               </div>
             </Link>
-            <p className="text-neutral mt-2 max-w-xs">
+            <p className="text-gray-300 mt-2 max-w-xs">
               Learn to drive with confidence! Certified instructors and modern
               vehicles ensure a safe and effective learning experience.
             </p>
-            <form className="flex flex-col gap-2">
+            {/* <form className="flex flex-col gap-2">
               {" "}
               <input
                 type="email"
@@ -65,12 +64,12 @@ export default function Footer() {
               />{" "}
               <div>
                 {" "}
-                <PrimaryBtn type={"submit"} className="flex-1 sm:w-auto">
+                <PrimaryBtn type={"submit"} className="flex-1 sm:w-auto bg-accent!">
                   {" "}
                   Subscribe{" "}
                 </PrimaryBtn>{" "}
               </div>{" "}
-            </form>
+            </form> */}
           </div>
 
           {/* Column 2: Quick Links */}
@@ -83,7 +82,7 @@ export default function Footer() {
                 <li key={link.id}>
                   <Link
                     href={link.href}
-                    className="hover:text-primary transition-colors duration-200"
+                    className="hover:text-accent transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -102,7 +101,7 @@ export default function Footer() {
                 <li key={link.id}>
                   <Link
                     href={link.href}
-                    className="hover:text-primary transition-colors duration-200"
+                    className="hover:text-accent transition-colors duration-200"
                   >
                     {link.label}
                   </Link>
@@ -113,7 +112,7 @@ export default function Footer() {
               <div className="mt-6">
                 <Link
                   href="/become-instructor"
-                  className="inline-block bg-primary text-white font-semibold px-6 py-3 rounded-xl hover:bg-primary/90 transition-all duration-300"
+                  className="inline-block bg-accent text-white font-semibold px-6 py-3 rounded-xl hover:bg-accent/90 transition-all duration-300"
                 >
                   Join as an Instructor
                 </Link>
@@ -134,7 +133,7 @@ export default function Footer() {
                     href="tel: +61 412 018 593"
                   >
                     {" "}
-                    <FaPhoneAlt size={22} className="text-primary" />
+                    <FaPhoneAlt size={22} className="text-accent" />
                     <span>+61 412 018 593</span>
                   </a>
                 </li>
@@ -144,24 +143,24 @@ export default function Footer() {
                     className="flex items-center gap-2"
                     href="mailto:testroutedrivingschool@gmail.com"
                   >
-                    <FaEnvelope size={22} className="text-primary" />
-                    <span>testroutedrivingschool@gmail.com</span>
+                    <FaEnvelope size={22} className="text-accent" />
+                    <span className="break-all">testroutedrivingschool@gmail.com</span>
                   </a>
                 </li>
 
                 <li className="flex items-center gap-2">
-                  <FaMapMarkerAlt size={22} className="text-primary" />
+                  <FaMapMarkerAlt size={22} className="text-accent" />
                   <span>67 Warialda St, Kogarah NSW 2217, Australia</span>
                 </li>
               </ul>
-              <div className="mt-2">
+              <div className="mt-4">
                 <h4 className="font-bold text-lg mb-2">Follow Us</h4>
 
                 <div className="flex gap-4">
                   <a
                     href="https://www.facebook.com/share/1A148kMS7g/"
                     target="_blank"
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:scale-110 transition"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-accent text-white hover:scale-110 transition"
                   >
                     <FaFacebookF />
                   </a>
@@ -169,7 +168,7 @@ export default function Footer() {
                   <a
                     href="https://share.google/TEMTklcOBslyY7zBC"
                     target="_blank"
-                    className="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:scale-110 transition"
+                    className="w-10 h-10 flex items-center justify-center rounded-full bg-accent text-white hover:scale-110 transition"
                   >
                     <FaGoogle />
                   </a>
