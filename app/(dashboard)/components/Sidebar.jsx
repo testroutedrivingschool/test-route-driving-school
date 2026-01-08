@@ -118,7 +118,10 @@ export default function Sidebar() {
                           : "opacity-100"
                       }`}
                     >
-                      <h3 className="font-bold text-lg">Dashboard</h3>
+                      <h3 className="font-bold text-lg">
+                        {" "}
+                        {userData.name.split(" ").slice(0, 2).join(" ")}
+                      </h3>
                       <div className="text-sm font-medium text-neutral capitalize">
                         {userData.role}
                       </div>

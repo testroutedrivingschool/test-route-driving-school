@@ -1,47 +1,87 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import {useRouter, useSearchParams} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import { useUserData } from "@/app/hooks/useUserData";
+import {useUserData} from "@/app/hooks/useUserData";
 import Container from "@/app/shared/ui/Container";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
+import {toast} from "react-toastify";
 
 export default function BookingConfirmPage() {
-  const searchParams = useSearchParams();
-  const { data: userData, isUserLoading } = useUserData();
-  const instructorEmail = searchParams.get("instructorEmail");
- console.log(userData);
-  const date = searchParams.get("date");
-  const time = searchParams.get("time");
+  const router = useRouter();
+  const {data: userData, isUserLoading} = useUserData();
+  const [booking, setBooking] = useState(null);
 
-  const { data: instructor, isLoading } = useQuery({
-    queryKey: ["instructor", instructorEmail],
+  useEffect(() => {
+    const data = sessionStorage.getItem("pendingBooking");
+
+    if (!data) {
+      router.push("/bookings");
+      return;
+    }
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBooking(JSON.parse(data));
+  }, [router]);
+
+  const {data: instructor, isLoading} = useQuery({
+    queryKey: ["instructor", booking?.instructorEmail],
     queryFn: async () => {
-      const res = await axios.get(`/api/instructors?email=${instructorEmail}`);
+      const res = await axios.get(
+        `/api/instructors?email=${booking.instructorEmail}`
+      );
       return res.data;
     },
-    enabled: !!instructorEmail,
+    enabled: !!booking,
   });
 
   const [selectedBooking, setSelectedBooking] = useState(null);
 
-
-
   // Transform backend services for table
   const durations = [
-    { label: "1 Hour", minutes: 60 },
-    { label: "1hr 30m", minutes: 90 },
-    { label: "2 Hours", minutes: 120 },
-    { label: "2hr 30m", minutes: 150 },
-    { label: "3 Hours", minutes: 180 },
-    { label: "3hr 30m", minutes: 210 },
-    { label: "4 Hours", minutes: 240 },
+    {label: "1 Hour", minutes: 60},
+    {label: "1hr 30m", minutes: 90},
+    {label: "2 Hours", minutes: 120},
+    {label: "2hr 30m", minutes: 150},
+    {label: "3 Hours", minutes: 180},
+    {label: "3hr 30m", minutes: 210},
+    {label: "4 Hours", minutes: 240},
   ];
+  const handleConfirmBooking = async () => {
+    if (!selectedBooking) {
+      return toast.error("Please select a service");
+    }
 
-if (isLoading || isUserLoading || !instructor) return <LoadingSpinner />;
+    const bookingData = {
+      userEmail: userData.email,
+      userName: userData.name,
+      userAddress: userData.address,
+      instructorEmail: instructor.email,
+      instructorName: instructor.name,
+
+      serviceName: selectedBooking.service,
+      duration: selectedBooking.duration,
+      minutes: selectedBooking.minutes,
+      price: selectedBooking.price,
+
+      bookingDate: booking.date,
+      bookingTime: booking.time,
+      location: booking.location,
+      status: "pending",
+    };
+
+    console.log("Booking:", bookingData);
+
+    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+
+    router.push("/booking-confirm/payment-confirm");
+  };
+
+  if (isLoading || isUserLoading || !instructor || !booking)
+    return <LoadingSpinner />;
   const services = instructor.services.map((s) => ({
     name: s.name,
     prices: durations.map((d, i) => s.prices[i] ?? null),
@@ -77,11 +117,11 @@ if (isLoading || isUserLoading || !instructor) return <LoadingSpinner />;
                   <div className="space-y-2">
                     <div className="flex items-center gap-6">
                       <p className="font-semibold w-45">Date:</p>
-                      <p>{new Date(date).toDateString()}</p>
+                      <p>{new Date(booking.date).toDateString()}</p>
                     </div>
                     <div className="flex items-center gap-6">
                       <p className="font-semibold w-45">Time:</p>
-                      <p>{time}</p>
+                      <p>{booking.time}</p>
                     </div>
                     <div className="flex items-center gap-6">
                       <p className="font-semibold w-45">Instructor:</p>
@@ -93,7 +133,9 @@ if (isLoading || isUserLoading || !instructor) return <LoadingSpinner />;
                     </div>
                     <div className="flex items-center gap-6">
                       <p className="font-semibold w-45">Booking Length:</p>
-                      <p>{selectedBooking ? selectedBooking.duration : "0 mins"}</p>
+                      <p>
+                        {selectedBooking ? selectedBooking.duration : "0 mins"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -127,7 +169,9 @@ if (isLoading || isUserLoading || !instructor) return <LoadingSpinner />;
                 </table>
 
                 <div className="mt-6">
-                  <PrimaryBtn>Confirm</PrimaryBtn>
+                  <PrimaryBtn onClick={handleConfirmBooking}>
+                    Proceed
+                  </PrimaryBtn>
                 </div>
               </div>
             </div>
@@ -139,15 +183,22 @@ if (isLoading || isUserLoading || !instructor) return <LoadingSpinner />;
 }
 
 /* ---------- Helper Row Component ---------- */
-function ServiceRow({ name, prices, activeDurations, onSelect, selectedBooking, index }) {
+function ServiceRow({
+  name,
+  prices,
+  activeDurations,
+  onSelect,
+  selectedBooking,
+  index,
+}) {
   const durations = [
-    { label: "1 Hour", minutes: 60 },
-    { label: "1hr 30m", minutes: 90 },
-    { label: "2 Hours", minutes: 120 },
-    { label: "2hr 30m", minutes: 150 },
-    { label: "3 Hours", minutes: 180 },
-    { label: "3hr 30m", minutes: 210 },
-    { label: "4 Hours", minutes: 240 },
+    {label: "1 Hour", minutes: 60},
+    {label: "1hr 30m", minutes: 90},
+    {label: "2 Hours", minutes: 120},
+    {label: "2hr 30m", minutes: 150},
+    {label: "3 Hours", minutes: 180},
+    {label: "3hr 30m", minutes: 210},
+    {label: "4 Hours", minutes: 240},
   ];
 
   const rowBg = index % 2 === 0 ? "bg-white" : "bg-base-300";
@@ -160,7 +211,8 @@ function ServiceRow({ name, prices, activeDurations, onSelect, selectedBooking, 
           {prices[i] && activeDurations[i] ? (
             <label className="flex flex-col items-center font-medium gap-1 cursor-pointer">
               <input
-                type="checkbox"
+                type="radio"
+                name={`service-${index}`}
                 checked={
                   selectedBooking?.service === name &&
                   selectedBooking?.minutes === d.minutes

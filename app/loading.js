@@ -2,7 +2,7 @@
 
 export default function Loading() {
   return (
-      <div className="flex items-center justify-center h-screen bg-gray-100">
+      <div className="absolute flex items-center justify-center h-screen bg-gray-100">
       <div className="relative w-32 h-6">
         {/* Ball 1 */}
         <div className="absolute w-6 h-6 bg-primary rounded-full animate-bounce-left"></div>

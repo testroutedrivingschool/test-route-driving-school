@@ -28,16 +28,16 @@ export default function UserProfile() {
     if (userData) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setProfile({
-        name: userData?.name,
-        email: userData?.email,
-        phone: userData?.phone,
-        dateOfBirth: userData?.dateOfBirth,
-        emergencyContact: userData?.emergencyContact,
-        address: userData?.address,
-        suburb: userData?.suburb,
-        state: userData?.state,
-        postCode: userData?.postCode,
-        vouchers: userData?.vouchers,
+        name: userData?.name || "",
+        email: userData?.email || "",
+        phone: userData?.phone || "",
+        dateOfBirth: userData?.dateOfBirth || "",
+        emergencyContact: userData?.emergencyContact || "",
+        address: userData?.address || "",
+        suburb: userData?.suburb || "",
+        state: userData?.state || "",
+        postCode: userData?.postCode || "",
+        vouchers: userData?.vouchers || "",
       });
     }
   }, [userData]);

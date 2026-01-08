@@ -127,7 +127,7 @@ export default function BookingsPage() {
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
-  const [selectedTime, setSelectedTime] = useState(null);
+ 
   const [locationSearch, setLocationSearch] = useState("");
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
@@ -179,13 +179,21 @@ const handleBookNow = (time, dayIndex) => {
     return;
   }
 
-  router.push(
-    `/booking-confirm?` +
-      `instructorEmail=${selectedInstructor.email}` +
-      `&date=${encodeURIComponent(date.toISOString())}` +
-      `&time=${encodeURIComponent(time)}` +
-      `&location=${encodeURIComponent(selectedLocations)}`
+   const bookingInfo = {
+    instructorEmail: selectedInstructor.email,
+    instructorName: selectedInstructor.name,
+    
+    date: date.toISOString(),
+    time,
+    location: selectedLocations,
+  };
+console.log(bookingInfo);
+  // ✅ Store booking info safely
+  sessionStorage.setItem(
+    "pendingBooking",
+    JSON.stringify(bookingInfo)
   );
+   router.push("/booking-confirm");
 };
 
   useEffect(() => {
