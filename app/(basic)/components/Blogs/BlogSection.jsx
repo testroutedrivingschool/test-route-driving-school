@@ -38,8 +38,7 @@ export default function BlogSection() {
           <SectionHeader
           className={`mt-0!`}
             title={`Our Blog`}
-            subtitle={`Stay updated with the latest news, tips, and insights from the
-              world of driving.`}
+            subtitle={`Stay updated with the latest tips and insights from the world of driving. Visit our blog for helpful guides and the latest updates.`}
           />
 
           {/* Blog Grid */}

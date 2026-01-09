@@ -8,44 +8,30 @@ const faqData = [
   {
     question: "How many lessons do I need to pass my driving test?",
     answer:
-      "The number of lessons varies for each learner. On average, most students require between 5–10 lessons depending on experience, confidence, and driving skills.",
+      "The number of lessons varies depending on your experience, confidence, and skill. Most learners typically need around 5–10 lessons to prepare thoroughly and succeed.",
   },
   {
     question: "Do you provide pickup and drop-off for lessons?",
     answer:
-      "Yes, we offer convenient pickup and drop-off from your home, school, workplace, or a preferred location within our service area.",
+      "Yes! We offer convenient pickup and drop-off from your home, school, workplace, or a preferred location within Kogarah for stress-free and flexible lesson arrangements.",
   },
   {
     question: "Which suburbs do your instructors cover?",
     answer:
-      "Our instructors cover a wide range of suburbs including Allawah, Arncliffe, Bexley, Rockdale, Hurstville, Kogarah, and more.",
+      "Our instructors cover Allawah, Arncliffe, Bexley, Rockdale, Hurstville, Kogarah, and nearby suburbs, ensuring you have access to professional driving lessons wherever you are located.",
   },
   {
     question: "What type of car will I learn in?",
     answer:
-      "You will learn in a modern automatic vehicle equipped with dual controls to ensure maximum safety during your training.",
+      "You will learn in a modern automatic vehicle equipped with dual controls, providing maximum safety and confidence during your driving lessons in Kogarah.",
   },
   {
     question: "Can I book lessons online?",
     answer:
-      "Yes! You can easily book your driving lessons online through our website's booking form anytime.",
+      "Yes! You can easily book your driving lessons online at any time through our Website, offering a convenient, fast, and simple way to secure your preferred schedule.",
   },
  
-  {
-    question: "Which suburbs do your instructors cover?",
-    answer:
-      "Our instructors cover a wide range of suburbs including Allawah, Arncliffe, Bexley, Rockdale, Hurstville, Kogarah, and more.",
-  },
-  {
-    question: "What type of car will I learn in?",
-    answer:
-      "You will learn in a modern automatic vehicle equipped with dual controls to ensure maximum safety during your training.",
-  },
-  {
-    question: "Can I book lessons online?",
-    answer:
-      "Yes! You can easily book your driving lessons online through our website's booking form anytime.",
-  },
+
 ];
 
 export default function FaqSection({className}) {

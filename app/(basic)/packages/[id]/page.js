@@ -12,6 +12,7 @@ import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import { addToCartLS } from "@/app/utils/cart";
 
 export default function PackageDetails() {
   const {id} = useParams();
@@ -23,7 +24,13 @@ export default function PackageDetails() {
       return res.data;
     },
   });
+  const handleAddToCart = (pkg, e) => {
+    e.preventDefault();
+    console.log(pkg);
 
+    addToCartLS(pkg);
+    router.push("/cart");
+  };
   if (isLoading) {
     return <LoadingSpinner />;
   }
@@ -131,13 +138,8 @@ export default function PackageDetails() {
             </div>
             {/* Book Button */}
             <div>
-              <PrimaryBtn
-                onClick={() => {
-                  // For now, just navigate to contact or booking page
-                  router.push("/bookings");
-                }}
-              >
-                Book This Package <FiChevronRight className="ml-1" />
+              <PrimaryBtn onClick={(e) => handleAddToCart(singlePackage, e)}>
+                Get This Package <FiChevronRight className="ml-1" />
               </PrimaryBtn>
             </div>
           </div>

@@ -17,7 +17,7 @@ export default function StripeCardInput() {
         color: "#1f2937",
         fontFamily: "sans-serif",
         "::placeholder": {color: "#9ca3af"},
-        padding: "10px 12px",
+       
       },
       invalid: {color: "#ef4444"},
     },

@@ -10,44 +10,41 @@ export default function WhyChooseUs({className}) {
     {
       title: "Expert Driving Instructors",
       description:
-        "Our certified trainers ensure you learn safe and efficient driving skills.",
+        "Certified trainers who teach safe and efficient driving skills.",
     },
     {
       title: "Comprehensive Training",
       description:
-        "We offer both practical and theoretical lessons to prepare you for real-world driving.",
+        "Practical and theoretical lessons covering all driving scenarios.",
     },
     {
       title: "License Assistance",
       description:
-        "We help you through the driving license application process, making it hassle-free.",
+        "Guidance through the Australian license process, making it hassle-free.",
     },
     {
       title: "Modern Vehicles",
       description:
-        "Learn to drive with well-maintained, modern vehicles for a smooth experience.",
+        "Learn in well-maintained, dual-controlled cars for a smooth experience.",
     },
     {
       title: "Flexible Timing",
-      description:
-        "Choose from convenient class schedules that fit your routine.",
+      description: "Convenient schedules tailored to your lifestyle.",
     },
   ];
   const router = useRouter();
   return (
     <section className={`py-16 ${className} `}>
       <Container>
-        <div className="grid md:grid-cols-2 gap-10 items-center">
+        <div className="flex flex-col md:flex-row gap-10 items-center ">
           {/* Left Content */}
-          <div className="flex flex-col gap-4">
+          <div className="flex-1 flex flex-col gap-4">
             <h2 className="text-2xl md:text-4xl font-bold ">
-              Why Choose{" "}
-              <span className="text-primary">Test Route Driving School?</span>
+              Why Choose Test Route Driving School
+              <span className="text-primary"> in Kogarah?</span>
             </h2>
             <p className="text-neutral">
-              At Bangladesh Driving Training Institute, we provide professional
-              driving lessons along with assistance in obtaining your driving
-              license. Here&apos;s why we are the best choice for your driving
+              At Test Route Driving School, We are one of the top driving schools near me in Kogarah for learners seeking expert guidance. Here&apos;s why we are the best choice for your driving
               education:
             </p>
 
@@ -76,13 +73,13 @@ export default function WhyChooseUs({className}) {
           </div>
 
           {/* Right Image */}
-          <div className="relative">
+          <div className="w-full md:flex-1 md:w-auto relative">
             <Image
               src={whyChooseImg}
               alt="Driving Training"
-              width={600}
-              height={400}
-              className="rounded-xl shadow-lg object-cover"
+              width={1000}
+              height={1000}
+              className="w-full rounded-xl shadow-lg object-cover"
             />
           </div>
         </div>

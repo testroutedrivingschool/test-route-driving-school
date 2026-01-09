@@ -15,28 +15,28 @@ const steps = [
   {
     step: "STEP 1",
     title: "SELECT YOUR COURSE",
-    desc: "View our courses or call us and our booking managers will help you choose.",
+    desc: "Browse our courses or contact us for guidance on selecting the ideal driving package that suits your learning needs and schedule.",
     icon: <FaMapMarkerAlt />,
     align: "left",
   },
   {
     step: "STEP 2",
     title: "BOOK YOUR COURSE",
-    desc: "All courses require only a small deposit to get started.",
+    desc: "Secure your driving lessons with a small deposit. Our booking process is quick, simple, and designed to get you started efficiently.",
     icon: <FaClipboardCheck />,
     align: "right",
   },
   {
     step: "STEP 3",
     title: "LET US GET TO WORK",
-    desc: "Your booking manager will begin arranging your course.",
+    desc: "Your dedicated booking manager arranges your lessons. We coordinate schedules and instructors to ensure smooth, structured, and personalised learning.",
     icon: <FaCogs />,
     align: "left",
   },
   {
     step: "STEP 4",
     title: "GET DRIVING!",
-    desc: "It’s time to conquer the roads with confidence.",
+    desc: "Start your lessons with confidence. Learn safely in Kogarah and the surrounding Sydney suburbs, mastering skills step by step under the guidance of experts.",
     icon: <FaCarSide />,
     align: "right",
   },
@@ -52,7 +52,7 @@ export default function HowItWorks() {
       <Container className={` relative`}>
 
         {/* MIDDLE LINE IMAGE */}
-        <div className="absolute left-1/2 top-1 -translate-x-1/2 h-full hidden md:block">
+        <div className="absolute left-1/2 top-1 -translate-x-1/2 h-full hidden lg:block">
           <Image
             src={roadLine}
             alt="Road line"
@@ -61,14 +61,14 @@ export default function HowItWorks() {
           />
         </div>
 
-        <div className="mt-8 space-y-10 md:space-y-15 relative z-10">
+        <div className="mt-8 space-y-10 lg:space-y-15 relative z-10 ">
           {steps.map((item, index) => (
-  <div key={index} className="md:flex items-center">
+  <div key={index} className="lg:flex items-center">
 
     {/* LEFT SIDE */}
-    <div className=" flex-1 md:pr-12 text-left">
+    <div className=" flex-1 lg:pr-12 text-left">
       {item.align === "left" && (
-        <div className="flex flex-row-reverse items-start justify-start md:justify-end gap-4">
+        <div className="flex flex-row-reverse items-start justify-start lg:justify-end gap-4">
          
           <div>
             <p className="text-sm text-gray-500 font-semibold">
@@ -77,7 +77,7 @@ export default function HowItWorks() {
             <h3 className="text-xl font-bold text-primary mt-1">
               {item.title}
             </h3>
-            <p className="text-neutral mt-2 max-w-md">
+            <p className="text-neutral mt-2 max-w-lg">
               {item.desc}
             </p>
           </div>
@@ -92,7 +92,7 @@ export default function HowItWorks() {
     <div className="w-10 shrink-0" />
 
     {/* RIGHT SIDE */}
-    <div className="flex-1 md:pl-12 text-left">
+    <div className="flex-1 lg:pl-12 text-left">
       {item.align === "right" && (
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl shrink-0">
@@ -105,7 +105,7 @@ export default function HowItWorks() {
             <h3 className="text-xl font-bold text-primary mt-1">
               {item.title}
             </h3>
-            <p className="text-neutral mt-2 max-w-md">
+            <p className="text-neutral mt-2 max-w-lg">
               {item.desc}
             </p>
           </div>

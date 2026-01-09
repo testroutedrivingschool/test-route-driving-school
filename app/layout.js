@@ -14,8 +14,9 @@ const openSans = Open_Sans({
 });
 
 export const metadata = {
-  title: "Test Route Driving School",
-  description: "Learn to drive with confidence! Certified instructors and modern vehicles ensure a safe and effective learning experience.",
+  title: "Driving School in Kogarah | Learn to Drive Safely & Confidently",
+  description:
+    "Gain confidence and pass your driving test with expert lessons in Kogarah. Flexible packages, modern cars, and certified instructors. Book today!",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
@@ -26,7 +27,6 @@ export const metadata = {
 export default function RootLayout({children}) {
   return (
     <html lang="en">
-      
       <body
         suppressHydrationWarning
         className={`${montserrat.variable} ${openSans.variable} antialiased`}

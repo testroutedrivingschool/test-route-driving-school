@@ -1,3 +1,4 @@
+"use client";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
@@ -5,14 +6,37 @@ import Image from "next/image";
 import React from "react";
 import testPackageImg1 from "@/app/assets/test-packageimg1.png";
 import testPackageImg2 from "@/app/assets/test-packageimg2.png";
-import {
-  FaCheckCircle,
-  FaStar,
-  FaArrowRight,
-} from "react-icons/fa";
-
+import {FaCheckCircle, FaStar, FaArrowRight} from "react-icons/fa";
+import {addToCartLS} from "@/app/utils/cart";
+import {useRouter} from "next/navigation";
+export const packages = [
+  {
+    _id: "695bebe91f72e6c2fa81e098",
+    name: "Test Package with 1 hour lesson",
+    packageThumbline: "/pkg.png",
+    regularPrice: "$250",
+    price: 220,
+    duration: "1 hour",
+  },
+  {
+    _id: "695bfa251f72e6c2fa81e09c",
+    name: "Test Package with 2 hours lesson",
+    packageThumbline: "/pkg.png",
+    regularPrice: "$300",
+    price: 290,
+    duration: "2 hours",
+  },
+];
 
 export default function DrivingTestPackage() {
+  const router = useRouter();
+  const handleAddToCart = (pkg, e) => {
+    e.preventDefault();
+    console.log(pkg);
+
+    addToCartLS(pkg);
+    router.push("/cart");
+  };
   return (
     <section className="py-20 bg-white">
       <Container>
@@ -25,7 +49,6 @@ export default function DrivingTestPackage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Package Card 1*/}
           <div className="group bg-base-300 rounded-xl overflow-hidden shadow hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-            
             {/* Image */}
             <div className="relative h-60 w-full overflow-hidden">
               <Image
@@ -71,8 +94,8 @@ export default function DrivingTestPackage() {
 
               {/* CTA */}
               <div className="flex items-center justify-between">
-                <PrimaryBtn>
-                  Book Now <FaArrowRight className="ml-2" />
+                <PrimaryBtn onClick={(e) => handleAddToCart(packages[0], e)}>
+                  Get this package <FaArrowRight className="ml-2" />
                 </PrimaryBtn>
 
                 <span className="text-sm text-gray-500 flex items-center gap-1">
@@ -84,7 +107,6 @@ export default function DrivingTestPackage() {
           </div>
           {/* Package Card 2 */}
           <div className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
-            
             {/* Image */}
             <div className="relative h-60 w-full overflow-hidden">
               <Image
@@ -130,8 +152,8 @@ export default function DrivingTestPackage() {
 
               {/* CTA */}
               <div className="flex items-center justify-between">
-                <PrimaryBtn>
-                  Book Now <FaArrowRight className="ml-2" />
+                <PrimaryBtn onClick={(e) => handleAddToCart(packages[1], e)}>
+                  Get this package <FaArrowRight className="ml-2" />
                 </PrimaryBtn>
 
                 <span className="text-sm text-gray-500 flex items-center gap-1">
@@ -146,4 +168,3 @@ export default function DrivingTestPackage() {
     </section>
   );
 }
-

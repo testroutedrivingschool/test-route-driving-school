@@ -52,24 +52,11 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-gray-300 mt-2 max-w-xs">
-              Learn to drive with confidence! Certified instructors and modern
-              vehicles ensure a safe and effective learning experience.
+              Start your driving journey today with a trusted driving school in
+              Kogarah. Our friendly instructors are ready to help you gain
+              confidence, master driving skills, and pass your test.
             </p>
-            {/* <form className="flex flex-col gap-2">
-              {" "}
-              <input
-                type="email"
-                placeholder="Your email"
-                className="px-4 py-2 rounded-lg text-white placeholder:text-white w-auto sm:w-auto flex-1 border border-white "
-              />{" "}
-              <div>
-                {" "}
-                <PrimaryBtn type={"submit"} className="flex-1 sm:w-auto bg-accent!">
-                  {" "}
-                  Subscribe{" "}
-                </PrimaryBtn>{" "}
-              </div>{" "}
-            </form> */}
+
           </div>
 
           {/* Column 2: Quick Links */}
@@ -144,7 +131,9 @@ export default function Footer() {
                     href="mailto:testroutedrivingschool@gmail.com"
                   >
                     <FaEnvelope size={22} className="text-accent" />
-                    <span className="break-all">testroutedrivingschool@gmail.com</span>
+                    <span className="break-all">
+                      testroutedrivingschool@gmail.com
+                    </span>
                   </a>
                 </li>
 

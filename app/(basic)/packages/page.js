@@ -11,6 +11,8 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
+import { addToCartLS } from "@/app/utils/cart";
+import { useRouter } from "next/navigation";
 
 export default function Packages() {
   const {data: packagesData = [], isLoading} = useQuery({
@@ -20,7 +22,7 @@ export default function Packages() {
       return res.data;
     },
   });
-
+const router = useRouter()
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("default");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -81,6 +83,12 @@ export default function Packages() {
     setSelectedArea("all");
     setSort("default");
   };
+
+  const handleAddToCart = (pkg, e) => {
+  e.preventDefault();
+  addToCartLS(pkg);
+  router.push("/cart");
+};
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -234,52 +242,54 @@ export default function Packages() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredPackages.map((pkg) => (
-             <Link
-  href={`/packages/${pkg._id}`}
-  key={pkg._id}
-  className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
->
-  {/* Image */}
-  <div className="w-full h-60">
-    <Image
-      src={pkg.packageThumbline}
-      alt={pkg.name}
-      width={800}
-      height={800}
-      className="w-full h-full object-cover"
-    />
-  </div>
+              <Link
+                href={`/packages/${pkg._id}`}
+                key={pkg._id}
+                className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
+              >
+                {/* Image */}
+                <div className="w-full h-60">
+                  <Image
+                    src={pkg.packageThumbline}
+                    alt={pkg.name}
+                    width={800}
+                    height={800}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-  {/* Content */}
-  <div className="p-5 flex flex-col flex-1">
-    {/* Title */}
-    <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
+                {/* Content */}
+                <div className="p-5 flex flex-col flex-1">
+                  {/* Title */}
+                  <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
 
-    {/* Description */}
-    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-  {pkg.description.length > 60
-    ? pkg.description.slice(0, 60) + "..."
-    : pkg.description}
-    </p>
+                  {/* Description */}
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                    {pkg.description.length > 60
+                      ? pkg.description.slice(0, 60) + "..."
+                      : pkg.description}
+                  </p>
 
-    {/* Price */}
-    <div className="text-2xl font-bold text-gray-900 mb-4">
-      ${pkg.price}
-      {pkg.originalPrice != 0 && pkg.originalPrice && (
-        <span className="text-gray-400 line-through ml-2">${pkg.originalPrice}</span>
-      )}
-    </div>
+                  {/* Price */}
+                  <div className="text-2xl font-bold text-gray-900 mb-4">
+                    ${pkg.price}
+                    {pkg.originalPrice != 0 && pkg.originalPrice && (
+                      <span className="text-gray-400 line-through ml-2">
+                        ${pkg.originalPrice}
+                      </span>
+                    )}
+                  </div>
 
-    {/* Button */}
-    <PrimaryBtn className="w-full flex justify-center items-center gap-2 mt-auto">
-      Book The Package
-      <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
-    </PrimaryBtn>
-  </div>
-</Link>
-
-
-
+                  {/* Button */}
+                  <PrimaryBtn
+                    onClick={(e) => handleAddToCart(pkg, e)}
+                    className="w-full flex justify-center items-center gap-2 mt-auto"
+                  >
+                    Add to Cart
+                    <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+                  </PrimaryBtn>
+                </div>
+              </Link>
             ))}
           </div>
         )}

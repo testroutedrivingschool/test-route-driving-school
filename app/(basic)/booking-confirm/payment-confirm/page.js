@@ -59,7 +59,7 @@ function PaymentForm() {
   }, []);
 
   if (!booking) return <LoadingSpinner />;
-
+console.log(booking);
   const handleConfirmPayment = async () => {
     if (!stripe || !elements) return;
 
@@ -78,6 +78,8 @@ function PaymentForm() {
         payment_method: {
           card: cardElement,
           billing_details: {
+            name: booking.userName,
+            email: booking.userEmail,
             address: {line1: address},
           },
         },

@@ -8,12 +8,6 @@ import {
   FaCar,
   FaBrain,
   FaAward,
-  FaClock,
-  FaMapMarkerAlt,
-  FaBullseye,
-  FaCheckCircle,
-  FaUserTie,
-  FaGraduationCap,
 } from "react-icons/fa";
 
 export default function DrivingTipsSection() {
@@ -21,7 +15,7 @@ export default function DrivingTipsSection() {
     {
       title: "Practice Regularly",
       description:
-        "Consistent practice is key to building confidence behind the wheel. Schedule lessons and practice drives covering different roads, traffic conditions, and parking scenarios.",
+        "Consistent practice is key to building confidence. Drive on varied roads, in various traffic conditions, and navigate challenging parking situations to gain real-world experience while consistently improving safety and control behind the wheel.",
       icon: <FaCalendarAlt className="h-6 w-6" />,
       color: "text-blue-600 bg-blue-50",
       duration: "Ongoing",
@@ -29,7 +23,7 @@ export default function DrivingTipsSection() {
     {
       title: "Prioritize Road Safety",
       description:
-        "Always follow traffic rules, maintain a safe distance from other vehicles, and anticipate hazards. Safe driving habits are essential from the first lesson.",
+        "Always follow traffic rules, maintain a safe distance, and be aware of potential hazards. Developing safe driving habits from your first lesson ensures confidence, reduces risk, and prepares you for real-world driving in Kogarah and the Sydney suburbs.",
       icon: <FaShieldAlt className="h-6 w-6" />,
       color: "text-green-600 bg-green-50",
       priority: "High",
@@ -37,7 +31,7 @@ export default function DrivingTipsSection() {
     {
       title: "Build Confidence Gradually",
       description:
-        "Start with simple exercises and gradually progress to complex scenarios like city traffic, highways, and night driving. Step-by-step learning ensures mastery.",
+        "Begin with simple exercises and progress to more complex scenarios, such as city streets, highways, and nighttime driving. Step-by-step practice helps you build confidence and master essential skills efficiently over time.",
       icon: <FaChartLine className="h-6 w-6" />,
       color: "text-purple-600 bg-purple-50",
       level: "Beginner to Advanced",
@@ -45,7 +39,7 @@ export default function DrivingTipsSection() {
     {
       title: "Understand Both Manual & Automatic Cars",
       description:
-        "Even if learning automatic driving, basic knowledge of manual cars improves overall vehicle control. Our instructors provide insights into both for comprehensive learning.",
+        "Even if learning automatically, understanding manual cars improves overall vehicle control and awareness. Instructors provide clear guidance, helping you become adaptable and confident in handling different vehicles for any situation.",
       icon: <FaCar className="h-6 w-6" />,
       color: "text-amber-600 bg-amber-50",
       type: "Technical",
@@ -53,7 +47,7 @@ export default function DrivingTipsSection() {
     {
       title: "Stay Calm and Focused",
       description:
-        "Driving requires focus and composure. Avoid distractions, stay alert, and take each lesson at your own pace. Confidence grows with consistent practice.",
+        "Driving requires concentration and composure. Avoid distractions, follow instructions carefully, and take lessons at your own pace. Confidence grows steadily when you remain calm, alert, and focused during every practice session.",
       icon: <FaBrain className="h-6 w-6" />,
       color: "text-teal-600 bg-teal-50",
       focus: "Mental",
@@ -61,7 +55,7 @@ export default function DrivingTipsSection() {
     {
       title: "Prepare for Driving Tests",
       description:
-        "Learn practical test tips including parking, highway driving, and city maneuvers. Our expert instructors guide you to pass your driving test efficiently.",
+        "Learn practical test strategies, including parking, highway driving, and city navigation. Our instructors provide expert guidance, helping you understand requirements, build confidence, and pass your driving test efficiently and successfully.",
       icon: <FaAward className="h-6 w-6" />,
       color: "text-red-600 bg-red-50",
       goal: "Test Success",
