@@ -11,12 +11,12 @@ export default function HomeAbout() {
           <div className="flex-1 space-y-4">
             <h2 className="text-2xl md:text-4xl font-bold">
               About Test Route Driving School
-              <span className="text-primary"> in Kogarah</span>
+              <span className="text-primary"> in Sydney suburbs</span>
             </h2>
 
             <p className="text-neutral text-lg leading-relaxed">
               Test Route Driving School has been providing professional driving
-              lessons in Kogarah for years. Our certified instructors focus on
+              lessons in Sydney suburbs for years. Our certified instructors focus on
               building your confidence, road safety, and test readiness. We
               provide personalized training in manual and automatic vehicles,
               ensuring you gain practical skills for all driving situations.
@@ -27,13 +27,13 @@ export default function HomeAbout() {
             </p>
 
             <h3 className="text-2xl font-bold mt-6">
-              Our Mission at Your Kogarah Driving School
+              Our Mission at Your Sydney suburbs Driving School
             </h3>
             <p className=" text-neutral text-lg">
               Our mission is to create confident, safe, and skilled drivers. We
               combine practical driving skills with road safety knowledge, so
               you are fully prepared for real-world driving scenarios and your
-              driving test. With a focus on driving lessons in Kogarah, we
+              driving test. With a focus on driving lessons in Sydney suburbs, we
               ensure every student gets expert guidance and a supportive
               learning environment. Your journey to becoming a safe driver
               starts here.

@@ -41,10 +41,10 @@ export default function WhyChooseUs({className}) {
           <div className="flex-1 flex flex-col gap-4">
             <h2 className="text-2xl md:text-4xl font-bold ">
               Why Choose Test Route Driving School
-              <span className="text-primary"> in Kogarah?</span>
+              <span className="text-primary"> in Sydney Suburbs?</span>
             </h2>
             <p className="text-neutral">
-              At Test Route Driving School, We are one of the top driving schools near me in Kogarah for learners seeking expert guidance. Here&apos;s why we are the best choice for your driving
+              At Test Route Driving School, We are one of the top driving schools near me in Sydney Suburbs for learners seeking expert guidance. Here&apos;s why we are the best choice for your driving
               education:
             </p>
 

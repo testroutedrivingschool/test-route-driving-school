@@ -23,7 +23,7 @@ export default function DrivingTipsSection() {
     {
       title: "Prioritize Road Safety",
       description:
-        "Always follow traffic rules, maintain a safe distance, and be aware of potential hazards. Developing safe driving habits from your first lesson ensures confidence, reduces risk, and prepares you for real-world driving in Kogarah and the Sydney suburbs.",
+        "Always follow traffic rules, maintain a safe distance, and be aware of potential hazards. Developing safe driving habits from your first lesson ensures confidence, reduces risk, and prepares you for real-world driving in Sydney suburbs and the Sydney suburbs.",
       icon: <FaShieldAlt className="h-6 w-6" />,
       color: "text-green-600 bg-green-50",
       priority: "High",

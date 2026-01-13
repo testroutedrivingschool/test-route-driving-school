@@ -16,7 +16,7 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {toast} from "react-toastify";
 import StripeCardInput from "@/app/shared/ui/StripeCardInput";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_TEST_Publishable_key);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_Stripe_Publishable_key);
 
 export default function PaymentConfirmPage() {
   return (

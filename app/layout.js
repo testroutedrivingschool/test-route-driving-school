@@ -14,9 +14,9 @@ const openSans = Open_Sans({
 });
 
 export const metadata = {
-  title: "Driving School in Kogarah | Learn to Drive Safely & Confidently",
+  title: "Driving School in Sydney suburbs| Learn to Drive Safely & Confidently",
   description:
-    "Gain confidence and pass your driving test with expert lessons in Kogarah. Flexible packages, modern cars, and certified instructors. Book today!",
+    "Master driving with our Driving School in Sydney suburbs– expert instructors, affordable packages, book now & enjoy your learning experience.",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",

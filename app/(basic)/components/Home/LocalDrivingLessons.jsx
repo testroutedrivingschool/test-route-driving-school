@@ -14,16 +14,16 @@ export default function LocalDrivingLessons() {
           <div className="flex-1 space-y-6">
             <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
               Professional Driving Lessons in
-              <span className="text-primary"> Kogarah, NSW</span>
+              <span className="text-primary"> Sydney Suburbs, NSW</span>
             </h2>
 
             <p className="text-neutral text-lg leading-relaxed">
-              Seeking reputable driving schools in Kogarah? We provide both
+              Seeking reputable driving schools in Sydney Suburbs? We provide both
               automatic and manual lessons designed for beginners, learners, and
               those preparing for their driving test. Our instructors focus on
               road safety, building confidence, and developing practical skills.
               You’ll master city streets, highways, and parking with structured
-              guidance in Kogarah, NSW. Explore our{" "}
+              guidance in Sydney Suburbs, NSW. Explore our{" "}
               <Link href="/package" className="text-primary">
                 driving packages
               </Link>
@@ -32,7 +32,7 @@ export default function LocalDrivingLessons() {
 
             <p className="text-neutral text-lg leading-relaxed">
               Whether you want to master city streets, highway driving, or
-              parking techniques, our structured driving programs in Kogarah,
+              parking techniques, our structured driving programs in Sydney Suburbs,
               NSW. provide everything you need to become a safe and confident
               driver.
             </p>
@@ -80,7 +80,7 @@ export default function LocalDrivingLessons() {
             <div className="flex items-center gap-4 bg-white/10 p-4 rounded-xl shadow-md hover:shadow-xl transition">
               <span className="text-3xl font-bold text-accent">✔</span>
               <p className="text-white text-base">
-                Learn local traffic rules and road conditions in Kogarah and the surrounding areas.
+                Learn local traffic rules and road conditions in Sydney Suburbs and the surrounding areas.
               </p>
             </div>
 

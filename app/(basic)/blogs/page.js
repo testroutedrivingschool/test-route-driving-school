@@ -1,7 +1,7 @@
 "use client";
 
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
-import BlogSection from "../../components/Blogs/BlogSection";
+import BlogSection from "../components/Blogs/BlogSection";
 
 export default function Blogs() {
   return (

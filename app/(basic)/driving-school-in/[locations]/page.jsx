@@ -10,9 +10,62 @@ import locationImg from "@/app/assets/test-route-driving-school-cover.png";
 import locationImg2 from "@/app/assets/test-lesson-test-route-driving-school.png";
 import WhatWeOffer from "../../components/Home/WhatWeOffer";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
-import {FaCar, FaTrafficLight} from "react-icons/fa";
+import {FaCar, FaCarSide, FaClipboardCheck, FaFileAlt, FaGift, FaMapMarkerAlt, FaTrafficLight} from "react-icons/fa";
 import {IoIosWarning} from "react-icons/io";
 import {FaArrowRotateLeft} from "react-icons/fa6";
+import Link from "next/link";
+
+const services = [
+  {
+    icon: <FaCar className="w-8 h-8 text-white" />,
+    title: "Dual-Controlled Vehicles",
+    description:
+      "All lessons utilize modern, dual-controlled cars, ensuring maximum safety. Instructors can take control if needed, helping you feel secure while learning essential driving skills efficiently.",
+  },
+  {
+    icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+    title: "Driving Test Assessment",
+    description: (
+      <>
+        Our certified instructors provide thorough driving assessments with
+        detailed feedback. You’ll know the areas needing improvement to pass
+        your test confidently.{" "}
+        <Link
+          href="/packages"
+          className="text-primary font-semibold underline hover:text-primary-focus"
+        >
+          Book your assessment
+        </Link>{" "}
+        now to get started.
+      </>
+    ),
+  },
+  {
+    icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+    title: "Pickup and Drop-off",
+    description:
+      "We offer convenient pickup and drop-off services within Kogarah and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.",
+  },
+  {
+    icon: <FaCarSide className="w-8 h-8 text-white" />,
+    title: "Car Hire for Test Day",
+    description:
+      "Use our modern vehicles for your driving test with our Test Day Packages. We also rent dual-controlled Kia, Toyota Hybrid, and Nissan cars, ensuring a smooth experience on test day.",
+  },
+  {
+    icon: <FaFileAlt className="w-8 h-8 text-white" />,
+    title: "Driving Test Support",
+    description:
+      "We provide full driving test support, including warm-up lessons and step-by-step guidance. Our instructors help you feel confident, focused, and prepared to pass your test successfully on the day of the exam.",
+  },
+  {
+    icon: <FaGift className="w-8 h-8 text-white" />,
+    title: "Lesson Packages",
+    description:
+      "Save with our 5, 10, or 20-hour lesson packages. You can enjoy structured, high-quality lessons while saving up to $140, giving you more affordable and flexible learning options.",
+  },
+];
+
 export default function LocationPage() {
   const params = useParams();
 
@@ -157,7 +210,7 @@ export default function LocationPage() {
       </section>
 
       <MovingCar />
-      <WhatWeOffer />
+      <WhatWeOffer services={services}/>
       <section className="py-16 ">
         <Container>
           <div className="space-y-12 text-center">

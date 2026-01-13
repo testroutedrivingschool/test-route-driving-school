@@ -36,7 +36,7 @@ const steps = [
   {
     step: "STEP 4",
     title: "GET DRIVING!",
-    desc: "Start your lessons with confidence. Learn safely in Kogarah and the surrounding Sydney suburbs, mastering skills step by step under the guidance of experts.",
+    desc: "Start your lessons with confidence. Learn safely in Sydney Suburbs and the surrounding Sydney suburbs, mastering skills step by step under the guidance of experts.",
     icon: <FaCarSide />,
     align: "right",
   },

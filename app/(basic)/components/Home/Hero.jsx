@@ -23,20 +23,20 @@ export default function Hero() {
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 animate-fadeUp ">
         {/* Main Heading */}
         <h1 className="text-white text-3xl md:text-3xl lg:text-4xl font-extrabold leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-w-6xl">
-         Driving School in Kogarah | Learn to Drive Safely & Confidently
+         Driving School in Sydney Suburbs | Learn to Drive Safely & Confidently
         </h1>
 
         {/* Subtitle */}
         <p className="text-gray-200 mt-5 md:text-lg  max-w-6xl leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
           Join our expert instructors and gain confidence behind the wheel. At
           Test Route Driving School, we provide structured, safe, and friendly
-          driving lessons in Kogarah. Whether you’re a beginner or improving
+          driving lessons in Sydney Suburbs. Whether you’re a beginner or improving
           your skills, our lessons help you feel comfortable on the road. Our
           programs cover both automatic and manual cars, and we tailor every
           session to your pace. You’ll learn city driving, highway skills,
           parking techniques, and more—all designed to prepare you for your
           driving test. <Link className="font-medium underline" href={`/packages`}>Book your lessons today</Link> and start your journey
-          with a trusted driving school near you in Kogarah.
+          with a trusted driving school near you in Sydney Suburbs.
         </p>
 
         {/* CTA Button */}

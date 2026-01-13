@@ -17,7 +17,7 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import Container from "@/app/shared/ui/Container";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_TEST_Publishable_key);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_Stripe_Publishable_key);
 
 export default function CheckoutWrapper() {
   return (

@@ -13,17 +13,17 @@ const faqData = [
   {
     question: "Do you provide pickup and drop-off for lessons?",
     answer:
-      "Yes! We offer convenient pickup and drop-off from your home, school, workplace, or a preferred location within Kogarah for stress-free and flexible lesson arrangements.",
+      "Yes! We offer convenient pickup and drop-off from your home, school, workplace, or a preferred location within Sydney suburbs for stress-free and flexible lesson arrangements.",
   },
   {
     question: "Which suburbs do your instructors cover?",
     answer:
-      "Our instructors cover Allawah, Arncliffe, Bexley, Rockdale, Hurstville, Kogarah, and nearby suburbs, ensuring you have access to professional driving lessons wherever you are located.",
+      "Our instructors cover Allawah, Arncliffe, Bexley, Rockdale, Hurstville, Sydney suburbs, and nearby suburbs, ensuring you have access to professional driving lessons wherever you are located.",
   },
   {
     question: "What type of car will I learn in?",
     answer:
-      "You will learn in a modern automatic vehicle equipped with dual controls, providing maximum safety and confidence during your driving lessons in Kogarah.",
+      "You will learn in a modern automatic vehicle equipped with dual controls, providing maximum safety and confidence during your driving lessons in Sydney suburbs.",
   },
   {
     question: "Can I book lessons online?",

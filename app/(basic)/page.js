@@ -27,22 +27,22 @@ import WhyChooseUs from "./components/Home/WhyChooseUs";
 import Link from "next/link";
 
 export const metadata = {
-  title: "Driving School in Kogarah | Learn to Drive Safely & Confidently",
+  title: "Driving School in Sydney suburbs| Learn to Drive Safely & Confidently",
   description:
-    "Master driving with our Driving School in Kogarah - expert instructors, affordable packages, book now & enjoy your learning experience.",
+    "Gain confidence and pass your driving test with expert lessons in Sydney suburbs. Flexible packages, modern cars, and certified instructors. Book today!",
   keywords: [
-    "Driving School in Kogarah",
+    "Driving School in Sydney suburbs",
     "driving school near me",
     "driving lessons schools",
-    "driving schools in Kogarah",
+    "driving schools in Sydney suburbs",
     "driving schools for manual transmission",
     "driving training school near me",
-    "affordable driving school in Kogarah",
+    "affordable driving school in Sydney suburbs",
     "driving schools near by me",
-    "driving instructor schools in Kogarah",
-    "driving class kogarah",
-    "driving lessons kogarah",
-    "driving instructor in kogarah",
+    "driving instructor schools in Sydney suburbs",
+    "driving class Sydney suburbs",
+    "driving lessons Sydney suburbs",
+    "driving instructor in Sydney suburbs",
   ],
 };
 const whatWeOfferServices = [
@@ -74,7 +74,7 @@ const whatWeOfferServices = [
     icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
     title: "Pickup and Drop-off",
     description:
-      "We offer convenient pickup and drop-off services within Kogarah and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.",
+      "We offer convenient pickup and drop-off services within Sydney Suburbs and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.",
   },
   {
     icon: <FaCarSide className="w-8 h-8 text-white" />,
