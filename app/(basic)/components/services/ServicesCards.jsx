@@ -74,7 +74,7 @@ export default function ServicesCards() {
         />
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => {
             const Icon = service.icon;
             const isLastTwo =
@@ -116,7 +116,8 @@ export default function ServicesCards() {
 
           {/* Last two (50% / 50%) */}
           {services.length % 3 === 2 && (
-            <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-8">
+            <div className="md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-8">
+
               {services.slice(-2).map((service) => {
                 const Icon = service.icon;
                 return (

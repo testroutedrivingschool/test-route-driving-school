@@ -12,6 +12,23 @@ import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
 
+export const metadata = {
+  title:
+    "City Driving Class in Sydney suburbs| Book Professional Driving Lessons Today",
+  description:
+    "Master urban roads with our City Driving Class in Sydney suburbs. Get expert guidance and flexible lesson packages to pass your test fast. Book your first lesson online!",
+  keywords: [
+    "City Driving Class in Sydney suburbs",
+    "Best driving school in Sydney suburbs",
+    "Learn city driving in Sydney suburbs",
+    "City driving lessons near Sydney suburbs",
+    "Professional driving instructor Sydney suburbs",
+    "Driving school Sydney suburbs",
+    "Driving lessons in Sydney suburbs",
+    "City driving class Sydney suburbs",
+    "City driving lessons Sydney suburbs",
+  ],
+};
 const cityCarDrivingPackages = [
   {
     id: 1,
@@ -30,25 +47,123 @@ const cityCarDrivingPackages = [
     buttonText: "Book Now",
   },
 ];
+const features = [
+  <>
+    <strong>Flexible Scheduling: </strong>We offer easy pickup and drop-off from
+    your home.
+  </>,
+  <>
+    <strong>Modern Fleet: </strong>You will use automatic vehicles with dual
+    controls.
+  </>,
+  <>
+    <strong>Top Safety: </strong>Our cars boast 5-Star ANCAP ratings for your
+    peace of mind.
+  </>,
+  <>
+    <strong>Fast Progress:</strong>You receive personalized feedback to
+    accelerate your learning and development.
+  </>,
+  <>
+    <strong>Expert Guidance:</strong> Learn city driving in Sydney suburbs with
+    local professionals.
+  </>,
+];
+const whyChoosePoints = [
+  {
+    title: "Expert Driving Instructors",
+    description: " Our trainers teach safe and efficient driving skills.",
+  },
+  {
+    title: "Comprehensive Training",
+    description: (
+      <>We offer practical and theoretical lessons for real success.</>
+    ),
+  },
+  {
+    title: "License Assistance",
+    description:
+      "We simplify and streamline the application process to make it hassle-free.",
+  },
+  {
+    title: "Modern Vehicles",
+    description: "Learn in well-maintained cars for a smooth experience.",
+  },
+  {
+    title: "Flexible Timing",
+    description: " Choose schedules that fit your busy daily routine.",
+  },
+  {
+    title: "Professional Support:",
+    description:
+      "Work with a top professional driving instructor in Sydney suburbs.",
+  },
+];
 
+const faqs = [
+  {
+    question: "How many lessons do I need to pass my driving test?",
+    answer: (
+      <>
+        The number of lessons varies for every learner we teach. On average,
+        most students need between 5 and 10 lessons. This depends on your
+        experience, confidence, and current driving skills. We assess your
+        progress during every city driving class in Sydney suburbs.
+      </>
+    ),
+  },
+  {
+    question: "Do you provide pickup and drop-off for lessons?",
+    answer: (
+      <>
+        Yes, we offer convenient pickup and drop-off for all students. We can
+        meet you at home, school, or your workplace. This service is available
+        throughout our entire service area in Sydney suburbs.
+      </>
+    ),
+  },
+  {
+    question: "Which suburbs do your instructors cover?",
+    answer: (
+      <>
+        Our instructors cover a wide range of local Sydney Suburbs. This
+        includes Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and Sydney
+        suburbs. We are familiar with the local traffic patterns and roads in
+        these areas.
+      </>
+    ),
+  },
+  {
+    question: "What type of car will I learn in?",
+    answer: (
+      <>
+        You will learn in a modern automatic vehicle for your comfort. Every car
+        features dual controls to ensure your maximum safety. Our fleet is
+        perfect for city driving lessons and Sydney suburbs sessions.
+      </>
+    ),
+  },
+  {
+    question: "Can I book lessons online?",
+    answer: (
+      <>
+        Yes! You can easily book your driving lessons in Sydney suburbs online.
+        Use our website&apos;s booking form at any time to find a suitable slot.
+        We make starting your driving journey simple and very fast.
+      </>
+    ),
+  },
+];
 export default function CityCarDrivingPackage() {
-  const features = [
-    "Flexible lesson scheduling with pick-up & drop-off",
-    "Automatic transmission vehicles with dual controls",
-    "5-Star ANCAP safety-rated cars for a secure learning experience",
-    "Personalized feedback to accelerate your progress",
-    "Dual-brake car hire for driving tests",
-  ];
-
   return (
     <div className="">
       <PageHeroSection
-        title={`City Driving Class in Sydney, NSW`}
-        subtitle={`At Test Route Driving School, we provide expert automatic driving lessons across Sydney to help learners of all skill levels become confident, safe drivers.`}
+        title={`City Driving Class in Sydney suburbs | Book Professional Driving Lessons Today`}
+        subtitle={`At TestRoutedDrivingSchool, we offer expert City Driving Classes in Sydney suburbs. We help learners of all skill levels become safe drivers. Our team offers top-tier automatic driving lessons across the local area. You will acquire the skills necessary to navigate dense urban traffic. We prioritize your safety and build your road confidence every day. Our instructors understand the unique challenges of the local Sydney suburbs streets. You can trust us to guide you toward driving success. We focus on making you a responsible and aware driver.`}
       />
 
       {/* Main Content Section */}
-      <section className="mt-10 md:mt-10 py-16">
+      <section className="py-16">
         <Container>
           <div className="flex flex-col-reverse lg:flex-row-reverse items-center gap-10 lg:gap-12">
             {/* Image Section */}
@@ -67,21 +182,22 @@ export default function CityCarDrivingPackage() {
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
               <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
-                City Car Driving
+                City Car Driving Lesson Package in
                 <span className="pl-2 inline-block text-primary">
-                  Lesson Package
+                  Sydney suburbs
                 </span>
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
-                At Test Route Driving School, we provide expert automatic
-                driving lessons across Sydney to help learners of all skill
-                levels become confident, safe drivers. Our certified instructors
-                tailor lessons to suit your individual needs, ensuring you are
-                well-prepared for your driving test and help you pass in the
-                first go. Safety is the number one priority in our lessons, and
-                we will encourage drivers to be aware, considerate, and practice
-                safe driving for life.
+                Our City Driving Class in Sydney suburbs helps you pass your
+                test easily. We tailor every session to suit your individual
+                learning needs. This ensures you are well-prepared for the
+                real-world driving environment. Our certified instructors
+                encourage you to be considerate on the road. Safety remains the
+                number one priority in all our lessons. You will learn to
+                practice safe driving habits for the rest of your life. We offer
+                the best driving school experience in Sydney suburbs for new
+                learners. Our goal is to help you pass on your first go.
               </p>
               <h3 className="text-lg font-semibold">Package Included:</h3>
               {/* Key Features */}
@@ -117,25 +233,35 @@ export default function CityCarDrivingPackage() {
       </section>
       <section className="py-12 bg-primary/80 text-white">
         <Container>
-          <h3 className="text-lg md:text-2xl font-semibold">
-            Why City Driving Package Is Different
+          <h3 className="text-lg md:text-2xl font-semibold mb-4">
+            Why Choose TestRoutedrivingSchool for Your City Driving Class in
+            Sydney suburbs?
           </h3>
-          <ul className="mt-2 list-disc pl-3 space-y-2">
+          <p>
+            We offer professional driving lessons in the city, near Sydney
+            suburbs, and provide license assistance. Here is why we are the best
+            choice for your education:
+          </p>
+          <ul className="mt-4 list-disc pl-3 space-y-2">
             <li className="text-base-300 ">
-              Quick decision-making in high-traffic areas
+              <strong>Flexible Scheduling:</strong> We offer easy pickup and drop-off from your home.
             </li>
             <li className="text-base-300 ">
-              Navigating multi-lane intersections and roundabouts
+              <strong>Modern Fleet: </strong>You will use automatic vehicles with dual controls.
+
             </li>
             <li className="text-base-300 ">
-              Managing bus lanes, tram lines, and shared zones
+              <strong>Top Safety: </strong>Our cars boast 5-Star ANCAP ratings for your peace of mind.
+
             </li>
             <li className="text-base-300 ">
-              Handling tight parallel parking and one-way streets
+              <strong>Fast Progress:</strong>You receive personalized feedback to accelerate your learning and development.
             </li>
             <li className="text-base-300 ">
-              Using hazard perception to anticipate unpredictable conditions
+              <strong>Expert Guidance:</strong>Learn city driving in Sydney suburbs with local professionals.
+
             </li>
+         
           </ul>
           <h3 className="mt-4 text-lg md:text-2xl font-semibold">
             Prepare for Success
@@ -157,9 +283,9 @@ export default function CityCarDrivingPackage() {
         packages={cityCarDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs />
+      <WhyChooseUs points={whyChoosePoints} title={`Why Choose TestRoutedrivingSchool for Your City Driving Class in Sydney suburbs?`} subtitle={`We offer professional driving lessons in the city, near Sydney suburbs, and provide license assistance. Here is why we are the best choice for your education:`}/>
 
-      <Faq />
+      <Faq faqs={faqs}/>
     </div>
   );
 }

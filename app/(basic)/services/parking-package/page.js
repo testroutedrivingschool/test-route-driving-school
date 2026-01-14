@@ -11,6 +11,43 @@ import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
+export const metadata = {
+  title:
+    "Affordable Parking Driving Lesson Package in Sydney suburbs| Book Today",
+  description:
+    " Master every spot with our Parking Driving Lesson Package in Sydney suburbs. Get expert 1-on-1 coaching to ace your test and park with confidence. Book your session now!",
+  keywords: [
+    "Parking Driving Lesson Package in Sydney suburbs",
+    "Driving school in Sydney suburbsNSW",
+    "Learn parking driving Sydney suburbs",
+    "Driving instructor in Sydney suburbs",
+    "Parking lessons for learners in Sydney suburbs",
+    "Driving lesson packages in Sydney suburbs",
+    "Parking driving lessons in Sydney suburbs",
+    "Best driving school near Sydney suburbs",
+    "Parking driving instructor near me",
+    "Driving lessons near Sydney suburbs",
+  ],
+};
+
+const features = [
+  <>
+    <strong> Parallel Parking Mastery:</strong> Learn smooth and accurate
+    techniques for test conditions and everyday driving.
+  </>,
+  <>
+    <strong>Reverse Bay Parking:</strong> Build confidence performing one of the
+    most difficult test maneuvers.
+  </>,
+  <>
+    <strong>Kerbside Stops:</strong> Practice in car parks and roadside
+    conditions commonly faced in urban Sydney.
+  </>,
+  <>
+    <strong>Tight Space Navigation:</strong> Learn how to handle confined areas
+    calmly and confidently.
+  </>,
+];
 
 const automaticDrivingPackages = [
   {
@@ -43,25 +80,105 @@ const automaticDrivingPackages = [
   },
 ];
 
-export default function ParkingPackage() {
-  const features = [
-    "Learn smooth and accurate techniques for both test conditions and everyday driving.",
-    "Build confidence performing one of the most difficult test maneuvers.",
-    "Practice in car parks and roadside conditions commonly faced in urban Sydney.",
-    "Learn how to handle confined areas calmly and confidently.",
-    "Receive step-by-step guidance and immediate correction to accelerate your progress.",
-    " Prepare for driving assessments where parking competence is essential.",
+  const whyChoosePoints = [
+    {
+      title: "Expert Driving Instructors",
+      description:
+        "Our certified trainers ensure you learn safe and efficient driving skills.",
+    },
+    {
+      title: "Comprehensive Training",
+      description:
+        <>
+       We offer both practical and theoretical lessons to prepare you for real-world driving.
+        </>,
+    },
+    {
+      title: "License Assistance",
+      description:
+        " We help you through the application process to make it hassle-free.",
+    },
+    {
+      title: "Modern Vehicles",
+      description:
+        "Learn in well-maintained cars for a smooth and comfortable experience.",
+    },
+    {
+      title: "Flexible Timing",
+      description: " Choose from convenient class schedules that fit your busy routine.",
+    },
   ];
 
+   const faqs = [
+  {
+    question: "How many lessons do I need to pass my driving test?",
+    answer:
+      <>
+      The number of lessons varies for each learner. On average, most students require between 5 and 10 lessons. This depends on your experience, confidence, and current driving skills. We offer various<strong>driving lesson packages in Sydney suburbs </strong>to suit your specific needs.
+      </>,
+  },
+  {
+    question: "Do you provide pickup and drop-off for lessons?",
+    answer:
+      <>
+       Yes, we offer convenient pickup and drop-off services. We can meet you at your home, school, or workplace. We serve a wide range of areas, including 
+     <strong>
+      Sydney suburbs, Hurstville, and Rockdale.
+     </strong>
+      </>,
+  },
+  {
+    question: "Which suburbs do your instructors cover?",
+    answer:
+      <>
+     Our instructors cover a wide range of suburbs in the <strong>Sydney Suburbs.</strong>This includes Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and Sydney suburbs. We are familiar with the local test routes in these areas better than anyone else.
+
+      </>,
+  },
+  {
+    question: "What type of car will I learn in?",
+    answer:
+      <>
+      You will learn in a modern automatic vehicle. Every car features dual controls to ensure maximum safety and security. This allows me to intervene if you make a mistake while you <strong>learn to park in Sydney suburbs.</strong>
+      </>,
+  },
+  {
+    question: "Can I book lessons online?",
+    answer:
+      <>
+      YYes, you can! Visit our<Link href={`/packages`} className="font-semibold underline px-1">Find Your Perfect Driving Package</Link> page to book at any time. Our online form is simple and fast to use for your convenience.
+
+      </>,
+  },
+
+
+];
+
+export default function ParkingPackage() {
   return (
     <div className="">
       <PageHeroSection
-        title={`Parking Driving Lesson Package`}
-        subtitle={`Master essential parking skills with expert guidance, hands-on practice, and personalized lessons designed to make you a confident driver.`}
+        title={`Affordable Parking Driving Lesson Package in Sydney suburbs | Book Today`}
+        subtitle={
+          <>
+            This specialized
+            <strong>
+              Parking Driving Lesson Package in Sydney suburbs
+            </strong>{" "}
+            helps you master difficult maneuvers with ease. You will gain
+            hands-on experience under the guidance of a professional
+            <strong>driving instructor in Sydney suburbs.</strong> Our course
+            focuses on reverse parallel parking, bay parking, and steering
+            control. We help you build the confidence needed to pass your NSW
+            driving test. Join the
+            <strong>best driving school near Sydney suburbs</strong>to secure
+            your independence on the road today.
+          </>
+        }
       />
 
       {/* Main Content Section */}
-      <section className="mt-10 md:mt-15 py-16">
+      <section className="py-16">
         <Container>
           <div className="flex flex-col-reverse lg:flex-row-reverse items-center gap-10 lg:gap-12">
             {/* Image Section */}
@@ -80,24 +197,38 @@ export default function ParkingPackage() {
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
               <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
-                Parking Driving
+                Master Your Skills with a Parking Driving Lesson Package in
                 <span className="pl-2 inline-block text-primary">
-                  Lesson Package
+                  Sydney suburbs
                 </span>
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
-                Do you feel anxious or uncertain when it comes to reverse
-                parking on a busy street or squeezing into a tight spot in a
-                crowded car park? <br /> You’re not alone, parking is one of the
-                most common pain points for new and experienced drivers alike.
-                Our Parking Training Package is a comprehensive 3-hour,
-                one-on-one lesson designed to eliminate that fear and turn
-                parking into a strength.
+                Do you feel anxious when parking on a busy street in reverse?
+                Squeezing into a tight spot in a crowded car park stresses many
+                people. You are not alone in this struggle. Parking is a common
+                pain point for both new and experienced drivers. Our{" "}
+                <strong>
+                  Parking Driving Lesson Package in Sydney suburbs
+                </strong>{" "}
+                is a comprehensive 3-hour, one-on-one session. I designed this
+                lesson to help you overcome your fear and turn parking into a
+                strength. As an experienced instructor, I see students transform
+                their skills in just one afternoon. You will move from being
+                nervous to being completely composed behind the wheel.
               </p>
-              <h3 className="text-lg font-semibold">
-                What’s Included in the Parking Package?
+              <h3 className="text-lg font-semibold mb-6">
+                What&apos;s Included in Your Parking Driving Lessons in Sydney
+                suburbs?
               </h3>
+
+              <p className="text-neutral leading-relaxed ">
+                Our <strong>parking driving lessons in Sydney suburbs</strong>{" "}
+                offer more than just basic tips. You receive a structured
+                curriculum focused on precision and safety. We utilize modern
+                vehicles equipped with dual controls for your absolute
+                protection.
+              </p>
               {/* Key Features */}
               <div className="mt-4  space-y-4 mb-8">
                 {features.slice(0, 4).map((feature, index) => (
@@ -131,51 +262,76 @@ export default function ParkingPackage() {
       </section>
       <section className="py-16 bg-primary/80 text-white">
         <Container>
-          <h3 className="text-lg md:text-2xl font-semibold">
-            We provide practical, real-world training in live traffic
-            conditions, including:
+          <h3 className="text-2xl lg:text-3xl font-semibold mb-4">
+            Real-World Training with a Driving Instructor in Sydney suburbs
           </h3>
-          <ul className="mt-2 list-disc pl-3 space-y-2">
-            <li className="text-base-300 ">Busy suburban streets</li>
-            <li className="text-base-300 ">Shopping center car parks</li>
-            <li className="text-base-300 ">Narrow side streets</li>
+
+          <p className="leading-relaxed ">
+            We provide practical, hands-on training in live traffic conditions.
+            You won&apos;t just practice in empty lots. Your
+            <strong>driving instructor in Sydney suburbs</strong> takes you
+            where the action is. This exposure ensures you can park anywhere in
+            the Sydney Suburbs. We focus on:
+          </p>
+          <ul className="mt-4 list-disc pl-3 space-y-2">
             <li className="text-base-300 ">
-              Residential and commercial areas{" "}
+              Busy suburban streets near<strong>Rockdale.</strong>
+            </li>
+            <li className="text-base-300 ">
+              Major shopping center car parks in<strong>Hurstville.</strong>
+            </li>
+            <li className="text-base-300 ">
+              Narrow side streets throughout<strong>Bexley.</strong>
+            </li>
+            <li className="text-base-300 ">
+              Residential and commercial areas in<strong>Carlton</strong>and
+              <strong>Arncliffe.</strong>
             </li>
           </ul>
-          <h3 className="mt-4 text-lg md:text-2xl font-semibold">
-            Who Can Use This Parking Package?
+          <h3 className="mt-6 text-2xl lg:text-3xl font-semibold mb-4">
+            Who Can Use These Parking Lessons for Learners in Sydney suburbs?
           </h3>
-          <ul className="mt-2 list-disc pl-3 space-y-2">
+          <p className="leading-relaxed ">
+            This package serves a wide variety of drivers in our community.
+            Whether you are a teen or an adult, we adapt to you.
+          </p>
+          <ul className="mt-4 list-disc pl-3 space-y-2">
             <li className="text-base-300 ">
-              Learner drivers preparing for the NSW driving test
+              <strong>Learner Drivers:</strong> Prepare for the specific
+              requirements of the NSW driving test.
             </li>
             <li className="text-base-300 ">
-              P-platers wanting to refine their parking skills
+              <strong>P-Platers:</strong> Refine your skills to navigate tricky city spots with ease.
+
             </li>
             <li className="text-base-300 ">
-              Overseas license holders adapting to local driving rules
+              <strong>Overseas License Holders:</strong> Adapt quickly to local Australian road rules and parking signs.
+
             </li>
             <li className="text-base-300 ">
-              Adults returning to driving after a break
+              <strong>Returning Adults:</strong> Re-learn essential skills after a long break from the driver&apos;s seat.
             </li>
-            <li className="text-base-300 ">
-              Anyone who feels nervous about parking in tight or busy areas
-            </li>
+           
           </ul>
+          <p className="mt-2 leading-relaxed">Anyone searching for a <strong>parking driving instructor near me</strong> to help them correct their bad habits.</p>
         </Container>
       </section>
 
       {/* Service Packages */}
       <ServicePackages
         sectionTitle="Parking Packages"
-        sectionSubtitle="Choose the perfect package for your learning journey with our structured Parking Package designed for success."
+        sectionSubtitle={
+          <>
+         Choose the perfect package for your learning journey with our structured Parking Package designed for success.
+          </>
+        }
         packages={automaticDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs />
+      <WhyChooseUs points={whyChoosePoints} subTitle={ <>   Selecting the right <strong>driving school in Sydney suburbs, NSW</strong> makes a massive difference. At <strong>TestRoutedDrivingSchool</strong>, we prioritize your success and safety above all else. I have helped hundreds of students in <strong>Allawah</strong> and <strong>Sydney suburbs</strong> find their rhythm on the road. We don&apos;t just teach you to drive; we teach you to survive and thrive.
+          </>}/>
 
-      <Faq />
+      <Faq faqs={faqs}/>
     </div>
   );
 }

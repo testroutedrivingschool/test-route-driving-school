@@ -149,6 +149,7 @@ export default function Footer() {
                   <a
                     href="https://www.facebook.com/share/1A148kMS7g/"
                     target="_blank"
+                     aria-label="Visit Test Route Driving School on Facebook"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-accent text-white hover:scale-110 transition"
                   >
                     <FaFacebookF />
@@ -157,6 +158,7 @@ export default function Footer() {
                   <a
                     href="https://share.google/TEMTklcOBslyY7zBC"
                     target="_blank"
+                     aria-label="Visit Test Route Driving School on Google"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-accent text-white hover:scale-110 transition"
                   >
                     <FaGoogle />

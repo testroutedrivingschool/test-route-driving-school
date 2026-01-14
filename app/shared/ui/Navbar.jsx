@@ -338,7 +338,7 @@ export default function Navbar({className}) {
       <div
         className={`lg:hidden mt-2 bg-white border-t border-border-color transform transition-all duration-500 ease-in-out ${
           open
-            ? "max-h-screen opacity-100 translate-y-0"
+            ? "min-h-[50vh] opacity-100 translate-y-0"
             : "max-h-0 opacity-0 -translate-y-4"
         } overflow-hidden`}
       >

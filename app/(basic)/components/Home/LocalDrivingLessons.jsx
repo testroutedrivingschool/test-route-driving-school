@@ -18,13 +18,13 @@ export default function LocalDrivingLessons() {
             </h2>
 
             <p className="text-neutral text-lg leading-relaxed">
-              Seeking reputable driving schools in Sydney Suburbs? We provide both
+              Seeking reputable <strong className="px-1">driving schools in Sydney Suburbs</strong>? We provide both
               automatic and manual lessons designed for beginners, learners, and
               those preparing for their driving test. Our instructors focus on
-              road safety, building confidence, and developing practical skills.
+              <strong className="px-1">road safety, building confidence, and developing practical skills.</strong>
               You’ll master city streets, highways, and parking with structured
-              guidance in Sydney Suburbs, NSW. Explore our{" "}
-              <Link href="/package" className="text-primary">
+              guidance in Sydney Suburbs, NSW. Explore our
+              <Link href="/package" className="text-primary px-1 font-semibold">
                 driving packages
               </Link>
               tailored for every learner.

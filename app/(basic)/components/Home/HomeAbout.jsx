@@ -1,6 +1,6 @@
 import Container from "@/app/shared/ui/Container";
 import Image from "next/image";
-import aboutImg from "@/app/assets/test-route-driving-school-cover.png"; // replace with your image path
+import aboutImg from "@/app/assets/test-route-driving-school-cover.png"; 
 
 export default function HomeAbout() {
   return (
@@ -44,7 +44,7 @@ export default function HomeAbout() {
           <div className="w-full md:w-auto md:flex-1">
             <Image
               src={aboutImg}
-              alt="Test Route Driving School"
+              alt="Test Route Driving School Cover"
               className="rounded-xl shadow-lg object-cover w-full h-full"
               width={600}
               height={400}

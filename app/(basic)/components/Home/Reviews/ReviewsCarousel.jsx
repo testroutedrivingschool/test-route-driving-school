@@ -99,10 +99,10 @@ export default function ReviewsCarousel() {
       </Swiper>
       {/* Custom Navigation Buttons */}
       <div className="flex justify-center gap-4 mt-6">
-        <button className="reviews-prev p-3 rounded-full bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors">
+        <button aria-label="Left Arrow" className="reviews-prev p-3 rounded-full bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors">
           <FiChevronLeft className="text-gray-600 text-xl" />
         </button>
-        <button className="reviews-next p-3 rounded-full bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors">
+        <button aria-label="Right Arrow" className="reviews-next p-3 rounded-full bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors">
           <FiChevronRight className="text-gray-600 text-xl" />
         </button>
       </div>

@@ -55,7 +55,7 @@ export default function HowItWorks() {
         <div className="absolute left-1/2 top-1 -translate-x-1/2 h-full hidden lg:block">
           <Image
             src={roadLine}
-            alt="Road line"
+            alt="Road line "
             className="h-full w-auto object-contain"
             priority
           />

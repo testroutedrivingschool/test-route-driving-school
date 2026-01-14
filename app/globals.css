@@ -20,7 +20,7 @@
   --color-accent: #fe8f1b;
   --color-base-300: #f3f4f6;
   --color-border-color: #e7e7e9e6;
-  --color-neutral: #808080;
+  --color-neutral: #595959; /*#808080*/
 }
 
 body {
@@ -43,7 +43,9 @@ button {
   @apply cursor-pointer;
 }
 
-
+strong{
+  @apply px-1!;
+}
 .input-class{
   @apply w-full pl-4 pr-4 py-3 border border-border-color rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition
 }

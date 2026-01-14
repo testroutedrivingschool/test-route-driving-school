@@ -1,0 +1,9 @@
+# Allow all search engines to crawl everything except private pages
+User-agent: *
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /checkout/
+Allow: /
+
+# Sitemap
+Sitemap: https://testroutedrivingschool.com.au/sitemap.xml

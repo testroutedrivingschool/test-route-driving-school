@@ -53,7 +53,7 @@ export default function DrivingTestPackage() {
             <div className="relative h-60 w-full overflow-hidden">
               <Image
                 src={testPackageImg1}
-                alt="Driving Test Package"
+                alt="Driving Test Package Test Route Driving School"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
@@ -111,7 +111,7 @@ export default function DrivingTestPackage() {
             <div className="relative h-60 w-full overflow-hidden">
               <Image
                 src={testPackageImg2}
-                alt="Driving Test Package"
+                alt="Driving Test Package Test Route Driving School"
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
