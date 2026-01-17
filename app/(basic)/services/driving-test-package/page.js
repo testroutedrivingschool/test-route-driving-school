@@ -385,7 +385,7 @@ export default function DrivingTestPackage() {
       </section>
       <MovingCar />
       <WhyChooseUs subTitle={<>
-        At <strong>TestRoutedDrivingSchool</strong>, we provide professional lessons and license assistance. We are the best choice for your driving education in the <stong>Sydney Suburbs.</stong>
+        At <strong>Test Route Driving School</strong>, we provide professional lessons and license assistance. We are the best choice for your driving education in the <stong>Sydney Suburbs.</stong>
         
         </>} points={whyChoosePoints}/>
 

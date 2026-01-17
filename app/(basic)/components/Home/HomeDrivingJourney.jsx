@@ -9,9 +9,6 @@ import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import {
   FaCheckCircle,
   FaArrowRight,
-  FaCar,
-  FaAward,
-  FaUserGraduate,
 } from "react-icons/fa";
 import {useEffect, useState} from "react";
 
@@ -74,7 +71,7 @@ export default function HomeDrivingJourney() {
 
             {/* CTA Buttons */}
             <div className="flex flex-wrap gap-4 mt-6">
-              <Link href="/bookings" className="group">
+              <Link href="/bookings" aria-label="Book Now" className="group">
                 <PrimaryBtn className="py-4 bg-accent!">
                   <span className="flex items-center gap-2">
                     Get started now
@@ -83,7 +80,7 @@ export default function HomeDrivingJourney() {
                 </PrimaryBtn>
               </Link>
 
-              <Link href="/packages" className="group">
+              <Link href="/packages" aria-label="View Packages" className="group">
                 <SecondaryBtn className="py-4">View All Packages</SecondaryBtn>
               </Link>
             </div>

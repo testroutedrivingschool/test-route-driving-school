@@ -63,6 +63,7 @@ export default function BlogSection() {
                 <p className="text-gray-600 mb-4">{blog.excerpt}</p>
                 <Link
                   href={`/blogs/${blog.slug}`}
+                   aria-label={` Read the full article: ${blog.title}`}
                   className="text-primary font-semibold hover:underline"
                 >
                   Read More

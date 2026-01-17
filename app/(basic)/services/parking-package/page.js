@@ -328,7 +328,7 @@ export default function ParkingPackage() {
         packages={automaticDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints} subTitle={ <>   Selecting the right <strong>driving school in Sydney suburbs, NSW</strong> makes a massive difference. At <strong>TestRoutedDrivingSchool</strong>, we prioritize your success and safety above all else. I have helped hundreds of students in <strong>Allawah</strong> and <strong>Sydney suburbs</strong> find their rhythm on the road. We don&apos;t just teach you to drive; we teach you to survive and thrive.
+      <WhyChooseUs points={whyChoosePoints} subTitle={ <>   Selecting the right <strong>driving school in Sydney suburbs, NSW</strong> makes a massive difference. At <strong>Test Route Driving School</strong>, we prioritize your success and safety above all else. I have helped hundreds of students in <strong>Allawah</strong> and <strong>Sydney suburbs</strong> find their rhythm on the road. We don&apos;t just teach you to drive; we teach you to survive and thrive.
           </>}/>
 
       <Faq faqs={faqs}/>

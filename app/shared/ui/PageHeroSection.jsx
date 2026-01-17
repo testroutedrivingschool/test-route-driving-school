@@ -20,7 +20,7 @@ export default function PageHeroSection({title,subtitle}) {
       {/* Centered Title */}
       <div className="relative z-10  h-full">
   <Container className="flex flex-col justify-center h-full pl-4 md:pl-8">
-  <h1 className="text-white text-3xl font-bold max-w-xl">
+  <h1 className="text-white text-3xl font-bold max-w-3xl">
     {title}
   </h1>
 
@@ -28,7 +28,7 @@ export default function PageHeroSection({title,subtitle}) {
     className="
       relative
       mt-3
-      max-w-3xl
+      max-w-4xl
       text-base-300
      pl-6
       leading-relaxed

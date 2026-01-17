@@ -264,7 +264,7 @@ export default function AutomaticDrivingLesson() {
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
-                At<strong>TestRoutedrivingSchool</strong>, we specialize in
+                At<strong>Test Route driving School</strong>, we specialize in
                 automatic training across the <strong>Sydney Suburbs.</strong>{" "}
                 that cater to your specific needs. Our team utilizes
                 dual-control cars to ensure your safety during every session.

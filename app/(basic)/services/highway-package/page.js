@@ -268,7 +268,7 @@ Test Route Driving School offers premium Highway Driving Lessons in Sydney subur
            Prepare for Success with a Driving Instructor in Kogarah
           </h3>
           <p className="mt-2 max-w-4xl">
-        Don’t leave your safety or your driving test to mere chance. With testroutedrivingschool, you receive the guidance needed to pass with flying colors. We provide a Highway driving instructor near me who knows local roads perfectly. Take the first step toward becoming a fully licensed and safe driver. Contact us today to book your assessment in Bexley or Arncliffe. Our team is ready to help you reach your driving goals quickly. You will enjoy a supportive environment that makes learning to drive a fun experience.
+        Don’t leave your safety or your driving test to mere chance. With test route driving school, you receive the guidance needed to pass with flying colors. We provide a Highway driving instructor near me who knows local roads perfectly. Take the first step toward becoming a fully licensed and safe driver. Contact us today to book your assessment in Bexley or Arncliffe. Our team is ready to help you reach your driving goals quickly. You will enjoy a supportive environment that makes learning to drive a fun experience.
           </p>
         </Container>
       </section>
@@ -280,7 +280,7 @@ Test Route Driving School offers premium Highway Driving Lessons in Sydney subur
         packages={automaticDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs title={`Why choose TestRoutedrivingSchool in Kogarah?`}  subTitle={`We provide professional lessons and help you obtain your Australian driving license. Here is why we are the best choice for your education:`} points={whyChoosePoints}/>
+      <WhyChooseUs title={`Why choose Test Route driving School in Kogarah?`}  subTitle={`We provide professional lessons and help you obtain your Australian driving license. Here is why we are the best choice for your education:`} points={whyChoosePoints}/>
 
       <Faq faqs={faqs}/>
     </div>

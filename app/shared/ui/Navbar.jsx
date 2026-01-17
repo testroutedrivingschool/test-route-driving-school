@@ -154,6 +154,7 @@ export default function Navbar({className}) {
               <li key={item.id} className="relative group">
                 <Link
                   href={item.pathname || "#"}
+                  aria-label={item.label}
                   className={`relative py-2 font-semibold lg:font-bold transition-all duration-300 group flex items-center gap-1  hover:border-primary ${
                     pathname === item.pathname
                       ? "text-primary border-b-3 border-primary"
@@ -174,6 +175,7 @@ export default function Navbar({className}) {
                             <li key={drop.id}>
                               <Link
                                 href={drop.pathname}
+                                 aria-label={drop.label}
                                 className="flex items-start gap-2 px-4 py-2  hover:bg-primary/10 transition-all"
                               >
                                 <span className="text-primary mt-1">
@@ -208,6 +210,7 @@ export default function Navbar({className}) {
                           <li key={drop.id}>
                             <Link
                               href={drop.pathname}
+                               aria-label={drop.label}
                               className="group flex items-start gap-3 p-3 rounded-xl hover:bg-primary/10 transition-all"
                             >
                               {/* Icon */}
@@ -352,6 +355,7 @@ export default function Navbar({className}) {
                 {/* Main Link */}
                 <Link
                   href={item.pathname || "#"}
+                   aria-label={item.pathname}
                   onClick={() =>
                     item.dropdowns ? toggleDropdown(item.id) : setOpen(false)
                   }
@@ -374,6 +378,7 @@ export default function Navbar({className}) {
                       <li key={drop.id} className="border-b border-gray-200">
                         <Link
                           href={drop.pathname}
+                           aria-label={drop.label}
                           onClick={() => setOpen(false)}
                           className="block px-5 py-2 text-gray-700 hover:bg-primary hover:text-white transition-colors duration-300"
                         >

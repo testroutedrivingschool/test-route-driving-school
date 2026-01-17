@@ -41,7 +41,7 @@ export default function LocalDrivingLessons() {
               <Link href={"/bookings"}>
                 <PrimaryBtn>Book a Lesson</PrimaryBtn>
               </Link>
-              <Link href={`/services/automatic-driving-lessons`}>
+              <Link  aria-label="Learn More: Automatic driving lesson" href={`/services/automatic-driving-lessons`}>
                 <OutlineBtn className={"py-1.5!"}>Learn More</OutlineBtn>
               </Link>
             </div>

@@ -102,6 +102,7 @@ export default function ServicesCards() {
 
                   <Link
                     href={service.pathname}
+                    aria-label={`Learn More: ${service.label}`}
                     className="inline-flex items-center gap-2 mt-5 text-primary font-medium group-hover:gap-3 transition-all"
                   >
                     Learn more →

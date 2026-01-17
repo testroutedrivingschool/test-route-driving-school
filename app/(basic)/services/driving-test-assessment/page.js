@@ -187,7 +187,7 @@ export default function DrivingTestAssessment() {
         title={`Driving Test Assessment in Sydney Suburbs | Book Online Now`}
         subtitle={
           <>
-            At<strong>TestRoutedrivingSchool</strong>, we understand that being
+            At<strong>Test Route driving School</strong>, we understand that being
             prepared for your exam is crucial. That is why we offer a top-tier{" "}
             <strong>Driving Test Assessment in Kogarah.</strong> This session
             helps you find your strengths and fix your driving weaknesses. We
@@ -298,7 +298,7 @@ export default function DrivingTestAssessment() {
               <p className="text-neutral text-lg leading-relaxed">
              Are you looking for a reliable <strong>Driving Test Assessment in Kogarah</strong>? 
 
-At <strong>TestRoutedDrivingSchool</strong>, we offer both automatic and manual driving lessons. Our certified instructors focus on road safety and practical skills for every learner. Whether you are a beginner or a seasoned professional, our programs are tailored to meet your needs. We help you master residential streets, highway driving, and difficult parking techniques. You can book a <strong>pre-driving test assessment in  Sydney suburbs</strong> to polish your skills. We ensure a smooth learning experience for students in  Sydney suburbs and Bexley.
+At <strong>Test Route Driving School</strong>, we offer both automatic and manual driving lessons. Our certified instructors focus on road safety and practical skills for every learner. Whether you are a beginner or a seasoned professional, our programs are tailored to meet your needs. We help you master residential streets, highway driving, and difficult parking techniques. You can book a <strong>pre-driving test assessment in  Sydney suburbs</strong> to polish your skills. We ensure a smooth learning experience for students in  Sydney suburbs and Bexley.
               </p>
 
               <p className="text-neutral text-lg leading-relaxed">
@@ -352,7 +352,7 @@ At <strong>TestRoutedDrivingSchool</strong>, we offer both automatic and manual 
         </Container>
       </section>
       <MovingCar />
-      <WhyChooseUs title={`Why Choose testroutedrivingschool?`} points={whyChoosePoints}/>
+      <WhyChooseUs title={`Why Choose Test Route driving school?`} points={whyChoosePoints}/>
 
       <Faq faqs={faqs}/>
     </div>

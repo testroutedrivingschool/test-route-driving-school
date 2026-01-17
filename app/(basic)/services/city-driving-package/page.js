@@ -159,7 +159,7 @@ export default function CityCarDrivingPackage() {
     <div className="">
       <PageHeroSection
         title={`City Driving Class in Sydney suburbs | Book Professional Driving Lessons Today`}
-        subtitle={`At TestRoutedDrivingSchool, we offer expert City Driving Classes in Sydney suburbs. We help learners of all skill levels become safe drivers. Our team offers top-tier automatic driving lessons across the local area. You will acquire the skills necessary to navigate dense urban traffic. We prioritize your safety and build your road confidence every day. Our instructors understand the unique challenges of the local Sydney suburbs streets. You can trust us to guide you toward driving success. We focus on making you a responsible and aware driver.`}
+        subtitle={`At Test Route Driving School, we offer expert City Driving Classes in Sydney suburbs. We help learners of all skill levels become safe drivers. Our team offers top-tier automatic driving lessons across the local area. You will acquire the skills necessary to navigate dense urban traffic. We prioritize your safety and build your road confidence every day. Our instructors understand the unique challenges of the local Sydney suburbs streets. You can trust us to guide you toward driving success. We focus on making you a responsible and aware driver.`}
       />
 
       {/* Main Content Section */}
@@ -234,7 +234,7 @@ export default function CityCarDrivingPackage() {
       <section className="py-12 bg-primary/80 text-white">
         <Container>
           <h3 className="text-lg md:text-2xl font-semibold mb-4">
-            Why Choose TestRoutedrivingSchool for Your City Driving Class in
+            Why Choose Test Route driving School for Your City Driving Class in
             Sydney suburbs?
           </h3>
           <p>
@@ -283,7 +283,7 @@ export default function CityCarDrivingPackage() {
         packages={cityCarDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints} title={`Why Choose TestRoutedrivingSchool for Your City Driving Class in Sydney suburbs?`} subtitle={`We offer professional driving lessons in the city, near Sydney suburbs, and provide license assistance. Here is why we are the best choice for your education:`}/>
+      <WhyChooseUs points={whyChoosePoints} title={`Why Choose Test Route driving School for Your City Driving Class in Sydney suburbs?`} subtitle={`We offer professional driving lessons in the city, near Sydney suburbs, and provide license assistance. Here is why we are the best choice for your education:`}/>
 
       <Faq faqs={faqs}/>
     </div>
