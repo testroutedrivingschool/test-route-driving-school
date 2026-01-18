@@ -88,7 +88,7 @@ export const adminSidebarLinks = [
 
 /* ================= INSTRUCTOR ================= */
 export const instructorSidebarLinks = [
-  {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard"},
+  {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard/instructor-dashboard"},
   {
     id: 2,
     label: "Profile",

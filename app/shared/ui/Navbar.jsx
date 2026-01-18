@@ -88,9 +88,10 @@ const navlinks = [
 const instructorNavLinks = [
   {id: 1, label: "Home", pathname: "/"},
   {id: 2, label: "Dashboard", pathname: "/dashboard"},
-  {id: 3, label: "Bookings", pathname: "/dashboard/instructor-bookings"},
-  {id: 4, label: "Sales", pathname: "/dashboard/instructor-sales"},
-  {id: 5, label: "Reports", pathname: "/dashboard/instructor-sales"},
+  {id: 3, label: "Bookings", pathname: "/instructor-bookings"},
+  {id: 3, label: "Clients", pathname: "/clients"},
+  {id: 4, label: "Sales", pathname: "/instructor/sales/search"},
+  {id: 5, label: "Reports", pathname: "/instructor-reports"},
 ];
 
 export default function Navbar({className}) {
