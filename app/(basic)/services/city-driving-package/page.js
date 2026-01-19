@@ -244,33 +244,44 @@ export default function CityCarDrivingPackage() {
           </p>
           <ul className="mt-4 list-disc pl-3 space-y-2">
             <li className="text-base-300 ">
-              <strong>Flexible Scheduling:</strong> We offer easy pickup and drop-off from your home.
+              <strong>Flexible Scheduling:</strong> We offer easy pickup and
+              drop-off from your home.
             </li>
             <li className="text-base-300 ">
-              <strong>Modern Fleet: </strong>You will use automatic vehicles with dual controls.
-
+              <strong>Modern Fleet: </strong>You will use automatic vehicles
+              with dual controls.
             </li>
             <li className="text-base-300 ">
-              <strong>Top Safety: </strong>Our cars boast 5-Star ANCAP ratings for your peace of mind.
-
+              <strong>Top Safety: </strong>Our cars boast 5-Star ANCAP ratings
+              for your peace of mind.
             </li>
             <li className="text-base-300 ">
-              <strong>Fast Progress:</strong>You receive personalized feedback to accelerate your learning and development.
+              <strong>Fast Progress:</strong>You receive personalized feedback
+              to accelerate your learning and development.
             </li>
             <li className="text-base-300 ">
-              <strong>Expert Guidance:</strong>Learn city driving in Sydney suburbs with local professionals.
-
+              <strong>Expert Guidance:</strong>Learn city driving in Sydney
+              suburbs with local professionals.
             </li>
-         
           </ul>
           <h3 className="mt-4 text-lg md:text-2xl font-semibold">
             Prepare for Success
           </h3>
           <p className="mt-2 max-w-4xl">
-            Don’t leave your driving test to chance. With Right Choice Driving
-            School, you’ll receive the support and guidance you need to pass
-            your test with confidence. Contact us today to book your driving
-            test assessment and take the first step towards becoming a licensed
+            Don’t leave your driving test to chance. With{" "}
+            <strong>Test Route Driving School</strong>, you’ll receive the
+            professional support and guidance you need to pass your test with
+            confidence. Alongside our test preparation lessons, we also offer a
+            dedicated
+            <Link
+              href="/services/highway-driving-package"
+              className="font-semibold underline  hover:text-primary-focus px-1"
+            >
+              highway driving package
+            </Link>
+            to help you master high-speed roads, lane discipline, and safe
+            overtaking techniques. Contact us today to book your driving test
+            assessment and take the first step towards becoming a licensed
             driver.
           </p>
         </Container>
@@ -283,9 +294,13 @@ export default function CityCarDrivingPackage() {
         packages={cityCarDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints} title={`Why Choose Test Route driving School for Your City Driving Class in Sydney suburbs?`} subtitle={`We offer professional driving lessons in the city, near Sydney suburbs, and provide license assistance. Here is why we are the best choice for your education:`}/>
+      <WhyChooseUs
+        points={whyChoosePoints}
+        title={`Why Choose Test Route driving School for Your City Driving Class in Sydney suburbs?`}
+        subtitle={`We offer professional driving lessons in the city, near Sydney suburbs, and provide license assistance. Here is why we are the best choice for your education:`}
+      />
 
-      <Faq faqs={faqs}/>
+      <Faq faqs={faqs} />
     </div>
   );
 }

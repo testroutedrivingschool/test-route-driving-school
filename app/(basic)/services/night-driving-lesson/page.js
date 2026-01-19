@@ -154,7 +154,10 @@ const faqs = [
     question: "What car will I use for my night driving lessons near me?",
     answer: (
       <>
-      You will drive a modern automatic vehicle equipped with dual safety controls. This ensures your instructor can assist you if any dangerous situation arises. Safety is our main priority for every student in the Sydney Suburbs.
+        You will drive a modern automatic vehicle equipped with dual safety
+        controls. This ensures your instructor can assist you if any dangerous
+        situation arises. Safety is our main priority for every student in the
+        Sydney Suburbs.
       </>
     ),
   },
@@ -162,7 +165,9 @@ const faqs = [
     question: "Can I book my driving lessons online?",
     answer: (
       <>
-        Yes, you can easily book your sessions through our website at any time. Visit our Blog for more tips or use the booking form. We make the process simple so you can start learning immediately.
+        Yes, you can easily book your sessions through our website at any time.
+        Visit our Blog for more tips or use the booking form. We make the
+        process simple so you can start learning immediately.
       </>
     ),
   },
@@ -332,8 +337,22 @@ This guide explores the best Night Driving Lessons in Sydney suburbsfor all lear
                   here to help you. Our lessons cover vital traffic rules and
                   hazard perception skills in Bexley. You will practice scanning
                   the road for animals or unlit cyclists. We focus on preparing
-                  you for real-world driving situations. Our goal is to turn
-                  your hesitation into expert{" "}
+                  you for real-world driving situations. Our lessons cover
+                  essential traffic rules and advanced hazard perception skills
+                  in <strong>Bexley</strong>. You will practise scanning the
+                  road for animals, pedestrians, and unlit cyclists while
+                  building confidence in real night-time conditions. For
+                  instructors and learners who need a reliable training vehicle,
+                  we also offer
+                  <Link
+                    href="/services/car-hire-for-instructor"
+                    className="font-bold underline  hover:text-primary-focus px-1"
+                  >
+                    car hire for instructors,
+                  </Link>
+                   featuring modern dual-controlled cars that ensure safety and
+                  flexibility during every lesson. Our goal is to turn your
+                  hesitation into expert{" "}
                   <Link
                     href={`/about`}
                     className="font-semibold underline px-1"
@@ -363,7 +382,21 @@ This guide explores the best Night Driving Lessons in Sydney suburbsfor all lear
                   braking. Are you a busy professional in Carlton or a student
                   in Arncliffe? We accommodate your needs while maintaining the
                   highest safety standards on the road. By the end of our
-                  course, you will handle night traffic with ease.
+                  course, you will handle night traffic with ease. If you are
+                  preparing for your driving exam, our
+                  <Link
+                    href="/services/driving-test-package"
+                    className="font-bold underline hover:text-primary-focus px-1"
+                  >
+                    driving test package
+                  </Link>{" "}
+                  is the perfect complement to night driving lessons. This
+                  package includes test-route practice, mock assessments, and
+                  expert guidance so you feel calm, confident, and fully
+                  prepared on test day. Whether you are a busy professional in{" "}
+                  <strong>Carlton</strong> or a student in{" "}
+                  <strong>Arncliffe</strong>, we adapt lessons to your schedule
+                  while maintaining the highest safety standards on the road.
                 </p>
               </div>
             </div>
@@ -377,7 +410,12 @@ This guide explores the best Night Driving Lessons in Sydney suburbsfor all lear
         points={whyChoosePoints}
       />
 
-      <Faq faqs={faqs} title={"Frequently Asked Questions About Night Time Driving Lessons Near Me"}/>
+      <Faq
+        faqs={faqs}
+        title={
+          "Frequently Asked Questions About Night Time Driving Lessons Near Me"
+        }
+      />
     </div>
   );
 }

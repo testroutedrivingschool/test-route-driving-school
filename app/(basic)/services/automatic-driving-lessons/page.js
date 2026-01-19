@@ -2,7 +2,15 @@ import Link from "next/link";
 
 import Image from "next/image";
 import automaticLessonImg from "@/app/assets/service-lesson-test-route-driving-school.png";
-import {FaAward, FaBrain, FaCalendarAlt, FaCar, FaChartLine, FaCheckCircle, FaShieldAlt} from "react-icons/fa";
+import {
+  FaAward,
+  FaBrain,
+  FaCalendarAlt,
+  FaCar,
+  FaChartLine,
+  FaCheckCircle,
+  FaShieldAlt,
+} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import MovingCar from "@/app/shared/MovingCar";
@@ -80,139 +88,158 @@ const automaticDrivingPackages = [
     popular: false,
   },
 ];
-  const features = [
-    <>
-      Dual-control vehicles for maximum safety in<strong>Hurstville</strong>
-    </>,
-    <>
-      Personalized lesson plans for all skill levels in<strong>Rockdale</strong>
-    </>,
-    <>
-      Real-time feedback and progress tracking in<strong>Bexley</strong>
-    </>,
-    <>
-      Test route practice and mock exams in<strong>Carlton</strong>
-    </>,
-  ];
-  const whyChoosePoints = [
-    {
-      title: "Expert Driving Instructors",
-      description:
-        "Our trainers ensure you learn safe and efficient skills.",
-    },
-    {
-      title: "Comprehensive Training",
-      description:
-        <>
-        We offer <Link href={`/services`} className="px-1 font-semibold underline">Our Driving Services</Link> for both practical and theoretical mastery.
-        </>,
-    },
-    {
-      title: "License Assistance",
-      description:
-        " We help you through the application process to keep it hassle-free.",
-    },
-    {
-      title: "Modern Vehicles",
-      description:
-        "Learn in well-maintained cars for a smooth and comfortable experience.",
-    },
-    {
-      title: "Flexible Timing",
-      description: " Choose class schedules that perfectly align with your daily routine.",
-    },
-  ];
+const features = [
+  <>
+    Dual-control vehicles for maximum safety in<strong>Hurstville</strong>
+  </>,
+  <>
+    Personalized lesson plans for all skill levels in<strong>Rockdale</strong>
+  </>,
+  <>
+    Real-time feedback and progress tracking in<strong>Bexley</strong>
+  </>,
+  <>
+    Test route practice and mock exams in<strong>Carlton</strong>
+  </>,
+];
+const whyChoosePoints = [
+  {
+    title: "Expert Driving Instructors",
+    description: "Our trainers ensure you learn safe and efficient skills.",
+  },
+  {
+    title: "Comprehensive Training",
+    description: (
+      <>
+        We offer{" "}
+        <Link href={`/services`} className="px-1 font-semibold underline">
+          Our Driving Services
+        </Link>{" "}
+        for both practical and theoretical mastery.
+      </>
+    ),
+  },
+  {
+    title: "License Assistance",
+    description:
+      " We help you through the application process to keep it hassle-free.",
+  },
+  {
+    title: "Modern Vehicles",
+    description:
+      "Learn in well-maintained cars for a smooth and comfortable experience.",
+  },
+  {
+    title: "Flexible Timing",
+    description:
+      " Choose class schedules that perfectly align with your daily routine.",
+  },
+];
 
-    const drivingLessonTips = [
-      {
-        title: "Practice Regularly",
-        description:
-          "Consistent driving builds your muscle memory and Confidence.",
-        icon: <FaCalendarAlt className="h-6 w-6" />,
-        color: "text-blue-600 bg-blue-50",
-        duration: "Ongoing",
-      },
-      {
-        title: "Prioritize Road Safety",
-        description:
-          "Always follow traffic rules and anticipate hazards early.",
-        icon: <FaShieldAlt className="h-6 w-6" />,
-        color: "text-green-600 bg-green-50",
-        priority: "High",
-      },
-      {
-        title: "Build Confidence Gradually",
-        description:
-          "Begin on quiet streets before progressing to heavy traffic.",
-        icon: <FaChartLine className="h-6 w-6" />,
-        color: "text-purple-600 bg-purple-50",
-        level: "Beginner to Advanced",
-      },
-      {
-        title: "Understand Both Manual & Automatic Cars",
-        description:
-          "If learning automatically, understanding manual cars improves overall vehicle control. ",
-        icon: <FaCar className="h-6 w-6" />,
-        color: "text-amber-600 bg-amber-50",
-        type: "Technical",
-      },
-      {
-        title: "Stay Calm and Focused",
-        description:
-          "Focus on the road and avoid distractions while you drive.",
-        icon: <FaBrain className="h-6 w-6" />,
-        color: "text-teal-600 bg-teal-50",
-        focus: "Mental",
-      },
-      {
-        title: "Prepare for Driving Tests",
-        description:
-          "Learn specific maneuvers, such as reverse parallel parking and three-point turns, to enhance your driving skills.",
-        icon: <FaAward className="h-6 w-6" />,
-        color: "text-red-600 bg-red-50",
-        goal: "Test Success",
-      },
-    ];
+const drivingLessonTips = [
+  {
+    title: "Practice Regularly",
+    description: "Consistent driving builds your muscle memory and Confidence.",
+    icon: <FaCalendarAlt className="h-6 w-6" />,
+    color: "text-blue-600 bg-blue-50",
+    duration: "Ongoing",
+  },
+  {
+    title: "Prioritize Road Safety",
+    description: "Always follow traffic rules and anticipate hazards early.",
+    icon: <FaShieldAlt className="h-6 w-6" />,
+    color: "text-green-600 bg-green-50",
+    priority: "High",
+  },
+  {
+    title: "Build Confidence Gradually",
+    description: "Begin on quiet streets before progressing to heavy traffic.",
+    icon: <FaChartLine className="h-6 w-6" />,
+    color: "text-purple-600 bg-purple-50",
+    level: "Beginner to Advanced",
+  },
+  {
+    title: "Understand Both Manual & Automatic Cars",
+    description:
+      "If learning automatically, understanding manual cars improves overall vehicle control. ",
+    icon: <FaCar className="h-6 w-6" />,
+    color: "text-amber-600 bg-amber-50",
+    type: "Technical",
+  },
+  {
+    title: "Stay Calm and Focused",
+    description: "Focus on the road and avoid distractions while you drive.",
+    icon: <FaBrain className="h-6 w-6" />,
+    color: "text-teal-600 bg-teal-50",
+    focus: "Mental",
+  },
+  {
+    title: "Prepare for Driving Tests",
+    description:
+      "Learn specific maneuvers, such as reverse parallel parking and three-point turns, to enhance your driving skills.",
+    icon: <FaAward className="h-6 w-6" />,
+    color: "text-red-600 bg-red-50",
+    goal: "Test Success",
+  },
+];
 
-   const faqs = [
+const faqs = [
   {
     question: "How many lessons do I need to pass?",
-    answer:
+    answer: (
       <>
-      The number varies for every learner in the <strong>Sydney Suburbs</strong>. Most students need 5 to 10 lessons to feel truly ready. For more details, please visit our <Link href={`/faq`} className="font-semibold underline px-1">FAQ page.</Link>
-
-      </>,
+        The number varies for every learner in the{" "}
+        <strong>Sydney Suburbs</strong>. Most students need 5 to 10 lessons to
+        feel truly ready. For more details, please visit our{" "}
+        <Link href={`/faq`} className="font-semibold underline px-1">
+          FAQ page.
+        </Link>
+      </>
+    ),
   },
   {
     question: "Do you provide pickup and drop-off?",
-    answer:
+    answer: (
       <>
-       Yes, we offer convenient pickup from your home or school. We serve
-     <strong>
-      the areas of Sydney suburbs, Hurstville, Rockdale, Bexley, Carlton, and Arncliffe.
-     </strong>
-      </>,
+        Yes, we offer convenient pickup from your home or school. We serve
+        <strong>
+          the areas of Sydney suburbs, Hurstville, Rockdale, Bexley, Carlton,
+          and Arncliffe.
+        </strong>
+      </>
+    ),
   },
   {
     question: "Which suburbs do your instructors cover?",
-    answer:
+    answer: (
       <>
-      We cover a wide range of areas, including <strong>Allawah, Arncliffe, Bexley, Rockdale, and Hurstville</strong>. Visit our<Link href={`/area-covered`} className="font-semibold underline px-1">Areas We Cover</Link>  page for the complete list.
-      </>,
+        We cover a wide range of areas, including{" "}
+        <strong>Allawah, Arncliffe, Bexley, Rockdale, and Hurstville</strong>.
+        Visit our
+        <Link href={`/area-covered`} className="font-semibold underline px-1">
+          Areas We Cover
+        </Link>{" "}
+        page for the complete list.
+      </>
+    ),
   },
   {
     question: "Can I book lessons online?",
-    answer:
+    answer: (
       <>
-      Yes, you can easily book through our website or <Link href={`/company/contact`} className="font-semibold underline px-1">Contact Us</Link>  page. Our online system is available 24/7 for your convenience.
-      </>,
+        Yes, you can easily book through our website or{" "}
+        <Link
+          href={`/company/contact`}
+          className="font-semibold underline px-1"
+        >
+          Contact Us
+        </Link>{" "}
+        page. Our online system is available 24/7 for your convenience.
+      </>
+    ),
   },
-
-
 ];
 export default function AutomaticDrivingLesson() {
-
-
   return (
     <div className="">
       <PageHeroSection
@@ -232,7 +259,16 @@ export default function AutomaticDrivingLesson() {
             the wheel with a{" "}
             <strong>professional driving instructor in Sydney suburbs?</strong>{" "}
             Our experts guide you through every turn with patience and
-            straightforward advice.
+            straightforward advice.We also help learners master essential skills
+            like reverse, parallel, and angle parking through our
+            <Link
+              href="/services/parking-package"
+              className="px-1 font-bold underline"
+            >
+              {" "}
+              professional parking lessons{" "}
+            </Link>
+            , designed to build confidence in real-world situations.
           </>
         }
       />
@@ -272,8 +308,14 @@ export default function AutomaticDrivingLesson() {
                 <strong>driving class in Sydney suburbs</strong>Our certified{" "}
                 <strong> driving instructor in Sydney suburbs</strong> offers
                 personalized coaching to help you build your road confidence. We
-                ensure you feel well-prepared to pass your practical test on the
-                first attempt.
+                ensure you feel well-prepared to pass your practical{" "}
+                <Link
+                  href={`/services/driving-test-package`}
+                  className="underline font-bold px-1"
+                >
+                  test
+                </Link>{" "}
+                on the first attempt.
               </p>
 
               {/* Key Features */}
@@ -344,13 +386,40 @@ export default function AutomaticDrivingLesson() {
               </h2>
 
               <p className="text-neutral text-lg leading-relaxed">
-               Our 
-            <strong>driving lessons for beginners in Sydney suburbs</strong>  focus on a smooth, stress-free learning path. Since automatic cars have no clutch, you can focus entirely on road awareness. You will learn vital hazard perception skills from our
-            <Link href={`/instructors`} className="font-semibold underline px-1">
-               instructors 
-            </Link>{" "}
-             in real-world conditions.<strong> Learn to drive Sydney suburbs </strong> streets with ease as we guide you through intersections and school zones. We ensure you master city driving and parking techniques before your big test day. Our structured programs provide everything you need to become a safe, independent driver.
-
+                Our
+                <strong>
+                  driving lessons for beginners in Sydney suburbs
+                </strong>{" "}
+                focus on a smooth, stress-free learning path. Since automatic
+                cars have no clutch, you can focus entirely on road awareness.
+                You will learn vital hazard perception skills from our
+                <Link
+                  href={`/instructors`}
+                  className="font-semibold underline px-1"
+                >
+                  instructors
+                </Link>{" "}
+                in real-world conditions.
+                <strong> Learn to drive Sydney suburbs </strong> streets with
+                ease as we guide you through intersections and school zones. We
+                ensure you master city driving and parking techniques before
+                your big test-day confidence through our
+                <Link
+                  href="/services/driving-test-package"
+                  className="font-bold underline  px-1"
+                >
+                  Driving Test Package
+                </Link>
+                , which includes mock tests and examiner-style guidance. For
+                learners ready to go beyond city limits, our
+                <Link
+                  href="/services/highway-package"
+                  className="font-bold underline  px-1"
+                >
+                  Highway Driving Package
+                </Link>
+                helps you gain confidence with speed control, lane discipline,
+                merging, and overtaking.
               </p>
 
               <p className="text-neutral text-lg leading-relaxed">
@@ -367,7 +436,6 @@ export default function AutomaticDrivingLesson() {
 
             {/* Right Image */}
             <div className="rounded-xl w-full md:w-auto flex-1 flex justify-center">
-         
               <Image
                 src={localDrivingImg}
                 width={500}
@@ -388,7 +456,30 @@ export default function AutomaticDrivingLesson() {
                   Flexible Driving Lessons Near Sydney suburbs for Busy Lives
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">
-                 We offer flexible <strong>driving lessons near Sydney suburbs</strong>, including weekdays, evenings, and weekends. Our instructors tailor each session to your learning pace and personal schedule. Whether you are a student or a working professional, we fit into your life. We understand that every learner has a unique pace and different goals. That is why we offer flexible timings across<strong>Arncliffe</strong> to accommodate your busy routine. Our instructors create customized plans based on your progress and areas for improvement. You will advance your skills steadily while maintaining total safety on the road.
+                  We offer flexible{" "}
+                  <strong>driving lessons near Sydney suburbs</strong>,
+                  including weekdays, evenings, and weekends. Our instructors
+                  tailor each session to your learning pace and personal
+                  schedule. Whether you are a student or a working professional,
+                  we fit into your life. We understand that every learner has a
+                  unique pace and different goals. That is why we offer flexible
+                  timings across<strong>Arncliffe</strong> to accommodate your
+                  busy routine. Our instructors create customized plans based on
+                  your progress and areas for improvement. You will advance your
+                  skills steadily while maintaining total safety on the road.
+                  For learners who need a vehicle on lesson or test day, we also
+                  provide
+                  <Link
+                    href="/services/car-hire-for-instructor"
+                    className="font-semibold underline text-primary hover:text-primary-focus px-1"
+                  >
+                    car hire for instructor
+                  </Link>
+                  services. Our dual-controlled, modern vehicles ensure maximum
+                  safety and confidence while you focus on improving your
+                  driving skills. This option is ideal for learners who do not
+                  have access to a suitable car or want extra peace of mind
+                  during lessons.
                 </p>
               </div>
 
@@ -415,11 +506,23 @@ export default function AutomaticDrivingLesson() {
         </Container>
       </section>
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints} subTitle={<>
-        As a leading <strong>driving school</strong>, we provide professional lessons and license assistance. We are the best choice for your education in the <strong>Sydney Suburbs.</strong>
-        </>}/>
-      <DrivingTipsSection subtitle={"Learning to drive can be challenging, but having the right mindset makes it easier. Our experts offer these tips to help you succeed on NSW roads:"} tips={drivingLessonTips}/>
-      <Faq className={`bg-white`} faqs={faqs}/>
+      <WhyChooseUs
+        points={whyChoosePoints}
+        subTitle={
+          <>
+            As a leading <strong>driving school</strong>, we provide
+            professional lessons and license assistance. We are the best choice
+            for your education in the <strong>Sydney Suburbs.</strong>
+          </>
+        }
+      />
+      <DrivingTipsSection
+        subtitle={
+          "Learning to drive can be challenging, but having the right mindset makes it easier. Our experts offer these tips to help you succeed on NSW roads:"
+        }
+        tips={drivingLessonTips}
+      />
+      <Faq className={`bg-white`} faqs={faqs} />
     </div>
   );
 }
