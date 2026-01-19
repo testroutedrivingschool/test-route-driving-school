@@ -17,48 +17,74 @@ const services = [
   {
     id: 1,
     label: "Automatic Driving Lessons",
+    description:<>
+    Our <strong>driving test lessons</strong> help you understand your strengths, weaknesses, and readiness. Receive expert guidance from instructors, practice real test scenarios, and feel confident for your practical driving exam.
+    </>,
     pathname: "/services/automatic-driving-lessons",
     icon: FaCar,
   },
   {
     id: 2,
     label: "Driving Test Assessment",
+    description:<>
+    Get complete preparation with <strong>driving test lessons. </strong> Learn city, highway, and parking skills under supervision, ensuring you pass quickly. Affordable packages make <strong>cheap driving lessons</strong> possible without losing quality.
+
+    </>,
     pathname: "/services/driving-test-assessment",
     icon: FaClipboardCheck,
   },
   {
     id: 3,
     label: "Driving Test Package",
+    description:<>
+    Get complete preparation with <strong>driving test lessons.</strong>Learn city, highway, and parking skills under supervision, ensuring you pass quickly. Affordable packages make <strong>cheap driving lessons </strong> possible without losing quality.
+    </>,
     pathname: "/services/driving-test-package",
     icon: FaRoad,
   },
   {
     id: 4,
     label: "Car Hire for Instructor",
+    description:<>
+   Need a car for practice or test? Our modern, safe vehicles with dual controls let you <strong>learn to drive</strong>confidently. Expert instructors guide you throughout, ensuring comfort and safety.
+    </>,
     pathname: "/services/car-hire-for-instructor",
     icon: FaUserTie,
   },
   {
     id: 5,
     label: "Parking Package",
+    description:<>
+   Master parking, reversing, and tight spots with our<strong>professional driving instructors. </strong>Step-by-step guidance builds your skills, confidence, and independence while preparing you for the driving test.
+    </>,
     pathname: "/services/parking-package",
     icon: FaParking,
   },
   {
     id: 6,
     label: "Highway Package",
+    description:<>
+   Learn safe highway driving techniques with expert instructors. Build confidence in merging, lane changes, speed control, and traffic handling. Ideal for learners who want fast progress and test readiness.
+
+    </>,
     pathname: "/services/highway-package",
     icon: FaRoad,
   },
   {
     id: 7,
     label: "Night Driving Lesson",
+    description:<>
+    Drive safely at night with structured lessons. Our<strong>professional driving instructors</strong>help you handle low visibility, hazards, and traffic, so you feel confident driving any Sydney road after dark.
+    </>,
     pathname: "/services/night-driving-lesson",
     icon: FaMoon,
   },
   {
     id: 8,
     label: "City Driving Package",
+    description:<>
+    Tackle busy Sydney streets with confidence. Learn traffic rules, intersections, signals, and road awareness with expert guidance. Our lessons make city driving simple, safe, and stress-free for all learners.
+    </>,
     pathname: "/services/city-driving-package",
     icon: FaCity,
   },
@@ -70,7 +96,10 @@ export default function ServicesCards() {
       <Container>
         <SectionHeader
           title={`Our Driving Services`}
-          subtitle={`Professional lessons tailored for every driving need`}
+          subtitle={<>
+          Our <strong>professional driving instructor</strong> team tailors lessons to your needs. Here’s what we offer:
+
+          </>}
         />
 
         {/* Services Grid */}

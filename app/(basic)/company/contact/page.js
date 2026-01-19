@@ -6,17 +6,33 @@ import {
   FaEnvelope,
   FaMapMarkerAlt,
   FaFacebookF,
-  FaTwitter,
-  FaYoutube,
+
   FaGoogle,
 } from "react-icons/fa";
+
+export const metadata = {
+  title: "Contact Us Today – Book Your Driving Lessons",
+  description:
+    "Contact Us – Get expert driving lessons across Sydney suburbs. Book your first lesson today and start learning to drive confidently with Test Route Driving School.",
+     keywords: [
+    "Book a Driving Class",
+"driving classes for adults",
+"Learn driving",
+"Driving lessons",
+"Driving school",
+  ],
+
+};
 
 export default function Contact() {
   return (
     <>
       <PageHeroSection
-        title="Contact Us"
-        subtitle="Have questions or ready to start your driving journey? Get in touch with Test Route Driving School and our team will be happy to help."
+        title="Contact Us Today – Book Your Driving Lessons"
+        subtitle={<>
+        Have questions or ready to start your driving journey? At <strong>Test Route Driving School,</strong> we make it easy for you to <strong>book a driving class</strong> and start learning confidently. Whether you are a teen learner, a young professional, or an adult seeking a license, our team is here to guide you every step of the way.
+        </>
+        }
       />
       <section className="py-16 ">
         <Container>
@@ -27,11 +43,11 @@ export default function Contact() {
   {/* Heading */}
   <div>
     <h2 className="text-3xl md:text-4xl font-extrabold leading-tight">
-      Get in Touch with{" "}
-      <span className="text-primary">Test Route Driving School</span>
+      Get in Touch with
+      <span className="text-primary px-1">Test Route Driving School</span>
     </h2>
     <p className="text-gray-600 mt-2 max-w-md">
-      Have questions or want to book a lesson? Reach out to us anytime.
+     Are you ready to <strong>learn driving</strong> or want to enrol in <strong>driving classes for adults? </strong>Reach out to us anytime. Our friendly instructors are here to answer your questions and help you schedule your <strong>driving lessons</strong> around your busy life.
     </p>
   </div>
 

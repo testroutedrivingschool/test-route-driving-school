@@ -26,6 +26,68 @@ import WhatWeOffer from "./components/Home/WhatWeOffer";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import Link from "next/link";
 
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "DrivingSchool",
+  "name": "Test Route Driving School",
+  "legalName": "Test Route Driving School",
+  "url": "https://testroutedrivingschool.com.au/",
+  "logo": "https://testroutedrivingschool.com.au/_next/image?url=%2Ftest-route-driving-school-logo.png&w=96&q=75",
+  "image": "https://testroutedrivingschool.com.au/_next/image?url=%2Ftest-route-driving-school-logo.png&w=96&q=75",
+  "description": "Join our expert instructors and gain confidence behind the wheel. At Test Route Driving School, we provide structured, safe, and friendly driving lessons in Sydney Suburbs. Whether you’re a beginner or improving your skills, our lessons help you feel comfortable on the road.",
+  "slogan": "Learn to Drive Safely & Confidently",
+  "telephone": "+61 412 018 593",
+  "email": "testroutedrivingschool@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "67 Warialda St",
+    "addressLocality": "Kogarah",
+    "addressRegion": "NSW",
+    "postalCode": "2217",
+    "addressCountry": "AU"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -33.9835176,
+    "longitude": 151.1348637
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+      ],
+      "opens": "06:00",
+      "closes": "20:00"
+    }
+  ],
+  "areaServed": [
+    "Kogarah", "Rockdale", "Roselands", "Sandringham", "Sans Souci", "South Hurstville", 
+    "Sutherland", "Sylvania", "Sylvania Waters", "Taren Point", "Tempe", "Turella", 
+    "Wali Creek", "Woolooware", "Kirrawee", "Kogarah Bay", "Kyeemagh", "Marrickville", 
+    "Miranda", "Monterey", "Mortdale", "Peakhurst", "Penshurst", "Ramsgate", "Ramsgate Beach", 
+    "Riverwood", "Allawah", "Arncliffe", "Banksia", "Bardwell Park", "Bardwell Valley", 
+    "Beverly Hills", "Bexley", "Bexley North", "Blakehurst", "Botany", "Brighton-Le-Sands", 
+    "Caringbah", "Caringbah South", "Carlton", "Carss Park", "Clemton Park", "Cronulla", 
+    "Dolls Point", "Eastgardens", "Endgadline", "Eastlakes", "Gymea", "Gymea Bay", 
+    "Hurstville", "Hurstville Grove", "Kangaroo Point", "Kareela", "Kingsgrove", "Mascot", 
+    "Pagewood", "Port Botany"
+  ],
+  "knowsAbout": [
+    "Automatic Driving Lessons",
+    "Driving Test Assessment",
+    "Driving Test Preparation Packages",
+    "Car Hire for Driving Instructor",
+    "Parking Techniques",
+    "Highway and Motorway Driving",
+    "Night Driving Lessons",
+    "City Driving Navigation"
+  ],
+  "sameAs": [
+    "https://www.facebook.com/share/1A148kMS7g/"
+  ]
+}
+
 export const metadata = {
   title: "Driving School in Sydney suburbs| Learn to Drive Safely & Confidently",
   description:
@@ -98,6 +160,10 @@ const whatWeOfferServices = [
 export default function Home() {
   return (
     <>
+    <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       <Hero />
       <FeatureCards />
       <HomeAbout />

@@ -239,18 +239,7 @@ export default function BookingsPage() {
     };
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedLocations) {
-  //     const availableInstructors = instructors.filter((inst) =>
-  //       inst.suburbs.some((s) => s.name === selectedLocations),
-  //     );
-  //     if (availableInstructors.length > 0) {
-  //       setSelectedInstructor(availableInstructors[0]);
-  //     } else {
-  //       setSelectedInstructor(null);
-  //     }
-  //   }
-  // }, [selectedLocations, instructors]);
+
 
 useEffect(() => {
   // when location changes, reset selection
@@ -282,11 +271,7 @@ const isAvailable = (instructor, dayIndex) => {
   }
 
 
-// const otherInstructors = instructors.filter(
-//   (inst) => inst._id !== selectedInstructor?._id
-// );
 
-// const otherCount = otherInstructors.length;
 
 
 
@@ -532,12 +517,13 @@ const canLoop = displayedInstructors.length > slidesToShow;
 
                       {/* Schedule Table */}
                       <div
-                        className="overflow-x-auto touch-pan-x scrollbar-hide"
-                        style={{
-                          WebkitOverflowScrolling: "touch",
-                          cursor: "grab",
-                        }}
-                        ref={tableRef}
+                         ref={tableRef}
+  className="overflow-x-auto overflow-y-hidden touch-pan-x select-none scrollbar-hide"
+  style={{
+    WebkitOverflowScrolling: "touch",
+    cursor: "grab",
+    touchAction: "pan-x", // ✅ important
+  }}
                       >
                         <table className="w-full min-w-[700px] border-collapse">
                           <thead>

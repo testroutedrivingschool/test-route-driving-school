@@ -3,8 +3,10 @@
 import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
-import React, {useState} from "react";
+import Script from "next/script";
+import React, {useMemo, useState} from "react";
 import { FaChevronDown } from "react-icons/fa";
+
 
 const faqs = [
   {
@@ -170,9 +172,31 @@ export default function FAQPAGE() {
   const toggleFaq = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
+const faqSchema = useMemo(() => {
+  const clean = (v) => String(v || "").replace(/\s+/g, " ").trim();
 
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: clean(f.question),
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: clean(f.answer),
+      },
+    })),
+  };
+}, []);
   return (
     <div>
+
+       <Script
+        id="faq-schema"
+        type="application/ld+json"
+        strategy="beforeInteractive" 
+        dangerouslySetInnerHTML={{__html: JSON.stringify(faqSchema)}}
+      />
       <PageHeroSection
         title="Frequently Asked Questions"
         subtitle="Find answers to all common questions about our driving lessons, packages, and services at Test Route Driving School."

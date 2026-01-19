@@ -108,8 +108,10 @@ export default function AreaCovered() {
   return (
     <div className="">
       <PageHeroSection
-        title="Areas We Cover"
-        subtitle="Our expert instructors provide professional driving lessons across Sydney's suburbs, ensuring comprehensive coverage for all your driving needs."
+        title="Areas Covered by Driving School in Sydney Suburbs"
+        subtitle={<>
+     Our <strong>driving school</strong> provides professional lessons across Sydney suburbs. You’ll practise real-life scenarios, learn local traffic rules, and navigate test routes with guidance from expert instructors. Pickup and drop-off services make every lesson stress-free.
+        </>}
       />
 
       {/* Main Content */}
@@ -159,15 +161,12 @@ export default function AreaCovered() {
             <div className="lg:w-1/2 space-y-8">
               <div>
                 <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
-                  Comprehensive Driving Lesson Coverage{" "}
-                  <span className="text-primary">Across Sydney</span>
+                  Comprehensive Areas Covered by Driving School for 
+                  <span className="text-primary px-1">Driving Lessons</span>
                 </h2>
 
                 <p className="text-neutral  leading-relaxed mb-6">
-                  Test Route Driving School proudly serves over 40 suburbs
-                  across Sydney, providing expert driving instruction to
-                  students in Southern Sydney, the Inner West, Eastern Suburbs,
-                  and Sutherland Shire.
+                  We serve over 40 Sydney suburbs, offering professional <strong>driving classes</strong> in Southern Sydney, Inner West, Eastern Suburbs, and Sutherland Shire. Whether you are a student, professional, or nervous beginner, our instructors help you feel ready for real-life driving and your test
                 </p>
               </div>
 

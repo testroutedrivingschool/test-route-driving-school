@@ -21,12 +21,40 @@ import Faq from "@/app/shared/FaqSection";
 import aboutImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import aboutImg2 from "@/app/assets/about-img2.png";
 import Link from "next/link";
+
+
+export const metadata = {
+  title: "About Us | Test Route Driving School – Learn to Drive with Confidence",
+  description:
+    "Master real test routes with Test Route Driving School – experienced Sydney instructors. Start your journey today and drive with confidence.",
+     keywords: [
+    "Test Route Driving School",
+"driving school",
+"best driving school near me",
+"driving school near me",
+"driving instructor near me",
+"best driving school",
+"local driving school",
+"driving lessons",
+"professional driving instructor",
+"driving classes",
+"beginner driving lessons",
+"driving instructor",
+"driving lessons for beginners",
+"driving school packages",
+  ],
+
+};
+
 const services = [
   {
     icon: <FaCar className="w-8 h-8 text-white" />,
     title: "Dual-Controlled Vehicles",
     description:
-      "All lessons utilize modern, dual-controlled cars, ensuring maximum safety. Instructors can take control if needed, helping you feel secure while learning essential driving skills efficiently.",
+     <>
+     
+     Our modern <strong>dual-controlled vehicles</strong> allow instructors to step in when needed, keeping you safe while learning essential driving skills. We also provide <Link className="font-semibold underline" href={`/services/driving-test-assessment`}>driving test assessments</Link> with detailed feedback, helping you focus on areas that need improvement.
+     </>,
   },
   {
     icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
@@ -50,7 +78,15 @@ const services = [
     icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
     title: "Pickup and Drop-off",
     description:
-      "We offer convenient pickup and drop-off services within Kogarah and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.",
+      <>
+      
+      For convenience, we offer pickup and drop-off across Kogarah, Rockdale, Hurstville, Arncliffe, and nearby Sydney suburbs. You can also rent a safe vehicle for your <Link
+          href="/services/driving-test-package"
+          className="text-primary font-semibold underline hover:text-primary-focus"
+        >
+          driving test
+        </Link>{" "}, including Kia, Toyota Hybrid, and Nissan cars.
+      </>,
   },
   {
     icon: <FaCarSide className="w-8 h-8 text-white" />,
@@ -62,15 +98,59 @@ const services = [
     icon: <FaFileAlt className="w-8 h-8 text-white" />,
     title: "Driving Test Support",
     description:
-      "We provide full driving test support, including warm-up lessons and step-by-step guidance. Our instructors help you feel confident, focused, and prepared to pass your test successfully on the day of the exam.",
+     <>
+     
+     We provide <strong>full driving test support</strong>, including warm-up lessons and step-by-step guidance, ensuring you feel confident and prepared on test day. 
+     </>,
   },
   {
     icon: <FaGift className="w-8 h-8 text-white" />,
     title: "Lesson Packages",
     description:
-      "Save with our 5, 10, or 20-hour lesson packages. You can enjoy structured, high-quality lessons while saving up to $140, giving you more affordable and flexible learning options.",
+      <>
+      
+      Our <Link
+          href="/services/automatic-driving-lessons"
+          className="text-primary font-semibold underline hover:text-primary-focus"
+        >
+       lesson packages
+        </Link>—5, 10, or 20 hours—are flexible and affordable, giving you structured learning while saving money.
+      </>,
   },
 ];
+
+const faqs = [
+  {
+    question: "How many lessons do I need to pass my driving test?",
+    answer:
+      "Most learners need around 5–10 lessons, depending on your skill, confidence, and experience. Our instructors tailor every session to ensure you are fully prepared and comfortable before your test.",
+  },
+  {
+    question: "Do you provide pickup and drop-off for lessons?",
+    answer:
+      "Yes! We pick you up from home, school, or work in Kogarah and nearby suburbs. Our service makes your driving lessons convenient, stress-free, and easy to fit into your busy schedule.",
+  },
+  {
+    question: "Which suburbs do your instructors cover?",
+    answer:
+      "Our instructors provide lessons across Kogarah and nearby Sydney suburbs, including Allawah, Arncliffe, Bexley, Rockdale, and Hurstville. Wherever you live, we ensure professional driving instruction is easy to access.",
+  },
+  {
+    question: "What type of car will I learn in?",
+    answer:
+      "You’ll learn in modern automatic vehicles with dual controls. These safe, comfortable cars allow your instructor to guide you while you gain confidence and master essential driving skills.",
+  },
+  {
+    question: "Can I book lessons online?",
+    answer:
+      <>
+      Yes! You can book driving lessons anytime through our <Link className="font-bold text-primary underline px-1" href={`/`}>website.</Link> Online booking makes scheduling fast, simple, and flexible, giving you control over your learning timetable.
+      </>,
+  },
+ 
+
+];
+
 export default function About() {
   const features = [
     {
@@ -98,7 +178,7 @@ export default function About() {
   return (
     <>
       <PageHeroSection
-        title={"About Us"}
+        title={"About Us | Test Route Driving School – Learn to Drive with Confidence"}
         subtitle={`Professional Driving Lessons You Can Trust`}
       />
       <section className="pt-16 ">
@@ -148,21 +228,16 @@ export default function About() {
                 </h2>
                 <div className="space-y-4">
                   <p className="text-gray-700 text-lg leading-relaxed">
-                    At{" "}
-                    <span className="font-semibold text-primary">
+                   At 
+
+                    <span className="font-bold text-primary px-1">
                       Test Route Driving School
                     </span>
-                    , we&apos;re dedicated to transforming new drivers into
-                    safe, confident road users. Our mission is to provide
-                    exceptional driver education that empowers learners with
-                    both skill and awareness.
+                    , we transform nervous beginners into confident drivers. Our lessons focus on safety, skill, and awareness. You’ll enjoy a stress-free, enjoyable learning experience.<br/>
+We use modern <strong>dual-controlled vehicles</strong> and flexible scheduling. This allows you to learn at your own pace while feeling secure. Our instructors provide personalised guidance, addressing your fears and helping you navigate city roads, traffic, and driving tests with ease.
                   </p>
                   <p className="text-gray-700 leading-relaxed">
-                    With a modern fleet of dual-controlled vehicles and flexible
-                    scheduling options, we make learning to drive an enjoyable,
-                    stress-free experience. Our patient, certified instructors
-                    tailor each lesson to individual needs, ensuring you
-                    progress at your own pace.
+                    Whether you are searching for the best driving school near me or local driving lessons that fit your lifestyle, we make learning convenient, flexible, and effective.
                   </p>
                 </div>
               </div>
@@ -200,37 +275,18 @@ export default function About() {
                 </h2>
 
                 <p className="text-neutral">
-                  <strong>Test Route Driving School</strong> is a leading
-                  professional driving school dedicated to helping learner
-                  drivers gain confidence, skill, and road awareness. Since our
-                  establishment, we have successfully trained thousands of
-                  students with structured driving lessons designed for
-                  real-world conditions.
+                  <strong>Test Route Driving School</strong> is a leading <strong>local driving school</strong> in Kogarah and surrounding NSW suburbs. Our experienced instructors specialise in helping beginners, nervous drivers, and international students gain confidence behind the wheel.
                 </p>
 
                 <p className="text-neutral">
-                  Our certified driving instructors focus on safe driving
-                  habits, defensive driving techniques, and exam-ready
-                  preparation. Whether you are a beginner, nervous driver, or
-                  preparing for your driving test, our tailored lesson plans
-                  ensure steady progress at your own pace.
+                  We provide structured <strong>driving lessons</strong> covering real-world scenarios, defensive driving, and exam preparation. Learning with our <strong>professional driving instructors</strong> gives you personalised feedback and a supportive environment.
                 </p>
 
                 <p className="text-neutral">
-                  We use modern dual-controlled vehicles and up-to-date teaching
-                  methods to provide a safe, comfortable learning environment.
-                  Our flexible lesson scheduling, affordable packages, and high
-                  first-time pass rate make us a trusted choice for driving
-                  lessons.
+                  At <strong>Test Route Driving School</strong>, you’ll learn in safe, modern vehicles, enjoy flexible <strong>lesson packages</strong>, and gain the confidence to pass your test the first time. Our step-by-step guidance ensures you develop lifelong driving skills with a trusted, experienced instructor.
                 </p>
 
-                <p className="text-neutral">
-                  At Test Route Driving School, our goal is not just to help you
-                  pass your test — but to become a confident, responsible driver
-                  for life. We take pride in building lifelong road safety
-                  skills that stay with our students long after they earn their
-                  license.
-                </p>
+               
               </div>
 
               {/* Image Content */}
@@ -251,10 +307,10 @@ export default function About() {
           </Container>
         </section>
 
-        <WhatWeOffer services={services}/>
+        <WhatWeOffer services={services} sectionSubtitle="We offer services that make learning to drive comfortable, safe, and convenient. Each lesson is designed to build your confidence and practical skills."/>
 
         <MovingCar className="mt-20 md:mt-25" />
-        <Faq />
+        <Faq faqs={faqs}/>
       </section>
     </>
   );

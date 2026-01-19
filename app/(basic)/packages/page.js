@@ -14,6 +14,9 @@ import axios from "axios";
 import { addToCartLS } from "@/app/utils/cart";
 import { useRouter } from "next/navigation";
 
+
+
+
 export default function Packages() {
   const {data: packagesData = [], isLoading} = useQuery({
     queryKey: ["packages"],
@@ -95,14 +98,26 @@ const router = useRouter()
   return (
     <section className="pb-16">
       <PageHeroSection
-        title="All Packages"
-        subtitle="Explore our range of carefully designed packages tailored to suit every learner’s needs. Whether you’re a beginner or looking to advance your skills, each package offers structured lessons, flexible scheduling, and expert guidance to help you succeed. Find the plan that fits your goals and start progressing with confidence today."
+        title="Learn Faster with Our Professional Driving Package"
+        subtitle={
+
+          <>
+          
+          Are you looking for the <strong>best driving package near me</strong> in Kogarah? At <strong>Test Route Driving School</strong>, we offer <strong>professional driving packages</strong> designed to help you learn faster, build confidence, and pass your driving test with ease. Whether you’re a beginner or need extra practice, our <strong>driving school packages</strong> cater to every learner’s needs.
+          </>
+        }
       />
       <Container>
         <div className="text-center mb-12">
           <SectionHeader
             title="Find Your Perfect Driving Package"
-            subtitle="Choose from our flexible packages designed for every skill level and learning style"
+            subtitle={
+<>
+
+Choosing the right <strong>driving lesson package</strong> is simple. Our <strong>driving school packages</strong> fit your schedule, skill, and needs, making learning easy, flexible, and confidence-boosting in every session.
+</>
+
+            }
           />
         </div>
 
