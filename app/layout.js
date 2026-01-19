@@ -2,7 +2,6 @@ import {Montserrat, Open_Sans} from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
 import QueryProvider from "./utils/QueryProvider";
-import Script from "next/script";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -70,6 +69,8 @@ const schema = {
   "@context": "https://schema.org",
   "@type": "DrivingSchool",
   "name": "Test Route Driving School",
+  "@id": "https://testroutedrivingschool.com.au/#drivingschool",
+"priceRange": "$$",
   "legalName": "Test Route Driving School",
   "url": "https://testroutedrivingschool.com.au/",
   "logo": "https://testroutedrivingschool.com.au/test-route-driving-school-logo.png",
@@ -132,12 +133,10 @@ export default function RootLayout({children}) {
   return (
     <html lang="en">
        <head>
-        <Script
-          id="driving-school-schema"
+        <script
           type="application/ld+json"
-          strategy="afterInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-        />
+        ></script>
       </head>
       <body
         suppressHydrationWarning
