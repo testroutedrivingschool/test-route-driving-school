@@ -2,6 +2,7 @@ import {Montserrat, Open_Sans} from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
 import QueryProvider from "./utils/QueryProvider";
+import Script from "next/script";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -65,9 +66,79 @@ export const metadata = {
   },
 };
 
+const schema = {
+  "@context": "https://schema.org",
+  "@type": "DrivingSchool",
+  "name": "Test Route Driving School",
+  "legalName": "Test Route Driving School",
+  "url": "https://testroutedrivingschool.com.au/",
+  "logo": "https://testroutedrivingschool.com.au/test-route-driving-school-logo.png",
+"image": "https://testroutedrivingschool.com.au/test-route-driving-school-logo.png",
+  "description": "Join our expert instructors and gain confidence behind the wheel. At Test Route Driving School, we provide structured, safe, and friendly driving lessons in Sydney Suburbs. Whether you’re a beginner or improving your skills, our lessons help you feel comfortable on the road.",
+  "slogan": "Learn to Drive Safely & Confidently",
+  "telephone": "+61 412 018 593",
+  "email": "testroutedrivingschool@gmail.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "67 Warialda St",
+    "addressLocality": "Kogarah",
+    "addressRegion": "NSW",
+    "postalCode": "2217",
+    "addressCountry": "AU"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": -33.9835176,
+    "longitude": 151.1348637
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+      ],
+      "opens": "06:00",
+      "closes": "20:00"
+    }
+  ],
+  "areaServed": [
+    "Kogarah", "Rockdale", "Roselands", "Sandringham", "Sans Souci", "South Hurstville", 
+    "Sutherland", "Sylvania", "Sylvania Waters", "Taren Point", "Tempe", "Turella", 
+    "Wali Creek", "Woolooware", "Kirrawee", "Kogarah Bay", "Kyeemagh", "Marrickville", 
+    "Miranda", "Monterey", "Mortdale", "Peakhurst", "Penshurst", "Ramsgate", "Ramsgate Beach", 
+    "Riverwood", "Allawah", "Arncliffe", "Banksia", "Bardwell Park", "Bardwell Valley", 
+    "Beverly Hills", "Bexley", "Bexley North", "Blakehurst", "Botany", "Brighton-Le-Sands", 
+    "Caringbah", "Caringbah South", "Carlton", "Carss Park", "Clemton Park", "Cronulla", 
+    "Dolls Point", "Eastgardens", "Endgadline", "Eastlakes", "Gymea", "Gymea Bay", 
+    "Hurstville", "Hurstville Grove", "Kangaroo Point", "Kareela", "Kingsgrove", "Mascot", 
+    "Pagewood", "Port Botany"
+  ],
+  "knowsAbout": [
+    "Automatic Driving Lessons",
+    "Driving Test Assessment",
+    "Driving Test Preparation Packages",
+    "Car Hire for Driving Instructor",
+    "Parking Techniques",
+    "Highway and Motorway Driving",
+    "Night Driving Lessons",
+    "City Driving Navigation"
+  ],
+  "sameAs": [
+    "https://www.facebook.com/share/1A148kMS7g/"
+  ]
+}
+
 export default function RootLayout({children}) {
   return (
     <html lang="en">
+       <head>
+        <Script
+          id="driving-school-schema"
+          type="application/ld+json"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      </head>
       <body
         suppressHydrationWarning
         className={`${montserrat.variable} ${openSans.variable} antialiased`}
