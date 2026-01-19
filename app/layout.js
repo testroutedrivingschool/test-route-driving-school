@@ -67,7 +67,7 @@ export const metadata = {
 
 const schema = {
   "@context": "https://schema.org",
-  "@type": "DrivingSchool",
+   "@type": ["LocalBusiness", "ProfessionalService"],
   "name": "Test Route Driving School",
   "@id": "https://testroutedrivingschool.com.au/#drivingschool",
 "priceRange": "$$",
