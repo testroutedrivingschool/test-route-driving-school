@@ -77,7 +77,7 @@ export default function ManagePackages() {
       !durationNum ||
       !price ||
       !description ||
-      !features
+      !features ||!imageFile
     ) {
       return toast.error(`Please fill all fields`);
     }

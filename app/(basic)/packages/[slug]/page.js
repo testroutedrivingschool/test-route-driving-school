@@ -1,5 +1,5 @@
 "use client";
-import {useParams, useRouter} from "next/navigation";
+import {useParams, useRouter, useSearchParams} from "next/navigation";
 
 import {packagesData} from "../packagesData";
 import {FiChevronRight} from "react-icons/fi";
@@ -15,15 +15,17 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import { addToCartLS } from "@/app/utils/cart";
 
 export default function PackageDetails() {
-  const {id} = useParams();
+  
+  const {slug} = useParams();
   const router = useRouter();
   const {data: singlePackage = [], isLoading} = useQuery({
-    queryKey: ["package"],
+    queryKey: ["package",slug],
     queryFn: async () => {
-      const res = await axios.get(`/api/packages/${id}`);
+     const res = await axios.get("/api/packages", { params: { slug } });
       return res.data;
     },
   });
+  
   const handleAddToCart = (pkg, e) => {
     e.preventDefault();
     console.log(pkg);
@@ -57,7 +59,7 @@ export default function PackageDetails() {
     <section className="pb-16">
       <PageHeroSection
         title={`${singlePackage.name}`}
-        subtitle={`Explore Packages`}
+        subtitle={`${singlePackage.description}`}
       />
       <Container className={``}>
         {/* Back Link */}

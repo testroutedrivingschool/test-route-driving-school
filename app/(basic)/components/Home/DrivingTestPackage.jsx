@@ -9,6 +9,7 @@ import testPackageImg2 from "@/app/assets/test-packageimg2.png";
 import {FaCheckCircle, FaStar, FaArrowRight} from "react-icons/fa";
 import {addToCartLS} from "@/app/utils/cart";
 import {useRouter} from "next/navigation";
+import Link from "next/link";
 export const packages = [
   {
     _id: "695bebe91f72e6c2fa81e098",
@@ -42,7 +43,18 @@ export default function DrivingTestPackage() {
       <Container>
         <SectionHeader
           title="Driving Test Packages"
-          subtitle="Choose the perfect test package to identify areas for improvement and boost your confidence before the official test."
+            subtitle={
+    <>
+      Choose the perfect test package to identify areas for improvement and boost your confidence before the official test.
+      Learn more about our 
+      <Link
+        href="/services/driving-test-package"
+        className="text-primary font-semibold underline hover:no-underline px-1"
+      >
+       Driving Test service.
+      </Link>
+    </>
+  }
           className="mt-0! mb-14"
         />
 

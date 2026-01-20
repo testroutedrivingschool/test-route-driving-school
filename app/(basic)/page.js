@@ -76,7 +76,16 @@ const whatWeOfferServices = [
     icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
     title: "Pickup and Drop-off",
     description:
-      "We offer convenient pickup and drop-off services within Sydney Suburbs and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.",
+      <>
+      For driving tests, we also offer a{" "}
+      <Link
+        href="/services/car-hire-for-instructor"
+        className="font-semibold underline text-primary"
+      >
+        car hire with instructor.
+      </Link>{" "}
+      
+      Also offer convenient pickup and drop-off services within Sydney Suburbs and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.</>,
   },
   {
     icon: <FaCarSide className="w-8 h-8 text-white" />,

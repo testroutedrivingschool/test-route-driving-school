@@ -1,19 +1,34 @@
-import { NextResponse } from "next/server";
-import { ObjectId } from "mongodb";
-import { packagesCollection } from "@/app/libs/mongodb/db";
+import {NextResponse} from "next/server";
+import {ObjectId} from "mongodb";
+import {packagesCollection} from "@/app/libs/mongodb/db";
 
 /* =========================
    GET – Fetch all packages
 ========================= */
-export async function GET() {
+export async function GET(request) {
   try {
-    const packages = await (await packagesCollection()).find().toArray();
+    const {searchParams} = new URL(request.url);
+    const slug = searchParams.get("slug");
+
+    const collection = await packagesCollection();
+
+    if (slug) {
+      const singlePackage = await collection.findOne({slug});
+
+      if (!singlePackage) {
+        return NextResponse.json({error: "Package not found"}, {status: 404});
+      }
+
+      return NextResponse.json(singlePackage);
+    }
+
+    const packages = await collection.find().toArray();
     return NextResponse.json(packages);
   } catch (error) {
-    console.error(error);
+    console.error("GET /api/packages error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch packages" },
-      { status: 500 }
+      {error: "Failed to fetch packages"},
+      {status: 500},
     );
   }
 }
@@ -52,13 +67,22 @@ export async function POST(req) {
       !category
     ) {
       return NextResponse.json(
-        { error: "All fields are required" },
-        { status: 400 }
+        {error: "All fields are required"},
+        {status: 400},
       );
     }
 
-    const result = await (await packagesCollection()).insertOne({
+    const result = await (
+      await packagesCollection()
+    ).insertOne({
       name,
+      slug: name
+        .toLowerCase()
+        .trim()
+        .replace(/&/g, "and")
+        .replace(/(\d)\.(\d)/g, "$1.$2")
+        .replace(/[^a-z0-9.]+/g, "-")
+        .replace(/(^-|-$)/g, ""),
       packageThumbline,
       lessons,
       duration,
@@ -74,15 +98,12 @@ export async function POST(req) {
     });
 
     return NextResponse.json(
-      { message: "Package added", id: result.insertedId },
-      { status: 201 }
+      {message: "Package added", id: result.insertedId},
+      {status: 201},
     );
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: "Failed to add package" },
-      { status: 500 }
-    );
+    return NextResponse.json({error: "Failed to add package"}, {status: 500});
   }
 }
 
@@ -91,14 +112,11 @@ export async function POST(req) {
 ========================= */
 export async function PUT(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const {searchParams} = new URL(req.url);
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Missing package ID" },
-        { status: 400 }
-      );
+      return NextResponse.json({error: "Missing package ID"}, {status: 400});
     }
 
     const body = await req.json();
@@ -108,24 +126,20 @@ export async function PUT(req) {
       updatedAt: new Date(),
     };
 
-    const result = await (await packagesCollection()).updateOne(
-      { _id: new ObjectId(id) },
-      { $set: updateData }
-    );
+    const result = await (
+      await packagesCollection()
+    ).updateOne({_id: new ObjectId(id)}, {$set: updateData});
 
     if (result.matchedCount === 0) {
-      return NextResponse.json(
-        { error: "Package not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({error: "Package not found"}, {status: 404});
     }
 
-    return NextResponse.json({ message: "Package updated successfully" });
+    return NextResponse.json({message: "Package updated successfully"});
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to update package" },
-      { status: 500 }
+      {error: "Failed to update package"},
+      {status: 500},
     );
   }
 }
@@ -135,33 +149,29 @@ export async function PUT(req) {
 ========================= */
 export async function DELETE(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const {searchParams} = new URL(req.url);
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json(
-        { error: "Missing package ID" },
-        { status: 400 }
-      );
+      return NextResponse.json({error: "Missing package ID"}, {status: 400});
     }
 
-    const result = await (await packagesCollection()).deleteOne({
+    const result = await (
+      await packagesCollection()
+    ).deleteOne({
       _id: new ObjectId(id),
     });
 
     if (result.deletedCount === 0) {
-      return NextResponse.json(
-        { error: "Package not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({error: "Package not found"}, {status: 404});
     }
 
-    return NextResponse.json({ message: "Package deleted successfully" });
+    return NextResponse.json({message: "Package deleted successfully"});
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to delete package" },
-      { status: 500 }
+      {error: "Failed to delete package"},
+      {status: 500},
     );
   }
 }

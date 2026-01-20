@@ -1,5 +1,6 @@
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import Link from "next/link";
 import React from "react";
 import {
   FaCalendarAlt,
@@ -55,7 +56,16 @@ export default function DrivingTipsSection({title,subtitle,tips}) {
     {
       title: "Prepare for Driving Tests",
       description:
-        "Learn practical test strategies, including parking, highway driving, and city navigation. Our instructors provide expert guidance, helping you understand requirements, build confidence, and pass your driving test efficiently and successfully.",
+        <>
+        
+        Learn practical test strategies, including parking, highway driving, and city navigation. Our instructors provide expert guidance, helping you understand requirements, build confidence, and pass your driving test efficiently and successfully. View our <Link
+        href="/services/driving-test-package"
+        className="text-primary font-semibold underline px-1"
+      >
+         Driving Test Packages.
+      </Link>
+      </>
+      ,
       icon: <FaAward className="h-6 w-6" />,
       color: "text-red-600 bg-red-50",
       goal: "Test Success",

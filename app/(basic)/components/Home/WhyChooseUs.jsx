@@ -52,7 +52,7 @@ export default function WhyChooseUs({className,title, subTitle, points}) {
             <p className="text-neutral">
               {subTitle
                 ? subTitle
-                : " At Test Route Driving School, We are one of the top driving schools near me in Sydney Suburbs for learners seeking expert guidance. Here&apos;s why we are the best choice for your driving education:"}
+                : ` At Test Route Driving School, We are one of the top driving schools near me in Sydney Suburbs for learners seeking expert guidance. Here's why we are the best choice for your driving education:`}
             </p>
 
             <ul className="flex flex-col gap-4 mt-4">

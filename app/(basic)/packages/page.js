@@ -25,6 +25,8 @@ export default function Packages() {
       return res.data;
     },
   });
+ 
+
 const router = useRouter()
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("default");
@@ -258,7 +260,7 @@ Choosing the right <strong>driving lesson package</strong> is simple. Our <stron
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredPackages.map((pkg) => (
               <Link
-                href={`/packages/${pkg._id}`}
+                href={`/packages/${(pkg.slug)}`}
                 key={pkg._id}
                 className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
               >

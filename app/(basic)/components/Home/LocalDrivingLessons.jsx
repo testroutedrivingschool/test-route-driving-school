@@ -24,15 +24,27 @@ export default function LocalDrivingLessons() {
               <strong className="px-1">road safety, building confidence, and developing practical skills.</strong>
               You’ll master city streets, highways, and parking with structured
               guidance in Sydney Suburbs, NSW. Explore our
-              <Link href="/package" className="text-primary px-1 font-semibold">
+              <Link href="/packages" className="text-primary px-1 font-semibold underline">
                 driving packages
-              </Link>
+              </Link>, including our
+  <Link
+    href="/services/highway-package"
+    className="text-primary px-1 font-semibold underline"
+  >
+    highway driving packages
+  </Link>
               tailored for every learner.
             </p>
 
             <p className="text-neutral text-lg leading-relaxed">
               Whether you want to master city streets, highway driving, or
-              parking techniques, our structured driving programs in Sydney Suburbs,
+              <Link
+    href="/services/parking-package"
+    className="text-primary px-1 font-semibold underline"
+  >
+    parking techniques
+  </Link>
+  , our structured driving programs in Sydney Suburbs,
               NSW. provide everything you need to become a safe and confident
               driver.
             </p>
