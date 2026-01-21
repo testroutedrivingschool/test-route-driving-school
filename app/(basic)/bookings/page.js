@@ -151,21 +151,27 @@ export default function BookingsPage() {
   };
 
   // Get dates for the week of selectedDate
-  const getWeekDates = (selectedDate) => {
-    const dates = [];
-    const startDate = new Date(selectedDate);
+const getWeekDates = (selectedDate) => {
+  const dates = [];
+  const startDate = new Date(selectedDate);
+  startDate.setHours(0, 0, 0, 0);
 
-    // 🔒 normalize time to avoid timezone bugs
-    startDate.setHours(0, 0, 0, 0);
+  // JS: Sun=0, Mon=1 ... Sat=6
+  const day = startDate.getDay();
+  const diffToMonday = (day + 6) % 7; // Monday => 0, Sunday => 6
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
-      dates.push(date);
-    }
+  // Move to Monday of that week
+  startDate.setDate(startDate.getDate() - diffToMonday);
 
-    return dates;
-  };
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    dates.push(d);
+  }
+
+  return dates;
+};
+
   const weekDates = getWeekDates(selectedDate);
 
   // Handle booking
@@ -349,7 +355,7 @@ const canLoop = displayedInstructors.length > slidesToShow;
               filteredInstructors.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-9 gap-6">
                   {/* Left Column - Calendar */}
-                  <div className="md:col-span-3">
+                  <div className="md:col-span-2">
                     <BookingCalendar
                       selectedDate={selectedDate}
                       setSelectedDate={setSelectedDate}
@@ -357,7 +363,7 @@ const canLoop = displayedInstructors.length > slidesToShow;
                   </div>
 
                   {/* Right Column - Schedule Table */}
-                  <div className="md:col-span-6 ">
+                  <div className="md:col-span-7 ">
                     {/* Instructor Selection - Horizontal Scrollbar */}
                     <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-6">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -475,141 +481,146 @@ const canLoop = displayedInstructors.length > slidesToShow;
     Please select an instructor to view the schedule.
   </div>
 ) : (
-                    <div className="rounded-xl shadow-sm border border-border-color overflow-hidden">
-                      {/* Schedule Header */}
-                      <div className="px-6 py-4 border-b border-border-color bg-linear-to-r from-gray-50 to-white">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h2 className="text-2xl font-bold text-gray-900">
-                              {selectedInstructor.name}&apos;s Schedule
-                            </h2>
-                            <p className="text-gray-600 mt-1">
-                              Week of{" "}
-                              {weekDates[0].toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                              })}{" "}
-                              -{" "}
-                              {weekDates[6].toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                              })}
-                            </p>
-                          </div>
-                          <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-red-500 rounded mr-2"></div>
-                                <span className="text-sm text-gray-600">
-                                  Booked
-                                </span>
-                              </div>
-                              <div className="flex items-center">
-                                <div className="w-3 h-3 bg-green-500 rounded mr-2"></div>
-                                <span className="text-sm text-gray-600">
-                                  Available
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                   <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
+  {/* ✅ Schedule Header sticky inside card */}
+  <div className="sticky top-0 z-40 px-6 py-4 border-b border-border-color bg-white">
+    <div className="flex items-center justify-between">
+      <div>
+        <h2 className="text-2xl font-bold text-gray-900">
+          {selectedInstructor.name}&apos;s Schedule
+        </h2>
+        <p className="text-gray-600 mt-1">
+          Week of{" "}
+          {weekDates[0].toLocaleDateString("en-US", {month: "short", day: "numeric"})}{" "}
+          -{" "}
+          {weekDates[6].toLocaleDateString("en-US", {month: "short", day: "numeric"})}
+        </p>
+      </div>
 
-                      {/* Schedule Table */}
-                      <div
-                         ref={tableRef}
-  className="overflow-x-auto overflow-y-hidden touch-pan-x select-none scrollbar-hide"
-  style={{
-    WebkitOverflowScrolling: "touch",
-    cursor: "grab",
-    touchAction: "pan-x", // ✅ important
-  }}
-                      >
-                        <table className="w-full min-w-[700px] border-collapse">
-                          <thead>
-                            <tr>
-                              <th className="py-2 px-4 border border-border-color text-left text-sm font-medium uppercase tracking-wider sticky left-0 bg-[#DCDCDC] z-10">
-                                Time
-                              </th>
-                              {weekDates.map((date, index) => (
-                                <th
-                                  key={index}
-                                  className="py-2 px-2 border border-border-color text-center text-sm font-medium text-gray-500 uppercase tracking-wider min-w-[140px]"
-                                >
-                                  <div className="flex flex-col items-center">
-                                    <div className="font-bold text-gray-900">
-                                      {weekdays[index]}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      {date.toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                      })}
-                                    </div>
+      <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-red-500 rounded mr-2"></div>
+            <span className="text-sm text-gray-600">Booked</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-green-500 rounded mr-2"></div>
+            <span className="text-sm text-gray-600">Available</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {/* ✅ Scroll container (vertical + horizontal) */}
+  <div
+    ref={tableRef}
+    className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
+    style={{
+      WebkitOverflowScrolling: "touch",
+      cursor: "grab",
+      touchAction: "pan-x",
+      maxHeight: "90vh", // ✅ adjust if you want bigger
+    }}
+  >
+    <table className="w-full min-w-[700px] border-separate border-spacing-0">
+      <thead className="bg-white">
+        <tr>
+          {/* ✅ Time header sticky top + left */}
+          <th className="py-2 px-2 border border-border-color text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-60 text-center">
+            Time
+          </th>
+
+          {/* ✅ Day headers sticky top */}
+          {weekDates.map((date, index) => (
+            <th
+              key={index}
+              className="py-2 px-2 border border-border-color text-center text-sm font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-white z-50"
+            >
+              <div className="flex flex-col items-center">
+                <div className="font-bold text-gray-900">{weekdays[index]}</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {date.toLocaleDateString("en-US", {month: "short", day: "numeric"})}
+                </div>
+              </div>
+            </th>
+          ))}
+        </tr>
+      </thead>
+
+      <tbody className="divide-y divide-border-color">
+        {times.map((time) => (
+          <tr key={time} className="hover:bg-gray-50/50">
+            {/* ✅ Time column sticky left */}
+            <td className="py-2 px-1 text-center whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-30">
+              {time}
+            </td>
+
+            {weekDates.map((date, dayIndex) => {
+              const available = isAvailable(selectedInstructor, dayIndex);
+
+              return (
+                <td key={dayIndex} className="text-center">
+                  <button
+                    onClick={() => available && handleBookNow(time, dayIndex)}
+                    disabled={!available}
+                    className={`w-full py-2 text-sm transition-all duration-200 min-h-11 flex items-center justify-center font-semibold ${
+                      available
+                        ? "bg-green-50 text-green-700 hover:bg-green-100 hover:shadow-sm border border-green-100"
+                        : "bg-red-50 text-red-700 cursor-not-allowed border border-red-100"
+                    }`}
+                  >
+                    {available ? (
+                      <div className="flex items-center gap-2">
+                        <IoMdAdd className="h-4 w-4" />
+                        <span className="text-xs">Book Now</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <FaTimesCircle className="h-4 w-4" />
+                        <span className="text-xs">Unavailable</span>
+                      </div>
+                    )}
+                  </button>
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+    <div className="sticky bottom-0 bg-white z-50">
+  <div className="flex  items-center  justify-between">
+    <div className="text-center">
+      <span className="font-bold ml-2">Date</span>
+    </div>
+{weekDates.map((date, index) => (
+                              <div
+                                key={index}
+                                className="py-2    text-center text-sm font-medium text-gray-500 uppercase tracking-wider "
+                              >
+                                <div className="flex flex-col items-center">
+                                  <div className="font-bold text-gray-900">
+                                    {weekdays[index]}
                                   </div>
-                                </th>
-                              ))}
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-border-color">
-                            {times.map((time) => (
-                              <tr key={time} className="hover:bg-gray-50/50">
-                                <td className="py-2 px-2 whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10">
-                                  {time}
-                                </td>
-                                {weekDates.map((date, dayIndex) => {
-                                  const available = isAvailable(
-                                    selectedInstructor,
-                                    dayIndex,
-                                  );
-                                  return (
-                                    <td key={dayIndex} className="text-center">
-                                      <button
-                                        onClick={() =>
-                                          available &&
-                                          handleBookNow(time, dayIndex)
-                                        }
-                                        disabled={!available}
-                                        className={`w-full py-2 text-sm transition-all duration-200 min-h-11 flex items-center justify-center font-semibold ${
-                                          available
-                                            ? "bg-green-50 text-green-700 hover:bg-green-100 hover:shadow-sm border border-green-100"
-                                            : "bg-red-50 text-red-700 cursor-not-allowed border border-red-100"
-                                        }`}
-                                      >
-                                        {available ? (
-                                          <div className="flex items-center gap-2">
-                                            <IoMdAdd className="h-4 w-4" />
-                                            <span className="text-xs">
-                                              Book Now
-                                            </span>
-                                          </div>
-                                        ) : (
-                                          <div className="flex items-center gap-2">
-                                            <FaTimesCircle className="h-4 w-4" />
-                                            <span className="text-xs">
-                                              Unavailable
-                                            </span>
-                                          </div>
-                                        )}
-                                      </button>
-                                    </td>
-                                  );
-                                })}
-                              </tr>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                   {date.toLocaleDateString("en-US", {
+                                    month: "short",
+                                    day: "numeric",
+                                  })}
+                                  </div>
+                                </div>
+                              </div>
                             ))}
-                          </tbody>
-                        </table>
-                      </div>
 
-                      {/* Table Footer */}
-                      <div className="px-6 py-4 border-t border-border-color bg-gray-50">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                          <div className="text-sm text-neutral">
-                            Showing {times.length} time slots
-                          </div>
-                        </div>
-                      </div>
-                    </div>)}
+   
+  </div>
+</div>
+  </div>
+
+ 
+</div>
+)}
 
 
 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from "react";
 import { FaCalendarAlt, FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
@@ -13,18 +14,26 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
   const [weekDates, setWeekDates] = useState([]);
 
   // Compute the week starting from the selected date
-  useEffect(() => {
-    const startOfWeek = new Date(selectedDate);
-    startOfWeek.setDate(selectedDate.getDate() - selectedDate.getDay() + 1); 
-    const dates = [];
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startOfWeek);
-      date.setDate(startOfWeek.getDate() + i);
-      dates.push(date);
-    }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setWeekDates(dates);
-  }, [selectedDate]);
+ useEffect(() => {
+  const startOfWeek = new Date(selectedDate);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  // convert Sun(0)..Sat(6) => Mon(0)..Sun(6)
+  const day = startOfWeek.getDay();
+  const diffToMonday = (day + 6) % 7;
+
+  startOfWeek.setDate(startOfWeek.getDate() - diffToMonday);
+
+  const dates = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    dates.push(d);
+  }
+
+  setWeekDates(dates);
+}, [selectedDate]);
+
 
   // Calendar grid generation
   const getDaysInMonth = (date) => {
@@ -34,14 +43,17 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
 
-    const firstDayIndex = firstDay.getDay();
+   const firstDayIndex = (firstDay.getDay() + 6) % 7;
     const days = [];
 
     // Previous month
     const prevMonthLastDay = new Date(year, month, 0).getDate();
-    for (let i = firstDayIndex - 1; i >= 0; i--) {
-      days.push({ date: new Date(year, month - 1, prevMonthLastDay - i), isCurrentMonth: false });
-    }
+    for (let i = firstDayIndex; i > 0; i--) {
+  days.push({
+    date: new Date(year, month - 1, prevMonthLastDay - i + 1),
+    isCurrentMonth: false,
+  });
+}
 
     // Current month
     const today = new Date();
@@ -74,11 +86,11 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
   };
 
   return (
-    <div className=" rounded-xl shadow-sm border border-border-color p-4">
+    <div className=" rounded-xl shadow-sm border border-border-color ">
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg md:text-xl font-bold text-gray-900">Find Next Available Time</h2>
-        <FaCalendarAlt className="h-5 w-5 text-gray-500" />
+      <div className="flex items-center justify-between mb-4 px-4 py-4 rounded-t-xl text-center bg-primary">
+        <h2 className="text-base  font-bold text-white">Find Next Available Time</h2>
+      
       </div>
 
       {/* Month Navigation */}
@@ -93,21 +105,21 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
       </div>
 
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 gap-1 mb-2">
+      <div className="grid grid-cols-7 gap-1 mb-2 bg-secondary px-2">
         {weekdays.map((day) => (
-          <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">{day}</div>
+          <div key={day} className="text-center text-sm font-medium text-white py-2">{day}</div>
         ))}
       </div>
 
       {/* Calendar Days */}
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 px-1">
         {calendarDays.map((day, index) => {
           const isSelected = isInSelectedWeek(day.date);
           return (
             <button
               key={index}
               onClick={() => setSelectedDate(day.date)}
-              className={`h-10 rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-200
+              className={`py-1 rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-200
                 ${day.isCurrentMonth ? "text-gray-900" : "text-gray-400"}
                 ${day.isToday ? "bg-blue-100 text-blue-900" : ""}
                 ${isSelected ? "bg-primary text-white" : "hover:bg-gray-100"}
