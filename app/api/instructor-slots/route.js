@@ -64,8 +64,16 @@ export async function PUT(req) {
       visibility = "public",
       privateNote = "",
       publicNote = "",
-      suburb = "ALL",
+   
     } = body || {};
+const suburb = body?.suburb ?? "ALL";
+
+const suburbOk =
+  suburb === "ALL" || (Array.isArray(suburb) && suburb.every((x) => typeof x === "string"));
+
+if (!suburbOk) {
+  return NextResponse.json({ error: "suburb must be 'ALL' or string[]" }, { status: 400 });
+}
 
     if (!instructorId || !date || !time) {
       return NextResponse.json(
@@ -129,5 +137,42 @@ export async function PUT(req) {
   } catch (err) {
     console.error("PUT instructor-slots error:", err);
     return NextResponse.json({error: "Something went wrong"}, {status: 500});
+  }
+}
+
+
+
+export async function DELETE(req) {
+  try {
+    const body = await req.json();
+    const { instructorId, date, times = [] } = body || {};
+
+    if (!instructorId || !date || !Array.isArray(times) || !times.length) {
+      return NextResponse.json(
+        { error: "instructorId, date, times required" },
+        { status: 400 }
+      );
+    }
+
+    if (!ObjectId.isValid(instructorId)) {
+      return NextResponse.json({ error: "Invalid instructorId" }, { status: 400 });
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return NextResponse.json({ error: "date must be YYYY-MM-DD" }, { status: 400 });
+    }
+
+    const collection = await instructorSlotsCollection();
+
+    const result = await collection.deleteMany({
+      instructorId: new ObjectId(instructorId),
+      date,
+      time: { $in: times },
+    });
+
+    return NextResponse.json({ ok: true, deletedCount: result.deletedCount });
+  } catch (err) {
+    console.error("DELETE instructor-slots error:", err);
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
