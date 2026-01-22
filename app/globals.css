@@ -98,3 +98,7 @@ strong{
   animation: moveCar 12s linear infinite;
   will-change: transform;
 }
+
+.location-link{
+  @apply underline font-bold px-1
+}

@@ -218,56 +218,95 @@ export const locationData = {
         ),
       },
     ],
-    faqs:[
-        {
-                question:"Where can I find cheap driving lessons near me?",
-                answer:<>
-                You can find competitive rates right here at <strong>test route driving school.</strong> We offer a range of packages to suit your budget and goals. You get high-quality instruction without a massive price tag.
-                </>
-        },
-        {
-                question:"Do you offer manual driving lessons in my area?",
-                answer:<>
-                 We currently specialize in providing the best Automatic Driving Lessons. This focus allows us to provide modern vehicles and specialized techniques. Most local learners prefer automatic cars for their ease.
-                </>
-        },
-        {
-                question:"Is your school a registered provider of driver's education? ",
-                answer:<>
-                You are choosing a professional and fully licensed <strong>driver&apos;s education</strong> team. We follow all official guidelines to ensure you receive great training. Our background reflects years of local driving expertise.
-                </>
-        },
-        {
-                question:"How do I book a driving lesson in Kogarah, NSW today? ",
-                answer:<>
-                You can simply visit our contact page to secure your slot. We offer flexible hours to accommodate students and young professionals. Our team will respond to you promptly to confirm.
-                </>
-        },
-        {
-                question:"What makes your driving lessons school different?",
-                answer:<>
-                You benefit from our deep local expertise and personalized teaching style. We don&apos;t just teach you to drive; we teach safety. Our student feedback demonstrates the high value learners place on our approach.
-                </>
-        },
-        {
-                question:"Do you provide manual driving lessons for international holders?",
-                answer:<>
-                 We focus on automatic cars to help you adapt quickly. If you need a <strong>refresher on driver education</strong>, we can help you. Our instructors explain local signs and rules clearly and straightforwardly.
-                </>
-        },
-        {
-                question:"What is in your driver education course in Kogarah, NSW?",
-                answer:<>
-               You will cover everything from car control to hazard perception. We show our students how to practice these vital skills. We ensure you are a safe driver before your test.
-                </>
-        },
-        {
-                question:"Can I get a discount on cheap driving lessons? ",
-                answer:<>
-             You can save money by purchasing one of our bulk bundles. These packages provide the best value for long-term learners. Quality safety training should be accessible to everyone in Kogarah.
-                </>
-        },
-    ]
+    faqs: [
+      {
+        question: "Where can I find cheap driving lessons near me?",
+        answer: (
+          <>
+            You can find competitive rates right here at{" "}
+            <strong>test route driving school.</strong> We offer a range of
+            packages to suit your budget and goals. You get high-quality
+            instruction without a massive price tag.
+          </>
+        ),
+      },
+      {
+        question: "Do you offer manual driving lessons in my area?",
+        answer: (
+          <>
+            We currently specialize in providing the best Automatic Driving
+            Lessons. This focus allows us to provide modern vehicles and
+            specialized techniques. Most local learners prefer automatic cars
+            for their ease.
+          </>
+        ),
+      },
+      {
+        question:
+          "Is your school a registered provider of driver's education? ",
+        answer: (
+          <>
+            You are choosing a professional and fully licensed{" "}
+            <strong>driver&apos;s education</strong> team. We follow all
+            official guidelines to ensure you receive great training. Our
+            background reflects years of local driving expertise.
+          </>
+        ),
+      },
+      {
+        question: "How do I book a driving lesson in Kogarah, NSW today? ",
+        answer: (
+          <>
+            You can simply visit our contact page to secure your slot. We offer
+            flexible hours to accommodate students and young professionals. Our
+            team will respond to you promptly to confirm.
+          </>
+        ),
+      },
+      {
+        question: "What makes your driving lessons school different?",
+        answer: (
+          <>
+            You benefit from our deep local expertise and personalized teaching
+            style. We don&apos;t just teach you to drive; we teach safety. Our
+            student feedback demonstrates the high value learners place on our
+            approach.
+          </>
+        ),
+      },
+      {
+        question:
+          "Do you provide manual driving lessons for international holders?",
+        answer: (
+          <>
+            We focus on automatic cars to help you adapt quickly. If you need a{" "}
+            <strong>refresher on driver education</strong>, we can help you. Our
+            instructors explain local signs and rules clearly and
+            straightforwardly.
+          </>
+        ),
+      },
+      {
+        question: "What is in your driver education course in Kogarah, NSW?",
+        answer: (
+          <>
+            You will cover everything from car control to hazard perception. We
+            show our students how to practice these vital skills. We ensure you
+            are a safe driver before your test.
+          </>
+        ),
+      },
+      {
+        question: "Can I get a discount on cheap driving lessons? ",
+        answer: (
+          <>
+            You can save money by purchasing one of our bulk bundles. These
+            packages provide the best value for long-term learners. Quality
+            safety training should be accessible to everyone in Kogarah.
+          </>
+        ),
+      },
+    ],
   },
   "sans-souci": {
     pageTitle: "Driving Lessons in Sans Souci – Your Local Driving Experts",
@@ -275,46 +314,48 @@ export const locationData = {
       "Master driving with professional Driving Lessons in Sans Souci – personalized lessons, proven techniques. Book your lesson and hit the road confidently!",
     keywords: [
       "Driving Lessons in Sans Souci",
-"driving lessons near me in Sans Souci",
-"driving lesson in Sans Souci",
-"driving lessons schools",
-"manual driving lessons",
-"learners driving lessons",
-"car driving lessons near me in Sans Souci",
-"cheap driving lessons",
-"driving school in Sans Souci",
-"driving lessons schools",
-"driving training school near me",
-"affordable driving school in Sans Souci",
-"drivers education school near me",
-"driver education course in Sans Souci",
-"drivers education",
-"driver education",
-"learn to drive schools",
-"manual driving lessons near me",
-"cheap driving lessons near me",
-"Teen driving lessons",
-"book driving lesson in Sans Souci",
+      "driving lessons near me in Sans Souci",
+      "driving lesson in Sans Souci",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Sans Souci",
+      "cheap driving lessons",
+      "driving school in Sans Souci",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Sans Souci",
+      "drivers education school near me",
+      "driver education course in Sans Souci",
+      "driver education",
+      "drivers education",
+      "learn to drive schools",
+      "cheap driving lessons near me",
+      "manual driving lessons near me",
+      "book driving lesson in Sans Souci",
+      "Teen driving lessons",
     ],
     heroTitle: "Driving Lessons in Sans Souci – Your Local Driving Experts",
     heroDescription: (
       <>
-       Master the roads with premium
-        <strong> Driving Lessons in Sans Souci</strong>designed for your ultimate success. We provide patient, expert coaching to help you pass your driving test with total confidence. Our modern fleet features safe, dual-controlled cars perfect for every new<strong>learner driving lesson.</strong>Whether you are a teen or an adult, we tailor every session to your needs. Start your journey toward freedom today with the most trusted <strong>driving school in Sans Souci.
-      </strong>
+        Master the roads with premium <strong> Driving Lessons in Sans Souci </strong> designed for
+        your ultimate success. We provide patient, expert coaching to help you
+        pass your driving test with total confidence. Our modern fleet features
+        safe, dual-controlled cars perfect for every new <strong>learner driving lesson.</strong>
+        Whether you are a teen or an adult, we tailor every session to your
+        needs. Start your journey toward freedom today with the most trusted
+        driving school in Sans Souci.
       </>
     ),
 
-    section1Title: "Why Learners Choose Our Driving Lessons in Kogarah",
+    section1Title: "Why Learners Choose Our Driving Lessons in Sans Souci, NSW",
     section1SubTitle: (
       <>
-        You can enjoy our top-rated car driving lessons near me in Sans Souci and the surrounding areas. We pick you up from your home or school in <Link className="underline font-bold px-1" href={`/area-covered`}>Sandringham</Link> or Dolls Point. My team is familiar with the specific challenges of the St. George region like the back of our hands. We ensure you get enough practice near the Kogarah testing center to feel ready. Our Driving Services cover every street where you might face your practical driving assessment. We make sure you feel at home behind the wheel in every local suburb.
+       You deserve an instructor who understands the unique coastal roads of Sans Souci. Many local students feel anxious about merging onto Rocky Point Road during peak-hour traffic. I use my years of expertise to calm your nerves and build your technical skills. Our driving training school, located near you, focuses on safety, precision, and mastering local test routes. You will learn to handle every intersection with the poise of a professional driver.
       </>
     ),
     section1Features: [
-      <>
-        Expert <strong>driving school in Kogarah, NSW.</strong>
-      </>,
+      <> Professional Driving Lessons in Sans Souci.</>,
       <>High first-time test pass rates.</>,
       <>Flexible booking for busy students.</>,
       <>Safe, modern dual-controlled training vehicles.</>,
@@ -336,7 +377,7 @@ export const locationData = {
       </>
     ),
     section2Features: [
-      <>Professional Automatic Driving Lessons Rockdale.</>,
+      <>Expert lessons in <Link className="location-link" href={"/area-covered"} >Ramsgate.</Link></>,
       <>Comprehensive Highway Package Hurstville.</>,
       <>Local City Driving Package Bexley.</>,
       <>Specialized Night Driving Lesson Carlton.</>,
@@ -387,14 +428,26 @@ export const locationData = {
       {
         icon: <FaFileAlt className="w-8 h-8 text-white" />,
         title: "Driving Test Package",
-        description:
-          "You get a warm-up session right before your practical driving exam. This package includes a reliable car for your use at the registry. You will feel supported and focused during this high-pressure moment.",
+        description: (
+          <>
+            You will master the art of reverse parallel parking in spaces. Our{" "}
+            <strong>cheap driving lessons</strong> focus on the technical points
+            of parking. You will develop the spatial awareness necessary for
+            navigating any street.
+          </>
+        ),
       },
       {
         icon: <FaCarSide className="w-8 h-8 text-white" />,
         title: "Car Hire for Instructor",
-        description:
-          "You can rent our professional vehicle for your official test day. Our cars meet all safety requirements and are easy to maneuver. This service removes the stress of finding a suitable car.",
+        description: (
+          <>
+            You will master the art of reverse parallel parking in spaces. Our{" "}
+            <strong>cheap driving lessons</strong> focus on the technical points
+            of parking. You will develop the spatial awareness necessary for
+            navigating any street.
+          </>
+        ),
       },
       {
         icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
@@ -425,13 +478,10 @@ export const locationData = {
     lessonTipsSectionTitle: "Driving Lesson Tips & Advice",
     lessonTips: [
       {
-        name: "Monitor Your Speed",
+        name: "Look Further Ahead",
         description: (
           <>
-            You must watch for school zones during your{" "}
-            <strong>Teen driving lessons.</strong> Speed cameras are common in
-            Kogarah, so always stay alert. Check our expert resources for more
-            tips on avoiding fines.
+           You must scan the road 15 seconds ahead to spot potential hazards early. This expert habit prevents sudden braking and keeps your driver's education safe.
           </>
         ),
       },
@@ -469,55 +519,94 @@ export const locationData = {
         ),
       },
     ],
-    faqs:[
-        {
-                question:"Where can I find cheap driving lessons near me?",
-                answer:<>
-                You can find competitive rates right here at <strong>test route driving school.</strong> We offer a range of packages to suit your budget and goals. You get high-quality instruction without a massive price tag.
-                </>
-        },
-        {
-                question:"Do you offer manual driving lessons in my area?",
-                answer:<>
-                 We currently specialize in providing the best Automatic Driving Lessons. This focus allows us to provide modern vehicles and specialized techniques. Most local learners prefer automatic cars for their ease.
-                </>
-        },
-        {
-                question:"Is your school a registered provider of driver's education? ",
-                answer:<>
-                You are choosing a professional and fully licensed <strong>driver&apos;s education</strong> team. We follow all official guidelines to ensure you receive great training. Our background reflects years of local driving expertise.
-                </>
-        },
-        {
-                question:"How do I book a driving lesson in Kogarah, NSW today? ",
-                answer:<>
-                You can simply visit our contact page to secure your slot. We offer flexible hours to accommodate students and young professionals. Our team will respond to you promptly to confirm.
-                </>
-        },
-        {
-                question:"What makes your driving lessons school different?",
-                answer:<>
-                You benefit from our deep local expertise and personalized teaching style. We don&apos;t just teach you to drive; we teach safety. Our student feedback demonstrates the high value learners place on our approach.
-                </>
-        },
-        {
-                question:"Do you provide manual driving lessons for international holders?",
-                answer:<>
-                 We focus on automatic cars to help you adapt quickly. If you need a <strong>refresher on driver education</strong>, we can help you. Our instructors explain local signs and rules clearly and straightforwardly.
-                </>
-        },
-        {
-                question:"What is in your driver education course in Kogarah, NSW?",
-                answer:<>
-               You will cover everything from car control to hazard perception. We show our students how to practice these vital skills. We ensure you are a safe driver before your test.
-                </>
-        },
-        {
-                question:"Can I get a discount on cheap driving lessons? ",
-                answer:<>
-             You can save money by purchasing one of our bulk bundles. These packages provide the best value for long-term learners. Quality safety training should be accessible to everyone in Kogarah.
-                </>
-        },
-    ]
+    faqs: [
+      {
+        question: "Where can I find cheap driving lessons near me?",
+        answer: (
+          <>
+            You can find competitive rates right here at{" "}
+            <strong>test route driving school.</strong> We offer a range of
+            packages to suit your budget and goals. You get high-quality
+            instruction without a massive price tag.
+          </>
+        ),
+      },
+      {
+        question: "Do you offer manual driving lessons in my area?",
+        answer: (
+          <>
+            We currently specialize in providing the best Automatic Driving
+            Lessons. This focus allows us to provide modern vehicles and
+            specialized techniques. Most local learners prefer automatic cars
+            for their ease.
+          </>
+        ),
+      },
+      {
+        question:
+          "Is your school a registered provider of driver's education? ",
+        answer: (
+          <>
+            You are choosing a professional and fully licensed{" "}
+            <strong>driver&apos;s education</strong> team. We follow all
+            official guidelines to ensure you receive great training. Our
+            background reflects years of local driving expertise.
+          </>
+        ),
+      },
+      {
+        question: "How do I book a driving lesson in Kogarah, NSW today? ",
+        answer: (
+          <>
+            You can simply visit our contact page to secure your slot. We offer
+            flexible hours to accommodate students and young professionals. Our
+            team will respond to you promptly to confirm.
+          </>
+        ),
+      },
+      {
+        question: "What makes your driving lessons school different?",
+        answer: (
+          <>
+            You benefit from our deep local expertise and personalized teaching
+            style. We don&apos;t just teach you to drive; we teach safety. Our
+            student feedback demonstrates the high value learners place on our
+            approach.
+          </>
+        ),
+      },
+      {
+        question:
+          "Do you provide manual driving lessons for international holders?",
+        answer: (
+          <>
+            We focus on automatic cars to help you adapt quickly. If you need a{" "}
+            <strong>refresher on driver education</strong>, we can help you. Our
+            instructors explain local signs and rules clearly and
+            straightforwardly.
+          </>
+        ),
+      },
+      {
+        question: "What is in your driver education course in Kogarah, NSW?",
+        answer: (
+          <>
+            You will cover everything from car control to hazard perception. We
+            show our students how to practice these vital skills. We ensure you
+            are a safe driver before your test.
+          </>
+        ),
+      },
+      {
+        question: "Can I get a discount on cheap driving lessons? ",
+        answer: (
+          <>
+            You can save money by purchasing one of our bulk bundles. These
+            packages provide the best value for long-term learners. Quality
+            safety training should be accessible to everyone in Kogarah.
+          </>
+        ),
+      },
+    ],
   },
 };
