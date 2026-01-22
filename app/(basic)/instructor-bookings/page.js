@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import {useEffect, useRef, useState} from "react";
 
 import Container from "@/app/shared/ui/Container";
 import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import Image from "next/image";
 
 import axios from "axios";
 import Modal from "@/app/shared/ui/Modal";
@@ -114,9 +112,8 @@ export default function InstructorBookings() {
   const [selectedSlot, setSelectedSlot] = useState(null);
 
   const [showMoreTimes, setShowMoreTimes] = useState(false);
-
-
- 
+  const [suburbSearch, setSuburbSearch] = useState("");
+  const [selectedSuburbs, setSelectedSuburbs] = useState([]);
 
   const visibleTimes = showMoreTimes
     ? times
@@ -131,53 +128,83 @@ export default function InstructorBookings() {
     bulkAction: "",
     reuseSettings: false,
   });
-const formatDate = (d) => {
-  const date = new Date(d);
+const LENGTH_OPTIONS = [
+  "15 mins",
+  "30 mins",
+  "45 mins",
+  "1 hour",
+  "1 hour 15 mins",
+  "1 hour 30 mins",
+  "1 hour 45 mins",
+  "2 hours",
+  "2 hours 15 mins",
+];
 
-  const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
 
-  return `${yyyy}-${mm}-${dd}`; // local YYYY-MM-DD
+
+
+  const formatDate = (d) => {
+    const date = new Date(d);
+
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+
+    return `${yyyy}-${mm}-${dd}`; // local YYYY-MM-DD
+  };
+
+ const openSlotModal = ({ date, time }) => {
+  const dateKey = formatDate(date);
+  const key = `${dateKey}__${time}`;
+  const existing = slotMap[key];
+
+  setSelectedSlot({
+    date,
+    time,
+    staff: instructor?.name || "Staff",
+    location: "Sydney",
+  });
+
+ const dateStr = formatDate(date);
+const maxMins = getMaxEmptyExtendMinutes(dateStr, time);
+const defaultLen = "15 mins";
+  if (existing) {
+    const isAll = existing.suburb === "ALL";
+
+    const current = existing?.duration || "15 mins";
+    const safe =
+      durationToMinutes(current) <= maxMins ? current : "15 mins";
+
+    setSlotForm((p) => ({
+      ...p,
+      length: safe, // ✅ safe length
+      visibility: existing.visibility || "public",
+      privateNote: existing.privateNote || "",
+      publicNote: existing.publicNote || "",
+      allSuburbs: isAll,
+      bulkAction: "", 
+      reuseSettings: false,
+    }));
+
+    setSelectedSuburbs(Array.isArray(existing.suburb) ? existing.suburb : []);
+  } else {
+    setSlotForm((p) => ({
+      ...p,
+        length: defaultLen,
+      visibility: "public",
+      privateNote: "",
+      publicNote: "",
+      allSuburbs: true,
+      bulkAction: "",
+      reuseSettings: false,
+    }));
+
+    setSelectedSuburbs([]);
+  }
+
+  setShowSlotModal(true);
 };
 
-
-  const openSlotModal = ({date, time}) => {
-    const dateKey = formatDate(date);
-    const key = `${dateKey}__${time}`;
-    const existing = slotMap[key];
-
-    setSelectedSlot({
-      date,
-      time,
-      staff: instructor?.name || "Staff",
-      location: "Sydney",
-    });
-
-    // if already scheduled previously, load it into form
-    if (existing) {
-      setSlotForm((p) => ({
-        ...p,
-        length: existing.duration || "15 mins",
-        visibility: existing.visibility || "public",
-        privateNote: existing.privateNote || "",
-        publicNote: existing.publicNote || "",
-        allSuburbs: existing.suburb === "ALL",
-      }));
-    } else {
-      // reset to defaults for new slot
-      setSlotForm((p) => ({
-        ...p,
-        length: "15 mins",
-        visibility: "public",
-        privateNote: "",
-        publicNote: "",
-        allSuburbs: true,
-      }));
-    }
-
-    setShowSlotModal(true);
-  };
 
   const closeSlotModal = () => {
     setShowSlotModal(false);
@@ -271,167 +298,311 @@ const formatDate = (d) => {
     },
   });
 
+
+
   // quick lookup map: key = "YYYY-MM-DD__7:15AM"
   const slotMap = slots.reduce((acc, s) => {
     acc[`${s.date}__${s.time}`] = s;
     return acc;
   }, {});
+  const selectedKey = selectedSlot
+    ? `${formatDate(selectedSlot.date)}__${selectedSlot.time}`
+    : "";
 
- const STEP_MIN = 15;
+  const existingSlot = selectedKey ? slotMap[selectedKey] : null;
 
-const durationToMinutes = (str = "") => {
-  const s = str.toLowerCase().replace(/\s+/g, " ").trim();
 
-  // examples: "15 mins", "1 hour", "1 hour 15 mins", "2 hours", "2 hour 15 mins"
-  const hourMatch = s.match(/(\d+)\s*hour/);
-  const minMatch = s.match(/(\d+)\s*min/);
 
-  const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
-  const mins = minMatch ? parseInt(minMatch[1], 10) : 0;
+  // ✅ show Remove if there is any saved slot in DB (public/private/hidden/etc)
+  const shouldShowRemove = !!existingSlot;
 
-  // if only "45 mins" -> hours=0 mins=45
-  return hours * 60 + mins;
+  const STEP_MIN = 15;
+
+
+
+    const isStopSlot = (slot) => {
+  // stop if empty OR public (available-to-book)
+  if (!slot) return true;
+  return slot.visibility === "public";
 };
 
-// index of each time for quick lookup
-const timeIndexMap = times.reduce((acc, t, i) => {
-  acc[t] = i;
-  return acc;
-}, {});
+const getMaxExtendMinutes = (dateStr, startTime) => {
+  const startIdx = timeIndexMap[startTime];
+  if (startIdx == null) return STEP_MIN;
 
-// coverage[dateKey][time] = { skip: true }  OR { rowSpan: n } on start
-const coverage = {};
+  let steps = 1; // at least 15 mins
+  for (let i = startIdx + 1; i < times.length; i++) {
+    const t = times[i];
+    const nextSlot = slotMap[`${dateStr}__${t}`];
 
-const sortedSlots = [...slots].sort((a, b) => {
-  if (a.date !== b.date) return a.date.localeCompare(b.date);
-  return (timeIndexMap[a.time] ?? 0) - (timeIndexMap[b.time] ?? 0);
-});
-
-for (const s of sortedSlots) {
-  const dateKey = s.date;
-  const startIdx = timeIndexMap[s.time];
-  if (startIdx == null) continue;
-
-  const durMin = durationToMinutes(s.duration || "15 mins");
-  const span = Math.max(1, Math.ceil(durMin / STEP_MIN));
-
-  coverage[dateKey] ??= {};
-
-  // ✅ If this start time is already covered by an earlier slot, ignore this slot
-  if (coverage[dateKey][s.time]) {
-    console.warn("Overlapping slot ignored:", s);
-    continue;
+    if (isStopSlot(nextSlot)) break; // hit public OR empty → stop
+    steps += 1; // can extend through hidden/privateBooked/publicNote
   }
 
-  // mark start
-  coverage[dateKey][s.time] = { rowSpan: span };
+  return steps * STEP_MIN; // minutes
+};
 
-  // mark covered times to skip (but don't overwrite an existing start cell)
-  for (let k = 1; k < span; k++) {
-    const t = times[startIdx + k];
+  const durationToMinutes = (str = "") => {
+    const s = str.toLowerCase().replace(/\s+/g, " ").trim();
+
+    // examples: "15 mins", "1 hour", "1 hour 15 mins", "2 hours", "2 hour 15 mins"
+    const hourMatch = s.match(/(\d+)\s*hour/);
+    const minMatch = s.match(/(\d+)\s*min/);
+
+    const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+    const mins = minMatch ? parseInt(minMatch[1], 10) : 0;
+
+    // if only "45 mins" -> hours=0 mins=45
+    return hours * 60 + mins;
+  };
+
+  // index of each time for quick lookup
+  const timeIndexMap = times.reduce((acc, t, i) => {
+    acc[t] = i;
+    return acc;
+  }, {});
+
+const isSlotBusy = (dateStr, time) => {
+  // If any slot exists in DB at this time => NOT empty
+  return !!slotMap[`${dateStr}__${time}`];
+};
+
+// how many minutes we can extend while NEXT slots are empty
+const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
+  const startIdx = timeIndexMap[startTime];
+  if (startIdx == null) return 15;
+
+  let steps = 1; // at least the clicked slot itself (15 mins)
+
+  // check next times one by one until we hit a busy slot
+  for (let i = startIdx + 1; i < times.length; i++) {
+    const t = times[i];
     if (!t) break;
 
-    if (!coverage[dateKey][t]) {
-      coverage[dateKey][t] = { skip: true };
-    } else {
-      // another slot already starts here -> overlap conflict
-      console.warn("Overlap conflict at", dateKey, t);
+    if (isSlotBusy(dateStr, t)) break; // stop at first non-empty slot
+    steps++;
+  }
+
+  return steps * STEP_MIN; // STEP_MIN = 15
+};
+
+
+      const dateStrForModal =
+  selectedSlot?.date ? formatDate(selectedSlot.date) : "";
+
+const maxMinutesAllowed =
+  selectedSlot?.time && dateStrForModal
+    ? getMaxExtendMinutes(dateStrForModal, selectedSlot.time)
+    : STEP_MIN;
+
+const allowedLengthOptions = LENGTH_OPTIONS.filter(
+  (opt) => durationToMinutes(opt) <= maxMinutesAllowed
+);
+
+  // coverage[dateKey][time] = { skip: true }  OR { rowSpan: n } on start
+  const coverage = {};
+
+  const sortedSlots = [...slots].sort((a, b) => {
+    if (a.date !== b.date) return a.date.localeCompare(b.date);
+    return (timeIndexMap[a.time] ?? 0) - (timeIndexMap[b.time] ?? 0);
+  });
+
+  for (const s of sortedSlots) {
+    const dateKey = s.date;
+    const startIdx = timeIndexMap[s.time];
+    if (startIdx == null) continue;
+
+    const durMin = durationToMinutes(s.duration || "15 mins");
+    const span = Math.max(1, Math.ceil(durMin / STEP_MIN));
+
+    coverage[dateKey] ??= {};
+
+    // ✅ If this start time is already covered by an earlier slot, ignore this slot
+    if (coverage[dateKey][s.time]) {
+      console.warn("Overlapping slot ignored:", s);
+      continue;
+    }
+
+    // mark start
+    coverage[dateKey][s.time] = {rowSpan: span};
+
+    // mark covered times to skip (but don't overwrite an existing start cell)
+    for (let k = 1; k < span; k++) {
+      const t = times[startIdx + k];
+      if (!t) break;
+
+      if (!coverage[dateKey][t]) {
+        coverage[dateKey][t] = {skip: true};
+      } else {
+        // another slot already starts here -> overlap conflict
+        console.warn("Overlap conflict at", dateKey, t);
+      }
     }
   }
-}
+
+  const parseBulkMinutes = (bulkAction) => {
+    if (!bulkAction) return 0;
+    if (bulkAction === "restOfDay") return -1;
+    const [type, val] = bulkAction.split(":");
+    if (type === "next") return parseInt(val, 10) || 0;
+    return 0;
+  };
+
+  const getTimeRangeFrom = (startTime, totalMinutes) => {
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return [];
+
+    const steps = Math.max(1, Math.ceil(totalMinutes / STEP_MIN));
+    return times.slice(startIdx, startIdx + steps);
+  };
+
+  const getRestOfDayRange = (startTime) => {
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return [];
+    return times.slice(startIdx); // from start time to end
+  };
+
+  const getBlockTimes = (startTime, lengthStr) => {
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return [];
+
+    const mins = durationToMinutes(lengthStr);
+    const steps = Math.max(1, Math.ceil(mins / STEP_MIN));
+    return times.slice(startIdx, startIdx + steps);
+  };
 
 
-const parseBulkMinutes = (bulkAction) => {
-  if (!bulkAction) return 0;
-  if (bulkAction === "restOfDay") return -1;
-  const [type, val] = bulkAction.split(":");
-  if (type === "next") return parseInt(val, 10) || 0;
-  return 0;
-};
+  const modalDateStr = selectedSlot ? formatDate(selectedSlot.date) : "";
+const modalMaxMins = selectedSlot
+  ? (existingSlot
+      ? getMaxExtendMinutes(modalDateStr, selectedSlot.time) // your existing logic for non-empty edits
+      : getMaxEmptyExtendMinutes(modalDateStr, selectedSlot.time)) // ✅ empty logic
+  : 15;
 
-const getTimeRangeFrom = (startTime, totalMinutes) => {
-  const startIdx = timeIndexMap[startTime];
-  if (startIdx == null) return [];
-
-  const steps = Math.max(1, Math.ceil(totalMinutes / STEP_MIN));
-  return times.slice(startIdx, startIdx + steps);
-};
-
-
-const getRestOfDayRange = (startTime) => {
-  const startIdx = timeIndexMap[startTime];
-  if (startIdx == null) return [];
-  return times.slice(startIdx); // from start time to end
-};
-
+const allowedLengths = LENGTH_OPTIONS.filter(
+  (opt) => durationToMinutes(opt) <= modalMaxMins
+);
 
 
   const handleSchedule = async () => {
-  try {
-    if (!instructor?._id || !selectedSlot?.date || !selectedSlot?.time) return;
+    try {
+      if (!instructor?._id || !selectedSlot?.date || !selectedSlot?.time)
+        return;
 
-    if (slotForm.visibility === "publicNote" && !slotForm.publicNote.trim()) {
-      return toast.error("Public Note is required for Public note only.");
+      if (slotForm.visibility === "publicNote" && !slotForm.publicNote.trim()) {
+        return toast.error("Public Note is required for Public note only.");
+      }
+      if (!slotForm.allSuburbs && selectedSuburbs.length === 0) {
+        return toast.error(
+          "Please select at least 1 suburb or enable All Suburbs.",
+        );
+      }
+
+      const dateStr = formatDate(selectedSlot.date);
+
+      // ✅ Which times are affected by bulk action?
+      const bulkMinutes = parseBulkMinutes(slotForm.bulkAction);
+
+      let bulkRange = [];
+      if (bulkMinutes > 0)
+        bulkRange = getTimeRangeFrom(selectedSlot.time, bulkMinutes);
+      else if (bulkMinutes === -1)
+        bulkRange = getRestOfDayRange(selectedSlot.time);
+      else bulkRange = [selectedSlot.time];
+
+      // ✅ For each time in bulkRange, we will create a block START
+      // and delete covered slots of that block
+      const requests = bulkRange.map(async (startTime) => {
+        const blockTimes = getBlockTimes(startTime, slotForm.length); // e.g. 1 hour => 4 times
+
+        // ✅ conflict check: if another slot exists inside this block (except itself)
+        const conflict = blockTimes.some((t) => {
+          const k = `${dateStr}__${t}`;
+          return slotMap[k] && t !== startTime;
+        });
+        if (conflict) {
+          throw new Error(`Conflict inside ${startTime} block`);
+        }
+
+        // ✅ 1) delete covered slots (except startTime)
+        const covered = blockTimes.slice(1);
+        if (covered.length) {
+          await axios.delete("/api/instructor-slots", {
+            data: {
+              instructorId: instructor._id,
+              date: dateStr,
+              times: covered,
+            },
+          });
+        }
+
+        // ✅ 2) upsert only the start slot with long duration
+        await axios.put("/api/instructor-slots", {
+          instructorId: instructor._id,
+          date: dateStr,
+          time: startTime,
+          duration: slotForm.length,
+          visibility: slotForm.visibility,
+          privateNote: slotForm.privateNote,
+          publicNote: slotForm.publicNote,
+          suburb: slotForm.allSuburbs ? "ALL" : selectedSuburbs,
+        });
+      });
+
+      await Promise.all(requests);
+
+      toast.success("Slots updated ✅");
+      setSlotForm((p) => ({
+        ...p,
+        bulkAction: "",
+      }));
+      closeSlotModal();
+      await refetchSlots();
+    } catch (err) {
+      console.error(err);
+      toast.error(err?.message || "Update failed");
     }
-const hasConflict = blockTimes.some((t) => slotMap[`${dateStr}__${t}`] && t !== selectedSlot.time);
-if (hasConflict) {
-  return toast.error("Conflict: Another slot already exists inside this duration.");
-}
+  };
 
-    const dateStr = formatDate(selectedSlot.date);
+  const handleRemove = async () => {
+    try {
+      if (!instructor?._id || !selectedSlot?.date || !selectedSlot?.time)
+        return;
 
-    const bulkMinutes = parseBulkMinutes(slotForm.bulkAction);
+      const dateStr = formatDate(selectedSlot.date);
 
-    // Build list of times to update
-    let targetTimes = [];
-    if (bulkMinutes > 0) {
-      targetTimes = getTimeRangeFrom(selectedSlot.time, bulkMinutes);
-    } else if (bulkMinutes === -1) {
-      targetTimes = getRestOfDayRange(selectedSlot.time);
-    } else {
-      targetTimes = [selectedSlot.time]; // normal single slot
+      // ✅ use DB duration if exists
+      const durationStr = existingSlot?.duration || "15 mins";
+      const blockTimes = getBlockTimes(selectedSlot.time, durationStr);
+
+      await axios.delete("/api/instructor-slots", {
+        data: {
+          instructorId: instructor._id,
+          date: dateStr,
+          times: blockTimes.length ? blockTimes : [selectedSlot.time],
+        },
+      });
+
+      toast.success("Removed ✅");
+
+      setSlotForm((p) => ({
+        ...p,
+        length: "15 mins",
+        visibility: "public",
+        privateNote: "",
+        publicNote: "",
+        bulkAction: "",
+        allSuburbs: true,
+        reuseSettings: false,
+      }));
+
+      closeSlotModal();
+      await refetchSlots();
+    } catch (err) {
+      console.error(err);
+      toast.error("Remove failed");
     }
-
-    if (!targetTimes.length) return;
-
-    // duration of the "block" should come from slotForm.length
-    const blockMinutes = durationToMinutes(slotForm.length);
-    const blockSteps = Math.max(1, Math.ceil(blockMinutes / STEP_MIN));
-
-    // If bulk action is selected, you probably want to apply the block duration
-    // from the start time, and only cover the next X of the "block".
-    // Example: length=1 hour => cover 4 slots.
-    const blockTimes = targetTimes.slice(0, blockSteps);
-
-    // Build requests:
-    // - first slot = duration = slotForm.length
-    // - covered slots after first = duration = "15 mins" but mark them as "privateBooked/hidden" etc
-    const requests = blockTimes.map((t, idx) => {
-      const payload = {
-        instructorId: instructor._id,
-        date: dateStr,
-        time: t,
-        duration: idx === 0 ? slotForm.length : "15 mins",
-        visibility: slotForm.visibility,
-        privateNote: slotForm.privateNote,
-        publicNote: slotForm.publicNote,
-        suburb: slotForm.allSuburbs ? "ALL" : "ALL",
-      };
-
-      return axios.put("/api/instructor-slots", payload);
-    });
-
-    await Promise.all(requests);
-
-    toast.success("Bulk slots updated ✅");
-    closeSlotModal();
-    await refetchSlots();
-  } catch (err) {
-    console.error(err);
-    toast.error("Update failed");
-  }
-};
-
+  };
 
   if (slotsLoading) return <LoadingSpinner />;
 
@@ -499,7 +670,7 @@ if (hasConflict) {
                             {weekDates.map((date, index) => (
                               <th
                                 key={index}
-                                className="py-2 px-2 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
+                                className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
                               >
                                 <div className="flex flex-col items-center">
                                   <div className="font-bold text-gray-900 wrap-break-word">
@@ -522,70 +693,121 @@ if (hasConflict) {
                               key={time}
                               className="hover:bg-gray-50/50 align-stretch"
                             >
-                              <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm  font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center ">
+                              <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm  font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500">
                                 {time}
                               </td>
                               {weekDates.map((date, dayIndex) => {
-  const dateKey = formatDate(date);
-  const key = `${dateKey}__${time}`;
-  const slot = slotMap[key];
+                                const dateKey = formatDate(date);
+                                const key = `${dateKey}__${time}`;
+                                const slot = slotMap[key];
+                                const suburbLabel =
+                                  slot?.suburb === "ALL" ? (
+                                    ""
+                                  ) : Array.isArray(slot?.suburb) ? (
+                                    <>
+                                      S <sup>{slot.suburb.length}</sup>{" "}
+                                    </>
+                                  ) : (
+                                    ""
+                                  );
+                                const cov = coverage?.[dateKey]?.[time];
+                                if (cov?.skip) return null; // ✅ this is what makes it collapse
 
-  const cov = coverage?.[dateKey]?.[time];
-  if (cov?.skip) return null; // ✅ this is what makes it collapse
+                                const rowSpan = cov?.rowSpan || 1;
+                                const visibility = slot?.visibility || "empty";
 
-  const rowSpan = cov?.rowSpan || 1;
-  const visibility = slot?.visibility || "public";
+                                return (
+                                  <td
+                                    key={dayIndex}
+                                    rowSpan={rowSpan} // ✅ merged height
+                                    className="p-0 align-stretch"
+                                  >
+                                    {/* IMPORTANT: button must fill the cell */}
+                                    {visibility === "empty" ? (
+                                      <button
+                                        onClick={() =>
+                                          openSlotModal({date, time})
+                                        }
+                                        className="w-full h-full min-h-11 bg-white hover:bg-gray-50 border border-border-color flex items-center justify-center"
+                                        title="Add"
+                                      >
+                                        <span className="text-lg  text-primary">
+                                          +
+                                        </span>
+                                      </button>
+                                    ) : visibility === "hidden" ? (
+                                      <button
+                                        onClick={() =>
+                                          openSlotModal({date, time})
+                                        }
+                                        className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col items-center justify-center gap-2"
+                                      >
+                                        <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
+                                        <span className="text-xs text-center">
+                                          {slot?.privateNote} {!!suburbLabel && (
+                                          <span className="text-[10px] opacity-90">
+                                            {suburbLabel}
+                                          </span>
+                                        )}
+                                        </span>
+                                        <IoMdAdd className="h-5 w-5 text-primary shrink-0" />
+                                      </button>
+                                    ) : visibility === "privateBooked" ? (
+                                      <button
+                                        onClick={() =>
+                                          openSlotModal({date, time})
+                                        }
+                                        className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
+                                      >
+                                        <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
+                                        <span className="flex-1 text-center text-white whitespace-normal wrap-break-word leading-snug"> 
+                                          {slot?.privateNote} {!!suburbLabel && (
+                                          <span className="text-[10px] opacity-90">
+                                            {suburbLabel}
+                                          </span>
+                                        )}
+                                        </span>
+                                        <IoMdAdd className="h-5 w-5 text-white shrink-0" />
+                                      </button>
+                                    ) : visibility === "publicNote" ? (
+                                      <button
+                                        onClick={() =>
+                                          openSlotModal({date, time})
+                                        }
+                                        className="w-full h-full min-h-11 bg-gray-100 text-primary border border-border-color hover:bg-[#B2B2B2] px-2 py-2 flex flex-col items-center justify-center gap-2"
+                                      >
+                                        
+                                        <span className="text-xs text-center whitespace-normal wrap-break-word leading-snug">
+                                          {slot?.publicNote}  {!!suburbLabel && (
+                                          <span className="text-[10px] opacity-90">
+                                            {suburbLabel}
+                                          </span>
+                                        )}
+                                        </span>
+                                        <IoMdAdd className="h-5 w-5 text-primary shrink-0" />
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() =>
+                                          openSlotModal({date, time})
+                                        }
+                                        className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center flex-wrap gap-2 text-xs font-semibold text-white px-1 py-2"
+                                      >
+                                        <span>Available</span>
+                                        <div>
 
-  return (
-    <td
-      key={dayIndex}
-      rowSpan={rowSpan}                 // ✅ merged height
-      className="p-0 align-stretch"
-    >
-      {/* IMPORTANT: button must fill the cell */}
-      {visibility === "hidden" ? (
-        <button
-          onClick={() => openSlotModal({ date, time })}
-          className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col items-center justify-center gap-2"
-        >
-          <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
-          <span className="text-xs text-center">{slot?.privateNote}</span>
-          <IoMdAdd className="h-5 w-5 text-primary shrink-0" />
-        </button>
-      ) : visibility === "privateBooked" ? (
-        <button
-          onClick={() => openSlotModal({ date, time })}
-          className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
-        >
-          <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
-          <span className="flex-1 text-left text-white whitespace-normal break-words leading-snug">
-            {slot?.privateNote}
-          </span>
-          <IoMdAdd className="h-5 w-5 text-white shrink-0" />
-        </button>
-      ) : visibility === "publicNote" ? (
-        <button
-          onClick={() => openSlotModal({ date, time })}
-          className="w-full h-full min-h-11 bg-gray-100 text-primary border border-border-color hover:bg-[#B2B2B2] px-2 py-2 flex flex-col items-center justify-center gap-2"
-        >
-          <span className="text-xs text-center whitespace-normal break-words leading-snug">
-            {slot?.publicNote}
-          </span>
-          <IoMdAdd className="h-5 w-5 text-primary shrink-0" />
-        </button>
-      ) : (
-        <button
-          onClick={() => openSlotModal({ date, time })}
-          className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center gap-2 text-xs font-semibold text-white"
-        >
-          <span>Available</span>
-          <IoMdAdd className="h-4 w-4" />
-        </button>
-      )}
-    </td>
-  );
-})}
-
+                                        {!!suburbLabel && (
+                                          <span className="text-[10px] opacity-90">
+                                            {suburbLabel}
+                                          </span>
+                                        )}
+                                        <IoMdAdd className="h-4 w-4" />
+                                        </div>
+                                      </button>
+                                    )}
+                                  </td>
+                                );
+                              })}
                             </tr>
                           ))}
                         </tbody>
@@ -665,27 +887,19 @@ if (hasConflict) {
               <h4 className="font-semibold text-gray-900 mb-3">Length:</h4>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-                {[
-                  "15 mins",
-                  "30 mins",
-                  "45 mins",
-                  "1 hour",
-                  "1 hour 15 mins",
-                  "1 hour 30 mins",
-                  "1 hour 45 mins",
-                  "2 hours",
-                  "2 hour  15 mins",
-                ].map((opt) => (
-                  <label key={opt} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="length"
-                      checked={slotForm.length === opt}
-                      onChange={() => setSlotForm((p) => ({...p, length: opt}))}
-                    />
-                    <span>{opt}</span>
-                  </label>
-                ))}
+              {allowedLengths.map((opt) => (
+  <label key={opt} className="flex items-center gap-2">
+    <input
+      type="radio"
+      name="length"
+      checked={slotForm.length === opt}
+      onChange={() => setSlotForm((p) => ({ ...p, length: opt }))}
+    />
+    <span>{opt}</span>
+  </label>
+))}
+
+
               </div>
             </div>
 
@@ -794,55 +1008,97 @@ if (hasConflict) {
             <div className="mb-6">
               <h4 className="font-semibold text-gray-900 mb-2">Suburbs:</h4>
 
-              <label className="flex items-center gap-2 text-sm">
+              <label className="flex items-center gap-2 text-sm mb-3">
                 <input
                   type="checkbox"
                   checked={slotForm.allSuburbs}
-                  onChange={(e) =>
-                    setSlotForm((p) => ({...p, allSuburbs: e.target.checked}))
-                  }
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setSlotForm((p) => ({...p, allSuburbs: checked}));
+                    if (checked) setSelectedSuburbs([]); // reset list when switching to ALL
+                  }}
                 />
                 <span>Available in all Suburbs</span>
               </label>
+
+              {!slotForm.allSuburbs && (
+                <div className="border border-border-color rounded-lg p-3">
+                  <input
+                    value={suburbSearch}
+                    onChange={(e) => setSuburbSearch(e.target.value)}
+                    placeholder="Search suburb..."
+                    className="w-full border border-border-color rounded-md px-3 py-2 mb-3"
+                  />
+
+                  <div className="max-h-64 overflow-y-auto space-y-2">
+                    {(instructor?.suburbs || [])
+                      .filter((s) =>
+                        s.name
+                          .toLowerCase()
+                          .includes(suburbSearch.toLowerCase()),
+                      )
+                      .map((s) => {
+                        const checked = selectedSuburbs.includes(s.name);
+                        return (
+                          <label
+                            key={s.name}
+                            className="flex items-center gap-2 text-sm"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={checked}
+                              onChange={(e) => {
+                                setSelectedSuburbs((prev) =>
+                                  e.target.checked
+                                    ? [...prev, s.name]
+                                    : prev.filter((x) => x !== s.name),
+                                );
+                              }}
+                            />
+                            <span>{s.name}</span>
+                          </label>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bulk Action */}
             <div className="mb-6">
-  <h4 className="font-semibold text-gray-900 mb-2">Bulk Action:</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">Bulk Action:</h4>
 
-  <select
-    value={slotForm.bulkAction}
-    onChange={(e) =>
-      setSlotForm((p) => ({ ...p, bulkAction: e.target.value }))
-    }
-    className="w-full border border-gray-300 rounded-lg px-3 py-2"
-  >
-    <option value="">Select Time Frame</option>
+              <select
+                value={slotForm.bulkAction}
+                onChange={(e) =>
+                  setSlotForm((p) => ({...p, bulkAction: e.target.value}))
+                }
+                className="w-full border border-gray-300 rounded-lg px-3 py-2"
+              >
+                <option value="">Select Time Frame</option>
 
-    {/* Next X minutes/hours */}
-    {[
-      30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180,
-      240, 300, 360, 420, 480,
-    ].map((mins) => {
-      const isHours = mins >= 60;
-      const hours = mins / 60;
+                {/* Next X minutes/hours */}
+                {[
+                  30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 240, 300,
+                  360, 420, 480,
+                ].map((mins) => {
+                  const isHours = mins >= 60;
+                  const hours = mins / 60;
 
-      const label = isHours
-        ? `Next ${Number.isInteger(hours) ? hours : hours} Hours`
-        : `Next ${mins} Minutes`;
+                  const label = isHours
+                    ? `Next ${Number.isInteger(hours) ? hours : hours} Hours`
+                    : `Next ${mins} Minutes`;
 
+                  return (
+                    <option key={mins} value={`next:${mins}`}>
+                      {label}
+                    </option>
+                  );
+                })}
 
-
-      return (
-        <option key={mins} value={`next:${mins}`}>
-          {label}
-        </option>
-      );
-    })}
-
-    <option value="restOfDay">Rest of Day</option>
-  </select>
-</div>
+                <option value="restOfDay">Rest of Day</option>
+              </select>
+            </div>
 
             {/* Reuse */}
             <div className="mb-6">
@@ -862,11 +1118,21 @@ if (hasConflict) {
             </div>
 
             {/* Footer button */}
-            <div className="flex justify-end">
+            <div className="flex items-center justify-between pt-4 border-t">
+              <div>
+                {shouldShowRemove && (
+                  <button
+                    type="button"
+                    onClick={handleRemove}
+                    className="text-red-600 font-semibold hover:underline"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+
               <button
-                onClick={() => {
-                  handleSchedule();
-                }}
+                onClick={handleSchedule}
                 className="bg-primary hover:bg-primary text-white font-semibold px-6 py-3 rounded-lg"
               >
                 Schedule
