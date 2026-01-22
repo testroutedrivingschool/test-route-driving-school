@@ -1,6 +1,7 @@
 import { locationData } from "./locationData/locationData";
 import LocationPageClient from "./LocationPageClient";
 
+
 export async function generateMetadata({ params }) {
    const resolvedParams = await params;
 
