@@ -695,6 +695,14 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
         ),
       },
       {
+        name: "Signal Your Intentions Early",
+        description: (
+          <>
+          You need to indicate for at least five seconds before moving or turning. This awareness is a core part of any driver education course.
+          </>
+        ),
+      },
+      {
         name: "Watch for Cyclists",
         description: (
           <>
