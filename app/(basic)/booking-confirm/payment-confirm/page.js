@@ -16,7 +16,9 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {toast} from "react-toastify";
 import StripeCardInput from "@/app/shared/ui/StripeCardInput";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_Stripe_Publishable_key);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_Stripe_Publishable_key,
+);
 
 export default function PaymentConfirmPage() {
   return (
@@ -34,7 +36,7 @@ function PaymentForm() {
   const [booking, setBooking] = useState(null);
   const [locations, setLocations] = useState([]);
   const [address, setAddress] = useState("");
-  const [suburb, setSuburb] = useState(booking?.location || "");
+  const [suburb, setSuburb] = useState("");
   const [loading, setLoading] = useState(false);
 
   /* Load booking */
@@ -45,12 +47,16 @@ function PaymentForm() {
       return;
     }
     const bookingData = JSON.parse(data);
-    console.log(bookingData);
+
     setBooking(bookingData);
-    setAddress(bookingData.userAddress || "");
+    setAddress(
+      bookingData.clientAddress
+        ? bookingData.clientAddress
+        : bookingData?.userAddress || "",
+    );
     setSuburb(bookingData.location || "");
   }, [router]);
-
+  console.log(booking);
   /* Load suburbs */
   useEffect(() => {
     axios.get("/api/locations").then((res) => {
@@ -59,57 +65,91 @@ function PaymentForm() {
   }, []);
 
   if (!booking) return <LoadingSpinner />;
-console.log(booking);
+  console.log(booking);
   const handleConfirmPayment = async () => {
-    if (!stripe || !elements) return;
+  if (!address || !suburb) return toast.error("Please complete address details");
 
-    if (!address || !suburb) {
-      return toast.error("Please complete address details");
-    }
+  setLoading(true);
 
-    setLoading(true);
-
-    try {
-      const {data} = await axios.post("/api/create-payment-intent", {
-        amount: booking.price,
-      });
-      const cardElement = elements.getElement(CardNumberElement);
-      const result = await stripe.confirmCardPayment(data.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: booking.userName,
-            email: booking.userEmail,
-            address: {line1: address},
-          },
-        },
-      });
-
-      if (result.error) {
-        toast.error(result.error.message);
-        setLoading(false);
-        return;
-      }
+  try {
+    const clientId = booking?.clientId;
+console.log(clientId);
+    // ✅ MANUAL booking => NO payment
+    if (booking.bookingType === "manual") {
+      
+if (clientId) {
+  await axios.patch(`/api/clients/${clientId}`, { address, suburb });
+}
 
       await axios.post("/api/bookings", {
         ...booking,
         address,
         suburb,
-        paymentIntentId: result.paymentIntent.id,
-        status: "paid",
+        status: "pending",
+        paymentStatus: "unpaid",
+        paymentIntentId: null,
       });
 
       sessionStorage.removeItem("pendingBooking");
-
-      toast.success("Booking confirmed 🎉");
+      toast.success("Booking created (Unpaid) ✅");
       router.push("/dashboard/my-bookings");
-    } catch (err) {
-      console.error(err);
-      toast.error("Failed to Booking");
-    } finally {
-      setLoading(false);
+      return;
     }
-  };
+
+    // ✅ WEBSITE booking => Stripe payment required
+    if (!stripe || !elements) return;
+
+    const cardElement = elements.getElement(CardNumberElement);
+    if (!cardElement) {
+      toast.error("Card input not ready");
+      return;
+    }
+
+    const { data } = await axios.post("/api/create-payment-intent", {
+      amount: booking.price,
+    });
+
+    const result = await stripe.confirmCardPayment(data.clientSecret, {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          name: booking.userName,
+          email: booking.userEmail,
+          address: { line1: address },
+        },
+      },
+    });
+
+    if (result.error) {
+      toast.error(result.error.message);
+      return;
+    }
+
+    // ✅ Update client address for website booking too (optional but good)
+    if (clientId) {
+      await axios.patch(`/api/clients/${clientId}`, { address, suburb });
+    }
+
+    await axios.post("/api/bookings", {
+      ...booking,
+      address,
+      suburb,
+      paymentIntentId: result.paymentIntent.id,
+      status: "pending",
+      paymentStatus: "paid",
+    });
+
+    sessionStorage.removeItem("pendingBooking");
+    toast.success("Booking confirmed 🎉");
+    router.push("/dashboard/my-bookings");
+  } catch (err) {
+    console.error(err);
+    toast.error("Failed to Booking");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   console.log(booking);
   return (
@@ -162,19 +202,26 @@ console.log(booking);
               ))}
             </select>
           </div>
-
-          {/* Card */}
-          <div className="space-y-2">
-            <StripeCardInput />
-          </div>
-
-          <PrimaryBtn
-            onClick={handleConfirmPayment}
-            disabled={loading}
-            className="w-full justify-center py-3 text-lg"
-          >
-            {loading ? "Processing..." : `Pay $${booking.price}`}
-          </PrimaryBtn>
+          {booking.bookingType === "website" ? (
+            <>
+              <StripeCardInput />
+              <PrimaryBtn
+                onClick={handleConfirmPayment}
+                disabled={loading}
+                className="w-full justify-center py-3 text-lg"
+              >
+                {loading ? "Processing..." : `Pay $${booking.price}`}
+              </PrimaryBtn>
+            </>
+          ) : (
+            <PrimaryBtn
+              onClick={handleConfirmPayment}
+              disabled={loading}
+              className="w-full justify-center py-3 text-lg"
+            >
+              {loading ? "Processing..." : "Confirm Booked"}
+            </PrimaryBtn>
+          )}
         </div>
       </Container>
     </section>

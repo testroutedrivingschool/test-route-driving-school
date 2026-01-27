@@ -29,6 +29,10 @@ export async function instructorSlotsCollection() {
   const db = await getDb();
   return db.collection("instructorSlots");
 }
+export async function clientsCollection() {
+  const db = await getDb();
+  return db.collection("clients");
+}
 export async function reviewsCollection() {
   const db = await getDb();
   return db.collection("reviews");

@@ -9,14 +9,31 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email"); // optional
 
-    const filter = email ? { userEmail: email } : {};
+    let filter = {};
 
-    const bookings = await (await bookingsCollection()).find(filter).sort({ createdAt: -1 }).toArray();
+    if (email) {
+      filter = {
+        $or: [
+          { userEmail: email },
+          { instructorEmail: email },
+        ],
+      };
+    }
+
+    const bookings = await (
+      await bookingsCollection()
+    )
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .toArray();
 
     return NextResponse.json(bookings);
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to fetch bookings" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch bookings" },
+      { status: 500 }
+    );
   }
 }
 

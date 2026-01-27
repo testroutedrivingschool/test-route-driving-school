@@ -31,7 +31,7 @@ export default function BookingConfirmPage() {
     queryKey: ["instructor", booking?.instructorEmail],
     queryFn: async () => {
       const res = await axios.get(
-        `/api/instructors?email=${booking.instructorEmail}`
+        `/api/instructors?email=${booking.instructorEmail}`,
       );
       return res.data;
     },
@@ -54,30 +54,54 @@ export default function BookingConfirmPage() {
     if (!selectedBooking) {
       return toast.error("Please select a service");
     }
+    console.log(booking);
 
-    const bookingData = {
-      userEmail: userData.email,
-      userName: userData.name,
-      userAddress: userData.address,
-      instructorEmail: instructor.email,
-      instructorName: instructor.name,
+    if (booking.bookingType === "website") {
+      const bookingData = {
+        userEmail: userData.email,
+        userName: userData.name,
+        userAddress: userData.address,
+        instructorEmail: instructor.email,
+        instructorName: instructor.name,
+        instructorId: instructor._id,
 
-      serviceName: selectedBooking.service,
-      duration: selectedBooking.duration,
-      minutes: selectedBooking.minutes,
-      price: selectedBooking.price,
+        serviceName: selectedBooking.service,
+        duration: selectedBooking.duration,
+        minutes: selectedBooking.minutes,
+        price: selectedBooking.price,
 
-      bookingDate: booking.date,
-      bookingTime: booking.time,
-      location: booking.location,
-      status: "pending",
-    };
+        bookingDate: booking.date,
+        bookingTime: booking.time,
+        location: booking.location,
+        status: "pending",
+        bookingType: booking.bookingType,
+      };
+      console.log("Booking:", bookingData);
 
-    console.log("Booking:", bookingData);
+      sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
-    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+      router.push("/booking-confirm/payment-confirm");
+    } else {
+      const bookingData = {
+        instructorEmail: instructor.email,
+        instructorName: instructor.name,
+        instructorId: instructor._id,
+        serviceName: selectedBooking.service,
+        duration: selectedBooking.duration,
+        minutes: selectedBooking.minutes,
+        price: selectedBooking.price,
 
-    router.push("/booking-confirm/payment-confirm");
+        bookingDate: booking.date,
+        bookingTime: booking.time,
+        location: booking.location,
+        status: "pending",
+        bookingType: booking.bookingType,
+      };
+      sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+
+      router.push("/select-client");
+      console.log(bookingData);
+    }
   };
 
   if (isLoading || isUserLoading || !instructor || !booking)
@@ -93,7 +117,7 @@ export default function BookingConfirmPage() {
         <div className="border border-border-color rounded shadow">
           {/* Header */}
           <div className="bg-green-600 text-white text-center py-3 font-semibold text-lg">
-            Booking {userData.name}
+            {booking.bookingType === "manual" ? "Booking User" : `Booking ${userData.name}`}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">

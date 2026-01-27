@@ -11,17 +11,11 @@ import {IoMdAdd} from "react-icons/io";
 import BookingCalendar from "../bookings/components/BookingCalendar";
 import {useUserData} from "@/app/hooks/useUserData";
 import {toast} from "react-toastify";
-import {FaCalendarPlus, FaEyeSlash} from "react-icons/fa";
+import {FaCalendarPlus, FaChevronLeft, FaChevronRight, FaEyeSlash} from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
-const weekdays = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
+const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
 
 const times = [
   "7:00AM",
@@ -95,6 +89,7 @@ const times = [
 ];
 
 export default function InstructorBookings() {
+  const router = useRouter();
   const {data: user} = useUserData();
   const {data: instructor} = useQuery({
     queryKey: ["instructor", user?.email],
@@ -104,7 +99,7 @@ export default function InstructorBookings() {
       return res.data;
     },
   });
-  console.log(instructor);
+
   const tableRef = useRef(null);
 
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -150,7 +145,7 @@ const LENGTH_OPTIONS = [
     const mm = String(date.getMonth() + 1).padStart(2, "0");
     const dd = String(date.getDate()).padStart(2, "0");
 
-    return `${yyyy}-${mm}-${dd}`; // local YYYY-MM-DD
+    return `${yyyy}-${mm}-${dd}`; 
   };
 
  const openSlotModal = ({ date, time }) => {
@@ -177,7 +172,7 @@ const defaultLen = "15 mins";
 
     setSlotForm((p) => ({
       ...p,
-      length: safe, // ✅ safe length
+      length: safe, 
       visibility: existing.visibility || "public",
       privateNote: existing.privateNote || "",
       publicNote: existing.publicNote || "",
@@ -211,27 +206,36 @@ const defaultLen = "15 mins";
     setSelectedSlot(null);
   };
 
+  const addDays = (date, days) => {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+};
+
+const goPrevWeek = () => setSelectedDate((d) => addDays(d, -7));
+const goNextWeek = () => setSelectedDate((d) => addDays(d, 7));
+
   // Get dates for the week of selectedDate
-  const getWeekDates = (selectedDate) => {
-    const dates = [];
-    const startDate = new Date(selectedDate);
-    startDate.setHours(0, 0, 0, 0);
+const getWeekDates = (selectedDate) => {
+  const dates = [];
+  const startDate = new Date(selectedDate);
+  startDate.setHours(0, 0, 0, 0);
 
-    // JS: Sun=0, Mon=1 ... Sat=6
-    const day = startDate.getDay();
-    const diffToMonday = (day + 6) % 7;
+  // JS: Sun=0..Sat=6  -> Monday start
+  const day = startDate.getDay();
+  const diffToMonday = (day + 6) % 7;
 
-    // Move to Monday of that week
-    startDate.setDate(startDate.getDate() - diffToMonday);
+  startDate.setDate(startDate.getDate() - diffToMonday);
 
-    for (let i = 0; i < 7; i++) {
-      const d = new Date(startDate);
-      d.setDate(startDate.getDate() + i);
-      dates.push(d);
-    }
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(startDate);
+    d.setDate(startDate.getDate() + i);
+    dates.push(d);
+  }
 
-    return dates;
-  };
+  return dates;
+};
+
 
   const weekDates = getWeekDates(selectedDate);
 
@@ -298,7 +302,32 @@ const defaultLen = "15 mins";
     },
   });
 
+const {
+  data: bookings = [],
+  isLoading: bookingsLoading,
+} = useQuery({
+  queryKey: ["bookings", user?.email, weekFrom, weekTo],
+  enabled: !!user?.email,
+  queryFn: async () => {
+    const res = await axios.get("/api/bookings", {
+      params: {
+        email: user.email,
+        from: weekFrom,
+        to: weekTo,
+      },
+    });
 
+    // ✅ only bookings of this instructor
+    return (res.data || []).filter(
+      (b) =>
+        (b.instructorEmail || "").toLowerCase() ===
+        (user.email || "").toLowerCase(),
+    );
+  },
+});
+
+
+console.log(bookings);
 
   // quick lookup map: key = "YYYY-MM-DD__7:15AM"
   const slotMap = slots.reduce((acc, s) => {
@@ -316,7 +345,57 @@ const defaultLen = "15 mins";
   // ✅ show Remove if there is any saved slot in DB (public/private/hidden/etc)
   const shouldShowRemove = !!existingSlot;
 
-  const STEP_MIN = 15;
+const STEP_MIN = 15;
+
+const toMinutes = (b) => {
+  if (typeof b?.minutes === "number") return b.minutes;
+  // fallback parse from "1hr 30m"
+  const s = (b?.duration || "").toLowerCase();
+  const hr = s.match(/(\d+)\s*h/);
+  const mn = s.match(/(\d+)\s*m/);
+  const hours = hr ? parseInt(hr[1], 10) : 0;
+  const mins = mn ? parseInt(mn[1], 10) : 0;
+  return hours * 60 + mins || 15;
+};
+
+// your timeIndexMap already exists
+// your formatDate already exists
+const timeIndexMap = times.reduce((acc, t, i) => {
+  acc[t] = i;
+  return acc;
+}, {});
+
+const bookingCoverage = {};
+const bookingsSorted = [...bookings].sort((a, b) => {
+  const da = formatDate(a.bookingDate || a.date);
+  const db = formatDate(b.bookingDate || b.date);
+  if (da !== db) return da.localeCompare(db);
+  return (timeIndexMap[a.bookingTime || a.time] ?? 0) - (timeIndexMap[b.bookingTime || b.time] ?? 0);
+});
+
+for (const b of bookingsSorted) {
+  const dateKey = formatDate(b.bookingDate || b.date);
+  const startTime = b.bookingTime || b.time;
+  const startIdx = timeIndexMap[startTime];
+  if (startIdx == null) continue;
+
+  const mins = toMinutes(b);
+  const span = Math.max(1, Math.ceil(mins / STEP_MIN));
+
+  bookingCoverage[dateKey] ??= {};
+
+  // if something already starts here, skip (or handle conflict)
+  if (bookingCoverage[dateKey][startTime]) continue;
+
+  bookingCoverage[dateKey][startTime] = { rowSpan: span, booking: b };
+
+  for (let k = 1; k < span; k++) {
+    const t = times[startIdx + k];
+    if (!t) break;
+    if (!bookingCoverage[dateKey][t]) bookingCoverage[dateKey][t] = { skip: true };
+  }
+}
+
 
 
 
@@ -357,15 +436,51 @@ const getMaxExtendMinutes = (dateStr, startTime) => {
   };
 
   // index of each time for quick lookup
-  const timeIndexMap = times.reduce((acc, t, i) => {
-    acc[t] = i;
-    return acc;
-  }, {});
+
 
 const isSlotBusy = (dateStr, time) => {
   // If any slot exists in DB at this time => NOT empty
   return !!slotMap[`${dateStr}__${time}`];
 };
+
+
+  const getBookingDateStr = (b) => formatDate(b.bookingDate || b.date);
+  const getBookingTime = (b) => b.bookingTime || b.time;
+
+
+  const bookingStartMap = {}; // key => booking (only at start time)
+
+  const sortedBookings = [...bookings].sort((a, b) => {
+    const da = getBookingDateStr(a);
+    const db = getBookingDateStr(b);
+    if (da !== db) return da.localeCompare(db);
+    return (timeIndexMap[getBookingTime(a)] ?? 0) - (timeIndexMap[getBookingTime(b)] ?? 0);
+  });
+
+  for (const b of sortedBookings) {
+    const dateKey = getBookingDateStr(b);
+    const time = getBookingTime(b);
+    const startIdx = timeIndexMap[time];
+    if (startIdx == null) continue;
+
+    const durMin = durationToMinutes(b.duration || "15 mins");
+    const span = Math.max(1, Math.ceil(durMin / STEP_MIN));
+
+    bookingCoverage[dateKey] ??= {};
+
+    // ignore overlap (optional)
+    if (bookingCoverage[dateKey][time]) continue;
+
+    bookingCoverage[dateKey][time] = { rowSpan: span };
+    bookingStartMap[`${dateKey}__${time}`] = b;
+
+    for (let k = 1; k < span; k++) {
+      const t = times[startIdx + k];
+      if (!t) break;
+      if (!bookingCoverage[dateKey][t]) bookingCoverage[dateKey][t] = { skip: true };
+    }
+  }
+
 
 // how many minutes we can extend while NEXT slots are empty
 const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
@@ -390,14 +505,8 @@ const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
       const dateStrForModal =
   selectedSlot?.date ? formatDate(selectedSlot.date) : "";
 
-const maxMinutesAllowed =
-  selectedSlot?.time && dateStrForModal
-    ? getMaxExtendMinutes(dateStrForModal, selectedSlot.time)
-    : STEP_MIN;
 
-const allowedLengthOptions = LENGTH_OPTIONS.filter(
-  (opt) => durationToMinutes(opt) <= maxMinutesAllowed
-);
+
 
   // coverage[dateKey][time] = { skip: true }  OR { rowSpan: n } on start
   const coverage = {};
@@ -604,7 +713,29 @@ const allowedLengths = LENGTH_OPTIONS.filter(
     }
   };
 
-  if (slotsLoading) return <LoadingSpinner />;
+const handleBooking = (date, slot, time) => {
+  if (!slot?._id) return toast.error("Slot not found!");
+
+  const bookingInfo = {
+    instructorEmail: instructor?.email,
+    instructorName: instructor?.name,
+    instructorId: instructor?._id,
+
+    date: new Date(date).toISOString(), 
+    time,
+    location: "", 
+
+    slotId: slot._id,
+    duration: slot.duration,
+
+    bookingType: "manual", 
+  };
+console.log(bookingInfo);
+  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+  router.push("/booking-confirm");
+};
+
+if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
 
   return (
     <>
@@ -628,26 +759,41 @@ const allowedLengths = LENGTH_OPTIONS.filter(
                   <div className="">
                     {/* Schedule Header */}
                     <div className="sticky top-0 z-50 px-6 py-4 border-b border-border-color bg-white">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h2 className="text-lg md:text-2xl font-bold text-gray-900">
-                            {user?.name}&apos;s Schedule
-                          </h2>
-                          <p className="text-gray-600 mt-1">
-                            Week of{" "}
-                            {weekDates[0].toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                            })}{" "}
-                            -{" "}
-                            {weekDates[6].toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
+  <div className="flex items-center justify-between gap-4">
+    {/* left: title + range */}
+    <div>
+      <h2 className="text-lg md:text-2xl font-bold text-gray-900">
+        {user?.name}&apos;s Schedule
+      </h2>
+      <p className="text-gray-600 mt-1">
+        Week of{" "}
+        {weekDates[0].toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
+        -{" "}
+        {weekDates[6].toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+      </p>
+    </div>
+
+    {/* right: prev/next week */}
+    <div className="flex items-center gap-2">
+      <button
+        onClick={goPrevWeek}
+        className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
+        title="Previous 7 days"
+      >
+        <FaChevronLeft />
+      </button>
+
+      <button
+        onClick={goNextWeek}
+        className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
+        title="Next 7 days"
+      >
+        <FaChevronRight />
+      </button>
+    </div>
+  </div>
+</div>
+
 
                     {/* Schedule Table */}
                     <div
@@ -673,16 +819,13 @@ const allowedLengths = LENGTH_OPTIONS.filter(
                                 className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
                               >
                                 <div className="flex flex-col items-center">
-                                  <div className="font-bold text-gray-900 wrap-break-word">
-                                    {weekdays[index]}
-                                  </div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {date.toLocaleDateString("en-US", {
-                                      month: "short",
-                                      day: "numeric",
-                                    })}
-                                  </div>
-                                </div>
+      <div className="font-bold text-gray-900">
+        {date.toLocaleDateString("en-US", { weekday: "long" })}
+      </div>
+      <div className="text-xs text-gray-500 mt-1">
+        {date.toLocaleDateString("en-US", { day: "numeric", month: "short" })}
+      </div>
+    </div>
                               </th>
                             ))}
                           </tr>
@@ -710,8 +853,55 @@ const allowedLengths = LENGTH_OPTIONS.filter(
                                   ) : (
                                     ""
                                   );
+
+
+
+const bCov = bookingCoverage?.[dateKey]?.[time];
+
+if (bCov?.skip) return null;
+
+if (bCov?.booking) {
+  const b = bCov.booking;
+  const name = b.clientName || b.userName || "Client";
+  const paid = b.paymentStatus === "paid";
+
+  return (
+    <td key={dayIndex} rowSpan={bCov.rowSpan} className="p-0 align-stretch">
+      <button
+        type="button"
+        onClick={() => handleBookingDetails?.(b)} // optional
+        className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color
+                   px-2 py-2 flex flex-col items-center justify-center text-center"
+      >
+        {/* Paid badge */}
+        {paid && (
+          <span
+            className="absolute top-1 left-1 h-5 w-5 rounded-full bg-blue-600 text-white
+                       text-[11px] font-bold flex items-center justify-center"
+            title="Paid"
+          >
+            P
+          </span>
+        )}
+
+        <div className="text-red-600 font-semibold text-sm">{name}</div>
+        <div className="text-red-600 text-xs font-semibold mt-1">
+          {(b.serviceName || "Driving lesson")} {b.duration || ""}
+        </div>
+        <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
+          {(b.address || b.userAddress || "")} {(b.suburb || b.location || "")}
+        </div>
+      </button>
+    </td>
+  );
+}
+
+
+
                                 const cov = coverage?.[dateKey]?.[time];
-                                if (cov?.skip) return null; // ✅ this is what makes it collapse
+                                if (cov?.skip) return null; 
+
+                                
 
                                 const rowSpan = cov?.rowSpan || 1;
                                 const visibility = slot?.visibility || "empty";
@@ -737,63 +927,63 @@ const allowedLengths = LENGTH_OPTIONS.filter(
                                       </button>
                                     ) : visibility === "hidden" ? (
                                       <button
-                                        onClick={() =>
-                                          openSlotModal({date, time})
-                                        }
-                                        className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col items-center justify-center gap-2"
+                                        onClick={()=>handleBooking(date,slot,time)}
+                                        className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col md:flex-row md:justify-between items-center justify-center gap-2"
                                       >
                                         <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
-                                        <span className="text-xs text-center">
+                                        <span  className="text-xs text-center leading-snug break-all">
                                           {slot?.privateNote} {!!suburbLabel && (
                                           <span className="text-[10px] opacity-90">
                                             {suburbLabel}
                                           </span>
                                         )}
                                         </span>
-                                        <IoMdAdd className="h-5 w-5 text-primary shrink-0" />
+                                        <IoMdAdd onClick={(e) => {
+    e.stopPropagation(); 
+    openSlotModal({ date, time });
+  }} className="h-5 w-5 text-primary shrink-0" />
                                       </button>
                                     ) : visibility === "privateBooked" ? (
                                       <button
-                                        onClick={() =>
-                                          openSlotModal({date, time})
-                                        }
+                                       onClick={()=>handleBooking(date,slot,time)}
                                         className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
                                       >
-                                        <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
-                                        <span className="flex-1 text-center text-white whitespace-normal wrap-break-word leading-snug"> 
+                                        <FaCalendarPlus  className="h-4 w-4 text-white shrink-0" />
+                                        <span  className="flex-1 text-center text-white text-xs  leading-snug break-all"> 
                                           {slot?.privateNote} {!!suburbLabel && (
                                           <span className="text-[10px] opacity-90">
                                             {suburbLabel}
                                           </span>
                                         )}
                                         </span>
-                                        <IoMdAdd className="h-5 w-5 text-white shrink-0" />
+                                        <IoMdAdd  onClick={(e) => {
+    e.stopPropagation(); 
+    openSlotModal({ date, time });
+  }} className="h-5 w-5 text-white shrink-0" />
                                       </button>
                                     ) : visibility === "publicNote" ? (
                                       <button
                                         onClick={() =>
                                           openSlotModal({date, time})
                                         }
-                                        className="w-full h-full min-h-11 bg-gray-100 text-primary border border-border-color hover:bg-[#B2B2B2] px-2 py-2 flex flex-col items-center justify-center gap-2"
+                                        className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
                                       >
                                         
-                                        <span className="text-xs text-center whitespace-normal wrap-break-word leading-snug">
+                                        <span className="text-xs text-center leading-snug break-all">
                                           {slot?.publicNote}  {!!suburbLabel && (
                                           <span className="text-[10px] opacity-90">
                                             {suburbLabel}
                                           </span>
                                         )}
                                         </span>
-                                        <IoMdAdd className="h-5 w-5 text-primary shrink-0" />
+                                        <IoMdAdd className="h-5 w-5 text-black shrink-0" />
                                       </button>
                                     ) : (
                                       <button
-                                        onClick={() =>
-                                          openSlotModal({date, time})
-                                        }
+                                      onClick={()=>handleBooking(date,slot,time)}
                                         className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center flex-wrap gap-2 text-xs font-semibold text-white px-1 py-2"
                                       >
-                                        <span>Available</span>
+                                        <span >Available</span>
                                         <div>
 
                                         {!!suburbLabel && (
@@ -801,7 +991,10 @@ const allowedLengths = LENGTH_OPTIONS.filter(
                                             {suburbLabel}
                                           </span>
                                         )}
-                                        <IoMdAdd className="h-4 w-4" />
+                                        <IoMdAdd   onClick={(e) => {
+    e.stopPropagation(); 
+    openSlotModal({ date, time });
+  }} className="h-4 w-4" />
                                         </div>
                                       </button>
                                     )}

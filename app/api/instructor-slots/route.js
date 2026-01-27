@@ -28,6 +28,10 @@ export async function GET(req) {
       instructorId: new ObjectId(instructorId),
     };
 
+
+
+
+
     // If from/to provided, filter by date range (string compare works for YYYY-MM-DD)
     if (from && to) {
       query.date = {$gte: from, $lte: to};

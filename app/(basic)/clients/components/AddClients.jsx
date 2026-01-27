@@ -2,59 +2,102 @@
 
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
-import { useState } from "react";
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import axios from "axios";
+import {useState} from "react";
+import {toast} from "react-toastify";
 
-const organizations = ["None", "Org A", "Org B"];
-const referredByList = ["Not Specified", "Google", "Facebook", "Friend"];
-const assignedToList = ["Anyone", "Instructor A", "Instructor B"];
-const actionShotList = ["No Action Set", "Call Client", "Follow Up"];
+const organizations = ["None"];
+const referredByList = ["Not Specified", "Google", "Facebook","Business","Client","Internet","Walk in", "Friend","Other"];
+const actionShotList = ["No Action Set", "No Action Required", "Action Required","Urgent Action Required"];
+
+const initialState = {
+  firstName: "",
+  lastName: "",
+  organization: "None",
+  mobile: "",
+  homePhone: "",
+  workPhone: "",
+  email: "",
+  anotherEmail: "",
+  dob: "",
+  gender: "male",
+  emergencyContact: "",
+  emergencyPhone: "",
+  address: "",
+  suburb: "",
+  state: "",
+  postCode: "",
+  accountBalance: "",
+  referredBy: "Not Specified",
+
+  activeClient: true,
+  marketingSubscriber: true,
+  receiveReminders: true,
+  loginAccess: true,
+  onlineBooking: true,
+  showPhoto: true,
+
+  actionShot: "No Action Set",
+  actionRequired: "",
+  assignedTo: "Anyone",
+  actionBy: "",
+  alerts: "",
+  clientNote: "",
+  comments: "",
+};
 
 export default function AddClients() {
-  const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
-    organization: "None",
-    mobile: "",
-    homePhone: "",
-    workPhone: "",
-    email: "",
-    anotherEmail: "",
-    dob: "",
-    gender: "male",
-    emergencyContact: "",
-    emergencyPhone: "",
-    address: "",
-    suburb: "",
-    state: "",
-    postCode: "",
-    accountBalance: "",
-    referredBy: "Not Specified",
+  const [form, setForm] = useState(initialState);
 
-    activeClient: true,
-    marketingSubscriber: false,
-    receiveReminders: false,
-    loginAccess: false,
-    onlineBooking: false,
-    showPhoto: false,
+  const queryClient = useQueryClient();
 
-    actionShot: "No Action Set",
-    actionRequired: "",
-    assignedTo: "Anyone",
-    actionBy: "",
-    alerts: "",
-    clientNote: "",
-    comments: "",
+const { data: instructors = [], isLoading: instructorsLoading } = useQuery({
+  queryKey: ["instructors"],
+  queryFn: async () => {
+    const res = await axios.get("/api/instructors");
+    return res.data;
+  },
+});
+const assignedToOptions = [
+  "Anyone",
+  ...instructors
+    .map((i) => i?.name)
+    .filter(Boolean),
+];
+  const addClient = useMutation({
+    mutationFn: async (payload) => {
+      const res = await axios.post("/api/clients", payload);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({queryKey: ["clients"]});
+      toast.success("Client added ✅");
+      setForm(initialState);
+    },
+    onError: (err) => {
+      const msg =
+        err?.response?.data?.error || err?.message || "Failed to add client";
+      toast.error(msg);
+      console.error(err);
+    },
   });
 
   const onChange = (e) => {
-    const { name, type, value, checked } = e.target;
-    setForm((p) => ({ ...p, [name]: type === "checkbox" ? checked : value }));
+    const {name, type, value, checked} = e.target;
+    setForm((p) => ({...p, [name]: type === "checkbox" ? checked : value}));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    console.log("SAVE CLIENT:", form);
-    // TODO: POST to your API
+
+    if (!form.firstName.trim() || !form.lastName.trim()) {
+      return toast.error("First Name and Last Name are required");
+    }
+
+    // call API
+    addClient.mutate(form);
+   
   };
 
   return (
@@ -66,7 +109,7 @@ export default function AddClients() {
             <h1 className="text-lg font-bold text-gray-900">Add Client</h1>
             <PrimaryBtn>
 
-    Save
+   {addClient.isPending ? "Saving..." : "Save"}
             </PrimaryBtn>
             
           </div>
@@ -149,7 +192,7 @@ export default function AddClients() {
             <Divider />
 
             <Row label="Account Balance:">
-              <Input name="accountBalance" value={form.accountBalance} onChange={onChange} className="max-w-[140px]" />
+              <Input name="accountBalance" disabled value={form.accountBalance} onChange={onChange} className="max-w-[140px]" />
             </Row>
 
             <Divider />
@@ -214,8 +257,25 @@ export default function AddClients() {
             </Row>
 
             <Row label="Assigned to:">
-              <Select name="assignedTo" value={form.assignedTo} onChange={onChange} options={assignedToList} />
-            </Row>
+  <select
+    name="assignedTo"
+    value={form.assignedTo}
+    onChange={onChange}
+    disabled={instructorsLoading}
+    className="input-class py-1!"
+  >
+    {instructorsLoading ? (
+      <option>Loading instructors...</option>
+    ) : (
+      assignedToOptions.map((op) => (
+        <option key={op} value={op}>
+          {op}
+        </option>
+      ))
+    )}
+  </select>
+</Row>
+
 
             <Row label="Action by:">
               <Input type="date" name="actionBy" value={form.actionBy} onChange={onChange} className="max-w-[200px]" />
@@ -237,9 +297,10 @@ export default function AddClients() {
             <div className="pt-2 flex justify-end">
               <button
                 type="submit"
-                className="bg-primary hover:bg-red-800 text-white font-semibold px-10 py-2 rounded-sm"
+                  disabled={addClient.isPending}
+                className="bg-primary hover:bg-primary/80 text-white font-semibold px-10 py-2 rounded-sm"
               >
-                Save
+               {addClient.isPending ? "Saving..." : "Save"}
               </button>
             </div>
           </div>

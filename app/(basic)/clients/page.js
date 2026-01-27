@@ -3,7 +3,6 @@
 
 import Container from "@/app/shared/ui/Container";
 import { useState } from "react";
-import { HiUserAdd } from "react-icons/hi";
 import AddClients from "./components/AddClients";
 import ClientSearch from "./components/ClientSearch";
 import Organisations from "./components/Organisations";
@@ -40,7 +39,7 @@ export default function Clients() {
 
           {/* Main Content (changes) */}
           <main className="lg:col-span-9">
-            {activeTab === "client-search" && <ClientSearch />}
+            {activeTab === "client-search" && <ClientSearch setActiveTab={setActiveTab}/>}
             {activeTab === "add-client" && <AddClients />}
             {activeTab === "organisations" && <Organisations/>}
           </main>
