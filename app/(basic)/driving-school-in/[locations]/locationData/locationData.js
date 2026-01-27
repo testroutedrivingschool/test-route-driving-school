@@ -179,7 +179,7 @@ export const locationData = {
         name: "Monitor Your Speed",
         description: (
           <>
-            You must watch for school zones during your teen driving lessons. Speed cameras are common in Kogarah, so always stay alert. Check our expert <a href="" target="_blank" className="location-link">Resources</a> for more tips on avoiding fines.
+            You must watch for school zones during your teen driving lessons. Speed cameras are common in Kogarah, so always stay alert. Check our expert <a href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="_blank" className="location-link">Resources</a> for more tips on avoiding fines.
           </>
         ),
       },
@@ -198,7 +198,7 @@ export const locationData = {
         name: "Practice Smooth Braking",
         description: (
           <>
-            You will learn to brake gently to keep your passengers comfortable. Our local <a href="https://en.wikipedia.org/wiki/Driver%27s_education" className="location-link">driver&apos;s education</a> school emphasizes control and vehicle handling. Avoid sudden stops unless it is an emergency on the road.
+            You will learn to brake gently to keep your passengers comfortable. Our local <a target="_blank" href="https://en.wikipedia.org/wiki/Driver%27s_education" className="location-link">driver&apos;s education</a> school emphasizes control and vehicle handling. Avoid sudden stops unless it is an emergency on the road.
           </>
         ),
       },

@@ -84,31 +84,24 @@ export async function GET(req, { params }) {
 export async function PATCH(req, { params }) {
   try {
     const { clientId } = await params;
-console.log(clientId);
-    console.log("PATCH clientId:", clientId);
 
     if (!ObjectId.isValid(clientId)) {
       return NextResponse.json({ error: "Invalid client id" }, { status: 400 });
     }
+    console.log(clientId);
 
     const body = await req.json();
     const updates = normalize(pickAllowed(body));
 
-    // ✅ if nothing to update, return the client (no 400)
     if (!Object.keys(updates).length) {
-      const col = await clientsCollection();
-      const client = await col.findOne({ _id: new ObjectId(clientId) });
-      return NextResponse.json(
-        client || { error: "Client not found" },
-        { status: client ? 200 : 404 }
-      );
+      return NextResponse.json({ ok: true, message: "Nothing to update" }, { status: 200 });
     }
 
     updates.updatedAt = new Date();
 
     const col = await clientsCollection();
 
-    // optional dup check
+    // optional duplicate check
     const dupOr = [];
     if (updates.email) dupOr.push({ email: updates.email });
     if (updates.mobile) dupOr.push({ mobile: updates.mobile });
@@ -126,17 +119,17 @@ console.log(clientId);
       }
     }
 
-    const result = await col.findOneAndUpdate(
+    const r = await col.updateOne(
       { _id: new ObjectId(clientId) },
-      { $set: updates },
-      { returnDocument: "after" }
+      { $set: updates }
     );
 
-    if (!result.value) {
+    if (r.matchedCount === 0) {
       return NextResponse.json({ error: "Client not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result.value);
+    const updated = await col.findOne({ _id: new ObjectId(clientId) });
+    return NextResponse.json(updated);
   } catch (error) {
     console.error("CLIENT PATCH ERROR:", error);
     return NextResponse.json(

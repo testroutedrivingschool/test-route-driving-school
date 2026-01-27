@@ -114,7 +114,7 @@ export default function SelectClientForBooking() {
 
   const next = {
     ...(booking || {}),
-    clientId: String(id),
+    clientId:id,
     clientName: `${client.firstName || ""} ${client.lastName || ""}`.trim(),
     clientEmail: client.email || "",
     clientPhone: client.mobile || client.phone || "",

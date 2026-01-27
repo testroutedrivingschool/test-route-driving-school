@@ -72,14 +72,15 @@ function PaymentForm() {
   setLoading(true);
 
   try {
-    const clientId = booking?.clientId;
-console.log(clientId);
+    const clientId = String(booking?.clientId);
+    console.log("PATCH URL:", `/api/clients/${clientId}`);
+console.log("clientId type:", typeof clientId, clientId);
     // ✅ MANUAL booking => NO payment
     if (booking.bookingType === "manual") {
       
-if (clientId) {
-  await axios.patch(`/api/clients/${clientId}`, { address, suburb });
-}
+      if (clientId) {
+          await axios.patch(`/api/clients/${clientId}`, { address, suburb });
+      }
 
       await axios.post("/api/bookings", {
         ...booking,
@@ -94,9 +95,8 @@ if (clientId) {
       toast.success("Booking created (Unpaid) ✅");
       router.push("/dashboard/my-bookings");
       return;
-    }
-
-    // ✅ WEBSITE booking => Stripe payment required
+    }else{
+       // ✅ WEBSITE booking => Stripe payment required
     if (!stripe || !elements) return;
 
     const cardElement = elements.getElement(CardNumberElement);
@@ -125,7 +125,7 @@ if (clientId) {
       return;
     }
 
-    // ✅ Update client address for website booking too (optional but good)
+  
     if (clientId) {
       await axios.patch(`/api/clients/${clientId}`, { address, suburb });
     }
@@ -142,9 +142,14 @@ if (clientId) {
     sessionStorage.removeItem("pendingBooking");
     toast.success("Booking confirmed 🎉");
     router.push("/dashboard/my-bookings");
+    }
+
+   
   } catch (err) {
-    console.error(err);
-    toast.error("Failed to Booking");
+    console.log("STATUS:", err?.response?.status);
+  console.log("DATA:", err?.response?.data);
+  console.log("URL:", err?.config?.url);
+  toast.error("Failed to Booking");
   } finally {
     setLoading(false);
   }

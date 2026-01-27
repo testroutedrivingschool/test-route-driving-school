@@ -1,4 +1,4 @@
-/* eslint-disable react-hooks/set-state-in-effect */
+
 "use client";
 import React, {useEffect, useState} from "react";
 import Container from "./Container";
@@ -43,7 +43,7 @@ export default function TopHeader() {
             </Link>
           )}
           {userData && userData.role === "instructor" ? (
-            <Link href={`/contact`} className="hover:underline font-semibold">
+            <Link href={`/company/contact`} className="hover:underline font-semibold">
               Help
             </Link>
           ) : (
