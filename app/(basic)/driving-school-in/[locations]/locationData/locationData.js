@@ -179,10 +179,7 @@ export const locationData = {
         name: "Monitor Your Speed",
         description: (
           <>
-            You must watch for school zones during your{" "}
-            <strong>Teen driving lessons.</strong> Speed cameras are common in
-            Kogarah, so always stay alert. Check our expert resources for more
-            tips on avoiding fines.
+            You must watch for school zones during your teen driving lessons. Speed cameras are common in Kogarah, so always stay alert. Check our expert <a href="" target="_blank" className="location-link">Resources</a> for more tips on avoiding fines.
           </>
         ),
       },
@@ -201,10 +198,7 @@ export const locationData = {
         name: "Practice Smooth Braking",
         description: (
           <>
-            You will learn to brake gently to keep your passengers comfortable.
-            Our<strong>local driver&apos;s education school </strong> emphasizes
-            control and vehicle handling. Avoid sudden stops unless it is an
-            emergency on the road.
+            You will learn to brake gently to keep your passengers comfortable. Our local <a href="https://en.wikipedia.org/wiki/Driver%27s_education" className="location-link">driver&apos;s education</a> school emphasizes control and vehicle handling. Avoid sudden stops unless it is an emergency on the road.
           </>
         ),
       },
@@ -906,7 +900,7 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
         title: "Night Driving Lesson in Wali Creek",
         description: (
           <>
-           You must complete your after-dark logbook hours with a Night Driving Lesson. I help you manage low visibility and headlight glare <a href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="_blank" className="location-link"></a>safely.
+           You must complete your after-dark logbook hours with a Night Driving Lesson. I help you manage low visibility and headlight glare <a href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="_blank" className="location-link">safely.</a>
           </>
         ),
       },
