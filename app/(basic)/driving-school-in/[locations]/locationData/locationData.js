@@ -10,6 +10,8 @@ import {
 
 export const locationData = {
   "kogarah-nsw": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13235.79356663766!2d151.1353442!3d-33.96816595!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b9e6e2340619%3A0x5017d681632bd00!2sKogarah%20NSW%202217%2C%20Australia!5e0!3m2!1sen!2sbd!4v1769527446565!5m2!1sen!2sbd",
     pageTitle: "Driving Lessons in Kogarah, NSW – Book Today",
     metaDescription:
       "Gain confidence behind the wheel with Driving Lessons in Kogarah NSW – expert instructors, flexible timings. Book now and enjoy stress-free learning!",
@@ -904,7 +906,7 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
         title: "Night Driving Lesson in Wali Creek",
         description: (
           <>
-           You must complete your after-dark logbook hours with a  <Link className="location-link" href={"/services/night-driving-lesson"} >Night Driving Lesson.</Link> I help you manage low visibility and headlight glare safely.
+           You must complete your after-dark logbook hours with a Night Driving Lesson. I help you manage low visibility and headlight glare <a href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="_blank" className="location-link"></a>safely.
           </>
         ),
       },

@@ -201,6 +201,24 @@ export default function LocationPageClient({locationData}) {
       </section>
 
       <Faq faqs={locationData?.faqs}/>
+{/* Map*/}
+    <section className="py-16">
+<Container>
+
+  <div className="w-full h-[450px] rounded-xl overflow-hidden border border-border-color">
+      <iframe
+        src={locationData.mapUrl}
+        width="100%"
+        height="100%"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+        />
+    </div>
+        </Container>
+        </section>
+    
     </div>
   );
 }
