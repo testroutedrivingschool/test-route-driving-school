@@ -28,7 +28,7 @@ const faqs = [
     question: "How many lessons do I need to pass my driving test?",
     answer:
       <>
-      The number varies based on your experience, confidence, and skill. Most learners require 5–10 lessons. Our structured <strong>driving test lessons</strong> ensure you are fully prepared.
+      The number varies based on your experience, confidence, and skill. Most learners require 5–10 lessons. Our structured <Link className="location-link" href={`/services/driving-test-package`}>driving test lessons</Link> ensure you are fully prepared.
       </>,
   },
 
@@ -38,6 +38,20 @@ const faqs = [
     answer:
       <>
       Yes! We offer convenient pickup and drop-off within Sydney suburbs. This makes your <strong>learn to drive</strong> experience stress-free and flexible.
+      </>,
+  },
+  {
+    question: "Which suburbs do your instructors cover?",
+    answer:
+      <>
+      Our instructors serve Kogarah, Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and surrounding Sydney suburbs. You get professional driving lessons wherever you are located.
+      </>,
+  },
+  {
+    question: "What type of car will I learn in?",
+    answer:
+      <>
+     You will <a target="_blank" className="location-link" href={"https://en.wikipedia.org/wiki/Newly_licensed_driver_plate"} >learn</a>in a modern automatic vehicle with dual controls, ensuring safety and confidence during lessons.
       </>,
   },
   {

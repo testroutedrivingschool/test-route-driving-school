@@ -237,7 +237,7 @@ export default function About() {
 We use modern <strong>dual-controlled vehicles</strong> and flexible scheduling. This allows you to learn at your own pace while feeling secure. Our instructors provide personalised guidance, addressing your fears and helping you navigate city roads, traffic, and driving tests with ease.
                   </p>
                   <p className="text-gray-700 leading-relaxed">
-                    Whether you are searching for the best driving school near me or local driving lessons that fit your lifestyle, we make learning convenient, flexible, and effective.
+                    Whether you are searching for the best driving school near me or local driving lessons that fit your lifestyle, we make learning convenient, flexible, and effective. <a className="location-link" href={"https://www.nhtsa.gov/road-safety/teen-driving"} target="_blank" >See more services tailored just for you.</a>
                   </p>
                 </div>
               </div>

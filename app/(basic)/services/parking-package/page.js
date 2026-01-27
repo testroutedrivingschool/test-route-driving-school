@@ -114,7 +114,9 @@ const automaticDrivingPackages = [
     question: "How many lessons do I need to pass my driving test?",
     answer:
       <>
-      The number of lessons varies for each learner. On average, most students require between 5 and 10 lessons. This depends on your experience, confidence, and current driving skills. We offer various<strong>driving lesson packages in Sydney suburbs </strong>to suit your specific needs.
+      The number of lessons varies for each <a target="_blank" href={`https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia`} className="font-semibold underline px-1">
+              learner.
+            </a> On average, most students require between 5 and 10 lessons. This depends on your experience, confidence, and current driving skills. We offer various<strong>driving lesson packages in Sydney suburbs </strong>to suit your specific needs.
       </>,
   },
   {
@@ -139,7 +141,9 @@ const automaticDrivingPackages = [
     question: "What type of car will I learn in?",
     answer:
       <>
-      You will learn in a modern automatic vehicle. Every car features dual controls to ensure maximum safety and security. This allows me to intervene if you make a mistake while you <strong>learn to park in Sydney suburbs.</strong>
+      You will learn in a modern automatic vehicle. Every car features dual controls to ensure maximum safety and security. This allows me to intervene if you make a mistake while you <strong>learn to park in Sydney suburbs.</strong><a target="_blank" href={`https://www.gov.uk/driving-test/what-to-take?`} className="font-semibold underline px-1">
+               learn more.
+            </a>
       </>,
   },
   {
@@ -150,7 +154,6 @@ const automaticDrivingPackages = [
 
       </>,
   },
-
 
 ];
 

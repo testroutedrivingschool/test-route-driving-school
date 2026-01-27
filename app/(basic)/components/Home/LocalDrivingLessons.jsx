@@ -84,7 +84,7 @@ export default function LocalDrivingLessons() {
           </h3>
 
           <p className="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto">
-            Learning to drive in Sydney suburbs with Test Route Driving School offers many benefits:
+            Learning to drive in  <a className="location-link" href={"/services/automatic-driving-lessons"} >Sydney suburbs</a>with Test Route Driving School offers many benefits: 
 
           </p>
 

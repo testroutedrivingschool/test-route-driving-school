@@ -41,11 +41,15 @@ export const locationData = {
     heroTitle: "Driving Lessons in Kogarah, NSW  –  Book Today",
     heroDescription: (
       <>
-        You need a school that understands the local road challenges. Our{" "}
-        <strong>Driving Lessons in Kogarah</strong> focus on your safety and
+        You need a school that understands the local road challenges. Our  <Link href={`/services/automatic-driving-lessons`} className="font-semibold underline px-1">
+          Driving Lessons in Kogarah 
+        </Link>
+       focus on your safety and
         success. You will master difficult intersections and busy school zones
         with us. We provide the best tools to help you become a licensed driver.
-        Your journey starts here at <strong>Test Route Driving School</strong>,
+        Your journey starts here at <Link href={`/about`} className="font-semibold underline px-1">
+          Test Route Driving School,
+        </Link>
         the local experts.
       </>
     ),
@@ -53,13 +57,11 @@ export const locationData = {
     section1Title: "Why Learners Choose Our Driving Lessons in Kogarah",
     section1SubTitle: (
       <>
-        You deserve an{" "}
-        <strong>affordable driving school in Kogarah, NSW</strong> that cares.
-        Many students struggle with nerves during their first few sessions. We
-        solve this by providing a calm and patient learning environment. You
-        will find our <strong>driving lessons near me in Kogarah, NSW</strong>{" "}
-        convenient. Our instructors use local knowledge to prepare you for the
-        actual test. You will feel confident in facing any traffic situation.
+        You deserve an
+        <Link href={`/`} className="font-semibold underline px-1">
+          affordable driving school
+        </Link> in Kogarah, NSW that cares. Many students struggle with nerves during their first few sessions. We solve this by providing a calm and patient learning environment. You will find our driving lessons near me in Kogarah, NSW convenient. Our instructors use local knowledge to prepare you for the actual test. You will feel confident in facing any traffic situation.
+
       </>
     ),
     section1Features: [
@@ -107,14 +109,15 @@ export const locationData = {
         You should expect a thorough{" "}
         <strong>driver education course in Kogarah, NSW.</strong> We simulate
         the actual RMS testing conditions to build your strength. You will
-        identify your common mistakes before the examiner sees them. Our Driving
-        Test Assessment ensures you are 100% ready.
+        identify your common mistakes before the examiner sees them. Our <Link href={`/services/driving-test-assessment`} className="font-semibold underline px-1">
+          Driving Test Assessment
+        </Link> ensures you are 100% ready.
       </>
     ),
     services: [
       {
         icon: <FaCar className="w-8 h-8 text-white" />,
-        title: "Dual-Controlled Vehicles",
+        title: "Dual-Controlled Vehicles in Kogarah",
         description: (
           <>
             You will find our automatic cars very easy to drive. These{" "}
@@ -126,7 +129,7 @@ export const locationData = {
       },
       {
         icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
-        title: "Driving Test Assessment",
+        title: "Driving Test Assessment in Kogarah",
         description: (
           <>
             You need to know if you are ready for your license. Our instructors
@@ -137,19 +140,19 @@ export const locationData = {
       },
       {
         icon: <FaFileAlt className="w-8 h-8 text-white" />,
-        title: "Driving Test Package",
+        title: "Driving Test Package in Kogarah",
         description:
           "You get a warm-up session right before your practical driving exam. This package includes a reliable car for your use at the registry. You will feel supported and focused during this high-pressure moment.",
       },
       {
         icon: <FaCarSide className="w-8 h-8 text-white" />,
-        title: "Car Hire for Instructor",
+        title: "Car Hire for Instructor in Kogarah",
         description:
           "You can rent our professional vehicle for your official test day. Our cars meet all safety requirements and are easy to maneuver. This service removes the stress of finding a suitable car.",
       },
       {
         icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
-        title: "Parking Package",
+        title: "Parking Package in Kogarah",
         description: (
           <>
             You will master the art of reverse parallel parking in spaces. Our{" "}
@@ -162,7 +165,7 @@ export const locationData = {
 
       {
         icon: <FaGift className="w-8 h-8 text-white" />,
-        title: "Highway Package",
+        title: "Highway Package in Kogarah",
         description: (
           <>
             You must learn how to merge safely at high speeds. Our{" "}
@@ -1739,7 +1742,7 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
     heroTitle: "Top-Rated Driving Lessons in Arncliffe – Master Your Local Road Rules",
     heroDescription: (
       <>
-       Master the roads with premium <Link className="location-link" href={"/services/automatic-driving-lessons"} >Drioooving Lessons</Link> in <strong>Arncliffe</strong> designed for your ultimate success. We provide patient, expert coaching to help you pass your driving test with total confidence. Our modern fleet features safe, dual-controlled cars perfect for every new <strong>learner driving lesson.</strong> Whether you are a teen or an adult, we tailor every session to your needs. Start your journey toward freedom today with the most trusted <strong>driving school in Arncliffe.</strong>
+       Master the roads with premium <Link className="location-link" href={"/services/automatic-driving-lessons"} >Driving Lessons</Link> in <strong>Arncliffe</strong> designed for your ultimate success. We provide patient, expert coaching to help you pass your driving test with total confidence. Our modern fleet features safe, dual-controlled cars perfect for every new <strong>learner driving lesson.</strong> Whether you are a teen or an adult, we tailor every session to your needs. Start your journey toward freedom today with the most trusted <strong>driving school in Arncliffe.</strong>
       </>
     ),
 

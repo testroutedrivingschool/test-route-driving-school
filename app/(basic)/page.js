@@ -45,6 +45,13 @@ export const metadata = {
     "driving class Sydney suburbs",
     "driving lessons Sydney suburbs",
     "driving instructor in Sydney suburbs",
+    "Common questions about driving lessons	",
+    "Learning to drive",
+    "Driving Lessons FAQ",
+"Driving instructor advice",
+"Driving test preparation tips",
+"Beginner driving questions",
+"Driving lesson tips",
   ],
 };
 const whatWeOfferServices = [

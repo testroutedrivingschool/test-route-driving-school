@@ -80,7 +80,7 @@ const navlinks = [
       {id: 1, label: "Resources", pathname: "/company/resources"},
       {id: 2, label: "Gallery", pathname: "/company/gallery"},
       {id: 3, label: "Testimonials", pathname: "/company/testimonials"},
-      {id: 4, label: "Blogs", pathname: "/company/blogs"},
+      {id: 4, label: "Blogs", pathname: "/blogs"},
       {id: 5, label: "Contact", pathname: "/company/contact"},
     ],
   },

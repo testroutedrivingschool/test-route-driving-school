@@ -1,7 +1,15 @@
 import Link from "next/link";
 import Image from "next/image";
 import automaticLessonImg from "@/app/assets/service-lesson-test-route-driving-school.png";
-import {FaAward, FaBrain, FaCalendarAlt, FaCar, FaChartLine, FaCheckCircle, FaShieldAlt} from "react-icons/fa";
+import {
+  FaAward,
+  FaBrain,
+  FaCalendarAlt,
+  FaCar,
+  FaChartLine,
+  FaCheckCircle,
+  FaShieldAlt,
+} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
@@ -74,84 +82,104 @@ const automaticDrivingPackages = [
   },
 ];
 
-  const whyChoosePoints = [
-    {
-      title: "Expert Driving Instructors",
-      description:
-        " Our trainers ensure you learn safe and efficient skills.",
-    },
-    {
-      title: "Comprehensive Training",
-      description:
-        <>
-        We provide practical and theoretical lessons that apply to real-world scenarios.
-        </>,
-    },
-    {
-      title: "License Assistance",
-      description:
-        "We help you through the application process to keep it hassle-free."
-    },
-    {
-      title: "Modern Vehicles",
-      description:
-        " Learn in well-maintained cars for a smooth and safe experience.",
-    },
-    {
-      title: "Flexible Timing",
-      description: "Select schedules that accommodate your routine, including school or work commitments",
-    },
-    {
-      title: "Local Knowledge",
-      description: <>
-      
-      We know the best routes in<strong>Hurstville, Rockdale, and Bexley.
-</strong>
-      </>,
-    },
-  ];
+const whyChoosePoints = [
+  {
+    title: "Expert Driving Instructors",
+    description: " Our trainers ensure you learn safe and efficient skills.",
+  },
+  {
+    title: "Comprehensive Training",
+    description: (
+      <>
+        We provide practical and theoretical lessons that apply to real-world
+        scenarios.
+      </>
+    ),
+  },
+  {
+    title: "License Assistance",
+    description:
+      "We help you through the application process to keep it hassle-free.",
+  },
+  {
+    title: "Modern Vehicles",
+    description:
+      " Learn in well-maintained cars for a smooth and safe experience.",
+  },
+  {
+    title: "Flexible Timing",
+    description:
+      "Select schedules that accommodate your routine, including school or work commitments",
+  },
+  {
+    title: "Local Knowledge",
+    description: (
+      <>
+        We know the best routes in
+        <strong>Hurstville, Rockdale, and Bexley.</strong>
+      </>
+    ),
+  },
+];
 
-
-   const faqs = [
+const faqs = [
   {
     question: "How many lessons do I need to pass my driving test?",
-    answer:
+    answer: (
       <>
-     The number of lessons varies for every learner in Sydney suburbs. On average, most students require between 5 and 10 professional lessons. This depends on your current experience, confidence, and basic driving skills.
-      </>,
+        The number of lessons varies for every learner in Sydney suburbs. On
+        average, most students require between 5 and 10 professional lessons.
+        This depends on your current experience, confidence, and basic{" "}
+        <a
+          target="_blank"
+          href={`https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia`}
+          className="font-semibold underline px-1"
+        >
+          driving skills.
+        </a>
+      </>
+    ),
   },
   {
     question: "Do you provide pickup and drop-off for lessons?",
-    answer:
+    answer: (
       <>
-     Yes, we offer convenient pickup and drop-off from your home or school. We can also meet you at your workplace in Carlton or Arncliffe. This service is included in our primary test packages.
-      </>,
+        Yes, we offer convenient pickup and drop-off from your home or school.
+        We can also meet you at your workplace in Carlton or Arncliffe. This
+        service is included in our primary test packages.
+      </>
+    ),
   },
   {
     question: "Which suburbs do your instructors cover?",
-    answer:
+    answer: (
       <>
-    Our instructors cover a wide range of areas, including Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and Sydney suburbs. We know these local streets and test routes intimately.
-      </>,
+        Our instructors cover a wide range of areas, including Allawah,
+        Arncliffe, Bexley, Rockdale, Hurstville, and Sydney suburbs. We know
+        these local streets and test routes intimately.
+      </>
+    ),
   },
   {
     question: "What type of car will I learn in?",
-    answer:
+    answer: (
       <>
-   You will learn in a modern automatic vehicle for a smooth experience. All our cars have dual controls to ensure your maximum safety. Our instructors keep every vehicle in top condition for your test.
-      </>,
+        You will learn in a modern automatic vehicle for a smooth experience.
+        All our cars have dual controls to ensure your maximum safety. Our
+        instructors keep every vehicle in top condition for your test.
+      </>
+    ),
   },
   {
     question: "Can I book lessons online?",
-    answer:
+    answer: (
       <>
-
-Yes! You can easily book your lessons through our website&apos;s booking form at any time. We offer instant confirmation to help you plan your schedule.
-
-      </>,
+        Yes! You can easily book your lessons through our website&apos;s booking
+        form at any time. We offer instant confirmation to help you plan your
+        schedule.
+      </>
+    ),
   },
-
-
 ];
 export default function DrivingTestPackage() {
   return (
@@ -365,18 +393,34 @@ export default function DrivingTestPackage() {
 
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                 Pre-Driving Test Package Lessons for Learners
+                  Pre-Driving Test Package Lessons for Learners
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">
-                   We understand that every learner has a unique schedule and pace. That is why we offer flexible lesson timings throughout the
-                  <strong>Sydney Suburbs.</strong>You can book sessions during evenings and weekends to fit your life. Our instructors create customized plans based on your progress and areas for improvement. With consistent feedback, you will steadily advance your skills on the road. By the end of your course, you will be ready for any scenario. You can find <strong>a Driving test car hire near Sydney suburbs</strong> that fits your timeline perfectly. Check our 
+                  We understand that every learner has a unique schedule and
+                  pace. That is why we offer flexible lesson timings throughout
+                  the
+                  <strong>Sydney Suburbs.</strong>You can{" "}
+                  <a
+                    target="_blank"
+                    href={`https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia`}
+                    className="font-semibold underline px-1"
+                  >
+                    book
+                  </a>{" "}
+                  sessions during evenings and weekends to fit your life. Our
+                  instructors create customized plans based on your progress and
+                  areas for improvement. With consistent feedback, you will
+                  steadily advance your skills on the road. By the end of your
+                  course, you will be ready for any scenario. You can find{" "}
+                  <strong>a Driving test car hire near Sydney suburbs</strong>{" "}
+                  that fits your timeline perfectly. Check our
                   <Link
                     href={`/area-covered`}
                     className="font-semibold underline px-1"
                   >
                     areas covered
                   </Link>
-                 to see if we serve your street.
+                  to see if we serve your street.
                 </p>
               </div>
             </div>
@@ -384,12 +428,18 @@ export default function DrivingTestPackage() {
         </Container>
       </section>
       <MovingCar />
-      <WhyChooseUs subTitle={<>
-        At <strong>Test Route Driving School</strong>, we provide professional lessons and license assistance. We are the best choice for your driving education in the <stong>Sydney Suburbs.</stong>
-        
-        </>} points={whyChoosePoints}/>
+      <WhyChooseUs
+        subTitle={
+          <>
+            At <strong>Test Route Driving School</strong>, we provide
+            professional lessons and license assistance. We are the best choice
+            for your driving education in the <stong>Sydney Suburbs.</stong>
+          </>
+        }
+        points={whyChoosePoints}
+      />
 
-      <Faq faqs={faqs}/>
+      <Faq faqs={faqs} />
     </div>
   );
 }

@@ -369,7 +369,10 @@ export default function AutomaticDrivingLesson() {
             to find the best fit for you. You will save money while receiving
             the<strong>best driving lessons in Sydney suburbs </strong> from
             local, expert instructors. Our goal is to deliver high-value
-            training tailored to your specific budget and needs.
+            training tailored to your specific budget and needs - <a target="_blank" href={`https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia`} className="font-semibold underline px-1">
+              {" "}
+              learn more about customized plans 
+            </a>{" "}
           </>
         }
         packages={automaticDrivingPackages}
@@ -518,7 +521,9 @@ export default function AutomaticDrivingLesson() {
       />
       <DrivingTipsSection
         subtitle={
-          "Learning to drive can be challenging, but having the right mindset makes it easier. Our experts offer these tips to help you succeed on NSW roads:"
+          <>
+          <a target="_blank" className="location-link" href={"https://www.nhtsa.gov/ten-tips-for-safe-driving"} >Learning to drive</a> can be challenging, but having the right mindset makes it easier. Our experts offer these tips to help you succeed on NSW roads:
+          </>
         }
         tips={drivingLessonTips}
       />

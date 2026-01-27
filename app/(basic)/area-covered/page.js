@@ -25,9 +25,53 @@ import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import Faq from "@/app/shared/FaqSection";
 import Link from "next/link";
 import WhatWeOffer from "../components/Home/WhatWeOffer";
-import { locations } from "@/app/utils/locations";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
-const coveredLocations = locations
+const faqs = [
+  {
+    question: "How many lessons do I need to pass my driving test?",
+    answer:
+      <>
+      Most<a target="_blank" className="location-link" href={`https://www.gov.uk/driving-lessons-learning-to-drive/taking-driving-lessons`}>learners</a>   typically need between 5 and 10 lessons, depending on their experience, confidence, and skill. Our driving lessons for beginners help you prepare thoroughly to pass your driving test successfully.
+      </>,
+  },
+
+
+  {
+    question: "Do you provide pickup and drop-off for lessons?",
+    answer:
+      <>
+       Yes! We offer convenient pickup and drop-off from your home, school, or workplace in Kogarah and nearby Sydney suburbs, making your lessons stress-free, time-efficient, and perfectly suited to your busy schedule.
+      </>,
+  },
+  {
+    question: "Which suburbs do your instructors cover?",
+    answer:
+      <>
+       Our instructors provide professional driving lessons in Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and surrounding Sydney suburbs, ensuring you receive expert guidance and confidence-building instruction wherever you are located.
+      </>,
+  },
+  {
+    question: "What type of car will I learn in?",
+    answer:
+      <>
+    You’ll learn in a modern automatic vehicle with dual controls, giving maximum safety and comfort. Our professional instructors guide you confidently through every lesson across Sydney suburbs.
+      </>,
+  },
+  {
+    question: "Can I book lessons online?",
+    answer:
+     <>
+     
+      Absolutely! You can book your driving lessons anytime online through our website. It’s quick, simple, and convenient, allowing you to secure your preferred time and instructor without any hassle.
+     </>,
+  },
+
+
+
+];
 
 const zones = [
   {name: "South", count: 18, color: "bg-blue-100 text-blue-700"},
@@ -90,9 +134,16 @@ export default function AreaCovered() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedZone, setSelectedZone] = useState("All");
   const [showMore, setShowMore] = useState(false);
-
+  const {data:locations,isLoading} = useQuery({
+    queryKey:"locations",
+    queryFn:async()=>{
+      const res = await axios.get("/api/locations");
+      return res.data
+    }
+  })
+  if(isLoading) return <LoadingSpinner/>
   // Filter locations based on search and zone
-  const filteredLocations = coveredLocations.filter((location) => {
+  const filteredLocations = locations.filter((location) => {
     const matchesSearch = location.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -203,13 +254,13 @@ export default function AreaCovered() {
                         placeholder="Search for your suburb..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                       />
                     </div>
                     <select
                       value={selectedZone}
                       onChange={(e) => setSelectedZone(e.target.value)}
-                      className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     >
                       <option value="All">All Zones</option>
                       {zones.map((zone) => (
@@ -285,7 +336,7 @@ export default function AreaCovered() {
                       Don&apos;t see your suburb in the list? We might still
                       service your area.
                     </p>
-                    <button className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                    <button className="px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition-colors">
                       Contact Us to Check
                     </button>
                   </div>
@@ -304,7 +355,7 @@ export default function AreaCovered() {
                          Flexible Automatic Driving Lessons Across Sydney
                       </h3>
                       <p className="text-gray-700 text-lg mb-3">
-                        We offer flexible automatic driving lessons across Sydney, including weekdays, evenings, and weekends. Whether you are a student, working professional, or nervous beginner, our instructors tailor each lesson to your learning pace and goals. From city driving and parking to test route practice, we ensure you are fully prepared for both your driving test and independent driving.
+                        We offer automatic <a className="location-link" href={"https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/learner-driver-licence"} >driving lessons</a> throughout Sydney, including weekdays, evenings, and weekends. Our professional instructors adjust each lesson to your pace, teaching city driving, parking, and test route practice so you feel confident on your driving test day.
                       </p>
                     </div>
       
@@ -355,7 +406,7 @@ export default function AreaCovered() {
           </div>
         </Container>
       </section>
-      <Faq />
+      <Faq faqs={faqs}/>
     </div>
   );
 }

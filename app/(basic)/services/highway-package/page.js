@@ -90,9 +90,7 @@ const whyChoosePoints = [
   {
     title: "Comprehensive Training",
     description: (
-      <>
-         We offer practical and theoretical lessons for real-world driving.
-      </>
+      <>We offer practical and theoretical lessons for real-world driving.</>
     ),
   },
   {
@@ -102,8 +100,7 @@ const whyChoosePoints = [
   },
   {
     title: "Modern Vehicles",
-    description:
-      "Learn in well-maintained, safe cars for a smooth experience.",
+    description: "Learn in well-maintained, safe cars for a smooth experience.",
   },
   {
     title: "Flexible Timing",
@@ -112,13 +109,21 @@ const whyChoosePoints = [
   },
 ];
 
-
 const faqs = [
   {
     question: "How many lessons do I need to pass my driving test?",
     answer: (
       <>
-     The number of lessons varies for every learner we teach in Kogarah. On average, most students require between 5 and 10 professional lessons. This depends on your current experience, confidence, and basic driving skills.
+        The number of lessons varies for every learner we teach in Kogarah. On
+        average, most students require between 5 and 10 professional lessons.
+        This depends on your current experience, confidence, and basic
+        <a
+          target="_blank"
+          href={`https://drivinglessons.site/blog/lessons-hours-pass-driving-test/`}
+          className="font-semibold underline px-1"
+        >
+          driving skills.
+        </a>
       </>
     ),
   },
@@ -126,7 +131,10 @@ const faqs = [
     question: "Do you provide pickup and drop-off for lessons?",
     answer: (
       <>
-        Yes, we offer convenient pickup and drop-off from your preferred location. This includes your home, school, or workplace within our service area. We serve all Sydney suburbs  to make your learning experience easy.
+        Yes, we offer convenient pickup and drop-off from your preferred
+        location. This includes your home, school, or workplace within our
+        service area. We serve all Sydney suburbs to make your learning
+        experience easy.
       </>
     ),
   },
@@ -134,7 +142,9 @@ const faqs = [
     question: "Which suburbs do your instructors cover?",
     answer: (
       <>
-        Our instructors cover Kogarah, Hurstville, Rockdale, Bexley, Carlton, and Arncliffe. We are familiar with the local highway entry points and exit routes.
+        Our instructors cover Kogarah, Hurstville, Rockdale, Bexley, Carlton,
+        and Arncliffe. We are familiar with the local highway entry points and
+        exit routes.
       </>
     ),
   },
@@ -142,7 +152,8 @@ const faqs = [
     question: "What type of car will I learn in?",
     answer: (
       <>
-You will learn in a modern automatic vehicle with dual controls. These cars ensure maximum safety while you practice on high-speed roads.
+        You will learn in a modern automatic vehicle with dual controls. These
+        cars ensure maximum safety while you practice on high-speed roads.
       </>
     ),
   },
@@ -150,7 +161,8 @@ You will learn in a modern automatic vehicle with dual controls. These cars ensu
     question: "Can I book lessons online?",
     answer: (
       <>
-       Yes! You can book your Highway driving lessons near me online at any time. Visit our website and fill out the booking form to get started.
+        Yes! You can book your Highway driving lessons near me online at any
+        time. Visit our website and fill out the booking form to get started.
       </>
     ),
   },
@@ -245,30 +257,53 @@ Test Route Driving School offers premium Highway Driving Lessons in Sydney subur
       <section className="py-12 bg-primary/80 text-white">
         <Container>
           <h3 className="text-lg md:text-2xl font-semibold">
-        Who Needs Highway Driving Lessons in Kogarah?
+            Who Needs Highway Driving Lessons in Kogarah?
           </h3>
+          <p className="mt-2 text-base-300">
+            Many different types of drivers benefit from our
+            <a
+              target="_blank"
+              href={`https://www.transport.nsw.gov.au/roadsafety/young-drivers/learners`}
+              className="font-semibold underline px-1"
+            >
+              Driving lessons
+            </a>{" "}
+            near Kogarah.
+          </p>
           <ul className="mt-2 list-disc pl-3 space-y-2">
             <li className="text-base-300 ">
-         <strong>New Learners:</strong> Prepare for your P’s test with motorway experience.
+              <strong>New Learners:</strong> Prepare for your P’s test with
+              motorway experience.
             </li>
             <li className="text-base-300 ">
-             <strong>Overseas Drivers:</strong> Adapt to the unique Australian road systems and signs.
+              <strong>Overseas Drivers:</strong> Adapt to the unique Australian
+              road systems and signs.
             </li>
             <li className="text-base-300 ">
-              <strong>Anxious Drivers:</strong>  Overcome Your Fear of Fast Motorways with Patient Support.
+              <strong>Anxious Drivers:</strong> Overcome Your Fear of Fast
+              Motorways with Patient Support.
             </li>
             <li className="text-base-300 ">
-            <strong>Commuters:</strong> Perfect for those moving from Hurstville or Rockdale to the city.
+              <strong>Commuters:</strong> Perfect for those moving from
+              Hurstville or Rockdale to the city.
             </li>
             <li className="text-base-300 ">
-           <strong>Experienced Drivers: </strong>Take Advanced driving lessons in Sydney suburbs to sharpen your skills.
+              <strong>Experienced Drivers: </strong>Take Advanced driving
+              lessons in Sydney suburbs to sharpen your skills.
             </li>
           </ul>
           <h3 className="mt-4 text-lg md:text-2xl font-semibold">
-           Prepare for Success with a Driving Instructor in Kogarah
+            Prepare for Success with a Driving Instructor in Kogarah
           </h3>
           <p className="mt-2 max-w-4xl">
-        Don’t leave your safety or your driving test to mere chance. With test route driving school, you receive the guidance needed to pass with flying colors. We provide a Highway driving instructor near me who knows local roads perfectly. Take the first step toward becoming a fully licensed and safe driver. Contact us today to book your assessment in Bexley or Arncliffe. Our team is ready to help you reach your driving goals quickly. You will enjoy a supportive environment that makes learning to drive a fun experience.
+            Don’t leave your safety or your driving test to mere chance. With
+            test route driving school, you receive the guidance needed to pass
+            with flying colors. We provide a Highway driving instructor near me
+            who knows local roads perfectly. Take the first step toward becoming
+            a fully licensed and safe driver. Contact us today to book your
+            assessment in Bexley or Arncliffe. Our team is ready to help you
+            reach your driving goals quickly. You will enjoy a supportive
+            environment that makes learning to drive a fun experience.
           </p>
         </Container>
       </section>
@@ -280,9 +315,13 @@ Test Route Driving School offers premium Highway Driving Lessons in Sydney subur
         packages={automaticDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs title={`Why choose Test Route driving School in Kogarah?`}  subTitle={`We provide professional lessons and help you obtain your Australian driving license. Here is why we are the best choice for your education:`} points={whyChoosePoints}/>
+      <WhyChooseUs
+        title={`Why choose Test Route driving School in Kogarah?`}
+        subTitle={`We provide professional lessons and help you obtain your Australian driving license. Here is why we are the best choice for your education:`}
+        points={whyChoosePoints}
+      />
 
-      <Faq faqs={faqs}/>
+      <Faq faqs={faqs} />
     </div>
   );
 }

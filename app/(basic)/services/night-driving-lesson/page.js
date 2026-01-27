@@ -101,7 +101,7 @@ const whyChoosePoints = [
     title: "Comprehensive Training",
     description: (
       <>
-        We combine theory with practical
+       We combine theory with practical
         <Link href={`/faq`} className="px-1 font-semibold underline">
           experience to achieve better results. Frequently Asked Questions About
           Driving Lessons.
@@ -157,7 +157,9 @@ const faqs = [
         You will drive a modern automatic vehicle equipped with dual safety
         controls. This ensures your instructor can assist you if any dangerous
         situation arises. Safety is our main priority for every student in the
-        Sydney Suburbs.
+        Sydney Suburbs.Ready to get started?<a target="_blank" href={`https://www.transport.nsw.gov.au/roadsafety/young-drivers/learners`} className="font-semibold underline px-1">
+              See more
+            </a> about our training sessions tailored for Sydney drivers.
       </>
     ),
   },
@@ -166,7 +168,9 @@ const faqs = [
     answer: (
       <>
         Yes, you can easily book your sessions through our website at any time.
-        Visit our Blog for more tips or use the booking form. We make the
+        Visit our <Link href={`/blogs`} className="font-semibold underline px-1">
+              Blog
+            </Link> for more tips or use the booking form. We make the
         process simple so you can start learning immediately.
       </>
     ),
@@ -214,12 +218,12 @@ This guide explores the best Night Driving Lessons in Sydney suburbsfor all lear
                 struggle with heavy glare from oncoming high-beam headlights.
                 You might find unfamiliar roads in Sydney suburbsmuch harder to
                 navigate at night. We offer a{" "}
-                <Link
-                  href={`/packages`}
+                <a target="_blank"
+                  href={`https://www.nsw.gov.au/driving-boating-and-transport/roads-safety-and-rules/safe-driving/fatigue`}
                   className="font-semibold underline px-1"
                 >
                   Find Your Perfect Driving Package
-                </Link>{" "}
+                </a>
                 to address these specific concerns for you. Why do these
                 specialized sessions matter for your growth as a driver?
               </p>

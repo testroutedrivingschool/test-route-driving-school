@@ -108,7 +108,9 @@ const faqs = [
         The number of lessons varies for every learner we teach. On average,
         most students need between 5 and 10 lessons. This depends on your
         experience, confidence, and current driving skills. We assess your
-        progress during every city driving class in Sydney suburbs.
+        progress during every city   <a target="_blank" href={`https://www.rateddriving.com/learner-driver/how-many-driving-lessons-do-i-need-to-pass/`} className="font-semibold underline px-1">
+          driving class
+        </a> in Sydney suburbs.
       </>
     ),
   },

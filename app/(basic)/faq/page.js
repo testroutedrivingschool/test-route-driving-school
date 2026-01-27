@@ -3,166 +3,196 @@
 import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import Link from "next/link";
 import Script from "next/script";
 import React, {useMemo, useState} from "react";
 import { FaChevronDown } from "react-icons/fa";
 
 
+
 const faqs = [
   {
-    question: "What is included in Automatic Driving Lessons?",
+    question: "Do you offer automatic driving lessons near me?",
     answer:
-      "Our Automatic Driving Lessons focus on road safety, traffic rules, and practical driving skills using dual-control automatic cars, perfect for beginners or nervous drivers.",
+     <>
+     Yes. You receive <Link className="location-link" href={"/services/automatic-driving-lessons"} >automatic driving lessons</Link> across Sydney&apos;s suburbs with licensed instructors. You practise on real test routes and local roads. This helps you build confidence faster.
+     </>,
   },
   {
-    question: "Do you provide Manual Driving Lessons?",
+    question: "Are automatic lessons good for beginner drivers?",
     answer:
-      "Yes, we offer Manual Driving Lessons to help learners gain full control of clutch, gears, and vehicle handling for a complete driving experience.",
+      "Yes. You learn faster because autonomous cars remove the need for clutch control. You focus more on steering, road signs, and traffic awareness.",
   },
   {
-    question: "What is the Driving Test Assessment service?",
+    question: "What cars do you use for automatic lessons?",
     answer:
-      "Driving Test Assessment is a pre-test evaluation where our instructors assess your readiness and guide you on areas to improve before taking the official driving test.",
+      "You drive modern automatic vehicles with dual brakes. These cars meet NSW safety standards. Your instructor controls the vehicle when needed.",
   },
   {
-    question: "What does the Driving Test Package include?",
+    question: "How many automatic lessons do I need before testing?",
     answer:
-      "The Driving Test Package includes structured lessons, mock tests, and preparation tailored to help you pass your driving test efficiently.",
+      <>
+      You need lessons based on your driving skills and confidence level. Most learners require regular practice on test routes. Your <Link className="location-link" href={"/instructors"} >instructor</Link>guides you on readiness.
+      </>,
   },
   {
-    question: "Can I hire a car for my instructor?",
+    question: "What is a driving test assessment?",
     answer:
-      "Yes, our Car Hire for Instructor service allows instructors to use dual-control cars for your driving lessons safely and efficiently.",
+      "You complete a full mock test under real exam conditions. Your instructor follows Service NSW testing rules. You receive detailed feedback.",
   },
   {
-    question: "What is the Parking Package?",
+    question: "Why should I take a pre-driving test assessment?",
     answer:
-      "The Parking Package focuses on teaching you all types of parking skills including parallel, reverse, and angled parking in real scenarios.",
+      "You identify common mistakes before your official test. This reduces your risk of failure. You improve weak areas early.",
   },
   {
-    question: "Do you offer Highway Packages?",
+    question: "Does the assessment follow Service NSW standards?",
     answer:
-      "Yes, the Highway Package teaches learners safe driving on highways, lane discipline, overtaking, and speed management.",
+      <>
+      Yes. You practise according to the current NSW testing guidelines. Your <Link className="location-link" href={"/services/driving-test-assessment"} >assessment</Link> reflects real examiner expectations.
+      </>,
   },
   {
-    question: "What is included in Night Driving Lessons?",
+    question: "Can assessments help nervous learners?",
     answer:
-      "Night Driving Lessons train you to drive safely after dark, improving your confidence and awareness during low-light conditions.",
+      "Yes. You gain confidence through repeated test-style practice. You learn how to manage pressure and stay focused.",
   },
   {
-    question: "Do you offer City Driving Packages?",
+    question: "What is included in your driving test package?",
     answer:
-      "Yes, the City Driving Package helps learners navigate busy city streets, traffic lights, and complex junctions safely.",
+     <>
+      You receive practice lessons, a mock assessment, and test-day support. The<Link className="location-link" href={"/services/driving-test-package"} >package</Link> consists of car hire if required. This prepares you fully.
+     </>,
   },
   {
-    question: "How long is each driving lesson?",
+    question: "Is a test package better than single lessons?",
     answer:
-      "Each lesson is typically 1–2 hours, depending on the learner's requirements and chosen package.",
+      "Yes. You follow a structured learning plan. This saves money and improves consistency. You progress faster.",
   },
   {
-    question: "Do I need to bring my own car?",
+    question: "Can beginners book a driving test package?",
     answer:
-      "No, we provide dual-control vehicles for all lessons, including automatic and manual cars.",
+      <>Yes. You start from basic skills and progress step by step. Your instructor adapts the <Link className="location-link" href={"/services/driving-test-package"} >package</Link> to your level.</>,
   },
   {
-    question: "Can I choose my instructor?",
+    question: "Do you help with last-minute test preparation?",
     answer:
-      "Yes, learners can request a preferred instructor, subject to availability.",
+      "Yes. You receive focused revision on test routes and manoeuvres. This improves your confidence before the exam.",
   },
   {
-    question: "Are lessons suitable for complete beginners?",
+    question: "Do you provide car hire for driving tests?",
     answer:
-      "Absolutely! Our lessons are designed for beginners with no prior experience, focusing on confidence and road safety.",
+      "Yes. You can hire a dual-controlled vehicle for your test. The car meets Service NSW requirements.",
   },
   {
-    question: "Do you provide mock driving tests?",
+    question: "Are your cars fitted with dual brakes?",
     answer:
-      "Yes, our Driving Test Package includes mock tests to simulate real test conditions.",
+      "Yes. Your instructor controls braking when necessary. This ensures safety during lessons and tests.",
   },
   {
-    question: "Can I take lessons during weekends?",
+    question: "Can I practise before using the test car?",
     answer:
-      "Yes, we offer flexible scheduling including evenings and weekends to accommodate your availability.",
+      "Yes. You receive familiarisation lessons in the same vehicle. This reduces stress on test day.",
   },
   {
-    question: "Are your instructors certified?",
+    question: "Is car hire available in all suburbs?",
     answer:
-      "Yes, all instructors are fully certified and have experience teaching in various driving scenarios.",
+      "Yes. You can book test vehicles across Sydney's suburbs. Availability depends on your test location.",
   },
   {
-    question: "How do I book a driving lesson?",
+    question: "Do you teach parallel and reverse parking?",
     answer:
-      "You can book lessons through our website or by contacting our office directly.",
+      "Yes. You learn parallel, reverse, and angle parking. You practise in real street conditions.",
   },
   {
-    question: "Do you offer refresher courses?",
+    question: "Who needs parking lesson packages?",
     answer:
-      "Yes, refresher courses are available for learners who already have some driving experience but want to improve skills.",
+      <>
+      
+      You benefit if you struggle with tight spaces. These <Link className="location-link" href={"/services/parking-package"} >package</Link> focus only on parking skills.
+      </>
   },
   {
-    question: "Is there a minimum age for lessons?",
+    question: "How long does parking training take?",
     answer:
-      "Learners must meet the legal minimum driving age as per local regulations.",
+      "You usually improve within a few targeted sessions. Your progress depends on practice and coordination.",
   },
   {
-    question: "Do you provide lesson packages for test preparation?",
+    question: "Are parking lessons included in test preparation?",
     answer:
-      "Yes, our Driving Test Packages are specifically designed to prepare learners for the official driving test.",
+      "Yes. You practise required parking manoeuvres for the driving test. This improves pass chances.",
   },
   {
-    question: "Can I switch between automatic and manual lessons?",
+    question: "Do you offer highway driving lessons near me?",
     answer:
-      "Yes, learners can switch based on comfort and progress with the guidance of our instructors.",
+      "Yes. You practise on NSW highways and major roads. You learn safe high-speed driving techniques.",
   },
   {
-    question: "Do you offer training for busy professionals?",
+    question: "What skills do highway lessons cover?",
     answer:
-      "Yes, our flexible schedules allow professionals to take lessons during evenings or weekends.",
+      "You learn merging, lane changing, and speed control. You also practise safe overtaking.",
   },
   {
-    question: "How safe are the training vehicles?",
+    question: "Are highway lessons good for new drivers?",
     answer:
-      "All our vehicles are dual-control, regularly maintained, and equipped for safe learning experiences.",
+      <>Yes. You gain confidence on faster roads. You learn how to handle traffic safely.</>,
   },
   {
-    question: "Do you provide training on traffic rules?",
+    question: "Are highway lessons included in packages?",
     answer:
-      "Yes, all lessons cover traffic rules, road signs, hazard perception, and safe driving practices.",
+      <>Yes. You can add <Link className="location-link" href={"/services/driving-test-package"} >highway training</Link> to your learning plan. This improves overall driving ability.</>,
   },
   {
-    question: "Can I practice with my own car?",
+    question: "Do you provide night driving lessons?",
     answer:
-      "We recommend using our dual-control vehicles for safety, especially for beginners.",
+      "Yes. You practise driving in low-light conditions. You learn proper headlight and visibility control.",
   },
   {
-    question: "How many lessons will I need to pass the test?",
+    question: "What do night lessons focus on?",
     answer:
-      "The number of lessons varies by learner. Our instructors will assess your progress and suggest the ideal number of lessons.",
+      "You develop hazard detection and reaction skills. You improve judgment in dark environments.",
   },
   {
-    question: "Do you provide instruction for senior drivers?",
+    question: "Who should take night driving classes?",
     answer:
-      "Yes, we provide tailored lessons for learners of all ages, including seniors who wish to refresh or learn driving skills.",
+      <>You benefit if you feel unsure after sunset. These<Link className="location-link" href={"/services/night-driving-lesson"} >lessons </Link> improve safety awareness.</>,
   },
   {
-    question: "Are lessons available for both city and highway driving?",
+    question: "Are night lessons flexible in timing?",
     answer:
-      "Yes, our packages include city, highway, night, and parking training.",
+      "Yes. You can book evening sessions that suit your schedule. Weekend slots are also available.",
   },
   {
-    question: "What makes Test Route Driving School different?",
+    question: "Do you teach city driving in Sydney suburbs?",
     answer:
-      "We focus on personalized learning, certified instructors, modern vehicles, and flexible schedules to ensure every learner succeeds safely.",
+      "Yes. You practise on busy roads and intersections. You learn to handle peak-hour traffic.",
   },
   {
-    question: "Do you offer package discounts?",
+    question: "Do you provide car hire for instructor service?",
     answer:
-      "Yes, we offer discounts for multiple lessons and package bookings. Contact us for current offers.",
+      <>
+       Yes, we offer car hire for instructor services. Our dual-controlled vehicles
+      are available for lessons and test preparation.<Link className="location-link" href={"/services/car-hire-for-instructor"} > Learn more about car hire.</Link>
+      </>,
   },
   {
-    question: "Can I cancel or reschedule a lesson?",
+    question: "What skills do city driving lessons build?",
     answer:
-      "Yes, lessons can be rescheduled or canceled in advance according to our policy.",
+      "You improve lane discipline and gap selection. You learn defensive driving techniques.",
+  },
+  {
+    question: "Are city lessons helpful before the test?",
+    answer:
+     <>
+     
+     Yes. You face complex routes during exams. <Link className="location-link" href={"/services/city-driving-package"} >City lessons</Link> prepare you for these conditions.
+     </>
+  },
+  {
+    question: "Why choose city driving packages?",
+    answer:
+     <>You gain real-world urban driving experience. This improves <a target="_blank" className="location-link" href={"https://www.nhtsa.gov/ten-tips-for-safe-driving"} > safety</a> and test performance.
+</>,
   },
 ];
 
@@ -206,7 +236,7 @@ const faqSchema = useMemo(() => {
         <Container>
           <SectionHeader
             className={`mt-0!`}
-            title="Frequently Asked Questions About Driving Lessons"
+            title="Frequently Asked Questions About Test Route Driving School (Sydney Suburbs)"
             subtitle="Find answers to common questions about our automatic and manual driving lessons, test preparation packages, car hire services, and other driving school programs at Test Route Driving School."
           />
           <div className="space-y-4">

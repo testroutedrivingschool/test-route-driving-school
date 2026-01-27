@@ -138,7 +138,7 @@ export default function BlogDetails() {
               </div>
 
               {/* Back Button */}
-              <PrimaryBtn onClick={() => router.push("/company/blogs")}>
+              <PrimaryBtn onClick={() => router.push("/blogs")}>
                 ← Back to Blogs
               </PrimaryBtn>
             </div>

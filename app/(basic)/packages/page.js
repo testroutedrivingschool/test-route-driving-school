@@ -105,7 +105,7 @@ const router = useRouter()
 
           <>
           
-          Are you looking for the <strong>best driving package near me</strong> in Kogarah? At <strong>Test Route Driving School</strong>, we offer <strong>professional driving packages</strong> designed to help you learn faster, build confidence, and pass your driving test with ease. Whether you’re a beginner or need extra practice, our <strong>driving school packages</strong> cater to every learner’s needs.
+          Are you looking for the <strong>best driving package near me</strong> in Kogarah? At <strong>Test Route Driving School</strong>, we offer <strong>professional driving packages</strong> designed to help you learn faster, build confidence, and pass your driving test with ease. Whether you’re a beginner or need extra practice, our <a href="https://en.wikipedia.org/wiki/Driver%27s_license" target="_blank" className="location-link">driving school packages</a> cater to every learner’s needs.
           </>
         }
       />

@@ -103,7 +103,9 @@ import { FaAward, FaBrain, FaCalendarAlt, FaCar, FaChartLine, FaShieldAlt } from
     question: "How many lessons do I need to pass my driving test?",
     answer:
       <>
-     The number of lessons varies for every learner in Kogarah. On average, students require 5 to 10 lessons, depending on their Level of Confidence. We assess your skills and help you reach your goals fast.
+     The number of lessons varies for every<a target="_blank" href={`https://drivinglessons.site/blog/lessons-hours-pass-driving-test/`} className="font-semibold underline px-1">
+         learner
+        </a> in Kogarah. On average, students require 5 to 10 lessons, depending on their Level of Confidence. We assess your skills and help you reach your goals fast.
       </>,
   },
   {
@@ -360,7 +362,13 @@ export default function CarHireForInstructorClient() {
       </section>
       <MovingCar />
       <WhyChooseUs points={whyChoosePoints}/>
-      <DrivingTipsSection title={`Expert Driving Tips & Advice for Sydney Suburbs  Learners`} subtitle={`Learning to drive is challenging but rewarding with the right mindset. Our professional instructors offer expert guidance to learners of all skill levels.`} tips={drivingLessonTips}/>
+      <DrivingTipsSection title={`Expert Driving Tips & Advice for Sydney Suburbs  Learners`} subtitle={
+        <>
+          <a target="_blank" href={`https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/learner-driver-licence/supervising`} className="font-semibold underline px-1">
+          Learning
+        </a> to drive is challenging but rewarding with the right mindset. Our professional instructors offer expert guidance to learners of all skill levels.
+        </>
+      } tips={drivingLessonTips}/>
       <Faq className={`bg-white`} faqs={faqs}/>
     </div>
   );
