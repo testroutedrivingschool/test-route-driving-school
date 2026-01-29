@@ -11,11 +11,23 @@ import {IoMdAdd} from "react-icons/io";
 import BookingCalendar from "../bookings/components/BookingCalendar";
 import {useUserData} from "@/app/hooks/useUserData";
 import {toast} from "react-toastify";
-import {FaCalendarPlus, FaChevronLeft, FaChevronRight, FaEyeSlash} from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import {
+  FaCalendarPlus,
+  FaChevronLeft,
+  FaChevronRight,
+  FaEyeSlash,
+} from "react-icons/fa";
+import {useRouter} from "next/navigation";
 
-const weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
+const weekdays = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
 
 const times = [
   "7:00AM",
@@ -123,20 +135,17 @@ export default function InstructorBookings() {
     bulkAction: "",
     reuseSettings: false,
   });
-const LENGTH_OPTIONS = [
-  "15 mins",
-  "30 mins",
-  "45 mins",
-  "1 hour",
-  "1 hour 15 mins",
-  "1 hour 30 mins",
-  "1 hour 45 mins",
-  "2 hours",
-  "2 hours 15 mins",
-];
-
-
-
+  const LENGTH_OPTIONS = [
+    "15 mins",
+    "30 mins",
+    "45 mins",
+    "1 hour",
+    "1 hour 15 mins",
+    "1 hour 30 mins",
+    "1 hour 45 mins",
+    "2 hours",
+    "2 hours 15 mins",
+  ];
 
   const formatDate = (d) => {
     const date = new Date(d);
@@ -145,61 +154,59 @@ const LENGTH_OPTIONS = [
     const mm = String(date.getMonth() + 1).padStart(2, "0");
     const dd = String(date.getDate()).padStart(2, "0");
 
-    return `${yyyy}-${mm}-${dd}`; 
+    return `${yyyy}-${mm}-${dd}`;
   };
 
- const openSlotModal = ({ date, time }) => {
-  const dateKey = formatDate(date);
-  const key = `${dateKey}__${time}`;
-  const existing = slotMap[key];
+  const openSlotModal = ({date, time}) => {
+    const dateKey = formatDate(date);
+    const key = `${dateKey}__${time}`;
+    const existing = slotMap[key];
 
-  setSelectedSlot({
-    date,
-    time,
-    staff: instructor?.name || "Staff",
-    location: "Sydney",
-  });
+    setSelectedSlot({
+      date,
+      time,
+      staff: instructor?.name || "Staff",
+      location: "Sydney",
+    });
 
- const dateStr = formatDate(date);
-const maxMins = getMaxEmptyExtendMinutes(dateStr, time);
-const defaultLen = "15 mins";
-  if (existing) {
-    const isAll = existing.suburb === "ALL";
+    const dateStr = formatDate(date);
+    const maxMins = getMaxEmptyExtendMinutes(dateStr, time);
+    const defaultLen = "15 mins";
+    if (existing) {
+      const isAll = existing.suburb === "ALL";
 
-    const current = existing?.duration || "15 mins";
-    const safe =
-      durationToMinutes(current) <= maxMins ? current : "15 mins";
+      const current = existing?.duration || "15 mins";
+      const safe = durationToMinutes(current) <= maxMins ? current : "15 mins";
 
-    setSlotForm((p) => ({
-      ...p,
-      length: safe, 
-      visibility: existing.visibility || "public",
-      privateNote: existing.privateNote || "",
-      publicNote: existing.publicNote || "",
-      allSuburbs: isAll,
-      bulkAction: "", 
-      reuseSettings: false,
-    }));
+      setSlotForm((p) => ({
+        ...p,
+        length: safe,
+        visibility: existing.visibility || "public",
+        privateNote: existing.privateNote || "",
+        publicNote: existing.publicNote || "",
+        allSuburbs: isAll,
+        bulkAction: "",
+        reuseSettings: false,
+      }));
 
-    setSelectedSuburbs(Array.isArray(existing.suburb) ? existing.suburb : []);
-  } else {
-    setSlotForm((p) => ({
-      ...p,
+      setSelectedSuburbs(Array.isArray(existing.suburb) ? existing.suburb : []);
+    } else {
+      setSlotForm((p) => ({
+        ...p,
         length: defaultLen,
-      visibility: "public",
-      privateNote: "",
-      publicNote: "",
-      allSuburbs: true,
-      bulkAction: "",
-      reuseSettings: false,
-    }));
+        visibility: "public",
+        privateNote: "",
+        publicNote: "",
+        allSuburbs: true,
+        bulkAction: "",
+        reuseSettings: false,
+      }));
 
-    setSelectedSuburbs([]);
-  }
+      setSelectedSuburbs([]);
+    }
 
-  setShowSlotModal(true);
-};
-
+    setShowSlotModal(true);
+  };
 
   const closeSlotModal = () => {
     setShowSlotModal(false);
@@ -207,35 +214,34 @@ const defaultLen = "15 mins";
   };
 
   const addDays = (date, days) => {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
-};
+    const d = new Date(date);
+    d.setDate(d.getDate() + days);
+    return d;
+  };
 
-const goPrevWeek = () => setSelectedDate((d) => addDays(d, -7));
-const goNextWeek = () => setSelectedDate((d) => addDays(d, 7));
+  const goPrevWeek = () => setSelectedDate((d) => addDays(d, -7));
+  const goNextWeek = () => setSelectedDate((d) => addDays(d, 7));
 
   // Get dates for the week of selectedDate
-const getWeekDates = (selectedDate) => {
-  const dates = [];
-  const startDate = new Date(selectedDate);
-  startDate.setHours(0, 0, 0, 0);
+  const getWeekDates = (selectedDate) => {
+    const dates = [];
+    const startDate = new Date(selectedDate);
+    startDate.setHours(0, 0, 0, 0);
 
-  // JS: Sun=0..Sat=6  -> Monday start
-  const day = startDate.getDay();
-  const diffToMonday = (day + 6) % 7;
+    // JS: Sun=0..Sat=6  -> Monday start
+    const day = startDate.getDay();
+    const diffToMonday = (day + 6) % 7;
 
-  startDate.setDate(startDate.getDate() - diffToMonday);
+    startDate.setDate(startDate.getDate() - diffToMonday);
 
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(startDate);
-    d.setDate(startDate.getDate() + i);
-    dates.push(d);
-  }
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startDate);
+      d.setDate(startDate.getDate() + i);
+      dates.push(d);
+    }
 
-  return dates;
-};
-
+    return dates;
+  };
 
   const weekDates = getWeekDates(selectedDate);
 
@@ -302,32 +308,28 @@ const getWeekDates = (selectedDate) => {
     },
   });
 
-const {
-  data: bookings = [],
-  isLoading: bookingsLoading,
-} = useQuery({
-  queryKey: ["bookings", user?.email, weekFrom, weekTo],
-  enabled: !!user?.email,
-  queryFn: async () => {
-    const res = await axios.get("/api/bookings", {
-      params: {
-        email: user.email,
-        from: weekFrom,
-        to: weekTo,
-      },
-    });
+  const {data: bookings = [], isLoading: bookingsLoading} = useQuery({
+    queryKey: ["bookings", user?.email, weekFrom, weekTo],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const res = await axios.get("/api/bookings", {
+        params: {
+          email: user.email,
+          from: weekFrom,
+          to: weekTo,
+        },
+      });
 
-    // ✅ only bookings of this instructor
-    return (res.data || []).filter(
-      (b) =>
-        (b.instructorEmail || "").toLowerCase() ===
-        (user.email || "").toLowerCase(),
-    );
-  },
-});
+      // ✅ only bookings of this instructor
+      return (res.data || []).filter(
+        (b) =>
+          (b.instructorEmail || "").toLowerCase() ===
+          (user.email || "").toLowerCase(),
+      );
+    },
+  });
 
-
-console.log(bookings);
+  console.log(bookings);
 
   // quick lookup map: key = "YYYY-MM-DD__7:15AM"
   const slotMap = slots.reduce((acc, s) => {
@@ -340,86 +342,85 @@ console.log(bookings);
 
   const existingSlot = selectedKey ? slotMap[selectedKey] : null;
 
-
-
   // ✅ show Remove if there is any saved slot in DB (public/private/hidden/etc)
   const shouldShowRemove = !!existingSlot;
 
-const STEP_MIN = 15;
+  const STEP_MIN = 15;
 
-const toMinutes = (b) => {
-  if (typeof b?.minutes === "number") return b.minutes;
-  // fallback parse from "1hr 30m"
-  const s = (b?.duration || "").toLowerCase();
-  const hr = s.match(/(\d+)\s*h/);
-  const mn = s.match(/(\d+)\s*m/);
-  const hours = hr ? parseInt(hr[1], 10) : 0;
-  const mins = mn ? parseInt(mn[1], 10) : 0;
-  return hours * 60 + mins || 15;
-};
+  const toMinutes = (b) => {
+    if (typeof b?.minutes === "number") return b.minutes;
+    // fallback parse from "1hr 30m"
+    const s = (b?.duration || "").toLowerCase();
+    const hr = s.match(/(\d+)\s*h/);
+    const mn = s.match(/(\d+)\s*m/);
+    const hours = hr ? parseInt(hr[1], 10) : 0;
+    const mins = mn ? parseInt(mn[1], 10) : 0;
+    return hours * 60 + mins || 15;
+  };
 
-// your timeIndexMap already exists
-// your formatDate already exists
-const timeIndexMap = times.reduce((acc, t, i) => {
-  acc[t] = i;
-  return acc;
-}, {});
+  // your timeIndexMap already exists
+  // your formatDate already exists
+  const timeIndexMap = times.reduce((acc, t, i) => {
+    acc[t] = i;
+    return acc;
+  }, {});
 
-const bookingCoverage = {};
-const bookingsSorted = [...bookings].sort((a, b) => {
-  const da = formatDate(a.bookingDate || a.date);
-  const db = formatDate(b.bookingDate || b.date);
-  if (da !== db) return da.localeCompare(db);
-  return (timeIndexMap[a.bookingTime || a.time] ?? 0) - (timeIndexMap[b.bookingTime || b.time] ?? 0);
-});
+  const bookingCoverage = {};
+  const bookingsSorted = [...bookings].sort((a, b) => {
+    const da = formatDate(a.bookingDate || a.date);
+    const db = formatDate(b.bookingDate || b.date);
+    if (da !== db) return da.localeCompare(db);
+    return (
+      (timeIndexMap[a.bookingTime || a.time] ?? 0) -
+      (timeIndexMap[b.bookingTime || b.time] ?? 0)
+    );
+  });
 
-for (const b of bookingsSorted) {
-  const dateKey = formatDate(b.bookingDate || b.date);
-  const startTime = b.bookingTime || b.time;
-  const startIdx = timeIndexMap[startTime];
-  if (startIdx == null) continue;
+  for (const b of bookingsSorted) {
+    const dateKey = formatDate(b.bookingDate || b.date);
+    const startTime = b.bookingTime || b.time;
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) continue;
 
-  const mins = toMinutes(b);
-  const span = Math.max(1, Math.ceil(mins / STEP_MIN));
+    const mins = toMinutes(b);
+    const span = Math.max(1, Math.ceil(mins / STEP_MIN));
 
-  bookingCoverage[dateKey] ??= {};
+    bookingCoverage[dateKey] ??= {};
 
-  // if something already starts here, skip (or handle conflict)
-  if (bookingCoverage[dateKey][startTime]) continue;
+    // if something already starts here, skip (or handle conflict)
+    if (bookingCoverage[dateKey][startTime]) continue;
 
-  bookingCoverage[dateKey][startTime] = { rowSpan: span, booking: b };
+    bookingCoverage[dateKey][startTime] = {rowSpan: span, booking: b};
 
-  for (let k = 1; k < span; k++) {
-    const t = times[startIdx + k];
-    if (!t) break;
-    if (!bookingCoverage[dateKey][t]) bookingCoverage[dateKey][t] = { skip: true };
-  }
-}
-
-
-
-
-    const isStopSlot = (slot) => {
-  // stop if empty OR public (available-to-book)
-  if (!slot) return true;
-  return slot.visibility === "public";
-};
-
-const getMaxExtendMinutes = (dateStr, startTime) => {
-  const startIdx = timeIndexMap[startTime];
-  if (startIdx == null) return STEP_MIN;
-
-  let steps = 1; // at least 15 mins
-  for (let i = startIdx + 1; i < times.length; i++) {
-    const t = times[i];
-    const nextSlot = slotMap[`${dateStr}__${t}`];
-
-    if (isStopSlot(nextSlot)) break; // hit public OR empty → stop
-    steps += 1; // can extend through hidden/privateBooked/publicNote
+    for (let k = 1; k < span; k++) {
+      const t = times[startIdx + k];
+      if (!t) break;
+      if (!bookingCoverage[dateKey][t])
+        bookingCoverage[dateKey][t] = {skip: true};
+    }
   }
 
-  return steps * STEP_MIN; // minutes
-};
+  const isStopSlot = (slot) => {
+    // stop if empty OR public (available-to-book)
+    if (!slot) return true;
+    return slot.visibility === "public";
+  };
+
+  const getMaxExtendMinutes = (dateStr, startTime) => {
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return STEP_MIN;
+
+    let steps = 1; // at least 15 mins
+    for (let i = startIdx + 1; i < times.length; i++) {
+      const t = times[i];
+      const nextSlot = slotMap[`${dateStr}__${t}`];
+
+      if (isStopSlot(nextSlot)) break; // hit public OR empty → stop
+      steps += 1; // can extend through hidden/privateBooked/publicNote
+    }
+
+    return steps * STEP_MIN; // minutes
+  };
 
   const durationToMinutes = (str = "") => {
     const s = str.toLowerCase().replace(/\s+/g, " ").trim();
@@ -437,16 +438,13 @@ const getMaxExtendMinutes = (dateStr, startTime) => {
 
   // index of each time for quick lookup
 
-
-const isSlotBusy = (dateStr, time) => {
-  // If any slot exists in DB at this time => NOT empty
-  return !!slotMap[`${dateStr}__${time}`];
-};
-
+  const isSlotBusy = (dateStr, time) => {
+    // If any slot exists in DB at this time => NOT empty
+    return !!slotMap[`${dateStr}__${time}`];
+  };
 
   const getBookingDateStr = (b) => formatDate(b.bookingDate || b.date);
   const getBookingTime = (b) => b.bookingTime || b.time;
-
 
   const bookingStartMap = {}; // key => booking (only at start time)
 
@@ -454,7 +452,10 @@ const isSlotBusy = (dateStr, time) => {
     const da = getBookingDateStr(a);
     const db = getBookingDateStr(b);
     if (da !== db) return da.localeCompare(db);
-    return (timeIndexMap[getBookingTime(a)] ?? 0) - (timeIndexMap[getBookingTime(b)] ?? 0);
+    return (
+      (timeIndexMap[getBookingTime(a)] ?? 0) -
+      (timeIndexMap[getBookingTime(b)] ?? 0)
+    );
   });
 
   for (const b of sortedBookings) {
@@ -471,42 +472,39 @@ const isSlotBusy = (dateStr, time) => {
     // ignore overlap (optional)
     if (bookingCoverage[dateKey][time]) continue;
 
-    bookingCoverage[dateKey][time] = { rowSpan: span };
+    bookingCoverage[dateKey][time] = {rowSpan: span};
     bookingStartMap[`${dateKey}__${time}`] = b;
 
     for (let k = 1; k < span; k++) {
       const t = times[startIdx + k];
       if (!t) break;
-      if (!bookingCoverage[dateKey][t]) bookingCoverage[dateKey][t] = { skip: true };
+      if (!bookingCoverage[dateKey][t])
+        bookingCoverage[dateKey][t] = {skip: true};
     }
   }
 
+  // how many minutes we can extend while NEXT slots are empty
+  const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return 15;
 
-// how many minutes we can extend while NEXT slots are empty
-const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
-  const startIdx = timeIndexMap[startTime];
-  if (startIdx == null) return 15;
+    let steps = 1; // at least the clicked slot itself (15 mins)
 
-  let steps = 1; // at least the clicked slot itself (15 mins)
+    // check next times one by one until we hit a busy slot
+    for (let i = startIdx + 1; i < times.length; i++) {
+      const t = times[i];
+      if (!t) break;
 
-  // check next times one by one until we hit a busy slot
-  for (let i = startIdx + 1; i < times.length; i++) {
-    const t = times[i];
-    if (!t) break;
+      if (isSlotBusy(dateStr, t)) break; // stop at first non-empty slot
+      steps++;
+    }
 
-    if (isSlotBusy(dateStr, t)) break; // stop at first non-empty slot
-    steps++;
-  }
+    return steps * STEP_MIN; // STEP_MIN = 15
+  };
 
-  return steps * STEP_MIN; // STEP_MIN = 15
-};
-
-
-      const dateStrForModal =
-  selectedSlot?.date ? formatDate(selectedSlot.date) : "";
-
-
-
+  const dateStrForModal = selectedSlot?.date
+    ? formatDate(selectedSlot.date)
+    : "";
 
   // coverage[dateKey][time] = { skip: true }  OR { rowSpan: n } on start
   const coverage = {};
@@ -580,18 +578,16 @@ const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
     return times.slice(startIdx, startIdx + steps);
   };
 
-
   const modalDateStr = selectedSlot ? formatDate(selectedSlot.date) : "";
-const modalMaxMins = selectedSlot
-  ? (existingSlot
+  const modalMaxMins = selectedSlot
+    ? existingSlot
       ? getMaxExtendMinutes(modalDateStr, selectedSlot.time) // your existing logic for non-empty edits
-      : getMaxEmptyExtendMinutes(modalDateStr, selectedSlot.time)) // ✅ empty logic
-  : 15;
+      : getMaxEmptyExtendMinutes(modalDateStr, selectedSlot.time) // ✅ empty logic
+    : 15;
 
-const allowedLengths = LENGTH_OPTIONS.filter(
-  (opt) => durationToMinutes(opt) <= modalMaxMins
-);
-
+  const allowedLengths = LENGTH_OPTIONS.filter(
+    (opt) => durationToMinutes(opt) <= modalMaxMins,
+  );
 
   const handleSchedule = async () => {
     try {
@@ -713,29 +709,29 @@ const allowedLengths = LENGTH_OPTIONS.filter(
     }
   };
 
-const handleBooking = (date, slot, time) => {
-  if (!slot?._id) return toast.error("Slot not found!");
+  const handleBooking = (date, slot, time) => {
+    if (!slot?._id) return toast.error("Slot not found!");
 
-  const bookingInfo = {
-    instructorEmail: instructor?.email,
-    instructorName: instructor?.name,
-    instructorId: instructor?._id,
+    const bookingInfo = {
+      instructorEmail: instructor?.email,
+      instructorName: instructor?.name,
+      instructorId: instructor?._id,
 
-    date: new Date(date).toISOString(), 
-    time,
-    location: "", 
+      date: new Date(date).toISOString(),
+      time,
+      location: "",
 
-    slotId: slot._id,
-    duration: slot.duration,
+      slotId: slot._id,
+      duration: slot.duration,
 
-    bookingType: "manual", 
+      bookingType: "manual",
+    };
+    console.log(bookingInfo);
+    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+    router.push("/booking-confirm");
   };
-console.log(bookingInfo);
-  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-  router.push("/booking-confirm");
-};
 
-if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
+  if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
 
   return (
     <>
@@ -759,41 +755,46 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                   <div className="">
                     {/* Schedule Header */}
                     <div className="sticky top-0 z-50 px-6 py-4 border-b border-border-color bg-white">
-  <div className="flex items-center justify-between gap-4">
-    {/* left: title + range */}
-    <div>
-      <h2 className="text-lg md:text-2xl font-bold text-gray-900">
-        {user?.name}&apos;s Schedule
-      </h2>
-      <p className="text-gray-600 mt-1">
-        Week of{" "}
-        {weekDates[0].toLocaleDateString("en-US", { month: "short", day: "numeric" })}{" "}
-        -{" "}
-        {weekDates[6].toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-      </p>
-    </div>
+                      <div className="flex items-center justify-between gap-4">
+                        {/* left: title + range */}
+                        <div>
+                          <h2 className="text-lg md:text-2xl font-bold text-gray-900">
+                            {user?.name}&apos;s Schedule
+                          </h2>
+                          <p className="text-gray-600 mt-1">
+                            Week of{" "}
+                            {weekDates[0].toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}{" "}
+                            -{" "}
+                            {weekDates[6].toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </p>
+                        </div>
 
-    {/* right: prev/next week */}
-    <div className="flex items-center gap-2">
-      <button
-        onClick={goPrevWeek}
-        className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
-        title="Previous 7 days"
-      >
-        <FaChevronLeft />
-      </button>
+                        {/* right: prev/next week */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={goPrevWeek}
+                            className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
+                            title="Previous 7 days"
+                          >
+                            <FaChevronLeft />
+                          </button>
 
-      <button
-        onClick={goNextWeek}
-        className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
-        title="Next 7 days"
-      >
-        <FaChevronRight />
-      </button>
-    </div>
-  </div>
-</div>
-
+                          <button
+                            onClick={goNextWeek}
+                            className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
+                            title="Next 7 days"
+                          >
+                            <FaChevronRight />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Schedule Table */}
                     <div
@@ -819,13 +820,18 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                                 className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
                               >
                                 <div className="flex flex-col items-center">
-      <div className="font-bold text-gray-900">
-        {date.toLocaleDateString("en-US", { weekday: "long" })}
-      </div>
-      <div className="text-xs text-gray-500 mt-1">
-        {date.toLocaleDateString("en-US", { day: "numeric", month: "short" })}
-      </div>
-    </div>
+                                  <div className="font-bold text-gray-900">
+                                    {date.toLocaleDateString("en-US", {
+                                      weekday: "long",
+                                    })}
+                                  </div>
+                                  <div className="text-xs text-gray-500 mt-1">
+                                    {date.toLocaleDateString("en-US", {
+                                      day: "numeric",
+                                      month: "short",
+                                    })}
+                                  </div>
+                                </div>
                               </th>
                             ))}
                           </tr>
@@ -854,54 +860,61 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                                     ""
                                   );
 
+                                const bCov = bookingCoverage?.[dateKey]?.[time];
 
+                                if (bCov?.skip) return null;
 
-const bCov = bookingCoverage?.[dateKey]?.[time];
+                                if (bCov?.booking) {
+                                  const b = bCov.booking;
+                                  const name =
+                                    b.clientName || b.userName || "Client";
+                                  const paid = b.paymentStatus === "paid";
 
-if (bCov?.skip) return null;
-
-if (bCov?.booking) {
-  const b = bCov.booking;
-  const name = b.clientName || b.userName || "Client";
-  const paid = b.paymentStatus === "paid";
-
-  return (
-    <td key={dayIndex} rowSpan={bCov.rowSpan} className="p-0 align-stretch">
-      <button
-        type="button"
-        onClick={() => handleBookingDetails?.(b)} // optional
-        className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color
+                                  return (
+                                    <td
+                                      key={dayIndex}
+                                      rowSpan={bCov.rowSpan}
+                                      className="p-0 align-stretch"
+                                    >
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          router.push(
+                                            `/instructor-bookings/${b._id}`,
+                                          )
+                                        } // optional
+                                        className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color
                    px-2 py-2 flex flex-col items-center justify-center text-center"
-      >
-        {/* Paid badge */}
-        {paid && (
-          <span
-            className="absolute top-1 left-1 h-5 w-5 rounded-full bg-blue-600 text-white
+                                      >
+                                        {/* Paid badge */}
+                                        {paid && (
+                                          <span
+                                            className="absolute top-1 left-1 h-5 w-5 rounded-full bg-primary text-white
                        text-[11px] font-bold flex items-center justify-center"
-            title="Paid"
-          >
-            P
-          </span>
-        )}
+                                            title="Paid"
+                                          >
+                                            P
+                                          </span>
+                                        )}
 
-        <div className="text-red-600 font-semibold text-sm">{name}</div>
-        <div className="text-red-600 text-xs font-semibold mt-1">
-          {(b.serviceName || "Driving lesson")} {b.duration || ""}
-        </div>
-        <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
-          {(b.address || b.userAddress || "")} {(b.suburb || b.location || "")}
-        </div>
-      </button>
-    </td>
-  );
-}
-
-
+                                        <div className="text-red-600 font-semibold text-sm">
+                                          {name}
+                                        </div>
+                                        <div className="text-red-600 text-xs font-semibold mt-1">
+                                          {b.serviceName || "Driving lesson"}{" "}
+                                          {b.duration || ""}
+                                        </div>
+                                        <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
+                                          {b.address || b.userAddress || ""}{" "}
+                                          {b.suburb || b.location || ""}
+                                        </div>
+                                      </button>
+                                    </td>
+                                  );
+                                }
 
                                 const cov = coverage?.[dateKey]?.[time];
-                                if (cov?.skip) return null; 
-
-                                
+                                if (cov?.skip) return null;
 
                                 const rowSpan = cov?.rowSpan || 1;
                                 const visibility = slot?.visibility || "empty";
@@ -927,39 +940,51 @@ if (bCov?.booking) {
                                       </button>
                                     ) : visibility === "hidden" ? (
                                       <button
-                                        onClick={()=>handleBooking(date,slot,time)}
+                                        onClick={() =>
+                                          handleBooking(date, slot, time)
+                                        }
                                         className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col md:flex-row md:justify-between items-center justify-center gap-2"
                                       >
                                         <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
-                                        <span  className="text-xs text-center leading-snug break-all">
-                                          {slot?.privateNote} {!!suburbLabel && (
-                                          <span className="text-[10px] opacity-90">
-                                            {suburbLabel}
-                                          </span>
-                                        )}
+                                        <span className="text-xs text-center leading-snug break-all">
+                                          {slot?.privateNote}{" "}
+                                          {!!suburbLabel && (
+                                            <span className="text-[10px] opacity-90">
+                                              {suburbLabel}
+                                            </span>
+                                          )}
                                         </span>
-                                        <IoMdAdd onClick={(e) => {
-    e.stopPropagation(); 
-    openSlotModal({ date, time });
-  }} className="h-5 w-5 text-primary shrink-0" />
+                                        <IoMdAdd
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openSlotModal({date, time});
+                                          }}
+                                          className="h-5 w-5 text-primary shrink-0"
+                                        />
                                       </button>
                                     ) : visibility === "privateBooked" ? (
                                       <button
-                                       onClick={()=>handleBooking(date,slot,time)}
+                                        onClick={() =>
+                                          handleBooking(date, slot, time)
+                                        }
                                         className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
                                       >
-                                        <FaCalendarPlus  className="h-4 w-4 text-white shrink-0" />
-                                        <span  className="flex-1 text-center text-white text-xs  leading-snug break-all"> 
-                                          {slot?.privateNote} {!!suburbLabel && (
-                                          <span className="text-[10px] opacity-90">
-                                            {suburbLabel}
-                                          </span>
-                                        )}
+                                        <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
+                                        <span className="flex-1 text-center text-white text-xs  leading-snug break-all">
+                                          {slot?.privateNote}{" "}
+                                          {!!suburbLabel && (
+                                            <span className="text-[10px] opacity-90">
+                                              {suburbLabel}
+                                            </span>
+                                          )}
                                         </span>
-                                        <IoMdAdd  onClick={(e) => {
-    e.stopPropagation(); 
-    openSlotModal({ date, time });
-  }} className="h-5 w-5 text-white shrink-0" />
+                                        <IoMdAdd
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openSlotModal({date, time});
+                                          }}
+                                          className="h-5 w-5 text-white shrink-0"
+                                        />
                                       </button>
                                     ) : visibility === "publicNote" ? (
                                       <button
@@ -968,33 +993,37 @@ if (bCov?.booking) {
                                         }
                                         className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
                                       >
-                                        
                                         <span className="text-xs text-center leading-snug break-all">
-                                          {slot?.publicNote}  {!!suburbLabel && (
-                                          <span className="text-[10px] opacity-90">
-                                            {suburbLabel}
-                                          </span>
-                                        )}
+                                          {slot?.publicNote}{" "}
+                                          {!!suburbLabel && (
+                                            <span className="text-[10px] opacity-90">
+                                              {suburbLabel}
+                                            </span>
+                                          )}
                                         </span>
                                         <IoMdAdd className="h-5 w-5 text-black shrink-0" />
                                       </button>
                                     ) : (
                                       <button
-                                      onClick={()=>handleBooking(date,slot,time)}
+                                        onClick={() =>
+                                          handleBooking(date, slot, time)
+                                        }
                                         className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center flex-wrap gap-2 text-xs font-semibold text-white px-1 py-2"
                                       >
-                                        <span >Available</span>
+                                        <span>Available</span>
                                         <div>
-
-                                        {!!suburbLabel && (
-                                          <span className="text-[10px] opacity-90">
-                                            {suburbLabel}
-                                          </span>
-                                        )}
-                                        <IoMdAdd   onClick={(e) => {
-    e.stopPropagation(); 
-    openSlotModal({ date, time });
-  }} className="h-4 w-4" />
+                                          {!!suburbLabel && (
+                                            <span className="text-[10px] opacity-90">
+                                              {suburbLabel}
+                                            </span>
+                                          )}
+                                          <IoMdAdd
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              openSlotModal({date, time});
+                                            }}
+                                            className="h-4 w-4"
+                                          />
                                         </div>
                                       </button>
                                     )}
@@ -1080,19 +1109,17 @@ if (bCov?.booking) {
               <h4 className="font-semibold text-gray-900 mb-3">Length:</h4>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-sm">
-              {allowedLengths.map((opt) => (
-  <label key={opt} className="flex items-center gap-2">
-    <input
-      type="radio"
-      name="length"
-      checked={slotForm.length === opt}
-      onChange={() => setSlotForm((p) => ({ ...p, length: opt }))}
-    />
-    <span>{opt}</span>
-  </label>
-))}
-
-
+                {allowedLengths.map((opt) => (
+                  <label key={opt} className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="length"
+                      checked={slotForm.length === opt}
+                      onChange={() => setSlotForm((p) => ({...p, length: opt}))}
+                    />
+                    <span>{opt}</span>
+                  </label>
+                ))}
               </div>
             </div>
 

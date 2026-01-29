@@ -119,6 +119,7 @@ export default function SelectClientForBooking() {
     clientEmail: client.email || "",
     clientPhone: client.mobile || client.phone || "",
     clientAddress: client.address || "",
+    suburb: client.suburb || "",
   };
 
   sessionStorage.setItem("pendingBooking", JSON.stringify(next));

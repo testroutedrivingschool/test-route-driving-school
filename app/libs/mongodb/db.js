@@ -49,3 +49,18 @@ export async function couponsCollection() {
   const db = await getDb();
   return db.collection("coupons");
 }
+
+export async function invoicesCollection() {
+  const db = await getDb();
+  return db.collection("invoices");
+}
+
+export async function countersCollection() {
+  const db = await getDb();
+  return db.collection("counters");
+}
+
+export async function emailsCollection() {
+    const db = await getDb();
+   return db.collection("emails");
+}

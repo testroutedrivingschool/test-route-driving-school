@@ -4,10 +4,13 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {useMemo, useState} from "react";
 import {HiUserAdd} from "react-icons/hi";
 
-export default function ClientSearch({setActiveTab}) {
+export default function ClientSearch({setActiveTab, setSelectedClient}) {
+  const router = useRouter()
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -156,8 +159,17 @@ console.log(clients);
                     const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#dcdcdc]";
           const mobile = c.mobile || c.phone || "—";
           const address = c.address || "—";
-                    return <tr key={c._id || idx} className={`w-full text-left ${rowBg}
-                hover:brightness-95 transition`}>
+                    return <tr
+  key={c._id || idx}
+  onClick={() => {
+    setSelectedClient(c);      // ✅ store clicked client
+    setActiveTab("client-details"); // ✅ go to details tab
+  }}
+  className={`cursor-pointer w-full text-left ${rowBg} hover:brightness-95 transition`}
+>
+                  
+                  
+                 
                       <td className="px-3 py-2 font-semibold">
                         {c.firstName} {c.lastName}
                         {form.showClientNote && c.clientNote ? (
@@ -173,6 +185,7 @@ console.log(clients);
                       <td className="px-3 py-2 text-red-600 font-semibold">
   {c.bookingCount > 0 ? `Last: ${c.lastBookingLabel}` : "—"}
 </td>
+
                     </tr>
                  })}
                 </tbody>

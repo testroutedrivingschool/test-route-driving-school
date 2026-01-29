@@ -58,9 +58,11 @@ export default function BookingConfirmPage() {
 
     if (booking.bookingType === "website") {
       const bookingData = {
+        userId:userData._id,
         userEmail: userData.email,
         userName: userData.name,
         userAddress: userData.address,
+        userPhone: userData.phone,
         instructorEmail: instructor.email,
         instructorName: instructor.name,
         instructorId: instructor._id,
@@ -106,30 +108,38 @@ export default function BookingConfirmPage() {
 
   if (isLoading || isUserLoading || !instructor || !booking)
     return <LoadingSpinner />;
-  const services = instructor.services.map((s) => ({
-    name: s.name,
-    prices: durations.map((d, i) => s.prices[i] ?? null),
-    activeDurations: durations.map((d, i) => s.activeDurations[i] ?? false),
-  }));
+  const services =
+    instructor?.services?.map((s) => ({
+      name: s.name,
+      prices: durations.map((_, i) => s.prices?.[i] ?? null),
+      activeDurations: durations.map((_, i) => s.activeDurations?.[i] ?? false),
+    })) ?? [];
   return (
     <section className="py-16">
       <Container>
         <div className="border border-border-color rounded shadow">
           {/* Header */}
           <div className="bg-green-600 text-white text-center py-3 font-semibold text-lg">
-            {booking.bookingType === "manual" ? "Booking User" : `Booking ${userData.name}`}
+            {booking.bookingType === "manual"
+              ? "Booking User"
+              : `Booking ${userData?.name || "User"}`}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div className="col-span-1">
               {/* Instructor Photo */}
-              <div className="mt-5 flex justify-center">
+              <div className="mt-5 flex justify-center ">
                 <Image
-                  src={instructor.photo}
+                  src={instructor.photo || "/profile-avatar.png"}
                   alt={instructor.name}
                   width={180}
                   height={180}
-                  className="border object-cover"
+                  className="border object-cover "
+                  onError={(e) => {
+                    e.target.style.display = "none";
+                    e.target.parentElement.innerHTML =
+                      `<img src="/profile-avatar.png" width="100" height="100" className="h-10 w-10 object-cover border ring-2 text-gray-500" />`;
+                  }}
                 />
               </div>
             </div>
@@ -165,39 +175,58 @@ export default function BookingConfirmPage() {
                 </div>
               </div>
 
-              {/* Services Table */}
-              <div className="px-8 pb-8 overflow-x-auto">
-                <table className="w-full min-w-[700px] md:min-w-full border border-border-color text-sm">
-                  <thead className="bg-secondary text-white">
-                    <tr>
-                      <th className="text-left px-3 py-2">Service</th>
-                      {durations.map((d) => (
-                        <th key={d.minutes}>{d.label}</th>
-                      ))}
-                    </tr>
-                  </thead>
+              {services.length === 0 ? (
+                <div className="w-full py-10 flex flex-col items-center justify-center text-center gap-3 bg-base-100 border border-dashed border-border-color rounded">
+                  <p className="w-full text-lg font-semibold text-gray-700">
+                    No Services Available
+                  </p>
+                  <p className="text-sm text-gray-500 ">
+                    This instructor does not have any services available for the
+                    selected date. Please try a different instructor or choose
+                    another date.
+                  </p>
 
-                  <tbody>
-                    {services.map((service, index) => (
-                      <ServiceRow
-                        key={service.name}
-                        name={service.name}
-                        prices={service.prices}
-                        activeDurations={service.activeDurations}
-                        onSelect={setSelectedBooking}
-                        selectedBooking={selectedBooking}
-                        index={index}
-                      />
-                    ))}
-                  </tbody>
-                </table>
-
-                <div className="mt-6">
-                  <PrimaryBtn onClick={handleConfirmBooking}>
-                    Proceed
+                  <PrimaryBtn className="mt-3" onClick={() => router.back()}>
+                    Choose Another Instructor
                   </PrimaryBtn>
                 </div>
-              </div>
+              ) : (
+                <>
+                  {/* Services Table */}
+                  <div className="px-8 pb-8 overflow-x-auto">
+                    <table className="w-full min-w-[700px] md:min-w-full border border-border-color text-sm">
+                      <thead className="bg-secondary text-white">
+                        <tr>
+                          <th className="text-left px-3 py-2">Service</th>
+                          {durations.map((d) => (
+                            <th key={d.minutes}>{d.label}</th>
+                          ))}
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {services.map((service, index) => (
+                          <ServiceRow
+                            key={service.name}
+                            name={service.name}
+                            prices={service.prices}
+                            activeDurations={service.activeDurations}
+                            onSelect={setSelectedBooking}
+                            selectedBooking={selectedBooking}
+                            index={index}
+                          />
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="mt-6">
+                      <PrimaryBtn onClick={handleConfirmBooking}>
+                        Proceed
+                      </PrimaryBtn>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

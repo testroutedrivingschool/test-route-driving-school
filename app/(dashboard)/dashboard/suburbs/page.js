@@ -4,7 +4,6 @@
 import React, {useState, useEffect} from "react";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Modal from "@/app/shared/ui/Modal";
-import {locations} from "@/app/utils/locations";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";

@@ -527,7 +527,7 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                             {selectedInstructor && (<div className="flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md">
                               <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3">
                                 <Image
-                                  src={selectedInstructor.photo}
+                                  src={selectedInstructor.photo || "/profile-avatar.png"}
                                   alt={selectedInstructor.name}
                                   width={80}
                                   height={80}
@@ -535,7 +535,7 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                                   onError={(e) => {
                                     e.target.style.display = "none";
                                     e.target.parentElement.innerHTML =
-                                      '<FaUserCheck className="h-10 w-10 text-gray-500" />';
+                                      '<img src="/profile-avatar.png" className="h-10 w-10 text-gray-500" />';
                                   }}
                                 />
                               </div>
@@ -580,7 +580,13 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                 className="w-full h-full object-cover"
               />
             ) : (
-              <FaUserCheck className="h-8 w-8 text-gray-500" />
+              <Image
+                src={"/profile-avatar.png"}
+                alt={instructor.name}
+                width={64}
+                height={64}
+                className="w-full h-full object-cover"
+              />
             )}
           </div>
           <h3 className="font-bold text-gray-900 text-sm mb-1 truncate max-w-[120px]">

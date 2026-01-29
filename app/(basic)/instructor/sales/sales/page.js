@@ -75,7 +75,7 @@ export default function ProductSalesPage() {
           <div className="flex justify-center lg:justify-center">
             <button
               type="submit"
-              className="w-[220px] h-12 bg-red-700 hover:bg-red-800 text-white font-semibold rounded-md shadow-sm"
+              className="w-[220px] h-12 bg-primary hover:bg-primary text-white font-semibold rounded-md shadow-sm"
             >
               Search
             </button>

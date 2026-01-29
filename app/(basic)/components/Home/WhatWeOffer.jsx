@@ -1,8 +1,42 @@
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import Link from "next/link";
 import React from "react";
+import { FaRightLong } from "react-icons/fa6";
 
-
+const whatWeOfferLinks =[
+  {
+    id: 1,
+    label: "Car Hire for Instructor",
+    pathname: "/services/car-hire-for-instructor",
+  },
+     
+      {
+        id: 2,
+        label: "Driving Test Assessment",
+        pathname: "/services/driving-test-assessment",
+      },
+      {
+    id: 3,
+    label: "Car Hire for Instructor",
+    pathname: "/services/car-hire-for-instructor",
+  },
+      {
+        id: 4,
+        label: "Driving Test Package",
+        pathname: "/services/driving-test-package",
+      },
+      {
+        id: 5,
+        label: "Driving Test Package",
+        pathname: "/services/driving-test-package",
+      },
+     {
+        id: 6,
+        label: "Automatic Driving Lessons",
+        pathname: "/services/automatic-driving-lessons",
+      },
+    ]
 export default function WhatWeOffer({
   sectionTitle,
   sectionSubtitle,
@@ -25,7 +59,8 @@ export default function WhatWeOffer({
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <div
+            <Link
+           href={whatWeOfferLinks[index]?.pathname || "/services"}
               key={index}
               className="group relative 
   bg-base-300 
@@ -43,7 +78,8 @@ bg-primary shadow-lg"
               </div>
               <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
               <p className="text-neutral">{service.description}</p>
-            </div>
+            
+            </Link>
           ))}
         </div>
       </Container>

@@ -15,6 +15,7 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {toast} from "react-toastify";
 import StripeCardInput from "@/app/shared/ui/StripeCardInput";
+import Link from "next/link";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_Stripe_Publishable_key,
@@ -38,7 +39,7 @@ function PaymentForm() {
   const [address, setAddress] = useState("");
   const [suburb, setSuburb] = useState("");
   const [loading, setLoading] = useState(false);
-
+const [acceptedTerms, setAcceptedTerms] = useState(false);
   /* Load booking */
   useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
@@ -49,13 +50,21 @@ function PaymentForm() {
     const bookingData = JSON.parse(data);
 
     setBooking(bookingData);
-    setAddress(
-      bookingData.clientAddress
-        ? bookingData.clientAddress
-        : bookingData?.userAddress || "",
-    );
-    setSuburb(bookingData.location || "");
+     setAddress(
+    bookingData.clientAddress ??
+    bookingData.userAddress ??
+    ""
+  );
+
+ setSuburb(
+  bookingData.location
+    ? bookingData.location
+    : bookingData.suburb
+    ? bookingData.suburb
+    : ""
+);
   }, [router]);
+  console.log("suburs",suburb);
   console.log(booking);
   /* Load suburbs */
   useEffect(() => {
@@ -67,6 +76,10 @@ function PaymentForm() {
   if (!booking) return <LoadingSpinner />;
   console.log(booking);
   const handleConfirmPayment = async () => {
+    if (!acceptedTerms) {
+      toast.error("Please accept the terms and conditions");
+      return;
+    }
   if (!address || !suburb) return toast.error("Please complete address details");
 
   setLoading(true);
@@ -126,9 +139,9 @@ console.log("clientId type:", typeof clientId, clientId);
     }
 
   
-    if (clientId) {
-      await axios.patch(`/api/clients/${clientId}`, { address, suburb });
-    }
+    // if (clientId) {
+    //   await axios.patch(`/api/clients/${clientId}`, { address, suburb });
+    // }
 
     await axios.post("/api/bookings", {
       ...booking,
@@ -207,6 +220,30 @@ console.log("clientId type:", typeof clientId, clientId);
               ))}
             </select>
           </div>
+           {/* Terms and Conditions Checkbox */}
+         {/* Terms and Conditions Checkbox */}
+<div className="flex items-start gap-2">
+  <input
+    type="checkbox"
+    id="terms"
+    checked={acceptedTerms}
+    onChange={(e) => setAcceptedTerms(e.target.checked)}
+    className="mt-1"
+  />
+
+  <label htmlFor="terms" className="text-base text-gray-700">
+    I accept the{" "}
+    <Link href="/terms" className="text-primary hover:underline font-medium">
+      Terms & Conditions
+    </Link>
+    
+    {" and "}
+    <Link href="/return-refund" className="text-primary hover:underline font-medium">
+      Return & Refund Policy
+    </Link>
+    .
+  </label>
+</div>
           {booking.bookingType === "website" ? (
             <>
               <StripeCardInput />
