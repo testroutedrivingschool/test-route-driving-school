@@ -14,6 +14,7 @@ import {
   EmailAuthProvider,
   reauthenticateWithCredential,
   updatePassword,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import {auth} from "../libs/firebase/firebase.config";
 
@@ -46,95 +47,107 @@ export default function AuthProvider({children}) {
   const userProfileUpdate = (profileData) => {
     return updateProfile(auth.currentUser, profileData);
   };
+  const forgetPassword = (email) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+  const changePassword = async (currentPassword, newPassword) => {
+    if (!auth.currentUser) throw new Error("No logged-in user found");
 
-const changePassword = async (currentPassword, newPassword) => {
-  if (!auth.currentUser) throw new Error("No logged-in user found");
+    try {
+      // Reauthenticate user
+      const credential = EmailAuthProvider.credential(
+        auth.currentUser.email,
+        currentPassword,
+      );
 
-  try {
-    // Reauthenticate user
-    const credential = EmailAuthProvider.credential(
-      auth.currentUser.email,
-      currentPassword
-    );
+      await reauthenticateWithCredential(auth.currentUser, credential);
 
-    await reauthenticateWithCredential(auth.currentUser, credential);
+      // Update password
+      await updatePassword(auth.currentUser, newPassword);
 
-    // Update password
-    await updatePassword(auth.currentUser, newPassword);
+      return {success: true, message: "Password updated successfully!"};
+    } catch (error) {
+      console.error("Password change error:", error);
+      throw new Error(error.message || "Failed to change password");
+    }
+  };
 
-    return { success: true, message: "Password updated successfully!" };
-  } catch (error) {
-    console.error("Password change error:", error);
-    throw new Error(error.message || "Failed to change password");
-  }
-};
+  // -------------------- OTP / Phone Auth --------------------
+  const setupRecaptcha = async () => {
+    if (typeof window === "undefined") return null;
 
-// -------------------- OTP / Phone Auth --------------------
-const setupRecaptcha = () => {
-  if (typeof window === "undefined") return null;
-
-  const container = document.getElementById("recaptcha-container");
-  if (!container) {
+    const container = document.getElementById("recaptcha-container");
+    if (!container) {
       console.error("Recaptcha container not found in DOM");
       return null;
-  }
+    }
 
-  if (!window.recaptchaVerifier) {
-    // FIX: auth goes first in Firebase v9+
+    // ✅ If already created, reuse it (DO NOT render again)
+    if (window.recaptchaVerifier) {
+      return window.recaptchaVerifier;
+    }
+
+    // Clean container just in case
+    container.innerHTML = "";
+
+    // ✅ Firebase v10+ signature: (auth, containerId, params)
     window.recaptchaVerifier = new RecaptchaVerifier(
-      auth, 
-      "recaptcha-container",
-      { size: "invisible" }
-    );
-
-    // ⚠️ IMPORTANT: Only keep this line if you are testing and NOT waiting for real SMS.
-    // If you want real SMS to your phone, REMOVE or COMMENT OUT this line.
-    // window.recaptchaVerifier.appVerificationDisabledForTesting = true; 
-  }
-
-  return window.recaptchaVerifier;
-};
-
-const sendOtp = async (phoneNumber) => {
-  setLoading(true);
-  try {
-    const appVerifier = setupRecaptcha();
-    if (!appVerifier) throw new Error("Recaptcha not ready");
-
-    const confirmationResult = await signInWithPhoneNumber(
       auth,
-      phoneNumber,
-      appVerifier
+      "recaptcha-container",
+      {size: "invisible"},
     );
 
-    window.confirmationResult = confirmationResult;
-    setLoading(false);
-    return true;
-  } catch (error) {
-    setLoading(false);
-    throw error;
-  }
-};
+    // Render only once
+    window.recaptchaWidgetId = await window.recaptchaVerifier.render();
 
+    return window.recaptchaVerifier;
+  };
 
+  const resetRecaptcha = () => {
+    try {
+      if (window.recaptchaWidgetId !== undefined && window.grecaptcha) {
+        window.grecaptcha.reset(window.recaptchaWidgetId);
+      }
+    } catch {}
+  };
 
-const verifyOtp = async (otp) => {
-  if (!window.confirmationResult) {
-    throw new Error("OTP not requested yet!");
-  }
-  setLoading(true);
-  try {
-    const result = await window.confirmationResult.confirm(otp);
-    setUser(result.user); 
-    setLoading(false);
-    return result.user; 
-  } catch (error) {
-    setLoading(false);
-    throw error;
-  }
-};
+  const sendOtp = async (phoneNumber) => {
+    setLoading(true);
+    try {
+      const appVerifier = await setupRecaptcha();
+      if (!appVerifier) throw new Error("Recaptcha not ready");
 
+      // ✅ reset before sending again (important for retries)
+      resetRecaptcha();
 
+      const confirmationResult = await signInWithPhoneNumber(
+        auth,
+        phoneNumber,
+        appVerifier,
+      );
+
+      window.confirmationResult = confirmationResult;
+      return true;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const verifyOtp = async (otp) => {
+    if (!window.confirmationResult) {
+      throw new Error("OTP not requested yet!");
+    }
+    setLoading(true);
+    try {
+      const result = await window.confirmationResult.confirm(otp);
+      setUser(result.user);
+      setLoading(false);
+      return result.user;
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
+  };
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -161,7 +174,8 @@ const verifyOtp = async (otp) => {
     userProfileUpdate,
     sendOtp,
     verifyOtp,
-    changePassword
+    changePassword,
+    forgetPassword,
   };
 
   return (

@@ -11,12 +11,14 @@ import axios from "axios";
 import useAuth from "@/app/hooks/useAuth";
 import {useState} from "react";
 import {getFirebaseAuthErrorMessage} from "@/app/utils/firebaseError";
+import {useQueryClient} from "@tanstack/react-query";
 
 export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const redirect = searchParams.get("redirect") || "/dashboard";
-  const {loginWithGoogle, loginUserWithCredential} = useAuth();
+  const {loginWithGoogle, loginUserWithCredential, forgetPassword} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -55,7 +57,7 @@ export default function Login() {
         console.log(err);
         setIsLoading(false);
         toast.error(
-          getFirebaseAuthErrorMessage(err) || "Otp Verification Failed"
+          getFirebaseAuthErrorMessage(err) || "Otp Verification Failed",
         );
       });
   };
@@ -66,7 +68,7 @@ export default function Login() {
       const user = result.user;
 
       const {data} = await axios.get(
-        `/api/users/check-email?email=${user.email}`
+        `/api/users/check-email?email=${user.email}`,
       );
 
       if (!data.exists) {
@@ -86,21 +88,32 @@ export default function Login() {
         // Update last login for existing user
         await axios.patch("/api/users", {email: user.email});
       }
-
+      await queryClient.invalidateQueries({queryKey: ["userData"]});
+      router.push(redirect || "/");
+      router.refresh();
       toast.success("Logged in successfully 🎉");
-      router.push("/");
     } catch (error) {
       console.error(error);
       toast.error("Google login failed. Please try again.");
     }
   };
+  const handleForgetPassword = async (email) => {
+  if (!email) return toast.error("Please enter your email first");
+
+  try {
+    await forgetPassword(email);
+    toast.success("Password reset email sent! Check Inbox/Spam.");
+  } catch (err) {
+    console.log("RESET ERROR:", err?.code, err?.message, err);
+    toast.error(getFirebaseAuthErrorMessage(err) || "Failed to send reset email");
+  }
+};
 
   return (
     <div className="py-16">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
         {/* Header */}
         <div className="mb-6 text-center">
-          
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
           </h1>
@@ -139,12 +152,13 @@ export default function Login() {
               <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
-              <Link
-                href="/forgot-password"
+              <button
+                type="button"
+                onClick={() => handleForgetPassword(formData.email)}
                 className="text-sm text-primary hover:text-blue-800 transition-colors"
               >
                 Forgot password?
-              </Link>
+              </button>
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">

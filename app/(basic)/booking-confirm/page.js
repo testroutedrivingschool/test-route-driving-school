@@ -58,7 +58,7 @@ export default function BookingConfirmPage() {
 
     if (booking.bookingType === "website") {
       const bookingData = {
-        userId:userData._id,
+        userId: userData._id,
         userEmail: userData.email,
         userName: userData.name,
         userAddress: userData.address,
@@ -78,8 +78,44 @@ export default function BookingConfirmPage() {
         status: "pending",
         bookingType: booking.bookingType,
       };
+      console.log(userData);
       console.log("Booking:", bookingData);
+      const clientPayload = {
+        firstName: userData?.name,
+        lastName: "",
+        organization: "None",
+        mobile: userData.phone || "",
+        homePhone: "",
+        workPhone: "",
+        email: userData?.email,
+        anotherEmail: "",
+        dob:userData.dateOfBirth || "",
+        gender: "",
+        emergencyContact: userData.emergencyContact || "",
+        emergencyPhone: "",
+        address: userData.address || "",
+        suburb: userData.suburb || "",
+        state: userData.state || "",
+        postCode: userData.postCode || "",
+        accountBalance: "",
+        referredBy: "Not Specified",
 
+        activeClient: true,
+        marketingSubscriber: true,
+        receiveReminders: true,
+        loginAccess: true,
+        onlineBooking: true,
+        showPhoto: true,
+
+        actionShot: "No Action Set",
+        actionRequired: "",
+        assignedTo: "Anyone",
+        actionBy: "",
+        alerts: "",
+        clientNote: "",
+        comments: "",
+      };
+      await axios.post("/api/clients", payload);
       sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
       router.push("/booking-confirm/payment-confirm");
@@ -137,8 +173,7 @@ export default function BookingConfirmPage() {
                   className="border object-cover "
                   onError={(e) => {
                     e.target.style.display = "none";
-                    e.target.parentElement.innerHTML =
-                      `<img src="/profile-avatar.png" width="100" height="100" className="h-10 w-10 object-cover border ring-2 text-gray-500" />`;
+                    e.target.parentElement.innerHTML = `<img src="/profile-avatar.png" width="100" height="100" className="h-10 w-10 object-cover border ring-2 text-gray-500" />`;
                   }}
                 />
               </div>

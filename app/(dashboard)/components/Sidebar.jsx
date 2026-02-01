@@ -42,7 +42,11 @@ export default function Sidebar() {
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
-
+ const avatarSrc = userData?.photo
+    ? userData.photo
+    : userData?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
+      : "/profile-avatar.png";
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -107,8 +111,9 @@ export default function Sidebar() {
                         className="w-full h-full object-cover object-top rounded-full"
                         width={20}
                         height={20}
-                        src={userData.photo}
-                        alt={userData.name}
+                        src={avatarSrc}
+                        alt={userData.name || "user"}
+                        unoptimized
                       />
                     </div>
                     <div

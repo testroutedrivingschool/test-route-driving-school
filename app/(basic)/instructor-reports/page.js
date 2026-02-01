@@ -11,7 +11,6 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { HiOutlineMenuAlt3 } from "react-icons/hi";
 
 
 
@@ -51,7 +50,7 @@ const bookingData = [
 
 function Card({ title, children }) {
   return (
-    <div className="bg-white border border-border-color rounded-xl p-5 shadow-sm">
+    <div className="bg-white border border-border-color rounded-xl p-5 shadow-sm min-w-0">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-gray-900">{title}</h2>
       
@@ -73,7 +72,7 @@ export default function InstructorReportPage() {
   return (
     <section className="py-8">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 ">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
           {/* Website Activity */}
           <Card title="Website Activity">
             <div className="h-80 ">
@@ -118,7 +117,7 @@ export default function InstructorReportPage() {
           {/* Booking Activity */}
           <Card title="Booking Activity">
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={bookingData}  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />

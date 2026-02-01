@@ -135,7 +135,7 @@ export default function AreaCovered() {
   const [selectedZone, setSelectedZone] = useState("All");
   const [showMore, setShowMore] = useState(false);
   const {data:locations,isLoading} = useQuery({
-    queryKey:"locations",
+    queryKey:["locations"],
     queryFn:async()=>{
       const res = await axios.get("/api/locations");
       return res.data

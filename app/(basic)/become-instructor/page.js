@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, {useEffect, useState} from "react";
@@ -10,16 +12,46 @@ import "react-phone-input-2/lib/style.css";
 import {useUserData} from "@/app/hooks/useUserData";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {useRouter} from "next/navigation";
+import {uploadProfilePhotoToMinio} from "@/app/utils/uploadProfilePhotoToMinio";
+import useAuth from "@/app/hooks/useAuth";
+import Container from "@/app/shared/ui/Container";
 
 export default function JoinAsInstructor() {
+  const {user: authUser, loading: authLoading} = useAuth();
   const {data: user, isLoading} = useUserData();
-
+  const [photoPreview, setPhotoPreview] = useState("");
+const [formLoading,setFormLoading] = useState(false)
+  const [applied, setApplied] = useState({ loading: true, data: null });
   const navigate = useRouter();
-  useEffect(() => {
-    if (!isLoading && !user) {
-      navigate.push("/login?redirect=/become-instructor");
+
+const fetchApplication = React.useCallback(async (email) => {
+  try {
+    const res = await axios.get(`/api/instructors?email=${email}`);
+    setApplied({ loading: false, data: res.data });
+  } catch (err) {
+    if (err?.response?.status === 404) {
+      setApplied({ loading: false, data: null });
+    } else {
+      console.log(err);
+      toast.error("Failed to check instructor status");
+      setApplied({ loading: false, data: null });
     }
-  }, [user, isLoading, navigate]);
+  }
+}, []);
+
+
+useEffect(() => {
+  if (authLoading) return;
+  if (!authUser) return navigate.push("/login?redirect=/become-instructor");
+  if (isLoading) return;
+  if (!user?.email) return;
+
+  setApplied((p) => ({ ...p, loading: true }));
+  fetchApplication(user.email);
+}, [authLoading, authUser, isLoading, user?.email, navigate, fetchApplication]);
+
+
+
   const [languagesListState, setLanguagesListState] = useState([
     "English",
     "Arabic",
@@ -45,7 +77,6 @@ export default function JoinAsInstructor() {
 
   useEffect(() => {
     if (user) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData((prev) => ({
         ...prev,
         email: user.email,
@@ -66,29 +97,15 @@ export default function JoinAsInstructor() {
     const file = e.target.files[0];
     if (file) {
       setFormData((prev) => ({...prev, photo: file}));
+      setPhotoPreview(URL.createObjectURL(file));
     }
   };
-  const uploadImageToImgBB = async (imageFile) => {
-    const imgFormData = new FormData();
-    imgFormData.append("image", imageFile);
 
-    const res = await fetch(
-      `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
-      {
-        method: "POST",
-        body: imgFormData,
-      }
-    );
-
-    const data = await res.json();
-
-    if (!data.success) {
-      throw new Error("Image upload failed");
-    }
-
-    return data.data.url;
-  };
-
+  const avatarSrc = user?.photo
+    ? user.photo
+    : user?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(user.photoKey)}`
+      : "/profile-avatar.png";
   const toggleArrayValue = (key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -104,28 +121,32 @@ export default function JoinAsInstructor() {
     if (!formData.phone) {
       return toast.error("Phone Number must be provided");
     }
-
-
+  if (formData.languages.length === 0) {
+  return toast.error("Select at least 1 language");
+}
     try {
-
-
-      let photoURL = "";
+      setFormLoading(true)
+      let photoKey = "";
+      // upload selected photo to MinIO (private)
       if (formData.photo) {
-        photoURL = await uploadImageToImgBB(formData.photo);
+        photoKey = await uploadProfilePhotoToMinio(formData.photo);
       }
-      const {password, ...rest} = formData;
-      let instructorData = {
+
+      const {photo, ...rest} = formData; // remove File object before sending
+
+      const instructorData = {
         ...rest,
-        photo: photoURL,
+        photo:user.photo || "",
+        photoKey: photoKey || user.photoKey || "", // ✅ store MinIO key
         status: "pending",
-        userId:user._id,
+        userId: user._id,
       };
 
-      // 4️⃣ Store in instructors collection
       await axios.post("/api/instructors", instructorData);
 
-      navigate.push("/dashboard");
       toast.success("Instructor application submitted 🚗");
+        fetchApplication(user.email);
+        setFormLoading(false)
     } catch (error) {
       console.error(error);
 
@@ -133,24 +154,72 @@ export default function JoinAsInstructor() {
         const status = error.response?.status;
         const message = error.response?.data?.error;
 
-        if (status === 409) {
-          toast.error(
-            message ||
-              "You have already applied as an instructor with this email"
-          );
-          return;
-        }
-
-        if (status === 400) {
-          toast.error(message || "Invalid data submitted");
-          return;
-        }
+        if (status === 409) return toast.error(message || "Already applied");
+        if (status === 400)
+          return toast.error(message || "Invalid data submitted");
       }
 
       toast.error("Something went wrong. Please try again.");
+        setFormLoading(false)
     }
   };
-  if (isLoading) return <LoadingSpinner />;
+
+  const previewSrc = photoPreview || avatarSrc;
+
+  useEffect(() => {
+    return () => {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+    };
+  }, [photoPreview]);
+
+if (authLoading || isLoading || applied.loading) return <LoadingSpinner />;
+
+if (applied.data) {
+  // applied exists in DB
+  const status = applied.data.status; // "pending" | "approved" | "rejected"
+
+  return (
+    <Container className="py-16">
+      <div className="bg-white rounded-xl shadow p-6 max-w-xl mx-auto">
+        <h2 className="text-2xl font-bold mb-2">Instructor Application</h2>
+
+        {status === "pending" && (
+          <p className="text-yellow-600 font-semibold">
+            ✅ Already Submitted — Admin approval pending.
+          </p>
+        )}
+
+        {status === "approved" && (
+          <>
+          <p className="text-green-600 font-semibold">
+            🎉 Approved! You are now an instructor.
+          </p>
+             <button
+              onClick={() => navigate.push("/dashboard/instructor-service-pacakge")}
+              className="mt-4 bg-primary text-white px-4 py-2 rounded"
+            >
+              Manage Services
+            </button>
+          </>
+        )}
+
+        {status === "rejected" && (
+          <div>
+            <p className="text-red-600 font-semibold">
+              ❌ Rejected. You can apply again.
+            </p>
+            <button
+              onClick={() => setApplied({ loading: false, data: null })}
+              className="mt-4 bg-primary text-white px-4 py-2 rounded"
+            >
+              Apply Again
+            </button>
+          </div>
+        )}
+      </div>
+    </Container>
+  );
+}
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center items-center py-12">
       <form
@@ -176,13 +245,12 @@ export default function JoinAsInstructor() {
             onChange={handlePhotoChange}
             className="border border-border-color p-2 cursor-pointer"
           />
-          {formData.photo && (
-            <Image
-              src={URL.createObjectURL(formData.photo)}
+
+          {(photoPreview || user?.photo || user?.photoKey) && (
+            <img
+              src={previewSrc}
               alt="Preview"
-              width={100}
-              height={100}
-              className="w-15 h-15 mt-3 rounded-full object-cover"
+              className="w-16 h-16 mt-3 rounded-full object-cover border"
             />
           )}
         </div>
@@ -219,8 +287,6 @@ export default function JoinAsInstructor() {
               value={formData.email}
             />
           </div>
-
-
 
           <div className="flex flex-col">
             <label htmlFor="phone" className="font-medium mb-1">
@@ -427,6 +493,7 @@ export default function JoinAsInstructor() {
 
         <button
           type="submit"
+          disabled={formLoading}
           className="w-full mt-10 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
         >
           Apply as Instructor

@@ -15,7 +15,7 @@ export default function VerifyOtp() {
     verifyOtp,
     signUpUserWithCredential,
     userProfileUpdate,
-    sendOtp,
+    logoutUser,
   } = useAuth();
 
   const [otp, setOtp] = useState("");
@@ -32,64 +32,62 @@ export default function VerifyOtp() {
     }
   }, [router]);
 
-  const handleVerify = async () => {
-    if (!otp) return toast.error("Enter OTP");
-    if (!userData) return;
+const handleVerify = async () => {
+  if (!otp) return toast.error("Enter OTP");
+  if (!userData) return;
 
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // ✅ Verify OTP
-      const verifiedUser = await verifyOtp(otp);
+    // ✅ Verify OTP (this signs in a PHONE user)
+    await verifyOtp(otp);
 
-      // ✅ Create Firebase account
-      const result = await signUpUserWithCredential(
-        userData.email,
-        userData.password
-      );
+    // ✅ IMPORTANT: sign out phone user before creating email/password user
+    await logoutUser();
 
-      // ✅ Update profile
-      await userProfileUpdate({
-        displayName: userData.fullName,
-        photoURL: userData.photo,
-      });
+    // ✅ Create Firebase account (email/password)
+    await signUpUserWithCredential(userData.email, userData.password);
+
+    // ✅ Update profile
+    await userProfileUpdate({
+      displayName: userData.fullName,
+    });
+
+    // ✅ Save user to MongoDB
+    await axios.post("/api/users", {
+      name: userData.fullName,
+      email: userData.email,
+      phone: userData.phone,
+      photoKey: userData.photoKey || "",
+      provider: "Credential",
+      role: "user",
+      registeredAt: new Date(),
+      lastLogin: new Date(),
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["user", userData.email],
+    });
+
+    sessionStorage.removeItem("pendingUser");
+
+    toast.success("Account created successfully 🎉");
+    router.push("/");
+  } catch (err) {
+    console.error(err);
+    toast.error(getFirebaseAuthErrorMessage(err) || "Otp Verification Failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
 
-     
-      // ✅ Save user to MongoDB
-      await axios.post("/api/users", {
-        name: userData.fullName,
-        email: userData.email,
-        phone: userData.phone,
-        photo: userData.photo,
-        provider: "Credential",
-        role: "user",
-        registeredAt: new Date(),
-        lastLogin: new Date(),
-      });
- await queryClient.invalidateQueries({
-        queryKey: ["user", userData.email],
-      });
 
-      sessionStorage.removeItem("pendingUser");
-
-      toast.success("Account created successfully 🎉");
-      router.push("/");
-    } catch (err) {
-      console.error(err);
-      toast.error(
-        getFirebaseAuthErrorMessage(err) || "Otp Verification Failed"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSendOtp = async () => {
-    if (!phone) return toast.error("Enter phone number");
-    await sendOtp(phone);
-    toast.success("OTP sent");
-  };
+  // const handleSendOtp = async () => {
+  //     if (!userData?.phone) return toast.error("Phone not found");
+  // await sendOtp(userData.phone);
+  // toast.success("OTP sent");
+  // };
 
   if (!userData) return null; // Avoid rendering until sessionStorage is loaded
 
@@ -108,9 +106,9 @@ export default function VerifyOtp() {
         />
 
         <button
-          onClick={handleVerify}
-          disabled={loading}
-          className="w-full bg-primary text-white py-3 rounded"
+            onClick={handleVerify}
+  disabled={loading}
+  className="w-full bg-primary text-white py-3 rounded"
         >
           {loading ? "Verifying..." : "Verify & Create Account"}
         </button>

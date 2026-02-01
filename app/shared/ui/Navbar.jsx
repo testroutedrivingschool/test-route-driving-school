@@ -96,7 +96,6 @@ const instructorNavLinks = [
 
 export default function Navbar({className}) {
   const [avatarOpen, setAvatarOpen] = useState(false);
-
   const avatarRef = useRef(null);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
@@ -105,6 +104,11 @@ export default function Navbar({className}) {
   const {data: userData, isLoading} = useUserData();
   const router = useRouter();
   const isInstructor = userData?.role === "instructor";
+  const avatarSrc = userData?.photo
+    ? userData.photo
+    : userData?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
+      : "/profile-avatar.png";
 
   const finalNavLinks = isInstructor ? instructorNavLinks : navlinks;
 
@@ -176,7 +180,7 @@ export default function Navbar({className}) {
                             <li key={drop.id}>
                               <Link
                                 href={drop.pathname}
-                                 aria-label={drop.label}
+                                aria-label={drop.label}
                                 className="flex items-start gap-2 px-4 py-2  hover:bg-primary/10 transition-all"
                               >
                                 <span className="text-primary mt-1">
@@ -211,7 +215,7 @@ export default function Navbar({className}) {
                           <li key={drop.id}>
                             <Link
                               href={drop.pathname}
-                               aria-label={drop.label}
+                              aria-label={drop.label}
                               className="group flex items-start gap-3 p-3 rounded-xl hover:bg-primary/10 transition-all"
                             >
                               {/* Icon */}
@@ -247,19 +251,14 @@ export default function Navbar({className}) {
                   className="flex items-center gap-2 focus:outline-none"
                 >
                   <div className="w-10 h-10 md:w-11 md:h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
-                    {userData.photo ? (
-                      <Image
-                        src={userData.photo}
-                        alt={userData.name || "User"}
-                        width={48}
-                        height={48}
-                        className="object-cover object-top w-full h-full"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-primary text-white flex items-center justify-center font-semibold">
-                        {userData.name?.charAt(0).toUpperCase() || "U"}
-                      </div>
-                    )}
+                    <Image
+                      src={avatarSrc}
+                      alt={userData?.name || "User"}
+                      width={48}
+                      height={48}
+                      className="object-cover object-top w-full h-full"
+                      unoptimized
+                    />
                   </div>
                 </button>
 
@@ -356,7 +355,7 @@ export default function Navbar({className}) {
                 {/* Main Link */}
                 <Link
                   href={item.pathname || "#"}
-                   aria-label={item.pathname}
+                  aria-label={item.pathname}
                   onClick={() =>
                     item.dropdowns ? toggleDropdown(item.id) : setOpen(false)
                   }
@@ -379,7 +378,7 @@ export default function Navbar({className}) {
                       <li key={drop.id} className="border-b border-gray-200">
                         <Link
                           href={drop.pathname}
-                           aria-label={drop.label}
+                          aria-label={drop.label}
                           onClick={() => setOpen(false)}
                           className="block px-5 py-2 text-gray-700 hover:bg-primary hover:text-white transition-colors duration-300"
                         >

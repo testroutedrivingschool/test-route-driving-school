@@ -124,7 +124,7 @@ export default function UserProfile() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
             {/* Left Column - Profile Information */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-full space-y-6">
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-gray-800">
@@ -406,48 +406,7 @@ export default function UserProfile() {
                 </div>
               )}
 
-              {userData.provider === "Google" && (
-                <div className="bg-white border border-gray-200 rounded-lg shadow p-6">
-                  <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                    Quick Links
-                  </h2>
-                  <div className="space-y-3">
-                    {/* Manage Users */}
-                    <Link
-                      href="/manage-admins"
-                      className="flex items-center justify-between w-full p-4 border border-gray-200 rounded-lg hover:bg-primary/10 transition duration-200"
-                    >
-                      <div className="flex items-center gap-3">
-                        <FaUsersCog className="h-6 w-6 text-primary" />
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            Manage Users
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            View, edit, and manage administrator accounts
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-
-                    {/* Settings */}
-                    <Link
-                      href="/settings"
-                      className="flex items-center justify-between w-full p-4 border border-gray-200 rounded-lg hover:bg-primary/10 transition duration-200"
-                    >
-                      <div className="flex items-center gap-3">
-                        <FaCog className="h-6 w-6 text-primary" />
-                        <div>
-                          <p className="font-medium text-gray-900">Settings</p>
-                          <p className="text-sm text-gray-500">
-                            Adjust your profile and preferences
-                          </p>
-                        </div>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              )}
+             
             </div>
           </div>
         </div>

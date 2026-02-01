@@ -22,6 +22,7 @@ import "react-phone-input-2/lib/style.css";
 import {getFirebaseAuthErrorMessage} from "@/app/utils/firebaseError";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import useAuth from "@/app/hooks/useAuth";
+import { uploadProfilePhotoToMinio } from "@/app/utils/uploadProfilePhotoToMinio";
 export default function Register() {
   const router = useRouter();
   const {loginWithGoogle, sendOtp} = useAuth();
@@ -39,8 +40,10 @@ export default function Register() {
     photoPreview: null,
   });
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
     setIsLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
@@ -72,25 +75,35 @@ export default function Register() {
         return;
       }
 
-      let imageUrl = "";
-      if (formData.photo) {
-        const imgbbKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-        const formDataImg = new FormData();
-        formDataImg.append("image", formData.photo);
+let photoKey = "";
+if (formData.photo) {
+  photoKey = await uploadProfilePhotoToMinio(formData.photo);
+}
+//       let imageUrl = "";
+//       if (formData.photo) {
+//         const imgbbKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+//         const formDataImg = new FormData();
+//         formDataImg.append("image", formData.photo);
 
-        const imgbbRes = await axios.post(
-          `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-          formDataImg
-        );
+//         const imgbbRes = await axios.post(
+//           `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
+//           formDataImg
+//         );
 
-        imageUrl = imgbbRes.data.data.url;
-      }
-
+//         imageUrl = imgbbRes.data.data.url;
+//       }
+// console.log(imageUrl);
       // Store all form data including uploaded image URL
       const pendingUser = {
-        ...formData,
-        photo: imageUrl, // replace local file with uploaded URL
-      };
+  ...formData,
+  photoKey,      
+  photo: null,   
+  photoPreview: null,
+};
+      console.log(formData.phone);
+      console.log("PHONE:", formData.phone);
+console.log("DOMAIN:", window.location.hostname);
+console.log("HAS_CONTAINER:", !!document.getElementById("recaptcha-container"));
       // ✅ Save form data temporarily
       sessionStorage.setItem("pendingUser", JSON.stringify(pendingUser));
       // ✅ Send OTP only
@@ -98,6 +111,7 @@ export default function Register() {
       toast.success("OTP sent to your phone");
       router.push("/register/verify-otp");
     } catch (error) {
+      console.log(error?.code, error?.message, error);
       toast.error(
         getFirebaseAuthErrorMessage(error) || "Otp Verification Failed"
       );

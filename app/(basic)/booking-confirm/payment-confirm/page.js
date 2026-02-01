@@ -138,11 +138,9 @@ console.log("clientId type:", typeof clientId, clientId);
       return;
     }
 
-  
-    // if (clientId) {
-    //   await axios.patch(`/api/clients/${clientId}`, { address, suburb });
-    // }
 
+    
+      
     await axios.post("/api/bookings", {
       ...booking,
       address,

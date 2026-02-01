@@ -24,7 +24,7 @@ export default function BasicLayout({children}) {
           <TopHeader />
           <Header />
           <main className="min-h-[90vh]">{children}</main>
-          <div id="recaptcha-container"></div>
+          {/* <div id="recaptcha-container"></div> */}
           <ScrollToTopButton />
 
           <Footer />
