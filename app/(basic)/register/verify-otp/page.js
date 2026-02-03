@@ -102,7 +102,7 @@ const handleVerify = async () => {
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           placeholder="Enter OTP"
-          className="w-full border p-3 rounded mb-4"
+          className="w-full border border-border-color p-3 rounded mb-4"
         />
 
         <button

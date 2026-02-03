@@ -20,37 +20,41 @@ export default function JoinAsInstructor() {
   const {user: authUser, loading: authLoading} = useAuth();
   const {data: user, isLoading} = useUserData();
   const [photoPreview, setPhotoPreview] = useState("");
-const [formLoading,setFormLoading] = useState(false)
-  const [applied, setApplied] = useState({ loading: true, data: null });
+  const [formLoading, setFormLoading] = useState(false);
+  const [applied, setApplied] = useState({loading: true, data: null});
   const navigate = useRouter();
 
-const fetchApplication = React.useCallback(async (email) => {
-  try {
-    const res = await axios.get(`/api/instructors?email=${email}`);
-    setApplied({ loading: false, data: res.data });
-  } catch (err) {
-    if (err?.response?.status === 404) {
-      setApplied({ loading: false, data: null });
-    } else {
-      console.log(err);
-      toast.error("Failed to check instructor status");
-      setApplied({ loading: false, data: null });
+  const fetchApplication = React.useCallback(async (email) => {
+    try {
+      const res = await axios.get(`/api/instructors?email=${email}`);
+      setApplied({loading: false, data: res.data});
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        setApplied({loading: false, data: null});
+      } else {
+        console.log(err);
+        toast.error("Failed to check instructor status");
+        setApplied({loading: false, data: null});
+      }
     }
-  }
-}, []);
+  }, []);
 
+  useEffect(() => {
+    if (authLoading) return;
+    if (!authUser) return navigate.push("/login?redirect=/become-instructor");
+    if (isLoading) return;
+    if (!user?.email) return;
 
-useEffect(() => {
-  if (authLoading) return;
-  if (!authUser) return navigate.push("/login?redirect=/become-instructor");
-  if (isLoading) return;
-  if (!user?.email) return;
-
-  setApplied((p) => ({ ...p, loading: true }));
-  fetchApplication(user.email);
-}, [authLoading, authUser, isLoading, user?.email, navigate, fetchApplication]);
-
-
+    setApplied((p) => ({...p, loading: true}));
+    fetchApplication(user.email);
+  }, [
+    authLoading,
+    authUser,
+    isLoading,
+    user?.email,
+    navigate,
+    fetchApplication,
+  ]);
 
   const [languagesListState, setLanguagesListState] = useState([
     "English",
@@ -121,11 +125,11 @@ useEffect(() => {
     if (!formData.phone) {
       return toast.error("Phone Number must be provided");
     }
-  if (formData.languages.length === 0) {
-  return toast.error("Select at least 1 language");
-}
+    if (formData.languages.length === 0) {
+      return toast.error("Select at least 1 language");
+    }
     try {
-      setFormLoading(true)
+      setFormLoading(true);
       let photoKey = "";
       // upload selected photo to MinIO (private)
       if (formData.photo) {
@@ -136,17 +140,18 @@ useEffect(() => {
 
       const instructorData = {
         ...rest,
-        photo:user.photo || "",
+        photo: user.photo || "",
         photoKey: photoKey || user.photoKey || "", // ✅ store MinIO key
         status: "pending",
         userId: user._id,
+    
       };
 
       await axios.post("/api/instructors", instructorData);
 
       toast.success("Instructor application submitted 🚗");
-        fetchApplication(user.email);
-        setFormLoading(false)
+      fetchApplication(user.email);
+      setFormLoading(false);
     } catch (error) {
       console.error(error);
 
@@ -160,7 +165,7 @@ useEffect(() => {
       }
 
       toast.error("Something went wrong. Please try again.");
-        setFormLoading(false)
+      setFormLoading(false);
     }
   };
 
@@ -172,54 +177,56 @@ useEffect(() => {
     };
   }, [photoPreview]);
 
-if (authLoading || isLoading || applied.loading) return <LoadingSpinner />;
+  if (authLoading || isLoading || applied.loading) return <LoadingSpinner />;
 
-if (applied.data) {
-  // applied exists in DB
-  const status = applied.data.status; // "pending" | "approved" | "rejected"
+  if (applied.data) {
+    // applied exists in DB
+    const status = applied.data.status; // "pending" | "approved" | "rejected"
 
-  return (
-    <Container className="py-16">
-      <div className="bg-white rounded-xl shadow p-6 max-w-xl mx-auto">
-        <h2 className="text-2xl font-bold mb-2">Instructor Application</h2>
+    return (
+      <Container className="py-16">
+        <div className="bg-white rounded-xl shadow p-6 max-w-xl mx-auto">
+          <h2 className="text-2xl font-bold mb-2">Instructor Application</h2>
 
-        {status === "pending" && (
-          <p className="text-yellow-600 font-semibold">
-            ✅ Already Submitted — Admin approval pending.
-          </p>
-        )}
-
-        {status === "approved" && (
-          <>
-          <p className="text-green-600 font-semibold">
-            🎉 Approved! You are now an instructor.
-          </p>
-             <button
-              onClick={() => navigate.push("/dashboard/instructor-service-pacakge")}
-              className="mt-4 bg-primary text-white px-4 py-2 rounded"
-            >
-              Manage Services
-            </button>
-          </>
-        )}
-
-        {status === "rejected" && (
-          <div>
-            <p className="text-red-600 font-semibold">
-              ❌ Rejected. You can apply again.
+          {status === "pending" && (
+            <p className="text-yellow-600 font-semibold">
+              ✅ Already Submitted — Admin approval pending.
             </p>
-            <button
-              onClick={() => setApplied({ loading: false, data: null })}
-              className="mt-4 bg-primary text-white px-4 py-2 rounded"
-            >
-              Apply Again
-            </button>
-          </div>
-        )}
-      </div>
-    </Container>
-  );
-}
+          )}
+
+          {status === "approved" && (
+            <>
+              <p className="text-green-600 font-semibold">
+                🎉 Approved! You are now an instructor.
+              </p>
+              <button
+                onClick={() =>
+                  navigate.push("/dashboard/instructor-service-pacakge")
+                }
+                className="mt-4 bg-primary text-white px-4 py-2 rounded"
+              >
+                Manage Services
+              </button>
+            </>
+          )}
+
+          {status === "rejected" && (
+            <div>
+              <p className="text-red-600 font-semibold">
+                ❌ Rejected. You can apply again.
+              </p>
+              <button
+                onClick={() => setApplied({loading: false, data: null})}
+                className="mt-4 bg-primary text-white px-4 py-2 rounded"
+              >
+                Apply Again
+              </button>
+            </div>
+          )}
+        </div>
+      </Container>
+    );
+  }
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center items-center py-12">
       <form

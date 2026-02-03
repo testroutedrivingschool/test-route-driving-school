@@ -79,21 +79,7 @@ let photoKey = "";
 if (formData.photo) {
   photoKey = await uploadProfilePhotoToMinio(formData.photo);
 }
-//       let imageUrl = "";
-//       if (formData.photo) {
-//         const imgbbKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
-//         const formDataImg = new FormData();
-//         formDataImg.append("image", formData.photo);
 
-//         const imgbbRes = await axios.post(
-//           `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
-//           formDataImg
-//         );
-
-//         imageUrl = imgbbRes.data.data.url;
-//       }
-// console.log(imageUrl);
-      // Store all form data including uploaded image URL
       const pendingUser = {
   ...formData,
   photoKey,      
@@ -120,16 +106,29 @@ console.log("HAS_CONTAINER:", !!document.getElementById("recaptcha-container"));
     }
   };
 
-  const handlePhotoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData((prev) => ({
-        ...prev,
-        photo: file,
-        photoPreview: URL.createObjectURL(file),
-      }));
-    }
-  };
+const handlePhotoChange = (e) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  // ✅ type check
+  if (!file.type.startsWith("image/")) {
+    toast.error("Please select a valid image file");
+    return;
+  }
+
+  // ✅ size check (1 MB max)
+  const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+  if (file.size > MAX_SIZE) {
+    toast.error("Profile photo must be less than 1 MB");
+    return;
+  }
+
+  setFormData((prev) => ({
+    ...prev,
+    photo: file,
+    photoPreview: URL.createObjectURL(file),
+  }));
+};
 
   const handleChange = (e) => {
     const {name, value, type, checked} = e.target;

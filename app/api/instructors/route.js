@@ -77,16 +77,21 @@ export async function PATCH(req) {
     const body = await req.json();
     const {
       email,
+
+      // basic profile (shared)
       name,
       phone,
       homePhone,
       workPhone,
-      dob,
+      dob, // instructors collection uses dob
+      dateOfBirth, // (optional if sometimes sent from frontend)
       emergencyContact,
       address,
       suburb,
       state,
       postCode,
+
+      // instructor-only fields
       abn,
       licencePlate,
       vehicleModel,
@@ -98,64 +103,103 @@ export async function PATCH(req) {
       languages,
       status,
       emailScheduleTime,
-      services 
+      services,
+
+      // photo fields
+      photoKey,
+      photo,
     } = body;
 
     if (!email) {
-      return NextResponse.json({error: "Email is required"}, {status: 400});
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const updateData = {};
-    if (name) updateData.name = name;
-    if (phone) updateData.phone = phone;
-    if (homePhone) updateData.homePhone = homePhone;
-    if (workPhone) updateData.workPhone = workPhone;
-    if (dob) updateData.dob = dob;
-    if (emergencyContact) updateData.emergencyContact = emergencyContact;
-    if (address) updateData.address = address;
-    if (suburb) updateData.suburb = suburb;
-    if (state) updateData.state = state;
-    if (postCode) updateData.postCode = postCode;
-    if(vehicleModel) updateData.vehicleModel = vehicleModel;
-    if (abn) updateData.abn = abn;
-    if (licencePlate) updateData.licencePlate = licencePlate;
-    if (carInsuranceNumber) updateData.carInsuranceNumber = carInsuranceNumber;
-    if (carInsuranceExpiry) updateData.carInsuranceExpiry = carInsuranceExpiry;
+    const instructorUpdate = {};
+    const setIfDefined = (obj, key, val) => {
+      if (val !== undefined) obj[key] = val; // allow "" to clear
+    };
 
-    if (qualifications) updateData.qualifications = qualifications;
-    if (bio) updateData.bio = bio;
-    if (suburbs) updateData.suburbs = suburbs;
-    if (languages) updateData.languages = languages;
-    if (status) updateData.status = status;
-    if (emailScheduleTime) updateData.emailScheduleTime = emailScheduleTime;
-if(services)  updateData.services = services
+    // ===== 1) Instructor update (full) =====
+    setIfDefined(instructorUpdate, "name", name);
+    setIfDefined(instructorUpdate, "phone", phone);
+    setIfDefined(instructorUpdate, "homePhone", homePhone);
+    setIfDefined(instructorUpdate, "workPhone", workPhone);
+
+    // accept either dob or dateOfBirth from frontend
+    setIfDefined(instructorUpdate, "dob", dob !== undefined ? dob : dateOfBirth);
+
+    setIfDefined(instructorUpdate, "emergencyContact", emergencyContact);
+    setIfDefined(instructorUpdate, "address", address);
+    setIfDefined(instructorUpdate, "suburb", suburb);
+    setIfDefined(instructorUpdate, "state", state);
+    setIfDefined(instructorUpdate, "postCode", postCode);
+
+    setIfDefined(instructorUpdate, "vehicleModel", vehicleModel);
+    setIfDefined(instructorUpdate, "abn", abn);
+    setIfDefined(instructorUpdate, "licencePlate", licencePlate);
+    setIfDefined(instructorUpdate, "carInsuranceNumber", carInsuranceNumber);
+    setIfDefined(instructorUpdate, "carInsuranceExpiry", carInsuranceExpiry);
+
+    setIfDefined(instructorUpdate, "qualifications", qualifications);
+    setIfDefined(instructorUpdate, "bio", bio);
+    setIfDefined(instructorUpdate, "suburbs", suburbs);
+    setIfDefined(instructorUpdate, "languages", languages);
+    setIfDefined(instructorUpdate, "status", status);
+    setIfDefined(instructorUpdate, "emailScheduleTime", emailScheduleTime);
+    setIfDefined(instructorUpdate, "services", services);
+
+    setIfDefined(instructorUpdate, "photoKey", photoKey);
+    setIfDefined(instructorUpdate, "photo", photo);
+
     const instructorCol = await instructorsCollection();
+    const userCol = await usersCollection();
 
-    const result = await instructorCol.updateOne({email}, {$set: updateData});
+    const instructorRes = await instructorCol.updateOne(
+      { email },
+      { $set: instructorUpdate }
+    );
 
-    if (result.matchedCount === 0) {
-      return NextResponse.json({error: "Instructor not found"}, {status: 404});
+    if (instructorRes.matchedCount === 0) {
+      return NextResponse.json({ error: "Instructor not found" }, { status: 404 });
     }
 
-    /* ===============================
-       🔥 ROLE SYNC LOGIC (IMPORTANT)
-    =============================== */
-    if (status) {
-      const userCol = await usersCollection();
+    // ===== 2) User update (ONLY basic fields) =====
+    const userUpdate = {};
+    setIfDefined(userUpdate, "name", name);
+    setIfDefined(userUpdate, "phone", phone);
+    setIfDefined(userUpdate, "emergencyContact", emergencyContact);
+    setIfDefined(userUpdate, "address", address);
+    setIfDefined(userUpdate, "suburb", suburb);
+    setIfDefined(userUpdate, "state", state);
+    setIfDefined(userUpdate, "postCode", postCode);
+    setIfDefined(userUpdate,"emailScheduleTime",emailScheduleTime)
+    
+    if (dob !== undefined) userUpdate.dateOfBirth = dob;
+    if (dateOfBirth !== undefined) userUpdate.dateOfBirth = dateOfBirth;
 
+    // photo fields in users (recommended)
+    setIfDefined(userUpdate, "photoKey", photoKey);
+    setIfDefined(userUpdate, "photo", photo);
+
+    if (Object.keys(userUpdate).length > 0) {
+      await userCol.updateOne({ email }, { $set: userUpdate });
+    }
+
+    // ===== 3) Role sync (your existing logic) =====
+    if (status !== undefined) {
       const role = status === "approved" ? "instructor" : "user";
-
-      await userCol.updateOne({email}, {$set: {role}});
+      await userCol.updateOne({ email }, { $set: { role } });
     }
 
     return NextResponse.json({
-      message: "Instructor updated successfully",
+      message: "Instructor updated + basic user profile synced",
     });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({error: "Something went wrong"}, {status: 500});
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+
 
 // DELETE - delete instructor by email
 export async function DELETE(req) {

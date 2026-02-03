@@ -121,7 +121,7 @@ export default function Footer() {
                   >
                     {" "}
                     <FaPhoneAlt size={22} className="text-accent" />
-                    <span>+61 412 018 593</span>
+                    <span> 412 018 593</span>
                   </a>
                 </li>
 

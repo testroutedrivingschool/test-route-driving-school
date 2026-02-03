@@ -87,7 +87,7 @@ const navlinks = [
 ];
 const instructorNavLinks = [
   {id: 1, label: "Home", pathname: "/"},
-  {id: 2, label: "Dashboard", pathname: "/dashboard"},
+  {id: 2, label: "Dashboard", pathname: "/dashboard/instructor"},
   {id: 3, label: "Bookings", pathname: "/instructor-bookings"},
   {id: 4, label: "Clients", pathname: "/clients"},
   {id: 5, label: "Sales", pathname: "/instructor/sales/search"},
@@ -257,7 +257,6 @@ export default function Navbar({className}) {
                       width={48}
                       height={48}
                       className="object-cover object-top w-full h-full"
-                      unoptimized
                     />
                   </div>
                 </button>

@@ -16,7 +16,8 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import {toast} from "react-toastify";
 import Container from "@/app/shared/ui/Container";
-
+import {useMemo} from "react";
+import {useQuery} from "@tanstack/react-query";
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_Stripe_Publishable_key);
 
 export default function CheckoutWrapper() {
@@ -38,6 +39,22 @@ function CheckoutPage() {
       router.push(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
     }
   }, [user, isLoading, router]);
+
+  const { data: locations = [], isLoading: isLocationsLoading } = useQuery({
+  queryKey: ["locations"],
+  queryFn: async () => {
+    const res = await axios.get("/api/locations");
+    return res.data || [];
+  },
+});
+
+const suburbOptions = useMemo(() => {
+  const names = locations
+    .map((l) => (l?.name || "").trim())
+    .filter(Boolean);
+
+  return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b));
+}, [locations]);
   const elements = useElements();
   const stripe = useStripe();
   const [billing, setBilling] = useState({
@@ -126,7 +143,7 @@ function CheckoutPage() {
     }
   };
 
-  if (isLoading || !user) return <LoadingSpinner />;
+  if (isLoading || isLocationsLoading || !user) return <LoadingSpinner />;
   return (
     <section className="py-16">
       <Container className={`max-w-4xl!`}>
@@ -170,14 +187,20 @@ function CheckoutPage() {
           />
 
           <div className="grid grid-cols-3 gap-4">
-            <input
-              type="text"
-              name="suburb"
-              placeholder="Suburb"
-              value={billing.suburb}
-              onChange={handleBillingChange}
-              className="input-class"
-            />
+           <select
+  name="suburb"
+  value={billing.suburb}
+  onChange={handleBillingChange}
+  required
+  className="input-class"
+>
+  <option value="">Choose Suburb</option>
+  {suburbOptions.map((s) => (
+    <option key={s} value={s}>
+      {s}
+    </option>
+  ))}
+</select>
 
             <select
               name="state"

@@ -17,7 +17,7 @@ export default function DashboardLayout({children}) {
         <Sidebar />
         <main
           className={`
-              flex-1 p-4 md:p-6 py-16 overflow-auto min-h-[calc(100vh-4rem)]
+              flex-1 p-4 md:p-6 py-16 overflow-auto min-w-0 min-h-[calc(100vh-4rem)]
               transition-all duration-300
             `}
         >

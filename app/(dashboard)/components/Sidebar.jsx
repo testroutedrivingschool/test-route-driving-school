@@ -13,6 +13,7 @@ import {
   instructorSidebarLinks,
   userSidebarLinks,
 } from "./sidebarLinks";
+
 export default function Sidebar() {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -25,6 +26,36 @@ export default function Sidebar() {
       : userData?.role === "instructor"
       ? instructorSidebarLinks
       : userSidebarLinks;
+
+
+      const normalizePath = (path = "") => {
+  if (!path) return "/";
+  return path.length > 1 && path.endsWith("/")
+    ? path.slice(0, -1)
+    : path;
+};
+
+const isActiveLink = (currentPath, linkPath) => {
+  const cur = normalizePath(currentPath);
+  const target = normalizePath(linkPath);
+
+  // exact match
+  if (cur === target) return true;
+
+  // dashboard roots should NOT match everything
+  const dashboardRoots = [
+    "/dashboard/admin",
+    "/dashboard/user",
+    "/dashboard/instructor",
+  ];
+
+  if (dashboardRoots.includes(target)) {
+    return false;
+  }
+
+  // nested route match
+  return cur.startsWith(target + "/");
+};
 
   // Detect mobile and set initial state
   useEffect(() => {
@@ -113,7 +144,6 @@ export default function Sidebar() {
                         height={20}
                         src={avatarSrc}
                         alt={userData.name || "user"}
-                        unoptimized
                       />
                     </div>
                     <div
@@ -154,11 +184,7 @@ export default function Sidebar() {
             {/* Navigation Items */}
             <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
               {sidebarLinks.map((item) => {
-                const isActive =
-                  item.path === "/dashboard"
-                    ? pathname === "/dashboard"
-                    : pathname === item.path ||
-                      pathname.startsWith(item.path + "/");
+               const isActive = isActiveLink(pathname, item.path);
 
                 return (
                   <div

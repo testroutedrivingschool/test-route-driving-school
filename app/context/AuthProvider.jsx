@@ -150,17 +150,39 @@ export default function AuthProvider({children}) {
   };
 
   useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
+  const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    try {
       if (currentUser) {
         setUser(currentUser);
+
+        // ✅ get idToken
+        const token = await currentUser.getIdToken();
+
+        // ✅ create/update cookie from server using Mongo role
+        await fetch("/api/auth/session", {
+          method: "POST",
+          headers: {
+            authorization: `Bearer ${token}`,
+          },
+        });
+
         setLoading(false);
       } else {
         setUser(null);
+
+        // ✅ clear cookie on logout
+        await fetch("/api/auth/logout", { method: "POST" });
+
         setLoading(false);
       }
-    });
-    return () => unSubscribe();
-  }, []);
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  });
+
+  return () => unSubscribe();
+}, []);
 
   const authInfo = {
     user,

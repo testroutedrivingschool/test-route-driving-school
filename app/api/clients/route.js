@@ -1,10 +1,6 @@
-import { clientsCollection, bookingsCollection } from "@/app/libs/mongodb/db";
+import { clientsCollection } from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
-
-
-
-
 
 const escapeRegExp = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 

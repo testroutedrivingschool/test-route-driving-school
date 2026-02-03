@@ -1,7 +1,7 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
-import { sendMailWithPdf } from "@/app/libs/invoice/mailer";
+import { sendMailWithPdf } from "@/app/libs/mail/mailer";
 import { bookingsCollection,invoicesCollection,emailsCollection  } from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";

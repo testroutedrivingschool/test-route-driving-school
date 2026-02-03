@@ -47,9 +47,23 @@ export async function POST(req) {
 export async function PATCH(req) {
   try {
     const body = await req.json();
-    const { email, name, phone, dateOfBirth, emergencyContact, address, suburb, state, postCode, role } = body;
+    const {
+      email,
+      name,
+      phone,
+      dateOfBirth,
+      emergencyContact,
+      address,
+      suburb,
+      state,
+      postCode,
+      role,
+      photoKey,  
+      photo,    
+    } = body;
 
-    if (!email) return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    if (!email)
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
 
     const updateData = {};
     if (name) updateData.name = name;
@@ -60,9 +74,16 @@ export async function PATCH(req) {
     if (suburb) updateData.suburb = suburb;
     if (state) updateData.state = state;
     if (postCode) updateData.postCode = postCode;
-    if (role) updateData.role = role; // <-- role update
+    if (role) updateData.role = role;
 
-    const result = await (await usersCollection()).updateOne({ email }, { $set: updateData });
+    // ✅ profile photo updates
+    if (photoKey !== undefined) updateData.photoKey = photoKey; // allow empty too
+    if (photo !== undefined) updateData.photo = photo; // allow empty too
+
+    const result = await (await usersCollection()).updateOne(
+      { email },
+      { $set: updateData }
+    );
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -74,6 +95,7 @@ export async function PATCH(req) {
     return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+
 
 
 export async function DELETE(req) {

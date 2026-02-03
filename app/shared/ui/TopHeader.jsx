@@ -33,8 +33,8 @@ export default function TopHeader() {
   return (
     <div className="bg-primary text-white py-2 w-full">
       <Container className="flex items-center justify-between">
-        <a className="hover:text-underline" href="tel:61412018593">
-          <span className="font-bold">Phone:</span> +61 412 018 593
+        <a className="hover:text-underline font-semibold" href="tel:61412018593">
+          <span className="font-bold">Phone:</span> 412 018 593
         </a>
         <div className="space-x-5">
           {hasCartItem && (
