@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3 } from "@/app/libs/s3/s3";
+import { storageFilesCollection } from "@/app/libs/mongodb/db";
 
 const MAX_BYTES = 10 * 1024 * 1024; // 10MB
 
@@ -73,7 +74,17 @@ export async function POST(req) {
   });
 
   const uploadUrl = await getSignedUrl(s3, cmd, { expiresIn: 60 }); 
-
+const col = await storageFilesCollection();
+   await col.insertOne({
+    key,
+    folder,
+    originalName: fileName,
+    size: fileSize,
+    mimeType: fileType,
+    status: "pending",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  });
   // private-only: no publicUrl
   return NextResponse.json({ uploadUrl, key });
 }

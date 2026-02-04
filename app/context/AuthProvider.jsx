@@ -17,11 +17,12 @@ import {
   sendPasswordResetEmail,
 } from "firebase/auth";
 import {auth} from "../libs/firebase/firebase.config";
+import {useRouter} from "next/navigation";
 
 export default function AuthProvider({children}) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const router = useRouter();
   const GoogleProvider = new GoogleAuthProvider();
 
   const loginWithGoogle = () => {
@@ -150,39 +151,46 @@ export default function AuthProvider({children}) {
   };
 
   useEffect(() => {
-  const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    try {
-      if (currentUser) {
-        setUser(currentUser);
+    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      try {
+        if (currentUser) {
+          setUser(currentUser);
 
-        // ✅ get idToken
-        const token = await currentUser.getIdToken();
+          const token = await currentUser.getIdToken(true);
+    
+            const r = await fetch("/api/auth/session", {
+              method: "POST",
+              headers: {authorization: `Bearer ${token}`},
+              credentials: "include",
+              cache: "no-store",
+            });
 
-        // ✅ create/update cookie from server using Mongo role
-        await fetch("/api/auth/session", {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${token}`,
-          },
-        });
+            if (!r.ok) {
+              console.log("session failed", await r.text());
+            }
+       
 
-        setLoading(false);
-      } else {
-        setUser(null);
+          // ✅ refresh so middleware sees cookie immediately
+          router.refresh();
 
-        // ✅ clear cookie on logout
-        await fetch("/api/auth/logout", { method: "POST" });
-
+          setLoading(false);
+        } else {
+          setUser(null);
+          await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+          });
+          router.refresh();
+          setLoading(false);
+        }
+      } catch (e) {
+        console.error(e);
         setLoading(false);
       }
-    } catch (e) {
-      console.error(e);
-      setLoading(false);
-    }
-  });
+    });
 
-  return () => unSubscribe();
-}, []);
+    return () => unSubscribe();
+  }, [router]);
 
   const authInfo = {
     user,

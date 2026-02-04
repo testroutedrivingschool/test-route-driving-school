@@ -22,7 +22,7 @@ import "react-phone-input-2/lib/style.css";
 import {getFirebaseAuthErrorMessage} from "@/app/utils/firebaseError";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import useAuth from "@/app/hooks/useAuth";
-import { uploadProfilePhotoToMinio } from "@/app/utils/uploadProfilePhotoToMinio";
+import {uploadProfilePhotoToMinio} from "@/app/utils/uploadProfilePhotoToMinio";
 export default function Register() {
   const router = useRouter();
   const {loginWithGoogle, sendOtp} = useAuth();
@@ -39,7 +39,6 @@ export default function Register() {
     photo: null,
     photoPreview: null,
   });
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +65,7 @@ export default function Register() {
 
     try {
       const {data} = await axios.get(
-        `/api/users/check-email?email=${formData.email}`
+        `/api/users/check-email?email=${formData.email}`,
       );
 
       if (data.exists) {
@@ -75,21 +74,24 @@ export default function Register() {
         return;
       }
 
-let photoKey = "";
-if (formData.photo) {
-  photoKey = await uploadProfilePhotoToMinio(formData.photo);
-}
+      let photoKey = "";
+      if (formData.photo) {
+        photoKey = await uploadProfilePhotoToMinio(formData.photo);
+      }
 
       const pendingUser = {
-  ...formData,
-  photoKey,      
-  photo: null,   
-  photoPreview: null,
-};
+        ...formData,
+        photoKey,
+        photo: null,
+        photoPreview: null,
+      };
       console.log(formData.phone);
       console.log("PHONE:", formData.phone);
-console.log("DOMAIN:", window.location.hostname);
-console.log("HAS_CONTAINER:", !!document.getElementById("recaptcha-container"));
+      console.log("DOMAIN:", window.location.hostname);
+      console.log(
+        "HAS_CONTAINER:",
+        !!document.getElementById("recaptcha-container"),
+      );
       // ✅ Save form data temporarily
       sessionStorage.setItem("pendingUser", JSON.stringify(pendingUser));
       // ✅ Send OTP only
@@ -99,36 +101,36 @@ console.log("HAS_CONTAINER:", !!document.getElementById("recaptcha-container"));
     } catch (error) {
       console.log(error?.code, error?.message, error);
       toast.error(
-        getFirebaseAuthErrorMessage(error) || "Otp Verification Failed"
+        getFirebaseAuthErrorMessage(error) || "Otp Verification Failed",
       );
     } finally {
       setIsLoading(false);
     }
   };
 
-const handlePhotoChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  // ✅ type check
-  if (!file.type.startsWith("image/")) {
-    toast.error("Please select a valid image file");
-    return;
-  }
+    // ✅ type check
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select a valid image file");
+      return;
+    }
 
-  // ✅ size check (1 MB max)
-  const MAX_SIZE = 1 * 1024 * 1024; // 1MB
-  if (file.size > MAX_SIZE) {
-    toast.error("Profile photo must be less than 1 MB");
-    return;
-  }
+    // ✅ size check (1 MB max)
+    const MAX_SIZE = 1 * 1024 * 1024; // 1MB
+    if (file.size > MAX_SIZE) {
+      toast.error("Profile photo must be less than 1 MB");
+      return;
+    }
 
-  setFormData((prev) => ({
-    ...prev,
-    photo: file,
-    photoPreview: URL.createObjectURL(file),
-  }));
-};
+    setFormData((prev) => ({
+      ...prev,
+      photo: file,
+      photoPreview: URL.createObjectURL(file),
+    }));
+  };
 
   const handleChange = (e) => {
     const {name, value, type, checked} = e.target;
@@ -156,9 +158,13 @@ const handlePhotoChange = (e) => {
 
       // Send to your MongoDB API
       await axios.post("/api/users", userData);
-
+      await axios.post("/api/clients/sync-from-user", {
+        email: user?.email,
+        provider: "Google",
+      });
       toast.success("Registered successfully 🎉");
       router.push("/");
+      router.refresh();
     } catch (error) {
       console.error(error);
       toast.error(getFirebaseAuthErrorMessage(error) || "Google Login Failed");
@@ -188,8 +194,6 @@ const handlePhotoChange = (e) => {
       <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header Section */}
         <div className="p-6 text-center">
-         
-
           <h1 className="text-3xl font-bold mb-2">Create Your Account</h1>
           <p className="text-neutral">Join thousands of successful drivers</p>
         </div>
@@ -417,9 +421,9 @@ const handlePhotoChange = (e) => {
                     formData.password !== formData.confirmPassword
                       ? "border-red-300"
                       : formData.confirmPassword &&
-                        formData.password === formData.confirmPassword
-                      ? "border-green-300"
-                      : "border-gray-300"
+                          formData.password === formData.confirmPassword
+                        ? "border-green-300"
+                        : "border-gray-300"
                   }`}
                   disabled={isLoading}
                 />

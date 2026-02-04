@@ -17,6 +17,11 @@ export async function instructorsCollection() {
   const db = await getDb();
   return db.collection("instructors");
 }
+
+export async function instructorsFilesCollection() {
+  const db = await getDb();
+  return db.collection("instructor_files");
+}
 export async function packagesCollection() {
   const db = await getDb();
   return db.collection("packages");
@@ -63,4 +68,9 @@ export async function countersCollection() {
 export async function emailsCollection() {
     const db = await getDb();
    return db.collection("emails");
+}
+
+export async function storageFilesCollection() {
+  const db = await getDb();
+  return db.collection("storage_files");
 }

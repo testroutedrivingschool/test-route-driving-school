@@ -124,6 +124,12 @@ export default function Navbar({className}) {
         toast.error("Failed to log out");
       });
   };
+const dashHref =
+  userData?.role === "admin"
+    ? "/dashboard/admin"
+    : userData?.role === "instructor"
+    ? "/dashboard/instructor"
+    : "/dashboard/user";
 
   return (
     <nav
@@ -285,7 +291,7 @@ export default function Navbar({className}) {
                   <ul className="py-2">
                     <li>
                       <Link
-                        href="/dashboard"
+                        href={dashHref}
                         className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
                         onClick={() => setAvatarOpen(false)}
                       >

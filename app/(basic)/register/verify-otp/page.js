@@ -11,12 +11,8 @@ export default function VerifyOtp() {
   const queryClient = useQueryClient();
 
   const router = useRouter();
-  const {
-    verifyOtp,
-    signUpUserWithCredential,
-    userProfileUpdate,
-    logoutUser,
-  } = useAuth();
+  const {verifyOtp, signUpUserWithCredential, userProfileUpdate, logoutUser} =
+    useAuth();
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -32,64 +28,64 @@ export default function VerifyOtp() {
     }
   }, [router]);
 
-const handleVerify = async () => {
-  if (!otp) return toast.error("Enter OTP");
-  if (!userData) return;
+  const handleVerify = async () => {
+    if (!otp) return toast.error("Enter OTP");
+    if (!userData) return;
 
-  try {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    // ✅ Verify OTP (this signs in a PHONE user)
-    await verifyOtp(otp);
+      // ✅ Verify OTP (this signs in a PHONE user)
+      await verifyOtp(otp);
 
-    // ✅ IMPORTANT: sign out phone user before creating email/password user
-    await logoutUser();
+      // ✅ IMPORTANT: sign out phone user before creating email/password user
+      await logoutUser();
 
-    // ✅ Create Firebase account (email/password)
-    await signUpUserWithCredential(userData.email, userData.password);
+      // ✅ Create Firebase account (email/password)
+      await signUpUserWithCredential(userData.email, userData.password);
 
-    // ✅ Update profile
-    await userProfileUpdate({
-      displayName: userData.fullName,
-    });
+      // ✅ Update profile
+      await userProfileUpdate({
+        displayName: userData.fullName,
+      });
 
-    // ✅ Save user to MongoDB
-    await axios.post("/api/users", {
-      name: userData.fullName,
-      email: userData.email,
-      phone: userData.phone,
-      photoKey: userData.photoKey || "",
-      provider: "Credential",
-      role: "user",
-      registeredAt: new Date(),
-      lastLogin: new Date(),
-    });
+      // ✅ Save user to MongoDB
+      await axios.post("/api/users", {
+        name: userData.fullName,
+        email: userData.email,
+        phone: userData.phone,
+        photoKey: userData.photoKey || "",
+        provider: "Credential",
+        role: "user",
+        registeredAt: new Date(),
+        lastLogin: new Date(),
+      });
 
-    await queryClient.invalidateQueries({
-      queryKey: ["user", userData.email],
-    });
+      await queryClient.invalidateQueries({
+        queryKey: ["user", userData.email],
+      });
+      await axios.post("/api/clients/sync-from-user", {
+        email:userData?.email,
+        provider: "Credential",
+      });
+      sessionStorage.removeItem("pendingUser");
 
-    sessionStorage.removeItem("pendingUser");
+      toast.success("Account created successfully 🎉");
+      router.push("/");
+       router.refresh();
+    } catch (err) {
+      console.error(err);
+      toast.error(
+        getFirebaseAuthErrorMessage(err) || "Otp Verification Failed",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    toast.success("Account created successfully 🎉");
-    router.push("/");
-  } catch (err) {
-    console.error(err);
-    toast.error(getFirebaseAuthErrorMessage(err) || "Otp Verification Failed");
-  } finally {
-    setLoading(false);
-  }
-};
 
 
-
-  // const handleSendOtp = async () => {
-  //     if (!userData?.phone) return toast.error("Phone not found");
-  // await sendOtp(userData.phone);
-  // toast.success("OTP sent");
-  // };
-
-  if (!userData) return null; // Avoid rendering until sessionStorage is loaded
+  if (!userData) return null; 
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -106,9 +102,9 @@ const handleVerify = async () => {
         />
 
         <button
-            onClick={handleVerify}
-  disabled={loading}
-  className="w-full bg-primary text-white py-3 rounded"
+          onClick={handleVerify}
+          disabled={loading}
+          className="w-full bg-primary text-white py-3 rounded"
         >
           {loading ? "Verifying..." : "Verify & Create Account"}
         </button>

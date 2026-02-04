@@ -105,11 +105,7 @@ export default function JoinAsInstructor() {
     }
   };
 
-  const avatarSrc = user?.photo
-    ? user.photo
-    : user?.photoKey
-      ? `/api/storage/proxy?key=${encodeURIComponent(user.photoKey)}`
-      : "/profile-avatar.png";
+ 
   const toggleArrayValue = (key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -169,7 +165,13 @@ export default function JoinAsInstructor() {
     }
   };
 
-  const previewSrc = photoPreview || avatarSrc;
+  const previewSrc = photoPreview
+  ? photoPreview
+  : user?.photo
+  ? user.photo
+  : user?.photoKey
+  ? `/api/storage/proxy?key=${encodeURIComponent(user.photoKey)}`
+  : "/profile-avatar.png";
 
   useEffect(() => {
     return () => {
@@ -253,13 +255,13 @@ export default function JoinAsInstructor() {
             className="border border-border-color p-2 cursor-pointer"
           />
 
-          {(photoPreview || user?.photo || user?.photoKey) && (
+         
             <img
               src={previewSrc}
               alt="Preview"
               className="w-16 h-16 mt-3 rounded-full object-cover border"
             />
-          )}
+      
         </div>
 
         {/* Basic Info */}
@@ -314,6 +316,7 @@ export default function JoinAsInstructor() {
                 borderRadius: "12px",
               }}
               containerStyle={{width: "100%"}}
+              
             />
           </div>
 

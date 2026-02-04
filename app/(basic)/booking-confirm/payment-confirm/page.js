@@ -106,7 +106,7 @@ console.log("clientId type:", typeof clientId, clientId);
 
       sessionStorage.removeItem("pendingBooking");
       toast.success("Booking created (Unpaid) ✅");
-      router.push("/dashboard/my-bookings");
+      router.push("/dashboard/instructor/bookings");
       return;
     }else{
        // ✅ WEBSITE booking => Stripe payment required

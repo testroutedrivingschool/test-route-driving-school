@@ -1,4 +1,4 @@
-import {FaInbox} from "react-icons/fa";
+import {FaFileAlt, FaInbox} from "react-icons/fa";
 import {
   FiHome,
   FiUser,
@@ -138,12 +138,18 @@ export const instructorSidebarLinks = [
   },
   {
     id: 8,
+    label: "Files",
+    icon: <FaFileAlt />,
+    path: "/dashboard/instructor/files",
+  },
+  {
+    id: 9,
     label: "Announcements",
     icon: <GoMegaphone />,
     path: "/dashboard/instructor/announcements",
   },
   {
-    id: 9,
+    id: 10,
     label: "Settings",
     icon: <FaGear />,
     path: "/dashboard/instructor/settings",

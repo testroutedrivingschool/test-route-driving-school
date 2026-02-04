@@ -42,6 +42,7 @@ export default function Login() {
       .then(async (data) => {
         toast.success("Log in successfully 🎉");
         await axios.patch("/api/users", {email: formData.email});
+        router.refresh();
         router.push(redirect || "/");
 
         setIsLoading(false);
@@ -84,6 +85,10 @@ export default function Login() {
           lastLogin: new Date(),
         };
         await axios.post("/api/users", userData);
+        await axios.post("/api/clients/sync-from-user", {
+          email: user?.email,
+          provider: "Google",
+        });
       } else {
         // Update last login for existing user
         await axios.patch("/api/users", {email: user.email});
@@ -98,16 +103,18 @@ export default function Login() {
     }
   };
   const handleForgetPassword = async (email) => {
-  if (!email) return toast.error("Please enter your email first");
+    if (!email) return toast.error("Please enter your email first");
 
-  try {
-    await forgetPassword(email);
-    toast.success("Password reset email sent! Check Inbox/Spam.");
-  } catch (err) {
-    console.log("RESET ERROR:", err?.code, err?.message, err);
-    toast.error(getFirebaseAuthErrorMessage(err) || "Failed to send reset email");
-  }
-};
+    try {
+      await forgetPassword(email);
+      toast.success("Password reset email sent! Check Inbox/Spam.");
+    } catch (err) {
+      console.log("RESET ERROR:", err?.code, err?.message, err);
+      toast.error(
+        getFirebaseAuthErrorMessage(err) || "Failed to send reset email",
+      );
+    }
+  };
 
   return (
     <div className="py-16">

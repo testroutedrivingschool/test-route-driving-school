@@ -1,5 +1,5 @@
 import {admin} from "@/app/libs/firebase/firebase.admin";
-import {instructorsCollection, usersCollection} from "@/app/libs/mongodb/db";
+import {instructorsCollection, usersCollection,clientsCollection} from "@/app/libs/mongodb/db";
 import {NextResponse} from "next/server";
 
 // GET - get all instructors or filter by email
@@ -190,6 +190,38 @@ export async function PATCH(req) {
       const role = status === "approved" ? "instructor" : "user";
       await userCol.updateOne({ email }, { $set: { role } });
     }
+// ===== 4) Clients sync: roleType = staff when approved =====
+if (status !== undefined) {
+  const clientsCol = await clientsCollection();
+  const emailLower = email.toLowerCase();
+
+  if (status === "approved") {
+    // ✅ mark client record as staff (keep same doc, just change type)
+    await clientsCol.updateOne(
+      { email: emailLower },
+      {
+        $set: {
+          roleType: "staff", 
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true } // if client doc missing, create minimal one
+    );
+  } else {
+    // ✅ optional: revert back to normal client when not approved
+    // (If you DON'T want to revert, delete this else block.)
+    await clientsCol.updateOne(
+      { email: emailLower },
+      {
+        $set: {
+          roleType: "client",
+          staffRole: null,
+          updatedAt: new Date(),
+        },
+      }
+    );
+  }
+}
 
     return NextResponse.json({
       message: "Instructor updated + basic user profile synced",

@@ -6,7 +6,7 @@ export async function GET(req) {
   try {
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
-    const role = url.searchParams.get("role"); // optional query: ?role=admin
+    const role = url.searchParams.get("role"); 
 
     const query = {};
 

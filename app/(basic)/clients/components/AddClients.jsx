@@ -45,12 +45,12 @@ const initialState = {
   accountBalance: "",
   referredBy: "Not Specified",
 
-  activeClient: true,
-  marketingSubscriber: true,
-  receiveReminders: true,
-  loginAccess: true,
-  onlineBooking: true,
-  showPhoto: true,
+  activeClient: false,
+  marketingSubscriber: false,
+  receiveReminders: false,
+  loginAccess: false,
+  onlineBooking: false,
+  showPhoto: false,
 
   actionShot: "No Action Set",
   actionRequired: "",

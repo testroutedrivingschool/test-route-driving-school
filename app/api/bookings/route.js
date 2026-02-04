@@ -1,48 +1,51 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
-import { sendMailWithPdf } from "@/app/libs/mail/mailer";
-import { bookingsCollection,invoicesCollection,emailsCollection  } from "@/app/libs/mongodb/db";
-import { ObjectId } from "mongodb";
-import { NextResponse } from "next/server";
-import { getNextInvoiceNo } from "@/app/libs/invoice/getNextInvoiceNo";
+import {generateInvoicePdfBuffer} from "@/app/libs/invoice/invoicePdf";
+import {sendMailWithPdf} from "@/app/libs/mail/mailer";
+import {
+  bookingsCollection,
+  invoicesCollection,
+  emailsCollection,
+} from "@/app/libs/mongodb/db";
+import {ObjectId} from "mongodb";
+import {NextResponse} from "next/server";
+import {getNextInvoiceNo} from "@/app/libs/invoice/getNextInvoiceNo";
 import Stripe from "stripe";
-
+import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
 
 //get all
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const {searchParams} = new URL(req.url);
 
-    const email = searchParams.get("email"); 
+    const email = searchParams.get("email");
     const instructorEmail = searchParams.get("instructorEmail");
     const userEmail = searchParams.get("userEmail");
 
     let filter = {};
 
     if (email) {
-      filter = { $or: [{ userEmail: email }, { instructorEmail: email }] };
+      filter = {$or: [{userEmail: email}, {instructorEmail: email}]};
     } else if (instructorEmail) {
-      filter = { instructorEmail };
+      filter = {instructorEmail};
     } else if (userEmail) {
-      filter = { userEmail };
+      filter = {userEmail};
     }
 
     const bookings = await (await bookingsCollection())
       .find(filter)
-      .sort({ createdAt: -1 })
+      .sort({createdAt: -1})
       .toArray();
 
     return NextResponse.json(bookings);
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Failed to fetch bookings" },
-      { status: 500 }
+      {error: "Failed to fetch bookings"},
+      {status: 500},
     );
   }
 }
-
 
 // POST create booking + invoiceNo + PDF + emails + store invoice+email log
 export async function POST(req) {
@@ -58,45 +61,45 @@ export async function POST(req) {
       address: body.address || body.clientAddress || body.userAddress || "",
       suburb: body.suburb || body.location || "",
     };
-// payment defaults
-let paymentMethod = "bank";
-let cardBrand = null;
-let cardLast4 = null;
+    // payment defaults
+    let paymentMethod = "bank";
+    let cardBrand = null;
+    let cardLast4 = null;
 
-// website bookings = card only
-if (normalized.bookingType === "website") {
-  paymentMethod = "card";
+    // website bookings = card only
+    if (normalized.bookingType === "website") {
+      paymentMethod = "card";
 
-  // 🚨 website booking MUST be paid
-  if (!normalized.paymentIntentId) {
-    return NextResponse.json(
-      { error: "Payment required for website booking" },
-      { status: 400 }
-    );
-  }
+      // 🚨 website booking MUST be paid
+      if (!normalized.paymentIntentId) {
+        return NextResponse.json(
+          {error: "Payment required for website booking"},
+          {status: 400},
+        );
+      }
 
-  // 🔑 Stripe lookup (THIS is where your code goes)
-  try {
-    const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
+      // 🔑 Stripe lookup (THIS is where your code goes)
+      try {
+        const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
 
-    const intent = await stripe.paymentIntents.retrieve(
-      normalized.paymentIntentId,
-      { expand: ["charges.data.payment_method_details"] }
-    );
+        const intent = await stripe.paymentIntents.retrieve(
+          normalized.paymentIntentId,
+          {expand: ["charges.data.payment_method_details"]},
+        );
 
-    const charge = intent?.charges?.data?.[0];
-    const card = charge?.payment_method_details?.card;
+        const charge = intent?.charges?.data?.[0];
+        const card = charge?.payment_method_details?.card;
 
-    cardBrand = card?.brand || null;   // e.g. visa
-    cardLast4 = card?.last4 || null;   // e.g. 4242
-  } catch (err) {
-    console.error("Stripe retrieve failed:", err);
-    return NextResponse.json(
-      { error: "Unable to verify Stripe payment" },
-      { status: 400 }
-    );
-  }
-}
+        cardBrand = card?.brand || null; // e.g. visa
+        cardLast4 = card?.last4 || null; // e.g. 4242
+      } catch (err) {
+        console.error("Stripe retrieve failed:", err);
+        return NextResponse.json(
+          {error: "Unable to verify Stripe payment"},
+          {status: 400},
+        );
+      }
+    }
 
     // ✅ 1) Create invoiceNo (1,2,3...)
     const invoiceNo = await getNextInvoiceNo();
@@ -105,25 +108,28 @@ if (normalized.bookingType === "website") {
     const bookingDoc = {
       ...normalized,
       invoiceNo,
-       paymentMethod,          // card | bank
-  cardBrand,              // visa
-  cardLast4,
+      paymentMethod, // card | bank
+      cardBrand, // visa
+      cardLast4,
       createdAt: new Date(),
     };
-console.log(bookingDoc);
-    const bookingResult = await (await bookingsCollection()).insertOne(bookingDoc);
+    console.log(bookingDoc);
+    const bookingResult = await (
+      await bookingsCollection()
+    ).insertOne(bookingDoc);
     const bookingId = bookingResult.insertedId; // ObjectId
 
     // ✅ 3) Generate PDF (use invoiceNo, bookingId)
     const pdfBuffer = await generateInvoicePdfBuffer({
       ...bookingDoc,
       bookingId: String(bookingId),
-      invoiceNo,                // number
+      invoiceNo, // number
       invoiceId: String(bookingId), // optional (keep if you like)
     });
 
     const filename = `invoice-${invoiceNo}.pdf`;
-
+    const invoiceKey = `invoices/${filename}`;
+    await uploadPdfToS3({key: invoiceKey, buffer: pdfBuffer});
     // ✅ 4) Prepare emails
     const bookingDateText = bookingDoc.bookingDate
       ? new Date(bookingDoc.bookingDate).toLocaleDateString("en-AU", {
@@ -139,7 +145,8 @@ console.log(bookingDoc);
 
     // Instructor mail (your required info)
     const instructorName = bookingDoc.instructorName || "Instructor";
-    const bookingTitle = `${bookingDoc.serviceName || ""} ${bookingDoc.duration || ""}`.trim();
+    const bookingTitle =
+      `${bookingDoc.serviceName || ""} ${bookingDoc.duration || ""}`.trim();
 
     const instructorText = `Hi ${instructorName},
 
@@ -195,7 +202,6 @@ Test Route Driving School
         <p>Hi ${bookingDoc.userName || "there"},</p>
         <p>Your booking is confirmed. Invoice attached (PDF).</p>
         <ul>       
-          <li><b>Invoice:</b> #${invoiceNo}</li>
           <li><b>Service:</b> ${bookingDoc.serviceName || ""}</li>
           <li><b>Date:</b> ${bookingDateText}</li>
           <li><b>Time:</b> ${bookingTimeText}</li>
@@ -209,122 +215,128 @@ Test Route Driving School
 
     // ✅ 5) Send emails
     const mailLog = {
-      user: { to: bookingDoc.userEmail, ok: false, error: null },
-      instructor: { to: bookingDoc.instructorEmail || null, ok: false, error: null },
+      user: {to: bookingDoc.userEmail, ok: false, error: null},
+      instructor: {
+        to: bookingDoc.instructorEmail || null,
+        ok: false,
+        error: null,
+      },
       sentAt: new Date(),
     };
 
     // Send to user
- if (bookingDoc.userEmail) {
-  let status = "SENT";
-  let errorMsg = null;
+    if (bookingDoc.userEmail) {
+      let status = "SENT";
+      let errorMsg = null;
 
-  try {
-    await sendMailWithPdf({
-      to: bookingDoc.userEmail,
-      subject: userSubject,
-      html: userHtml,
-      text: userText,
-      pdfBuffer,
-      filename,
-    });
-  } catch (e) {
-    status = "FAILED";
-    errorMsg = String(e?.message || e);
-  }
+      try {
+        await sendMailWithPdf({
+          to: bookingDoc.userEmail,
+          subject: userSubject,
+          html: userHtml,
+          text: userText,
+          pdfBuffer,
+          filename,
+        });
+      } catch (e) {
+        status = "FAILED";
+        errorMsg = String(e?.message || e);
+      }
 
-  // ✅ keep mailLog accurate
-  mailLog.user.ok = status === "SENT";
-  mailLog.user.error = errorMsg;
+      // ✅ keep mailLog accurate
+      mailLog.user.ok = status === "SENT";
+      mailLog.user.error = errorMsg;
 
-  await (await emailsCollection()).insertOne({
-  bookingId,
-  invoiceNo,
-  type: "USER",
-  to: bookingDoc.userEmail,
-  subject: userSubject,
+      await (
+        await emailsCollection()
+      ).insertOne({
+        bookingId,
+        invoiceNo,
+        type: "USER",
+        to: bookingDoc.userEmail,
+        subject: userSubject,
 
-  
-  text: userText,
-  html: userHtml,
-preview: userText.slice(0, 200),
-  status,
-  error: errorMsg,
-  hasAttachment: true,
-  attachmentName: filename,
-  sentAt: new Date(),
-  createdAt: new Date(),
-});
-
-}
-
+        text: userText,
+        html: userHtml,
+        preview: userText.slice(0, 200),
+        status,
+        error: errorMsg,
+        hasAttachment: true,
+        attachmentName: filename,
+        sentAt: new Date(),
+        createdAt: new Date(),
+        attachmentKey: invoiceKey,
+      });
+    }
 
     // Send to instructor
- if (bookingDoc.instructorEmail) {
-  let status = "SENT";
-  let errorMsg = null;
+    if (bookingDoc.instructorEmail) {
+      let status = "SENT";
+      let errorMsg = null;
 
-  try {
-    await sendMailWithPdf({
-      to: bookingDoc.instructorEmail,
-      subject: `New Booking: ${bookingDoc.serviceName || ""} (Invoice #${invoiceNo})`,
-      html: instructorHtml,
-      text: instructorText,
-      pdfBuffer,
-      filename,
-    });
-  } catch (e) {
-    status = "FAILED";
-    errorMsg = String(e?.message || e);
-  }
+      try {
+        await sendMailWithPdf({
+          to: bookingDoc.instructorEmail,
+          subject: `New Booking: ${bookingDoc.serviceName || ""} (Invoice #${invoiceNo})`,
+          html: instructorHtml,
+          text: instructorText,
+          pdfBuffer,
+          filename,
+        });
+      } catch (e) {
+        status = "FAILED";
+        errorMsg = String(e?.message || e);
+      }
 
-  mailLog.instructor.ok = status === "SENT";
-  mailLog.instructor.error = errorMsg;
+      mailLog.instructor.ok = status === "SENT";
+      mailLog.instructor.error = errorMsg;
 
- await (await emailsCollection()).insertOne({
-  bookingId,
-  invoiceNo,
-  type: "INSTRUCTOR",
-  to: bookingDoc.instructorEmail,
-  subject: `New Booking: ${bookingDoc.serviceName || ""}`,
+      await (
+        await emailsCollection()
+      ).insertOne({
+        bookingId,
+        invoiceNo,
+        type: "INSTRUCTOR",
+        to: bookingDoc.instructorEmail,
+        subject: `New Booking: ${bookingDoc.serviceName || ""}`,
 
-  
-  text: instructorText,
-  html: instructorHtml,
+        text: instructorText,
+        html: instructorHtml,
 
-  status,
-  error: errorMsg,
-  hasAttachment: true,
-  attachmentName: filename,
-  sentAt: new Date(),
-  createdAt: new Date(),
-  preview: instructorText.slice(0, 200),
-});
-
-}
-
+        status,
+        error: errorMsg,
+        hasAttachment: true,
+        attachmentName: filename,
+        sentAt: new Date(),
+        createdAt: new Date(),
+        preview: instructorText.slice(0, 200),
+        attachmentKey: invoiceKey,
+      });
+    }
 
     // ✅ 6) Save invoice PDF + email log in DB
-    // NOTE: base64 increases size. For lots of invoices use GridFS later.
-    const pdfBase64 = pdfBuffer.toString("base64");
 
-    await (await invoicesCollection()).insertOne({
-  invoiceNo,
-  bookingId, // ✅ already ObjectId
-  createdAt: new Date(),
-  paymentStatus: bookingDoc.paymentStatus,
-  paymentMethod,
-  cardBrand,
-  cardLast4,
-  pdfBase64,
-  filename,
-  userEmail: bookingDoc.userEmail,
-  instructorEmail: bookingDoc.instructorEmail || null,
-  mailLog,
-  paymentStatus: bookingDoc.paymentStatus || "unpaid",
-  total: bookingDoc.price || 0,
-});
+    await (
+      await invoicesCollection()
+    ).insertOne({
+      invoiceNo,
+      bookingId,
+      createdAt: new Date(),
+      paymentStatus: bookingDoc.paymentStatus || "unpaid",
+      paymentMethod,
+      cardBrand,
+      cardLast4,
 
+      // ✅ store storage key instead of base64
+      invoiceKey,
+      filename,
+
+      userEmail: bookingDoc.userEmail,
+      instructorEmail: bookingDoc.instructorEmail || null,
+
+      mailLog,
+      total: bookingDoc.price || 0,
+    });
 
     // ✅ 7) Return success
     return NextResponse.json(
@@ -334,33 +346,41 @@ preview: userText.slice(0, 200),
         invoiceNo,
         mailLog,
       },
-      { status: 201 }
+      {status: 201},
     );
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to add booking" }, { status: 500 });
+    return NextResponse.json({error: "Failed to add booking"}, {status: 500});
   }
 }
 
 // DELETE a booking by ID
 export async function DELETE(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const {searchParams} = new URL(req.url);
     const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "Booking ID is required" }, { status: 400 });
+      return NextResponse.json(
+        {error: "Booking ID is required"},
+        {status: 400},
+      );
     }
 
-    const result = await (await bookingsCollection()).deleteOne({ _id: new ObjectId(id) });
+    const result = await (
+      await bookingsCollection()
+    ).deleteOne({_id: new ObjectId(id)});
 
     if (result.deletedCount === 0) {
-      return NextResponse.json({ error: "Booking not found" }, { status: 404 });
+      return NextResponse.json({error: "Booking not found"}, {status: 404});
     }
 
-    return NextResponse.json({ message: "Booking deleted successfully" });
+    return NextResponse.json({message: "Booking deleted successfully"});
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to delete booking" }, { status: 500 });
+    return NextResponse.json(
+      {error: "Failed to delete booking"},
+      {status: 500},
+    );
   }
 }

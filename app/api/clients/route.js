@@ -1,12 +1,12 @@
-import { clientsCollection } from "@/app/libs/mongodb/db";
-import { ObjectId } from "mongodb";
-import { NextResponse } from "next/server";
+import {clientsCollection} from "@/app/libs/mongodb/db";
+import {ObjectId} from "mongodb";
+import {NextResponse} from "next/server";
 
 const escapeRegExp = (s = "") => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const {searchParams} = new URL(req.url);
 
     const firstName = searchParams.get("firstName") || "";
     const lastName = searchParams.get("lastName") || "";
@@ -20,59 +20,62 @@ export async function GET(req) {
     const q = (searchParams.get("q") || "").trim();
 
     const and = [];
-
+    and.push({roleType: "client"});
     // ✅ safer active filter (includes old docs missing activeClient)
     if (activeOnly) {
       and.push({
-        $or: [{ activeClient: true }, { activeClient: { $exists: false } }],
+        $or: [{activeClient: true}, {activeClient: {$exists: false}}],
       });
     }
 
     if (clientId.trim()) {
-      if (!ObjectId.isValid(clientId.trim())) return NextResponse.json([], { status: 200 });
-      and.push({ _id: new ObjectId(clientId.trim()) });
+      if (!ObjectId.isValid(clientId.trim()))
+        return NextResponse.json([], {status: 200});
+      and.push({_id: new ObjectId(clientId.trim())});
     }
 
     const rx = (val) => new RegExp(escapeRegExp(val.trim()), "i");
 
-    if (firstName.trim()) and.push({ firstName: rx(firstName) });
-    if (lastName.trim()) and.push({ lastName: rx(lastName) });
-    if (mobile.trim()) and.push({ mobile: rx(mobile) });
-    if (email.trim()) and.push({ email: rx(email) });
-    if (address.trim()) and.push({ address: rx(address) });
-    if (clientNote.trim()) and.push({ clientNote: rx(clientNote) });
-    if (licence.trim()) and.push({ licence: rx(licence) });
+    if (firstName.trim()) and.push({firstName: rx(firstName)});
+    if (lastName.trim()) and.push({lastName: rx(lastName)});
+    if (mobile.trim()) and.push({mobile: rx(mobile)});
+    if (email.trim()) and.push({email: rx(email)});
+    if (address.trim()) and.push({address: rx(address)});
+    if (clientNote.trim()) and.push({clientNote: rx(clientNote)});
+    if (licence.trim()) and.push({licence: rx(licence)});
 
     if (q) {
       const qr = rx(q);
       and.push({
         $or: [
-          { firstName: qr },
-          { lastName: qr },
-          { mobile: qr },
-          { email: qr },
-          { address: qr },
-          { clientNote: qr },
-          { licence: qr },
+          {firstName: qr},
+          {lastName: qr},
+          {mobile: qr},
+          {email: qr},
+          {address: qr},
+          {clientNote: qr},
+          {licence: qr},
         ],
       });
     }
 
-    const matchFilter = and.length ? { $and: and } : {};
+    const matchFilter = and.length ? {$and: and} : {};
 
-    const clients = await (await clientsCollection())
+    const clients = await (
+      await clientsCollection()
+    )
       .aggregate([
-        { $match: matchFilter },
-        { $sort: { createdAt: -1 } },
-        { $limit: 50 },
+        {$match: matchFilter},
+        {$sort: {createdAt: -1}},
+        {$limit: 50},
 
         // ✅ last booking
         {
           $lookup: {
             from: "bookings",
-            let: { clientIdStr: { $toString: "$_id" } },
+            let: {clientIdStr: {$toString: "$_id"}},
             pipeline: [
-              { $match: { $expr: { $eq: ["$clientId", "$$clientIdStr"] } } },
+              {$match: {$expr: {$eq: ["$clientId", "$$clientIdStr"]}}},
               {
                 $addFields: {
                   __bookingDate: {
@@ -97,9 +100,9 @@ export async function GET(req) {
                   },
                 },
               },
-              { $sort: { __bookingDate: -1 } },
-              { $limit: 1 },
-              { $project: { __bookingDate: 1 } },
+              {$sort: {__bookingDate: -1}},
+              {$limit: 1},
+              {$project: {__bookingDate: 1}},
             ],
             as: "lastBookingArr",
           },
@@ -109,10 +112,10 @@ export async function GET(req) {
         {
           $lookup: {
             from: "bookings",
-            let: { clientIdStr: { $toString: "$_id" } },
+            let: {clientIdStr: {$toString: "$_id"}},
             pipeline: [
-              { $match: { $expr: { $eq: ["$clientId", "$$clientIdStr"] } } },
-              { $count: "count" },
+              {$match: {$expr: {$eq: ["$clientId", "$$clientIdStr"]}}},
+              {$count: "count"},
             ],
             as: "bookingCountArr",
           },
@@ -120,41 +123,43 @@ export async function GET(req) {
 
         {
           $addFields: {
-            bookingCount: { $ifNull: [{ $arrayElemAt: ["$bookingCountArr.count", 0] }, 0] },
-            lastBooking: { $arrayElemAt: ["$lastBookingArr.__bookingDate", 0] },
+            bookingCount: {
+              $ifNull: [{$arrayElemAt: ["$bookingCountArr.count", 0]}, 0],
+            },
+            lastBooking: {$arrayElemAt: ["$lastBookingArr.__bookingDate", 0]},
           },
         },
 
         {
-  $addFields: {
-    lastBookingLabel: {
-      $cond: [
-        { $ifNull: ["$lastBooking", false] },
-        {
-          $dateToString: {
-            date: "$lastBooking",
-            format: "%d/%m/%Y %H:%M",
-            timezone: "Australia/Sydney",
+          $addFields: {
+            lastBookingLabel: {
+              $cond: [
+                {$ifNull: ["$lastBooking", false]},
+                {
+                  $dateToString: {
+                    date: "$lastBooking",
+                    format: "%d/%m/%Y %H:%M",
+                    timezone: "Australia/Sydney",
+                  },
+                },
+                null,
+              ],
+            },
           },
         },
-        null,
-      ],
-    },
-  },
-},
 
-        { $project: { lastBookingArr: 0, bookingCountArr: 0 } },
+        {$project: {lastBookingArr: 0, bookingCountArr: 0}},
       ])
       .toArray();
 
     return NextResponse.json(clients);
   } catch (error) {
-  console.error("CLIENTS GET ERROR:", error);
-  return NextResponse.json(
-    { error: "Failed to fetch clients", details: error?.message },
-    { status: 500 }
-  );
-}
+    console.error("CLIENTS GET ERROR:", error);
+    return NextResponse.json(
+      {error: "Failed to fetch clients", details: error?.message},
+      {status: 500},
+    );
+  }
 }
 
 export async function POST(req) {
@@ -163,8 +168,8 @@ export async function POST(req) {
 
     if (!body?.firstName?.trim() || !body?.lastName?.trim()) {
       return NextResponse.json(
-        { error: "First Name and Last Name are required" },
-        { status: 400 }
+        {error: "First Name and Last Name are required"},
+        {status: 400},
       );
     }
 
@@ -174,7 +179,8 @@ export async function POST(req) {
       firstName: body.firstName.trim(),
       lastName: body.lastName.trim(),
       organization: body.organization ?? "None",
-
+      provider: body.provider || "Credential",
+      linkedUserEmail: body.email?.trim()?.toLowerCase() || "",
       mobile: body.mobile?.trim() || "",
       homePhone: body.homePhone?.trim() || "",
       workPhone: body.workPhone?.trim() || "",
@@ -210,34 +216,33 @@ export async function POST(req) {
       alerts: body.alerts ?? "",
       clientNote: body.clientNote ?? "",
       comments: body.comments ?? "",
-
+      roleType: "client",
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     const dupOr = [];
-    if (doc.email) dupOr.push({ email: doc.email });
-    if (doc.mobile) dupOr.push({ mobile: doc.mobile });
+    if (doc.email) dupOr.push({email: doc.email});
+    if (doc.mobile) dupOr.push({mobile: doc.mobile});
 
     if (dupOr.length) {
-      const existing = await collection.findOne({ $or: dupOr });
+      const existing = await collection.findOne({$or: dupOr});
       if (existing) {
         return NextResponse.json(
-          { error: "Client already exists with same email or mobile", clientId: existing._id },
-          { status: 409 }
+          {
+            error: "Client already exists with same email or mobile",
+            clientId: existing._id,
+          },
+          {status: 409},
         );
       }
     }
 
     const result = await collection.insertOne(doc);
 
-return NextResponse.json(
-  { _id: result.insertedId, ...doc },
-  { status: 201 }
-);
-
+    return NextResponse.json({_id: result.insertedId, ...doc}, {status: 201});
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }
