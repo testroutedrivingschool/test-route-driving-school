@@ -38,7 +38,7 @@ export async function GET(req) {
 
 export async function POST(req) {
   const body = await req.json();
-
+  body.emailScheduleTime= "00:00";
   const result = await (await usersCollection()).insertOne(body);
 
   return NextResponse.json(result, {status: 201});

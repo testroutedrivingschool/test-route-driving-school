@@ -51,13 +51,7 @@ export default function UserMessages() {
 
   const rows = useMemo(() => emails || [], [emails]);
 
-  const goToBooking = (email) => {
-    const bookingId = email?.bookingId;
-    if (!bookingId) return;
 
-    // ✅ change this route to your user booking details page
-    router.push(`/user/my-bookings/${bookingId}`);
-  };
 
   const downloadAttachment = async (key) => {
     const { data } = await axios.post("/api/storage/download-url", { key });

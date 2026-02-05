@@ -201,7 +201,7 @@ export async function POST(req) {
 
       accountBalance: body.accountBalance ? Number(body.accountBalance) : 0,
       referredBy: body.referredBy ?? "Not Specified",
-
+      emailScheduleTime: "00:00",
       activeClient: body.activeClient ?? true,
       marketingSubscriber: body.marketingSubscriber ?? false,
       receiveReminders: body.receiveReminders ?? false,
