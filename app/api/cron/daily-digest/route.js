@@ -333,18 +333,30 @@ export async function GET(req) {
       .toArray();
 
     // Normalize into one list
-    const receivers = [
-      ...userReceivers.map((u) => ({
-        email: u.email,
-        name: u.name,
-        role: u.role, // user|instructor|admin
-      })),
-      ...clientReceivers.map((c) => ({
-        email: c.email,
-        name: c.name,
-        role: "client", // 👈 treat client as its own role
-      })),
-    ];
+const userEmailSet = new Set(
+  userReceivers.map(u => String(u.email).trim().toLowerCase())
+);
+
+// 2️⃣ Normalize users
+const receivers = userReceivers.map((u) => ({
+  email: String(u.email).trim().toLowerCase(),
+  name: u.name,
+  role: u.role, // user | instructor | admin
+}));
+
+// 3️⃣ Add clients ONLY if not present in users
+for (const c of clientReceivers) {
+  const email = String(c.email || "").trim().toLowerCase();
+  if (!email) continue;
+
+  if (!userEmailSet.has(email)) {
+    receivers.push({
+      email,
+      name: c.name,
+      role: "client",
+    });
+  }
+}
 
     if (!receivers.length) {
       return NextResponse.json({ ok: true, sent: 0, note: "No schedules at this minute" });
@@ -407,7 +419,7 @@ export async function GET(req) {
         sentAt: new Date(),
         createdAt: new Date(),
         digestDay: dayKey,
-        digestRole: u.role, // user|client|instructor|admin
+        digestRole: u.role, 
       });
 
       if (status === "SENT") sent += 1;
