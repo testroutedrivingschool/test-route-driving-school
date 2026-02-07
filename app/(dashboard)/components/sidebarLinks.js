@@ -48,6 +48,12 @@ export const userSidebarLinks = [
     icon: <FiMessageSquare />,
     path: "/dashboard/user/feedback",
   },
+  {
+    id: 10,
+    label: "Settings",
+    icon: <FaGear />,
+    path: "/dashboard/user/settings",
+  },
 ];
 
 /* ================= ADMIN ================= */

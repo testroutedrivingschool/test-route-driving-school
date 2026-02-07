@@ -59,7 +59,8 @@ export async function PATCH(req) {
       postCode,
       role,
       photoKey,  
-      photo,    
+      photo, 
+      emailScheduleTime   
     } = body;
 
     if (!email)
@@ -79,7 +80,17 @@ export async function PATCH(req) {
     // ✅ profile photo updates
     if (photoKey !== undefined) updateData.photoKey = photoKey; // allow empty too
     if (photo !== undefined) updateData.photo = photo; // allow empty too
-
+if (emailScheduleTime !== undefined) {
+  const v = String(emailScheduleTime).trim(); // allow "00:00"
+  const ok = /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
+  if (!ok) {
+    return NextResponse.json(
+      { error: "emailScheduleTime must be HH:MM (24h) like 07:48 or 21:55" },
+      { status: 400 }
+    );
+  }
+  updateData.emailScheduleTime = v;
+}
     const result = await (await usersCollection()).updateOne(
       { email },
       { $set: updateData }
