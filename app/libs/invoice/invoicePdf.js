@@ -1,238 +1,191 @@
-import PDFDocument from "pdfkit";
-import fs from "fs";
+import puppeteer from "puppeteer";
 import path from "path";
+import fs from "fs";
 
 function safe(v) {
   return v ?? "";
 }
 
 function formatAUDate(dateLike) {
-  try {
-    return new Date(dateLike).toLocaleDateString("en-AU", {
-      weekday: "long",
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    });
-  } catch {
-    return "";
-  }
+  const d = new Date(dateLike);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-AU", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
 }
 
-export function generateInvoicePdfBuffer(data) {
-  return new Promise((resolve, reject) => {
-    const doc = new PDFDocument({ size: "A4", margin: 50 });
-    const chunks = [];
+function toPublicFileUrl(reqUrl, filePathInPublic) {
+  // Build absolute URL like: http://localhost:3000/test-route-driving-school-logo.png
+  const base = new URL(reqUrl).origin;
+  return `${base}/${filePathInPublic.replace(/^\/+/, "")}`;
+}
 
-    doc.on("data", (c) => chunks.push(c));
-    doc.on("end", () => resolve(Buffer.concat(chunks)));
-    doc.on("error", reject);
+function invoiceHtml(data, logoUrl) {
+  const bookingDateText = formatAUDate(data.bookingDate);
+  const today = formatAUDate(new Date());
 
-    // ===== Load font (required for Next.js) =====
-   const regularFont = path.join(
-  process.cwd(),
-  "public",
-  "fonts",
-  "OpenSans-Regular.ttf"
-);
-const boldFont = path.join(
-  process.cwd(),
-  "public",
-  "fonts",
-  "OpenSans-Bold.ttf"
-);
+  const ps = String(safe(data.paymentStatus)).toLowerCase();
+  const isPaid = ps === "paid" || ps.includes("voucher");
 
-doc.registerFont("Regular", fs.readFileSync(regularFont));
-doc.registerFont("Bold", fs.readFileSync(boldFont));
+  const paidLabel = isPaid ? "PAID IN FULL" : "UNPAID";
 
-// default font
-doc.font("Regular");
+  // safer number parse
+  const total = Number(String(data.price ?? 0).replace(/[^\d.-]/g, "")) || 0;
 
-    // ===== Constants =====
-    const pageLeft = doc.page.margins.left; // 50
-    const pageRight = doc.page.width - doc.page.margins.right; // 545
-    const contentWidth = pageRight - pageLeft;
+  const method = String(safe(data.paymentMethod)).toLowerCase(); // "card" or ""
+  const brand = data.cardBrand ? String(data.cardBrand).toUpperCase() : "";
+  const last4 = data.cardLast4 ? String(data.cardLast4) : "";
 
-    // ===== Logo (TOP-RIGHT FIXED POSITION) =====
-    // Put your logo here: /public/images/logo.png
-   const logoPath = path.join(
-  process.cwd(),
-  "public",
-  "test-route-driving-school-logo.png"
-);
-    const logoWidth = 100;
-    const logoX = doc.page.width - doc.page.margins.right - logoWidth;
-    const logoY = doc.page.margins.top; // fixed top-right
+  const paidByCardLine =
+    isPaid && method === "card"
+      ? `Paid by Card (${brand || "CARD"} •••• ${last4 || "----"})`
+      : "";
 
-    try {
-      if (fs.existsSync(logoPath)) {
-        doc.image(logoPath, logoX, logoY, { width: logoWidth });
-      }
-    } catch (e) {
-      // ignore logo errors
-    }
+  const pendingLine = !isPaid ? "Payment pending." : "";
 
-    // ===== Company Info (LEFT) =====
-    const topY = doc.page.margins.top; // fixed top
-    doc.font("Bold").fontSize(12).text(
-  "TEST ROUTE DRIVING SCHOOL",
-  pageLeft,
-  topY
-);
+  return `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; color:#111; margin:0; }
+    .page { padding: 40px; font-size: 12px; }
+    .top { display:flex; justify-content:space-between; align-items:flex-start; }
+    .brand h1 { margin:0; font-size:14px; font-weight:700; }
+    .brand p { margin:3px 0; line-height:1.35; }
 
-// switch back to regular for rest
-doc.font("Regular");
-    
-    doc.moveDown(0.4);
-    doc.fontSize(10).text("67 Warialda St, Kogarah NSW 2217, Australia", {
-      lineGap: 2,
-    });
-    doc.text("Phone: 61 412 018 593");
-    doc.text("https://testroutedrivingschool.com.au");
-    doc.text("ABN: 60 328 717 194");
+    .logo { width: 150px; height:auto; display:block; margin-left:auto; }
+    .rightTitle { margin-top: 10px; text-align:right; }
+    .rightTitle .title { font-weight:700; font-size:13px; }
+    .rightTitle .sub { margin-top:4px; font-size:11px; }
 
-    // ✅ Make sure next section starts below logo area
-    doc.y = topY + 110;
-doc.moveDown(0.4);
-    // ===== Right side title + invoice number =====
-    doc.font("Bold").fontSize(14).text("Invoice / Receipt", pageLeft, doc.y, {
-  align: "right",
-  width: contentWidth,
-});
-doc.font("Regular");
+    .dateRow { margin-top: 18px; }
 
-    doc.moveDown(0.3);
-    doc.fontSize(10).text(`Invoice # ${safe(data.invoiceNo)}`, {
-      align: "right",
-      width: contentWidth,
-    });
+    .section { margin-top: 18px; }
+    .label { font-weight:700; }
 
-    // Date left
-    doc.moveDown(0.6);
-    doc.fontSize(10).text(formatAUDate(new Date()), pageLeft);
+    table { width:100%; border-collapse:collapse; margin-top:10px; }
+    thead th { background:#d9d9d9; padding:8px; font-weight:700; font-size:11px; text-align:left; }
+    tbody td { padding:10px 8px; border-bottom:1px solid #e5e5e5; vertical-align:top; }
+    .t-right { text-align:right; }
+    .t-center { text-align:center; }
 
-    // Invoiced To
-    doc.moveDown(1.4);
-    doc.fontSize(10).text("Invoiced To:", pageLeft, doc.y, { continued: true });
-    doc.fontSize(10).text(`   ${String(safe(data.userName)).toUpperCase()}`);
+    .split { display:flex; gap:18px; margin-top: 14px; }
+    .box { flex:1; }
+    .muted { color:#444; }
 
-    doc.moveDown(1.2);
+    .totals { text-align:right; }
+    .grand { font-weight:700; border-top:1px solid #bbb; padding-top:8px; margin-top:10px; }
 
-    // ===== Table Header =====
-    const tableX = pageLeft;
-    const tableW = contentWidth;
-    const rowH = 24;
+    .paid { margin-top: 18px; text-align:right; font-weight:800; font-size:14px; }
+    .paid small { display:block; margin-top:4px; font-weight:400; font-size:11px; }
 
-    const colItemW = Math.floor(tableW * 0.68);
-    const colGSTW = Math.floor(tableW * 0.12);
-    const colCostW = tableW - colItemW - colGSTW;
+    .footer { margin-top: 28px; font-size:10px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="top">
+      <div class="brand">
+        <h1>TEST ROUTE DRIVING SCHOOL</h1>
+        <p>67 Warialda St, Kogarah NSW 2217, Australia</p>
+        <p>Phone: 61 412 018 593</p>
+        <p>https://testroutedrivingschool.com.au</p>
+        <p>ABN: 60 328 717 194</p>
+      </div>
 
-    const headerY = doc.y;
+      <div>
+        ${logoUrl ? `<img class="logo" src="${logoUrl}" />` : ""}
+        <div class="rightTitle">
+          <div class="title">Invoice / Receipt</div>
+          <div class="sub">Invoice # ${safe(data.invoiceNo)}</div>
+        </div>
+      </div>
+    </div>
 
-    // Grey header background
-    doc.save();
-    doc.rect(tableX, headerY, tableW, rowH).fill("#D9D9D9");
-    doc.restore();
+    <div class="dateRow">${today}</div>
 
-    doc.fontSize(10).fillColor("#000");
-doc.font("Bold").fontSize(10);
-doc.text("Item", tableX + 8, headerY + 7);
-doc.text("GST", tableX + colItemW, headerY + 7, { align: "center" });
-doc.text("Cost", tableX + colItemW + colGSTW, headerY + 7, { align: "right" });
-doc.font("Regular");
+    <div class="section">
+      <span class="label">Invoiced To:</span>
+      <b>${String(safe(data.userName)).toUpperCase()}</b>
+    </div>
 
-  
+    <table>
+      <thead>
+        <tr>
+          <th style="width:68%;">Item</th>
+          <th style="width:12%;" class="t-center">GST</th>
+          <th style="width:20%;" class="t-right">Cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <b>${safe(data.serviceName)}</b> - ${safe(data.duration)}<br/>
+            <span class="muted">${bookingDateText} at ${safe(data.bookingTime)}</span>
+          </td>
+          <td class="t-center">—</td>
+          <td class="t-right">$${total.toFixed(2)}</td>
+        </tr>
+      </tbody>
+    </table>
 
-    // ===== Table Row =====
-    const rowY = headerY + rowH;
-    doc
-      .moveTo(tableX, rowY + rowH)
-      .lineTo(tableX + tableW, rowY + rowH)
-      .strokeColor("#E5E5E5")
-      .stroke();
+    <div class="split">
+      <div class="box">
+        <div><b>Instructor:</b> ${safe(data.instructorName) || "—"}</div>
 
-    const bookingDateText = formatAUDate(data.bookingDate);
-    const bookingTimeText = safe(data.bookingTime);
+        ${paidByCardLine ? `<div class="section">${paidByCardLine}</div>` : ""}
+        ${pendingLine ? `<div class="section">${pendingLine}</div>` : ""}
+      </div>
 
-    const itemText = `${safe(data.serviceName)} - ${safe(
-      data.duration
-    )} on ${bookingDateText} at ${bookingTimeText}`;
+      <div class="box totals">
+        <div class="grand">TOTAL&nbsp;&nbsp;&nbsp;&nbsp;$${total.toFixed(2)}</div>
 
-    doc.fontSize(10).fillColor("#000");
-    doc.text(itemText, tableX + 8, rowY + 6, { width: colItemW - 16 });
+        <div class="paid">
+          ${paidLabel}
+          <small>on ${today}</small>
+        </div>
+      </div>
+    </div>
 
-    // GST column
-    doc.text("—", tableX + colItemW, rowY + 6, {
-      width: colGSTW,
-      align: "center",
-    });
+    <div class="footer">
+      Terms & Conditions: https://testroutedrivingschool.com.au/terms
+    </div>
+  </div>
+</body>
+</html>`;
+}
 
-    // Cost column: Voucher or price
-    const isVoucher = String(safe(data.paymentStatus))
-      .toLowerCase()
-      .includes("voucher");
-    const costText = isVoucher
-      ? "Voucher"
-      : `$${Number(data.price || 0).toFixed(2)}`;
+export async function generateInvoicePdfBuffer(data, reqUrlForAssets) {
+  // Build logo URL from your public folder
+  // public/test-route-driving-school-logo.png
+  const logoUrl = reqUrlForAssets
+    ? toPublicFileUrl(reqUrlForAssets, "test-route-driving-school-logo.png")
+    : null;
 
-    doc.text(costText, tableX + colItemW + colGSTW, rowY + 6, {
-      width: colCostW - 8,
-      align: "right",
-    });
+  const html = invoiceHtml(data, logoUrl);
 
-    // Instructor line under table
-    doc.moveDown(3);
-    doc
-      .strokeColor("#CFCFCF")
-      .moveTo(tableX, doc.y)
-      .lineTo(tableX + tableW, doc.y)
-      .stroke();
-    doc.moveDown(0.8);
-
-    if (data.instructorName) {
-      doc.fontSize(10).text(`Instructor: ${safe(data.instructorName)}`, tableX);
-    }
-
-    // ===== Payment status / method =====
-    doc.moveDown(1.6);
-
-    const ps = String(safe(data.paymentStatus)).toLowerCase();
-    const isPaid = ps === "paid" || ps.includes("voucher");
-
-    let paidLabel = "UNPAID";
-    if (ps === "paid") paidLabel = "PAID";
-    if (ps.includes("voucher")) paidLabel = "PAID";
-
-    doc.font("Bold").fontSize(16).text(paidLabel, tableX, doc.y, {
-  width: tableW,
-  align: "right",
-});
-doc.font("Regular");
-
-    // If paid, show card details ONLY (no bank details ever)
-    if (isPaid && data.paymentMethod === "card") {
-      doc.moveDown(0.8);
-
-      const brand = data.cardBrand
-        ? String(data.cardBrand).toUpperCase()
-        : "CARD";
-      const last4 = data.cardLast4 ? String(data.cardLast4) : "----";
-
-      doc.fontSize(10).text(`Paid by Card (${brand} •••• ${last4})`, tableX);
-    }
-
-    if (!isPaid) {
-      doc.moveDown(0.8);
-      doc.fontSize(10).text("Payment pending.", tableX);
-    }
-
-    // ===== Terms =====
-    doc.moveDown(3.0);
-    doc.fontSize(9).text(
-      "Terms & Conditions: https://testroutedrivingschool.com.au/terms",
-      tableX
-    );
-
-    doc.end();
+  const browser = await puppeteer.launch({
+    headless: "new",
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
+
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+
+    const pdf = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: "14mm", right: "14mm", bottom: "14mm", left: "14mm" },
+    });
+
+    return Buffer.from(pdf);
+  } finally {
+    await browser.close();
+  }
 }

@@ -8,24 +8,24 @@ import ClientChecklists from "./ClientChecklists";
 import ClientMessages from "./ClientMessages";
 import axios from "axios";
 import {toast} from "react-toastify";
-import { useQuery } from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+
 function safeStr(v) {
   return v === null || v === undefined ? "" : String(v);
 }
 
-function safeBool(v) {
-  return !!v;
-}
+
 
 export default function ClientDetails({client, onBack}) {
-        const {data:suburbs,isLoading} = useQuery({
-                queryKey:["suburbs"],
-                queryFn:async ()=>{
-                        const res = await axios.get("/api/locations");
-                        return res.data
-                }
-        })
+  const {data: suburbs, isLoading} = useQuery({
+    queryKey: ["suburbs"],
+    queryFn: async () => {
+      const res = await axios.get("/api/locations");
+      return res.data;
+    },
+  });
+  console.log(client);
   const initial = useMemo(
     () => ({
       firstName: safeStr(client.firstName),
@@ -63,7 +63,7 @@ export default function ClientDetails({client, onBack}) {
       activeClient: client.activeClient || false,
       marketingSubscriber: client.marketingSubscriber || false,
       receiveReminders: client.receiveReminders || false,
-      loginAccess: client.onlineBooking || false,
+      loginAccess: client.loginAccess || false,
       showPhoto: client.showPhoto || false,
       alerts: safeStr(client.alerts),
       clientNote: safeStr(client.clientNote),
@@ -72,9 +72,9 @@ export default function ClientDetails({client, onBack}) {
     [client],
   );
   const suburbOptions = useMemo(() => {
-  if (!suburbs) return [];
-  return suburbs?.map((s) => s.name);
-}, [suburbs]);
+    if (!suburbs) return [];
+    return suburbs?.map((s) => s.name);
+  }, [suburbs]);
   const [activeTab, setActiveTab] = useState("client");
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(initial);
@@ -158,13 +158,54 @@ export default function ClientDetails({client, onBack}) {
       setSaving(false);
     }
   };
-if(isLoading) return <LoadingSpinner/>
+
+  const sendLoginInvite = async () => {
+    try {
+      const fullName = `${form.firstName} ${form.lastName}`.trim();
+
+      await axios.post("/api/admin/create-client-login", {
+        name: fullName || "",
+        email: form.email,
+        role: "user",
+        clientId: form.clientId,
+        emergencyContact: form.emergencyContact || "",
+        emergencyPhone: form.emergencyPhone || "",
+
+        address: form.address || "",
+        suburb: form.suburb || "",
+        state: form.state || "",
+        postCode: form.postCode || "",
+      });
+
+      toast.success("Login email sent 📧");
+
+      // update UI immediately (so button switches to reset)
+      setForm((p) => ({...p, loginAccess: true}));
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to send login email");
+    }
+  };
+  const sendResetPassword = async () => {
+    try {
+      const fullName = `${form.firstName} ${form.lastName}`.trim();
+
+      await axios.post("/api/admin/send-client-reset-password", {
+        name: fullName,
+        email: form.email,
+      });
+
+      toast.success("Reset password email sent 🔐");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to send reset link");
+    }
+  };
+  if (isLoading) return <LoadingSpinner />;
   return (
-    <div className="bg-white border border-border-color rounded-md p-6">
+    <div className="bg-white border border-border-color rounded-md p-4">
       {/* Header */}
-      <div className="sticky top-24 z-50 bg-white">
+      <div className="sticky top-24 z-99 bg-white ">
         <div className="pt-4 px-0">
-          <div className="flex items-start justify-between gap-6">
+          <div className="flex items-start justify-between gap-6 mb-2">
             <h1 className="text-3xl font-bold text-gray-900">
               {form.firstName} {form.lastName}
             </h1>
@@ -267,24 +308,65 @@ if(isLoading) return <LoadingSpinner/>
                 onChange={onChange}
               />
 
-              <Row3
-                label="Email:"
-                input={
-                  <input
-                    name="email"
-                    value={form.email}
-                    onChange={onChange}
-                    className="w-full input-class py-2!"
-                  />
-                }
-                right={
-                  <a target="_blank" href={`mailto:${form.email}`}>
-                    <span className="text-primary text-sm font-semibold hover:underline">
+              {/* Email (like screenshot) */}
+              <div className="grid grid-cols-12 items-start gap-4">
+                <label className="col-span-4 text-sm font-medium text-gray-900 pt-2">
+                  Email:
+                </label>
+
+                <div className="col-span-8">
+                  {/* top row: input + Email link */}
+                  <div className="flex items-center justify-between gap-3">
+                    <input
+                      name="email"
+                      value={form.email}
+                      onChange={onChange}
+                      className="flex-1 input-class py-2!"
+                    />
+
+                    <button
+                      type="button"
+                      className="text-primary text-sm font-semibold hover:underline"
+                    >
                       Email
-                    </span>
-                  </a>
-                }
-              />
+                    </button>
+                  </div>
+
+                  {/* bottom row: actions */}
+                  <div className="mt-2 flex items-center gap-10 text-sm">
+                    {!form.loginAccess ? (
+                      <button
+                        type="button"
+                        onClick={sendLoginInvite}
+                        className="text-primary font-semibold hover:underline"
+                      >
+                        Send Login Email
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={sendResetPassword}
+                        className="text-primary font-semibold hover:underline"
+                        disabled={!form.loginAccess}
+                        title={!form.loginAccess ? "Enable login first" : ""}
+                      >
+                        Send Reset Email
+                      </button>
+                    )}
+                  </div>
+
+                  {/* status text */}
+                  {!form.loginAccess ? (
+                    <p className="mt-1 text-sm text-gray-500">
+                      This client does not have a login account.
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-sm text-gray-500">
+                      This client has login access enabled.
+                    </p>
+                  )}
+                </div>
+              </div>
 
               <Field
                 label="Alternate Email:"
@@ -332,15 +414,15 @@ if(isLoading) return <LoadingSpinner/>
                 value={form.address}
                 onChange={onChange}
               />
-              
+
               <SelectField
-  label="Suburb:"
-  name="suburb"
-  value={form.suburb}
-  onChange={onChange}
-  options={suburbOptions}
-/>
-              
+                label="Suburb:"
+                name="suburb"
+                value={form.suburb}
+                onChange={onChange}
+                options={suburbOptions}
+              />
+
               <Field
                 label="State:"
                 name="state"
@@ -406,7 +488,7 @@ if(isLoading) return <LoadingSpinner/>
                   },
                   {
                     name: "loginAccess",
-                    label: "Allow this client to access their account.",
+                    label: "Allow this client to login access their account.",
                   },
                   {
                     name: "onlineBooking",
@@ -433,13 +515,14 @@ if(isLoading) return <LoadingSpinner/>
                     onChange={onChange}
                     className="input-class py-2!"
                   >
-
-
-                   
                     <option value="">No Action Set</option>
-                    <option value="no-action-required">No Action Required</option>
+                    <option value="no-action-required">
+                      No Action Required
+                    </option>
                     <option value="action-required">Action Required</option>
-                    <option value="urgent-action-required">Urgent Action Required</option>
+                    <option value="urgent-action-required">
+                      Urgent Action Required
+                    </option>
                   </select>
                 }
               />
@@ -472,10 +555,13 @@ if(isLoading) return <LoadingSpinner/>
 
             {/* Bottom Save */}
             <div className="flex justify-end">
-              <PrimaryBtn onClick={onSave} disabled={saving} className="px-10! py-3!">
-  {saving ? "Saving..." : "Save"}
-</PrimaryBtn>
-
+              <PrimaryBtn
+                onClick={onSave}
+                disabled={saving}
+                className="px-10! py-3!"
+              >
+                {saving ? "Saving..." : "Save"}
+              </PrimaryBtn>
             </div>
           </div>
         )}
@@ -523,7 +609,7 @@ function Field({label, name, value, onChange}) {
   );
 }
 
-function SelectField({ label, name, value, onChange, options }) {
+function SelectField({label, name, value, onChange, options}) {
   return (
     <div className="grid grid-cols-12 items-center gap-4">
       <label className="col-span-4 text-sm font-medium text-gray-900">
@@ -547,7 +633,6 @@ function SelectField({ label, name, value, onChange, options }) {
     </div>
   );
 }
-
 
 function Row2({label, input}) {
   return (

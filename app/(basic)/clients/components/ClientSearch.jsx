@@ -226,7 +226,7 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
 
                         <td className="px-3 py-2">{address}</td>
                         <td className="px-3 py-2">{c.bookingCount || "-"}</td>
-                        <td className="px-3 py-2 text-red-600 font-semibold">
+                        <td className="px-3 py-2 text-primary font-semibold">
                           {c.bookingCount > 0
                             ? `Last: ${c.lastBookingLabel}`
                             : "—"}

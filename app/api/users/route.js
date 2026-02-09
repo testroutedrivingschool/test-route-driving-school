@@ -6,7 +6,7 @@ export async function GET(req) {
   try {
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
-    const role = url.searchParams.get("role"); 
+    const role = url.searchParams.get("role");
 
     const query = {};
 
@@ -38,7 +38,7 @@ export async function GET(req) {
 
 export async function POST(req) {
   const body = await req.json();
-  body.emailScheduleTime= "00:00";
+  body.emailScheduleTime = "00:00";
   const result = await (await usersCollection()).insertOne(body);
 
   return NextResponse.json(result, {status: 201});
@@ -58,56 +58,55 @@ export async function PATCH(req) {
       state,
       postCode,
       role,
-      photoKey,  
-      photo, 
-      emailScheduleTime   
+      photoKey,
+      photo,
+      emailScheduleTime,
     } = body;
 
     if (!email)
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+      return NextResponse.json({error: "Email is required"}, {status: 400});
 
     const updateData = {};
-    if (name) updateData.name = name;
-    if (phone) updateData.phone = phone;
-    if (dateOfBirth) updateData.dateOfBirth = dateOfBirth;
-    if (emergencyContact) updateData.emergencyContact = emergencyContact;
-    if (address) updateData.address = address;
-    if (suburb) updateData.suburb = suburb;
-    if (state) updateData.state = state;
-    if (postCode) updateData.postCode = postCode;
-    if (role) updateData.role = role;
+    if (name !== undefined) updateData.name = name;
+    if (phone !== undefined) updateData.phone = phone;
+    if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
+
+    if (emergencyContact !== undefined)
+      updateData.emergencyContact = emergencyContact;
+    if (address !== undefined) updateData.address = address;
+    if (suburb !== undefined) updateData.suburb = suburb;
+    if (state !== undefined) updateData.state = state;
+    if (postCode !== undefined) updateData.postCode = postCode;
+    if (role !== undefined) updateData.role = role;
 
     // ✅ profile photo updates
-    if (photoKey !== undefined) updateData.photoKey = photoKey; // allow empty too
-    if (photo !== undefined) updateData.photo = photo; // allow empty too
-if (emailScheduleTime !== undefined) {
-  const v = String(emailScheduleTime).trim(); // allow "00:00"
-  const ok = /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
-  if (!ok) {
-    return NextResponse.json(
-      { error: "emailScheduleTime must be HH:MM (24h) like 07:48 or 21:55" },
-      { status: 400 }
-    );
-  }
-  updateData.emailScheduleTime = v;
-}
-    const result = await (await usersCollection()).updateOne(
-      { email },
-      { $set: updateData }
-    );
+    if (photoKey !== undefined) updateData.photoKey = photoKey; 
+    if (photo !== undefined) updateData.photo = photo; 
+    if (emailScheduleTime !== undefined) {
+      const v = String(emailScheduleTime).trim(); 
+      const ok = /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
+      if (!ok) {
+        return NextResponse.json(
+          {error: "emailScheduleTime must be HH:MM (24h) like 07:48 or 21:55"},
+          {status: 400},
+        );
+      }
+      updateData.emailScheduleTime = v;
+    }
+    const result = await (
+      await usersCollection()
+    ).updateOne({email}, {$set: updateData});
 
     if (result.matchedCount === 0) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({error: "User not found"}, {status: 404});
     }
 
-    return NextResponse.json({ message: "User updated successfully" });
+    return NextResponse.json({message: "User updated successfully"});
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }
-
-
 
 export async function DELETE(req) {
   try {

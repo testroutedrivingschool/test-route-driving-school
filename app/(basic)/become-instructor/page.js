@@ -23,7 +23,7 @@ export default function JoinAsInstructor() {
   const [formLoading, setFormLoading] = useState(false);
   const [applied, setApplied] = useState({loading: true, data: null});
   const navigate = useRouter();
-
+  const [phoneError, setPhoneError] = useState("");
   const fetchApplication = React.useCallback(async (email) => {
     try {
       const res = await axios.get(`/api/instructors?email=${email}`);
@@ -105,7 +105,6 @@ export default function JoinAsInstructor() {
     }
   };
 
- 
   const toggleArrayValue = (key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -118,9 +117,11 @@ export default function JoinAsInstructor() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.phone) {
-      return toast.error("Phone Number must be provided");
+    if (!formData.phone || formData.phone.replace(/\D/g, "").length < 9) {
+      setPhoneError("Phone number is required");
+      return;
     }
+    setPhoneError("");
     if (formData.languages.length === 0) {
       return toast.error("Select at least 1 language");
     }
@@ -140,7 +141,6 @@ export default function JoinAsInstructor() {
         photoKey: photoKey || user.photoKey || "", // ✅ store MinIO key
         status: "pending",
         userId: user._id,
-    
       };
 
       await axios.post("/api/instructors", instructorData);
@@ -166,12 +166,12 @@ export default function JoinAsInstructor() {
   };
 
   const previewSrc = photoPreview
-  ? photoPreview
-  : user?.photo
-  ? user.photo
-  : user?.photoKey
-  ? `/api/storage/proxy?key=${encodeURIComponent(user.photoKey)}`
-  : "/profile-avatar.png";
+    ? photoPreview
+    : user?.photo
+      ? user.photo
+      : user?.photoKey
+        ? `/api/storage/proxy?key=${encodeURIComponent(user.photoKey)}`
+        : "/profile-avatar.png";
 
   useEffect(() => {
     return () => {
@@ -255,13 +255,11 @@ export default function JoinAsInstructor() {
             className="border border-border-color p-2 cursor-pointer"
           />
 
-         
-            <img
-              src={previewSrc}
-              alt="Preview"
-              className="w-16 h-16 mt-3 rounded-full object-cover border"
-            />
-      
+          <img
+            src={previewSrc}
+            alt="Preview"
+            className="w-16 h-16 mt-3 rounded-full object-cover border"
+          />
         </div>
 
         {/* Basic Info */}
@@ -302,7 +300,7 @@ export default function JoinAsInstructor() {
               Phone
             </label>
             <PhoneInput
-              country={"au"}
+              country="au"
               value={formData.phone}
               onChange={(phone) =>
                 setFormData((prev) => ({
@@ -314,10 +312,13 @@ export default function JoinAsInstructor() {
                 width: "100%",
                 height: "48px",
                 borderRadius: "12px",
+                border: phoneError ? "1px solid #dc2626" : "1px solid #d1d5db",
               }}
-              containerStyle={{width: "100%"}}
-              
             />
+
+            {phoneError && (
+              <p className="text-sm text-red-600 mt-1">{phoneError}</p>
+            )}
           </div>
 
           <div className="flex flex-col">
@@ -503,7 +504,7 @@ export default function JoinAsInstructor() {
 
         <button
           type="submit"
-          disabled={formLoading}
+         disabled={formLoading || !formData.phone}
           className="w-full mt-10 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
         >
           Apply as Instructor

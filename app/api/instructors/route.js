@@ -1,5 +1,9 @@
 import {admin} from "@/app/libs/firebase/firebase.admin";
-import {instructorsCollection, usersCollection,clientsCollection} from "@/app/libs/mongodb/db";
+import {
+  instructorsCollection,
+  usersCollection,
+  clientsCollection,
+} from "@/app/libs/mongodb/db";
 import {NextResponse} from "next/server";
 
 // GET - get all instructors or filter by email
@@ -18,7 +22,7 @@ export async function GET(req) {
       if (!instructor) {
         return NextResponse.json(
           {error: "Instructor not found"},
-          {status: 404}
+          {status: 404},
         );
       }
       return NextResponse.json(instructor);
@@ -41,7 +45,7 @@ export async function POST(req) {
     if (!name || !email) {
       return NextResponse.json(
         {error: "Name and email are required"},
-        {status: 400}
+        {status: 400},
       );
     }
 
@@ -53,7 +57,7 @@ export async function POST(req) {
     if (existingInstructor) {
       return NextResponse.json(
         {error: "Instructor already registered with this email"},
-        {status: 409}
+        {status: 409},
       );
     }
 
@@ -64,7 +68,7 @@ export async function POST(req) {
 
     return NextResponse.json(
       {message: "Instructor registered successfully", result},
-      {status: 201}
+      {status: 201},
     );
   } catch (err) {
     console.error(err);
@@ -111,7 +115,7 @@ export async function PATCH(req) {
     } = body;
 
     if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+      return NextResponse.json({error: "Email is required"}, {status: 400});
     }
 
     const instructorUpdate = {};
@@ -126,7 +130,11 @@ export async function PATCH(req) {
     setIfDefined(instructorUpdate, "workPhone", workPhone);
 
     // accept either dob or dateOfBirth from frontend
-    setIfDefined(instructorUpdate, "dob", dob !== undefined ? dob : dateOfBirth);
+    setIfDefined(
+      instructorUpdate,
+      "dob",
+      dob !== undefined ? dob : dateOfBirth,
+    );
 
     setIfDefined(instructorUpdate, "emergencyContact", emergencyContact);
     setIfDefined(instructorUpdate, "address", address);
@@ -155,83 +163,99 @@ export async function PATCH(req) {
     const userCol = await usersCollection();
 
     const instructorRes = await instructorCol.updateOne(
-      { email },
-      { $set: instructorUpdate }
+      {email},
+      {$set: instructorUpdate},
     );
 
     if (instructorRes.matchedCount === 0) {
-      return NextResponse.json({ error: "Instructor not found" }, { status: 404 });
+      return NextResponse.json({error: "Instructor not found"}, {status: 404});
     }
 
     // ===== 2) User update (ONLY basic fields) =====
     const userUpdate = {};
-    setIfDefined(userUpdate, "name", name);
-    setIfDefined(userUpdate, "phone", phone);
-    setIfDefined(userUpdate, "emergencyContact", emergencyContact);
-    setIfDefined(userUpdate, "address", address);
-    setIfDefined(userUpdate, "suburb", suburb);
-    setIfDefined(userUpdate, "state", state);
-    setIfDefined(userUpdate, "postCode", postCode);
-    setIfDefined(userUpdate,"emailScheduleTime",emailScheduleTime)
-    
-    if (dob !== undefined) userUpdate.dateOfBirth = dob;
-    if (dateOfBirth !== undefined) userUpdate.dateOfBirth = dateOfBirth;
+    const setUser = (key, val) => {
+      if (val !== undefined) userUpdate[key] = val;
+    };
 
-    // photo fields in users (recommended)
-    setIfDefined(userUpdate, "photoKey", photoKey);
-    setIfDefined(userUpdate, "photo", photo);
+    setUser("name", name);
+    setUser("phone", phone);
+    setUser("homePhone", homePhone);
+    setUser("workPhone", workPhone);
+    setUser("emergencyContact", emergencyContact);
+    setUser("address", address);
+    setUser("suburb", suburb);
+    setUser("state", state);
+    setUser("postCode", postCode);
+    setUser("emailScheduleTime", emailScheduleTime);
 
+    if (dob !== undefined) setUser("dateOfBirth", dob);
+    if (dateOfBirth !== undefined) setUser("dateOfBirth", dateOfBirth);
+
+    setUser("photoKey", photoKey);
+    setUser("photo", photo);
+
+    // ✅ update users by userId (best)
     if (Object.keys(userUpdate).length > 0) {
-      await userCol.updateOne({ email }, { $set: userUpdate });
+      const instructorDoc = await instructorCol.findOne({email});
+
+      if (instructorDoc?.userId) {
+        const {ObjectId} = await import("mongodb");
+        await userCol.updateOne(
+          {_id: new ObjectId(instructorDoc.userId)},
+          {$set: userUpdate},
+        );
+      } else {
+        // fallback (if userId missing)
+        await userCol.updateOne({email}, {$set: userUpdate});
+      }
     }
 
     // ===== 3) Role sync (your existing logic) =====
     if (status !== undefined) {
       const role = status === "approved" ? "instructor" : "user";
-      await userCol.updateOne({ email }, { $set: { role } });
+      await userCol.updateOne({email}, {$set: {role}});
     }
-// ===== 4) Clients sync: roleType = staff when approved =====
-if (status !== undefined) {
-  const clientsCol = await clientsCollection();
-  const emailLower = email.toLowerCase();
+    // ===== 4) Clients sync: roleType = staff when approved =====
+    if (status !== undefined) {
+      const clientsCol = await clientsCollection();
+      const emailLower = email.toLowerCase();
 
-  if (status === "approved") {
-    // ✅ mark client record as staff (keep same doc, just change type)
-    await clientsCol.updateOne(
-      { email: emailLower },
-      {
-        $set: {
-          roleType: "staff", 
-          updatedAt: new Date(),
-        },
-      },
-      { upsert: true } // if client doc missing, create minimal one
-    );
-  } else {
-    // ✅ optional: revert back to normal client when not approved
-    // (If you DON'T want to revert, delete this else block.)
-    await clientsCol.updateOne(
-      { email: emailLower },
-      {
-        $set: {
-          roleType: "client",
-          staffRole: null,
-          updatedAt: new Date(),
-        },
+      if (status === "approved") {
+        // ✅ mark client record as staff (keep same doc, just change type)
+        await clientsCol.updateOne(
+          {email: emailLower},
+          {
+            $set: {
+              roleType: "staff",
+              updatedAt: new Date(),
+            },
+          },
+          {upsert: true}, // if client doc missing, create minimal one
+        );
+      } else {
+        // ✅ optional: revert back to normal client when not approved
+        // (If you DON'T want to revert, delete this else block.)
+        await clientsCol.updateOne(
+          {email: emailLower},
+          {
+            $set: {
+              roleType: "client",
+              staffRole: null,
+              updatedAt: new Date(),
+            },
+          },
+        );
       }
-    );
-  }
-}
+    }
 
     return NextResponse.json({
       message: "Instructor updated + basic user profile synced",
     });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }
-
 
 // DELETE - delete instructor by email
 export async function DELETE(req) {
@@ -248,7 +272,6 @@ export async function DELETE(req) {
       return NextResponse.json({error: "Instructor not found"}, {status: 404});
     }
 
-    
     try {
       const userRecord = await admin.auth().getUserByEmail(email);
       await admin.auth().deleteUser(userRecord.uid);

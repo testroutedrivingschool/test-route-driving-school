@@ -238,7 +238,7 @@ function buildUserDigestHtml(name, bookings) {
           <td style="padding:8px;border-bottom:1px solid #eee;">${b.instructorName || "—"}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;">${instructorPhone}</td>
           <td style="padding:8px;border-bottom:1px solid #eee;">${address || "—"}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.status || "—"}</td>
+          
         </tr>
       `;
     })
@@ -259,7 +259,7 @@ function buildUserDigestHtml(name, bookings) {
               <th style="text-align:left;padding:8px;">Instructor</th>
               <th style="text-align:left;padding:8px;">Instructor Phone</th>
               <th style="text-align:left;padding:8px;">Address</th>
-              <th style="text-align:left;padding:8px;">Status</th>
+            
             </tr>
           </thead>
           <tbody>${rows}</tbody>

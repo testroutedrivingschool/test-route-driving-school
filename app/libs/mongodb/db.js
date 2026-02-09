@@ -38,6 +38,14 @@ export async function clientsCollection() {
   const db = await getDb();
   return db.collection("clients");
 }
+export async function clientsChecklistsCollection() {
+  const db = await getDb();
+  return db.collection("client_checklists");
+}
+export async function notesCollection() {
+  const db = await getDb();
+  return db.collection("notes");
+}
 export async function reviewsCollection() {
   const db = await getDb();
   return db.collection("reviews");

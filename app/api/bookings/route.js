@@ -1,6 +1,5 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-import {generateInvoicePdfBuffer} from "@/app/libs/invoice/invoicePdf";
 import {sendMailWithPdf} from "@/app/libs/mail/mailer";
 import {
   bookingsCollection,
@@ -12,6 +11,7 @@ import {NextResponse} from "next/server";
 import {getNextInvoiceNo} from "@/app/libs/invoice/getNextInvoiceNo";
 import Stripe from "stripe";
 import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
+import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
 
 //get all
 export async function GET(req) {
@@ -51,7 +51,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const body = await req.json();
-
+console.log("USING invoicePdf from:", __filename);
     // ✅ Normalize (manual uses client*, website uses user*)
     const normalized = {
       ...body,
@@ -101,31 +101,28 @@ export async function POST(req) {
       }
     }
 
-    // ✅ 1) Create invoiceNo (1,2,3...)
+   
     const invoiceNo = await getNextInvoiceNo();
 
-    // ✅ 2) Insert booking with invoiceNo
+    
     const bookingDoc = {
       ...normalized,
       invoiceNo,
-      paymentMethod, // card | bank
-      cardBrand, // visa
+      paymentMethod, 
+      cardBrand, 
       cardLast4,
       createdAt: new Date(),
     };
-    console.log(bookingDoc);
-    const bookingResult = await (
-      await bookingsCollection()
-    ).insertOne(bookingDoc);
-    const bookingId = bookingResult.insertedId; // ObjectId
 
-    // ✅ 3) Generate PDF (use invoiceNo, bookingId)
-    const pdfBuffer = await generateInvoicePdfBuffer({
-      ...bookingDoc,
-      bookingId: String(bookingId),
-      invoiceNo, // number
-      invoiceId: String(bookingId), // optional (keep if you like)
-    });
+
+   
+   const bookingResult = await (await bookingsCollection()).insertOne(bookingDoc);
+    const bookingId = bookingResult.insertedId;
+
+const pdfBuffer = await generateInvoicePdfBuffer(
+      { ...bookingDoc, bookingId: String(bookingId) },
+      req.url 
+    );
 
     const filename = `invoice-${invoiceNo}.pdf`;
     const invoiceKey = `invoices/${filename}`;

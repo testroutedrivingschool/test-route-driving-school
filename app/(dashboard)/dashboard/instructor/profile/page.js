@@ -138,7 +138,7 @@ export default function InstructorProfile() {
       await axios.patch("/api/instructors", {
         email: profile.email,
         photoKey,
-        photo: "", // clear old direct url if exists
+        photo: "", 
       });
 
       toast.success("Profile photo updated!");
@@ -493,7 +493,7 @@ export default function InstructorProfile() {
                         </label>
                         <input
                           type="text"
-                          name="Vehical Model"
+                          name="vehicleModel"
                           value={profile.vehicleModel}
                           onChange={handleProfileChange}
                           disabled={!isEditing}

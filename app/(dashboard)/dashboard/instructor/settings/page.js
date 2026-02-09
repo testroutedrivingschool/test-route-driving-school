@@ -7,24 +7,18 @@ import useAuth from "@/app/hooks/useAuth";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import { useUserData } from "@/app/hooks/useUserData";
 
 export default function InstructorSettings() {
   const [emailScheduleTime, setEmailScheduleTime] = useState("00:00");
   const { user } = useAuth();
 
-  const { data: instructorData = {}, isLoading } = useQuery({
-    queryKey: ["instructor", user?.email],
-    queryFn: async () => {
-      const res = await axios.get(`/api/instructors?email=${user.email}`);
-      return res.data;
-    },
-    enabled: !!user?.email,
-  });
+  const { data: userData = {}, isLoading } = useUserData();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    setEmailScheduleTime(instructorData.emailScheduleTime || "00:00");
-  }, [instructorData]);
+    setEmailScheduleTime(userData.emailScheduleTime || "00:00");
+  }, [userData]);
 
   const scheduleOptions = [
     { label: "Send at MidNight 12 AM", value: "00:00" },

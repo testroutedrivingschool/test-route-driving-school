@@ -9,6 +9,7 @@ import ClientDetails from "./components/ClientDetails";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { FaBars } from "react-icons/fa";
 
 export default function Clients() {
   const router = useRouter();
@@ -19,6 +20,7 @@ export default function Clients() {
   const [loadingClient, setLoadingClient] = useState(false);
 
   const clientIdFromUrl = searchParams.get("clientId");
+const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // ✅ If URL has clientId -> load client and open details tab
   useEffect(() => {
@@ -69,12 +71,106 @@ export default function Clients() {
   };
 
   return (
-    <section className="py-8">
+    <section className="py-4 md:py-8">
       <Container>
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* ✅ Mobile menu (only for small screens) */}
+<div className="lg:hidden mb-4">
+  <div className="bg-black text-white rounded-md overflow-hidden">
+    <button
+      type="button"
+      onClick={() => setMobileMenuOpen((v) => !v)}
+      className="w-full flex items-center gap-3 px-4 py-4"
+    >
+      <FaBars className="text-xl" />
+      <span className="text-lg font-semibold">Client Detail</span>
+    </button>
+
+    {mobileMenuOpen && (
+      <div className="px-4 pb-4 space-y-2">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("client-search");
+            router.push("/clients");
+            setMobileMenuOpen(false);
+          }}
+          className="block w-full text-left py-2"
+        >
+          Client Search
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("organisations");
+            setMobileMenuOpen(false);
+          }}
+          className="block w-full text-left py-2"
+        >
+          Organisations
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab("add-client");
+            setMobileMenuOpen(false);
+          }}
+          className="block w-full text-left py-2"
+        >
+          Add Client
+        </button>
+
+        {/* ✅ only show these when selectedClient exists */}
+        {selectedClient && (
+          <>
+            <div className="border-t border-white/20 my-2" />
+
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("client-details");
+                router.push(`/clients?clientId=${selectedClient._id}`);
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2 font-semibold"
+            >
+              {selectedClient.firstName} {selectedClient.lastName}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                router.push(`/instructor/sales/sales?clientId=${selectedClient._id}`);
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2"
+            >
+              New Sale / Purchase
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                router.push(`/instructor-bookings?clientId=${selectedClient._id}`);
+                setMobileMenuOpen(false);
+              }}
+              className="block w-full text-left py-2"
+            >
+              Book Now
+            </button>
+          </>
+        )}
+      </div>
+    )}
+  </div>
+</div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 ">
           {/* Left Side Tabs */}
-          <aside className="lg:col-span-3">
-            <div className="sticky top-24">
+          <aside className="hidden lg:block lg:col-span-3">
+            
+            <div className="sticky top-24 ">
               <div className="bg-white border border-border-color rounded-md overflow-hidden">
                 <TabButton
                   label="Client Search"
@@ -131,7 +227,7 @@ export default function Clients() {
           </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-9">
+          <main className="lg:col-span-9 ">
             {activeTab === "client-search" && (
               <ClientSearch
                 setActiveTab={setActiveTab}

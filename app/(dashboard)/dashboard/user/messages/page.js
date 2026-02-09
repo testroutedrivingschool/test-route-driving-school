@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, {useMemo, useState} from "react";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import { FiMail } from "react-icons/fi";
-import { HiChevronDown } from "react-icons/hi";
-import { useRouter } from "next/navigation";
-import { useUserData } from "@/app/hooks/useUserData";
+import {FiMail} from "react-icons/fi";
+import {HiChevronDown} from "react-icons/hi";
+import {useRouter} from "next/navigation";
+import {useUserData} from "@/app/hooks/useUserData";
 import Modal from "@/app/shared/ui/Modal";
 
 function formatAU(d) {
@@ -28,7 +28,7 @@ function formatAU(d) {
 export default function UserMessages() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
-  const { data: userData, isUserLoading } = useUserData();
+  const {data: userData, isUserLoading} = useUserData();
 
   const {
     data: emails = [],
@@ -51,10 +51,8 @@ export default function UserMessages() {
 
   const rows = useMemo(() => emails || [], [emails]);
 
-
-
   const downloadAttachment = async (key) => {
-    const { data } = await axios.post("/api/storage/download-url", { key });
+    const {data} = await axios.post("/api/storage/download-url", {key});
     window.open(data.url, "_blank", "noopener,noreferrer");
   };
 
@@ -178,7 +176,7 @@ export default function UserMessages() {
             {selected.html ? (
               <div
                 className="prose max-w-none text-sm"
-                dangerouslySetInnerHTML={{ __html: selected.html }}
+                dangerouslySetInnerHTML={{__html: selected.html}}
               />
             ) : (
               <pre className="whitespace-pre-wrap text-sm text-gray-800">
@@ -200,11 +198,14 @@ export default function UserMessages() {
 
           {/* Actions */}
           <div className="mt-6 flex items-center justify-end gap-3">
-          
-              <PrimaryBtn onClick={() => router.push("/dashboard/user/my-bookings")} className="px-6!">
+            {!selected.checklistId && (
+              <PrimaryBtn
+                onClick={() => router.push("/dashboard/user/my-bookings")}
+                className="px-6!"
+              >
                 View Booking
               </PrimaryBtn>
-        
+            )}
 
             <PrimaryBtn
               onClick={() => setSelected(null)}

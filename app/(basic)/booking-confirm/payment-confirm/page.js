@@ -39,7 +39,8 @@ function PaymentForm() {
   const [address, setAddress] = useState("");
   const [suburb, setSuburb] = useState("");
   const [loading, setLoading] = useState(false);
-const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [phone, setPhone] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   /* Load booking */
   useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
@@ -50,21 +51,17 @@ const [acceptedTerms, setAcceptedTerms] = useState(false);
     const bookingData = JSON.parse(data);
 
     setBooking(bookingData);
-     setAddress(
-    bookingData.clientAddress ??
-    bookingData.userAddress ??
-    ""
-  );
-
- setSuburb(
-  bookingData.location
-    ? bookingData.location
-    : bookingData.suburb
-    ? bookingData.suburb
-    : ""
-);
+    setAddress(bookingData.clientAddress ?? bookingData.userAddress ?? "");
+    setPhone(bookingData.clientPhone || bookingData.userPhone || "");
+    setSuburb(
+      bookingData.location
+        ? bookingData.location
+        : bookingData.suburb
+          ? bookingData.suburb
+          : "",
+    );
   }, [router]);
-  console.log("suburs",suburb);
+  console.log("suburs", suburb);
   console.log(booking);
   /* Load suburbs */
   useEffect(() => {
@@ -80,92 +77,90 @@ const [acceptedTerms, setAcceptedTerms] = useState(false);
       toast.error("Please accept the terms and conditions");
       return;
     }
-  if (!address || !suburb) return toast.error("Please complete address details");
+    if (!address || !suburb)
+      return toast.error("Please complete address details");
 
-  setLoading(true);
+    setLoading(true);
 
-  try {
-    const clientId = String(booking?.clientId);
-    console.log("PATCH URL:", `/api/clients/${clientId}`);
-console.log("clientId type:", typeof clientId, clientId);
-    // ✅ MANUAL booking => NO payment
-    if (booking.bookingType === "manual") {
-      
-      if (clientId) {
-          await axios.patch(`/api/clients/${clientId}`, { address, suburb });
-      }
+    try {
+      const clientId = String(booking?.clientId);
+      console.log("PATCH URL:", `/api/clients/${clientId}`);
+      console.log("clientId type:", typeof clientId, clientId);
+      // ✅ MANUAL booking => NO payment
+      if (booking.bookingType === "manual") {
+        if (clientId) {
+          await axios.patch(`/api/clients/${clientId}`, {address, suburb});
+        }
 
-      await axios.post("/api/bookings", {
-        ...booking,
-        address,
-        suburb,
-        status: "pending",
-        paymentStatus: "unpaid",
-        paymentIntentId: null,
-      });
+        await axios.post("/api/bookings", {
+          ...booking,
+          address,
+          suburb,
+          status: "pending",
+          paymentStatus: "unpaid",
+          paymentIntentId: null,
+        });
 
-      sessionStorage.removeItem("pendingBooking");
-      toast.success("Booking created (Unpaid) ✅");
-      router.push("/dashboard/instructor/bookings");
-      return;
-    }else{
-       // ✅ WEBSITE booking => Stripe payment required
-    if (!stripe || !elements) return;
+        sessionStorage.removeItem("pendingBooking");
+        toast.success("Booking created (Unpaid) ✅");
+        router.push("/dashboard/instructor/bookings");
+        return;
+      } else {
+        // ✅ WEBSITE booking => Stripe payment required
+        if (!stripe || !elements) return;
 
-    const cardElement = elements.getElement(CardNumberElement);
-    if (!cardElement) {
-      toast.error("Card input not ready");
-      return;
-    }
+        const cardElement = elements.getElement(CardNumberElement);
+        if (!cardElement) {
+          toast.error("Card input not ready");
+          return;
+        }
 
-    const { data } = await axios.post("/api/create-payment-intent", {
-      amount: booking.price,
-    });
+        const {data} = await axios.post("/api/create-payment-intent", {
+          amount: booking.price,
+        });
 
-    const result = await stripe.confirmCardPayment(data.clientSecret, {
-      payment_method: {
-        card: cardElement,
-        billing_details: {
-          name: booking.userName,
+        const result = await stripe.confirmCardPayment(data.clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: booking.userName,
+              email: booking.userEmail,
+              address: {line1: address},
+            },
+          },
+        });
+
+        if (result.error) {
+          toast.error(result.error.message);
+          return;
+        }
+
+        await axios.post("/api/bookings", {
+          ...booking,
+          address,
+          suburb,
+          paymentIntentId: result.paymentIntent.id,
+          status: "pending",
+          paymentStatus: "paid",
+        });
+        await axios.patch(`/api/users`, {
           email: booking.userEmail,
-          address: { line1: address },
-        },
-      },
-    });
-
-    if (result.error) {
-      toast.error(result.error.message);
-      return;
+          address,
+          suburb,
+        });
+        sessionStorage.removeItem("pendingBooking");
+        toast.success("Booking confirmed 🎉");
+        router.push("/dashboard/user/my-bookings");
+      }
+    } catch (err) {
+      console.log("STATUS:", err?.response?.status);
+      console.log("DATA:", err?.response?.data);
+      console.log("URL:", err?.config?.url);
+      toast.error("Failed to Booking");
+    } finally {
+      setLoading(false);
     }
-
-
-    
-      
-    await axios.post("/api/bookings", {
-      ...booking,
-      address,
-      suburb,
-      paymentIntentId: result.paymentIntent.id,
-      status: "pending",
-      paymentStatus: "paid",
-    });
-
-    sessionStorage.removeItem("pendingBooking");
-    toast.success("Booking confirmed 🎉");
-    router.push("/dashboard/my-bookings");
-    }
-
-   
-  } catch (err) {
-    console.log("STATUS:", err?.response?.status);
-  console.log("DATA:", err?.response?.data);
-  console.log("URL:", err?.config?.url);
-  toast.error("Failed to Booking");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   console.log(booking);
   return (
@@ -218,30 +213,35 @@ console.log("clientId type:", typeof clientId, clientId);
               ))}
             </select>
           </div>
-           {/* Terms and Conditions Checkbox */}
-         {/* Terms and Conditions Checkbox */}
-<div className="flex items-start gap-2">
-  <input
-    type="checkbox"
-    id="terms"
-    checked={acceptedTerms}
-    onChange={(e) => setAcceptedTerms(e.target.checked)}
-    className="mt-1"
-  />
+          {/* Terms and Conditions Checkbox */}
+          {/* Terms and Conditions Checkbox */}
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={acceptedTerms}
+              onChange={(e) => setAcceptedTerms(e.target.checked)}
+              className="mt-1"
+            />
 
-  <label htmlFor="terms" className="text-base text-gray-700">
-    I accept the{" "}
-    <Link href="/terms" className="text-primary hover:underline font-medium">
-      Terms & Conditions
-    </Link>
-    
-    {" and "}
-    <Link href="/return-refund" className="text-primary hover:underline font-medium">
-      Return & Refund Policy
-    </Link>
-    .
-  </label>
-</div>
+            <label htmlFor="terms" className="text-base text-gray-700">
+              I accept the{" "}
+              <Link
+                href="/terms"
+                className="text-primary hover:underline font-medium"
+              >
+                Terms & Conditions
+              </Link>
+              {" and "}
+              <Link
+                href="/return-refund"
+                className="text-primary hover:underline font-medium"
+              >
+                Return & Refund Policy
+              </Link>
+              .
+            </label>
+          </div>
           {booking.bookingType === "website" ? (
             <>
               <StripeCardInput />

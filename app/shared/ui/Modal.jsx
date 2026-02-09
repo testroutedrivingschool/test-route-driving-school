@@ -2,16 +2,16 @@
 
 import React from "react";
 
-export default function Modal({ children, onClose }) {
+export default function Modal({children, onClose}) {
   return (
-    <div className="fixed inset-0 z-999 flex items-center sm:items-center justify-center bg-black/50 px-3 sm:px-0 pt-10 sm:pt-0">
+    <div className="fixed inset-0 z-999 flex items-center sm:items-center justify-center bg-black/50 px-3 sm:px-0 pt-6 sm:pt-0">
       <div
         className="
           bg-white rounded-xl shadow-lg
-          w-full max-w-xl 
+          w-full max-w-3xl 
           max-h-[90vh]
           overflow-y-auto
-          p-5 sm:p-6
+          p-4 sm:p-4
           relative
         "
       >
