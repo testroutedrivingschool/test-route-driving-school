@@ -5,7 +5,6 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import { toast } from "react-toastify";
 import useAuth from "@/app/hooks/useAuth";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import { useUserData } from "@/app/hooks/useUserData";
 

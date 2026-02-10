@@ -1,7 +1,5 @@
-import puppeteer from "puppeteer";
-import path from "path";
-import fs from "fs";
 
+import {getBrowser} from "@/app/libs/puppeteer/browser";
 function safe(v) {
   return v ?? "";
 }
@@ -18,7 +16,7 @@ function formatAUDate(dateLike) {
 }
 
 function toPublicFileUrl(reqUrl, filePathInPublic) {
-  // Build absolute URL like: http://localhost:3000/test-route-driving-school-logo.png
+
   const base = new URL(reqUrl).origin;
   return `${base}/${filePathInPublic.replace(/^\/+/, "")}`;
 }
@@ -161,31 +159,27 @@ function invoiceHtml(data, logoUrl) {
 }
 
 export async function generateInvoicePdfBuffer(data, reqUrlForAssets) {
-  // Build logo URL from your public folder
-  // public/test-route-driving-school-logo.png
+ 
   const logoUrl = reqUrlForAssets
     ? toPublicFileUrl(reqUrlForAssets, "test-route-driving-school-logo.png")
     : null;
 
   const html = invoiceHtml(data, logoUrl);
 
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  const browser = await getBrowser();
+  const page = await browser.newPage();
 
   try {
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setContent(html, {waitUntil: "load"});
 
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
-      margin: { top: "14mm", right: "14mm", bottom: "14mm", left: "14mm" },
+      margin: {top: "14mm", right: "14mm", bottom: "14mm", left: "14mm"},
     });
 
     return Buffer.from(pdf);
   } finally {
-    await browser.close();
+    await page.close();
   }
 }

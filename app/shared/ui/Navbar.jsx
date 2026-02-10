@@ -269,7 +269,7 @@ const dashHref =
 
                 {/* Dropdown */}
                 <div
-                  className={`absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-xl border border-border-color z-50
+                  className={`absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-xl border border-border-color z-999999999999
       transition-all duration-200 origin-top-right
       ${
         avatarOpen
@@ -305,7 +305,7 @@ const dashHref =
                   <div className="border-t border-border-color">
                     <button
                       onClick={() => {
-                        // logout function here
+                   
                         handleLogout();
                         setAvatarOpen(false);
                       }}

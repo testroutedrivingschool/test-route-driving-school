@@ -1,43 +1,59 @@
 import { NextResponse } from "next/server";
 import { emailsCollection } from "@/app/libs/mongodb/db";
+import { ObjectId } from "mongodb";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const url = new URL(req.url);
 
-    const to = (searchParams.get("to") || "").trim().toLowerCase();
-    const type = (searchParams.get("type") || "").trim(); 
-    const limit = Number(searchParams.get("limit") || 50);
+    // ✅ filter keys
+    const actorType = url.searchParams.get("actorType"); // USER | INSTRUCTOR | ADMIN
+    const to = url.searchParams.get("to");               // email address
+    const clientId = url.searchParams.get("clientId");   // optional
+    const bookingId = url.searchParams.get("bookingId"); // optional
+    const limit = Math.min(Number(url.searchParams.get("limit") || 50), 200);
+    const page = Math.max(Number(url.searchParams.get("page") || 1), 1);
+    const skip = (page - 1) * limit;
 
-    if (!to) {
-      return NextResponse.json(
-        { message: "`to` email is required" },
-        { status: 400 }
-      );
+    const query = {};
+
+    // ✅ IMPORTANT: filter by actorType (NOT type)
+    if (actorType) query.actorType = actorType;
+
+    // common filters you’ll likely need
+    if (to) query.to = to;
+
+    if (clientId && ObjectId.isValid(clientId)) {
+      query.clientId = clientId; // (your schema stores clientId as string)
+      
     }
 
-    const collection = await emailsCollection();
+    if (bookingId) query.bookingId = bookingId;
 
-    const query = {
-      to,
-    };
+    const col = await emailsCollection();
 
-    if (type) {
-      query.type = type; 
-    }
+    const [items, total] = await Promise.all([
+      col
+        .find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
+      col.countDocuments(query),
+    ]);
 
-    const emails = await collection
-      .find(query)
-      .sort({ createdAt: -1 })
-      .limit(limit)
-      .toArray();
-
-    return NextResponse.json(emails);
-  } catch (error) {
-    console.error("GET EMAILS ERROR:", error);
-    return NextResponse.json(
-      { message: "Server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({
+      items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Failed to load emails" }, { status: 500 });
   }
 }

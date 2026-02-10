@@ -41,10 +41,10 @@ export default function InstructorMessages() {
       const res = await axios.get("/api/emails", {
         params: {
           to: userData.email,
-          type: "INSTRUCTOR",
+          actorType: "INSTRUCTOR",
         },
       });
-      return res.data;
+      return res.data.items;
     },
   });
 
@@ -53,7 +53,7 @@ export default function InstructorMessages() {
   const goToBooking = (email) => {
     const bookingId = email?.bookingId;
     if (!bookingId) return;
-    // ✅ change this path to your booking details page route
+  
     router.push(`/instructor-bookings/${bookingId}`);
   };
   const downloadAttachment = async (key) => {

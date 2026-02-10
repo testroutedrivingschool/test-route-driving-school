@@ -147,6 +147,7 @@ function PaymentForm() {
           email: booking.userEmail,
           address,
           suburb,
+          phone,
         });
         sessionStorage.removeItem("pendingBooking");
         toast.success("Booking confirmed 🎉");
@@ -185,6 +186,17 @@ function PaymentForm() {
             <p className="text-lg font-semibold">Total: ${booking.price}</p>
           </div>
 
+          {/* Phone */}
+          <div className="space-y-2">
+            <label className="font-medium">Phone</label>
+            <input
+              type="text"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="input-class"
+              placeholder="123 Main Street"
+            />
+          </div>
           {/* Address */}
           <div className="space-y-2">
             <label className="font-medium">Street Address</label>

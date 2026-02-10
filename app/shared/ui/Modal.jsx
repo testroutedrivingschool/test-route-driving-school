@@ -4,7 +4,7 @@ import React from "react";
 
 export default function Modal({children, onClose}) {
   return (
-    <div className="fixed inset-0 z-999 flex items-center sm:items-center justify-center bg-black/50 px-3 sm:px-0 pt-6 sm:pt-0">
+    <div className="fixed inset-0 z-999 flex items-center sm:items-center justify-center bg-black/50 px-3 sm:px-0  sm:pt-0">
       <div
         className="
           bg-white rounded-xl shadow-lg
@@ -19,7 +19,7 @@ export default function Modal({children, onClose}) {
         <button
           onClick={onClose}
           className="
-            absolute top-3 right-3
+            absolute top-2 right-3
             text-gray-500 hover:text-gray-700
             font-bold text-2xl
             sm:top-4 sm:right-4

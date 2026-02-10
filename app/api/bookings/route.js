@@ -11,7 +11,8 @@ import {NextResponse} from "next/server";
 import {getNextInvoiceNo} from "@/app/libs/invoice/getNextInvoiceNo";
 import Stripe from "stripe";
 import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
-import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
+import {generateInvoicePdfBuffer} from "@/app/libs/invoice/invoicePdf";
+import { type } from "os";
 
 //get all
 export async function GET(req) {
@@ -51,7 +52,7 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const body = await req.json();
-console.log("USING invoicePdf from:", __filename);
+    console.log("USING invoicePdf from:", __filename);
     // ✅ Normalize (manual uses client*, website uses user*)
     const normalized = {
       ...body,
@@ -101,27 +102,25 @@ console.log("USING invoicePdf from:", __filename);
       }
     }
 
-   
     const invoiceNo = await getNextInvoiceNo();
 
-    
     const bookingDoc = {
       ...normalized,
       invoiceNo,
-      paymentMethod, 
-      cardBrand, 
+      paymentMethod,
+      cardBrand,
       cardLast4,
       createdAt: new Date(),
     };
 
-
-   
-   const bookingResult = await (await bookingsCollection()).insertOne(bookingDoc);
+    const bookingResult = await (
+      await bookingsCollection()
+    ).insertOne(bookingDoc);
     const bookingId = bookingResult.insertedId;
 
-const pdfBuffer = await generateInvoicePdfBuffer(
-      { ...bookingDoc, bookingId: String(bookingId) },
-      req.url 
+    const pdfBuffer = await generateInvoicePdfBuffer(
+      {...bookingDoc, bookingId: String(bookingId)},
+      req.url,
     );
 
     const filename = `invoice-${invoiceNo}.pdf`;
@@ -249,7 +248,8 @@ Test Route Driving School
       ).insertOne({
         bookingId,
         invoiceNo,
-        type: "USER",
+        actorType: "USER",
+        type:"BOOKINGS_CONFIRM",
         to: bookingDoc.userEmail,
         subject: userSubject,
 
@@ -293,7 +293,8 @@ Test Route Driving School
       ).insertOne({
         bookingId,
         invoiceNo,
-        type: "INSTRUCTOR",
+        actorType: "INSTRUCTOR",
+        type:"BOOKINGS_CONFIRM",
         to: bookingDoc.instructorEmail,
         subject: `New Booking: ${bookingDoc.serviceName || ""}`,
 
@@ -310,8 +311,6 @@ Test Route Driving School
         attachmentKey: invoiceKey,
       });
     }
-
-    // ✅ 6) Save invoice PDF + email log in DB
 
     await (
       await invoicesCollection()

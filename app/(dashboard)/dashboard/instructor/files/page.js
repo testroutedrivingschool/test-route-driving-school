@@ -165,7 +165,7 @@ export default function InstructorFiles() {
       <div className="mt-6 border border-gray-200 rounded-md overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[800px] text-sm">
-            <thead className="bg-gray-700 text-white">
+            <thead className="bg-secondary text-white">
               <tr>
                 <th className="text-left px-4 py-2">File Name</th>
                 <th className="text-left px-4 py-2">Created by</th>

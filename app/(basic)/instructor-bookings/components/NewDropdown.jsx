@@ -36,15 +36,15 @@ export default function NewDropdown() {
         <div className="absolute right-0 mt-2 w-48 bg-white border border-border-color rounded-xl shadow z-50">
           <Link
             href="/instructor-bookings"
-            className="block px-4 py-2 text-sm text-primary hover:bg-primary/60"
+            className="block px-4 py-2 text-sm text-primary hover:bg-gray-100"
             onClick={() => setOpen(false)}
           >
             Booking
           </Link>
 
           <Link
-            href="#"
-            className="block px-4 py-2 text-sm text-primary hover:bg-red-50"
+            href="/instructor/sales/sales"
+            className="block px-4 py-2 text-sm text-primary hover:bg-gray-100"
             onClick={() => setOpen(false)}
           >
             Sale / Purchase

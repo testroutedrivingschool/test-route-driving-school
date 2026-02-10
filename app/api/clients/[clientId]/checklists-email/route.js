@@ -2,7 +2,9 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import {NextResponse} from "next/server";
-import puppeteer from "puppeteer";
+import { getBrowser } from "@/app/libs/puppeteer/browser";
+import { uploadPdfToS3 } from "@/app/libs/storage/uploadPdfToS3";
+import { invoicesCollection } from "@/app/libs/mongodb/db";
 import fs from "fs";
 import path from "path";
 import {ObjectId} from "mongodb";
@@ -13,7 +15,7 @@ import {
 } from "@/app/libs/mongodb/db";
 import {sendMailWithPdf} from "@/app/libs/mail/mailer";
 import {emailSignatureHtml} from "@/app/libs/mail/signature"
-import { type } from "os";
+import { getNextInvoiceNo } from "@/app/libs/invoice/getNextInvoiceNo";
 function safe(v) {
   return v === null || v === undefined ? "" : String(v);
 }
@@ -221,25 +223,23 @@ async function generateChecklistPdfBuffer({
     rows,
   });
 
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  const browser = await getBrowser();
+const page = await browser.newPage();
+
+try {
+  await page.setContent(html, { waitUntil: "networkidle0" });
+
+  const pdf = await page.pdf({
+    format: "A4",
+    printBackground: true,
+    margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
   });
 
-  try {
-    const page = await browser.newPage();
-    await page.setContent(html, {waitUntil: "networkidle0"});
+  return Buffer.from(pdf);
+} finally {
+  await page.close();
+}
 
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: {top: "10mm", right: "10mm", bottom: "10mm", left: "10mm"},
-    });
-
-    return Buffer.from(pdf);
-  } finally {
-    await browser.close();
-  }
 }
 
 export async function POST(req, {params}) {
@@ -284,11 +284,59 @@ if (bcc && !isValidEmailList(bcc)) return NextResponse.json({error:"Invalid BCC 
       checklistTitle,
       instructorName,
     });
+const clientDoc = await (await clientsCollection()).findOne({ _id: new ObjectId(clientId) });
 
-  const messageHtml =
-  (safe(body.html).trim() || `<p>Here are your latest results.</p>`) +
-  emailSignatureHtml({ instructorName });
+const userEmail = String(clientDoc?.email || "").trim().toLowerCase();
+const instructorEmail = String(body?.instructorEmail || "").trim().toLowerCase(); // or from auth user
 
+const safeTitleSlug = checklistTitle
+  .toLowerCase()
+  .replace(/[^a-z0-9]+/g, "-")
+  .replace(/^-+|-+$/g, "");
+
+const filename = `checklist-${safeTitleSlug}-${clientId}.pdf`;
+const invoiceKey = `checklists/${clientId}/${Date.now()}-${filename}`;
+
+// ✅ Upload pdfBuffer to S3/Minio
+await uploadPdfToS3({
+  key: invoiceKey,
+  buffer: pdfBuffer,
+  contentType: "application/pdf",
+});
+const invoiceNo = await getNextInvoiceNo();
+const invCol = await invoicesCollection();
+const insertRes = await invCol.insertOne({
+  invoiceNo: invoiceNo, 
+  bookingId: null,
+
+  clientId: new ObjectId(clientId),
+  checklistId,
+  checklistTitle,
+
+  createdAt: new Date(),
+
+
+  invoiceKey,
+  filename,
+
+  userEmail,
+  instructorEmail,
+
+  total: 0,
+
+  meta: {
+    kind: "CHECKLIST_REPORT",
+  },
+});
+
+const rawHtml = safe(body.html).trim() || `<p>Here are your latest results.</p>`;
+const signature = emailSignatureHtml({ instructorName });
+
+const emailHtml = rawHtml + signature; 
+const webHtml = emailHtml.replace(
+  /src="cid:companylogo"/g,
+  `src="https://testroutedrivingschool.com.au/test-route-driving-school-logo.png"`
+);
 const logoPath = path.join(process.cwd(), "public", "test-route-driving-school-logo.png");
 
 const mailInfo = await sendMailWithPdf({
@@ -296,7 +344,7 @@ const mailInfo = await sendMailWithPdf({
   cc: cc || undefined,
   bcc: bcc || undefined,
   subject,
-  html: messageHtml,
+  html: emailHtml,
   text: safe(body.text).trim() || "Please find your report attached.",
   pdfBuffer,
   filename: `${checklistTitle}-progress-report.pdf`,
@@ -306,8 +354,12 @@ const mailInfo = await sendMailWithPdf({
 // ✅ Save to DB
 const emailsCol = await emailsCollection();
 
+const now = new Date();
+
 await emailsCol.insertOne({
-  type: "checklist_report",              
+  type: "CHECKLIST_REPORT",
+  actorType: "USER", 
+
   clientId: new ObjectId(clientId),
   checklistId,
   checklistTitle,
@@ -317,24 +369,31 @@ await emailsCol.insertOne({
   bcc: bcc ? bcc.toLowerCase() : null,
 
   subject,
-  html: messageHtml,                     
+  html: webHtml,       
   text: safe(body.text).trim() || "",
 
+  // ✅ Attachment fields like your old email records
+  hasAttachment: true,
+  attachmentName: filename,      // e.g. checklist-performance-xxxx.pdf
+  attachmentKey: invoiceKey,     // ✅ the S3/Minio key you uploaded
+  sentAt: now,
+  createdAt: now,
+
+  // (optional keep your old structure too)
   attachment: {
-    filename: `${checklistTitle}-progress-report.pdf`,
+    filename,
     mime: "application/pdf",
     size: pdfBuffer?.length || 0,
   },
-type:"USER",
+
   mailer: {
     messageId: mailInfo?.messageId || null,
     accepted: mailInfo?.accepted || [],
     rejected: mailInfo?.rejected || [],
     response: mailInfo?.response || null,
   },
-
-  createdAt: new Date(),
 });
+
 
 return NextResponse.json({ok: true, messageId: mailInfo?.messageId || null});
   } catch (err) {

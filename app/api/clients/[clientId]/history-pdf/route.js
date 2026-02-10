@@ -1,7 +1,8 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-import puppeteer from "puppeteer";
+import { getBrowser } from "@/app/libs/puppeteer/browser";
+
 import fs from "fs";
 import path from "path";
 import { NextResponse } from "next/server";
@@ -167,8 +168,6 @@ function historyHtml({ client, bookings, logoDataUri }) {
 
 export async function GET(_req, { params }) {
   const { clientId } = await params;
-console.log("clientId param:", clientId);
-console.log("isValidObjectId:", ObjectId.isValid(clientId));
   const clientsCol = await clientsCollection();
   const bookingsCol = await bookingsCollection();
 
@@ -190,28 +189,26 @@ console.log("isValidObjectId:", ObjectId.isValid(clientId));
 
   const html = historyHtml({ client, bookings, logoDataUri });
 
-  const browser = await puppeteer.launch({
-    headless: "new",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  const browser = await getBrowser();
+const page = await browser.newPage();
+
+try {
+  await page.setContent(html, { waitUntil: "load" });
+await page.emulateMediaType("screen");
+  const pdf = await page.pdf({
+    format: "A4",
+    printBackground: true,
+    margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
   });
 
-  try {
-    const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+  return new NextResponse(pdf, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="client-history-${clientId}.pdf"`,
+    },
+  });
+} finally {
+  await page.close(); 
+}
 
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-      margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
-    });
-
-    return new NextResponse(pdf, {
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="client-history-${clientId}.pdf"`,
-      },
-    });
-  } finally {
-    await browser.close();
-  }
 }

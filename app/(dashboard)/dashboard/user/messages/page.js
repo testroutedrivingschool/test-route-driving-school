@@ -42,10 +42,10 @@ export default function UserMessages() {
       const res = await axios.get("/api/emails", {
         params: {
           to: userData.email,
-          type: "USER",
+          actorType: "USER",
         },
       });
-      return res.data;
+      return res.data.items;
     },
   });
 

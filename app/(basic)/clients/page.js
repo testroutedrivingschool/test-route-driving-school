@@ -10,6 +10,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { FaBars } from "react-icons/fa";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
 export default function Clients() {
   const router = useRouter();
@@ -56,8 +57,8 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientIdFromUrl]);
+    
+  }, [clientIdFromUrl,router,selectedClient?._id]);
 
   const openClientDetails = (client) => {
     setSelectedClient(client);
@@ -67,7 +68,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const backToSearch = () => {
     setActiveTab("client-search");
-    router.push("/clients"); // ✅ remove query
+    router.push("/clients"); 
   };
 
   return (
@@ -82,7 +83,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
       className="w-full flex items-center gap-3 px-4 py-4"
     >
       <FaBars className="text-xl" />
-      <span className="text-lg font-semibold">Client Detail</span>
+      <span className="text-lg font-semibold">Client Details</span>
     </button>
 
     {mobileMenuOpen && (
@@ -135,7 +136,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
               }}
               className="block w-full text-left py-2 font-semibold"
             >
-              {selectedClient.firstName} {selectedClient.lastName}
+              {selectedClient.firstName} {selectedClient.lastName} 
             </button>
 
             <button
@@ -152,7 +153,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
             <button
               type="button"
               onClick={() => {
-                router.push(`/instructor-bookings?clientId=${selectedClient._id}`);
+                router.push(`/instructor-bookings`);
                 setMobileMenuOpen(false);
               }}
               className="block w-full text-left py-2"
@@ -170,7 +171,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
           {/* Left Side Tabs */}
           <aside className="hidden lg:block lg:col-span-3">
             
-            <div className="sticky top-24 ">
+            <div className="sticky md:top-[89px] ">
               <div className="bg-white border border-border-color rounded-md overflow-hidden">
                 <TabButton
                   label="Client Search"
@@ -216,7 +217,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                       label="Book Now"
                       onClick={() =>
                         router.push(
-                          `/instructor-bookings?clientId=${selectedClient._id}`
+                          `/instructor-bookings`
                         )
                       }
                     />
@@ -243,11 +244,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
               <ClientDetails client={selectedClient} onBack={backToSearch} />
             )}
 
-            {loadingClient && !selectedClient ? (
-              <div className="bg-white border border-border-color rounded-md p-6">
-                Loading client...
-              </div>
-            ) : null}
+            {loadingClient && !selectedClient ? <LoadingSpinner/>: null}
           </main>
         </div>
       </Container>

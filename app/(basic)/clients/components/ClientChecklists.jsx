@@ -215,7 +215,7 @@ export default function ClientChecklists({clientId}) {
   const [emailSending, setEmailSending] = useState(false);
   const {data: client = []} = useQuery({
     queryKey: ["client"],
-    enabled: !!clientId, // only fetch after Search click
+    enabled: !!clientId,
     queryFn: async () => {
       const res = await axios.get(`/api/clients/${clientId}`);
       return res.data;
@@ -305,7 +305,7 @@ export default function ClientChecklists({clientId}) {
     },
 
     onSuccess: () => {
-      toast.success("Checklist item saved");
+      toast.success("Checklist item saved",{autoClose: 1000,});
       queryClient.invalidateQueries({
         queryKey: ["clientChecklists", clientId],
       });
@@ -342,7 +342,7 @@ export default function ClientChecklists({clientId}) {
     return updated;
   };
 
-  // ✅ save active row to state + db
+
   const saveRowAtIndex = (index) => {
     const updatedRow = buildUpdatedRowForIndex(index, {
       comment: draftComment,
@@ -452,9 +452,9 @@ export default function ClientChecklists({clientId}) {
 
   if (isChecklistsLoading) return <LoadingSpinner />;
   return (
-    <div className="bg-white border border-border-color rounded-md p-4">
+    <div className="bg-white md:border border-border-color rounded-md  ">
       {/* Top */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="  flex flex-col gap-4 md:flex-row md:items-center md:justify-between p-4">
         <div className="flex items-center gap-4 w-full">
           <label className="text-sm font-semibold text-gray-900 min-w-[70px]">
             Checklist:
@@ -520,99 +520,180 @@ export default function ClientChecklists({clientId}) {
       </div>
 
       {/* Table */}
-      <div className="mt-4 border border-border-color rounded-md overflow-x-auto">
-        <div className="min-w-[900px]">
-          <div className="grid grid-cols-12 px-4 py-3 text-sm font-semibold text-gray-900 border-b border-border-color">
-            <div className="col-span-3">Item Name</div>
-            <div className="col-span-4">Comments</div>
-            <div className="col-span-1 text-center">Rating</div>
-            <div className="col-span-3 text-center">Last Completed</div>
-            <div className="col-span-1 text-center">Tally</div>
-          </div>
-
-          {selected?.rows?.length ? (
-            selected.rows.map((r, idx) => (
-              <div
-                key={`${r.name}-${idx}`}
-                className={`grid grid-cols-12 px-4 py-3 text-sm items-center ${
-                  idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                }`}
-              >
-                <div className="col-span-3 text-gray-900">{r.name}</div>
-
-                <div className="col-span-4 flex items-start justify-start gap-3">
-                  {r.comment ? (
-                    <span
-                      onClick={() => openEditorAt(idx)}
-                      className="text-primary whitespace-pre-line font-semibold cursor-pointer"
-                    >
-                      {r.comment}
-                    </span>
-                  ) : (
-                    <button
-                      type="button"
-                      className="h-8 w-8 rounded-md flex items-center justify-center hover:bg-white shrink-0"
-                      title="Edit comment"
-                      onClick={() => openEditorAt(idx)}
-                    >
-                      <FaRegEdit size={20} className="text-primary" />
-                    </button>
-                  )}
-                </div>
-
-                <div className="col-span-1 flex justify-center">
-                  <button
-                    type="button"
-                    onClick={() => openEditorAt(idx)}
-                    className="h-8 w-8 flex items-center justify-center"
-                    title="Rate"
-                  >
-                    {r.rating ? (
-                      <span
-                        className={`font-semibold ${ratingTextColor(r.rating)}`}
-                      >
-                        {r.rating}
-                      </span>
-                    ) : (
-                      <FaRegStar size={20} className="text-primary" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="col-span-3 text-center">
-                  {r.lastCompleted === "Mark Completed" ? (
-                    <button
-                      type="button"
-                      className="text-primary font-semibold hover:underline"
-                      onClick={() => onMarkCompletedQuick(idx)}
-                      disabled={persistRowMutation.isPending}
-                    >
-                      Mark Completed
-                    </button>
-                  ) : (
-                    <span
-                      onClick={() => onMarkCompletedQuick(idx)}
-                      className="text-primary font-semibold inline-flex items-center justify-center gap-1 cursor-pointer"
-                      title="Mark again"
-                    >
-                      {r.lastCompleted}
-                      <FaArrowRotateRight />
-                    </span>
-                  )}
-                </div>
-
-                <div className="col-span-1 text-center font-semibold text-gray-900">
-                  {(Number(r.tally) || 0) === 0 ? "" : Number(r.tally)}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="p-6 text-sm text-gray-500">
-              No checklist items found.
-            </div>
-          )}
-        </div>
+<div className="mt-4  rounded-md overflow-hidden">
+  {/* ✅ Desktop table (md+) */}
+  <div className="hidden md:block overflow-x-auto">
+    <div className="min-w-[900px]">
+      <div className="grid grid-cols-12 px-4 py-3 text-sm font-semibold text-gray-900 border-b border-border-color">
+        <div className="col-span-3">Item Name</div>
+        <div className="col-span-4">Comments</div>
+        <div className="col-span-1 text-center">Rating</div>
+        <div className="col-span-3 text-center">Last Completed</div>
+        <div className="col-span-1 text-center">Tally</div>
       </div>
+
+      {selected?.rows?.length ? (
+        selected.rows.map((r, idx) => (
+          <div
+            key={`${r.name}-${idx}`}
+            className={`grid grid-cols-12 px-4 py-3 text-sm items-center ${
+              idx % 2 === 0 ? "bg-white" : "bg-gray-100"
+            }`}
+          >
+            <div className="col-span-3 text-gray-900 ">{r.name}</div>
+
+            <div className="col-span-4 flex items-start justify-start gap-3">
+              {r.comment ? (
+                <span
+                  onClick={() => openEditorAt(idx)}
+                  className="text-primary whitespace-pre-line font-semibold cursor-pointer"
+                >
+                  {r.comment}
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  className="h-8 w-8 rounded-md flex items-center justify-center hover:bg-white shrink-0"
+                  title="Edit comment"
+                  onClick={() => openEditorAt(idx)}
+                >
+                  <FaRegEdit size={20} className="text-primary" />
+                </button>
+              )}
+            </div>
+
+            <div className="col-span-1 flex justify-center">
+              <button
+                type="button"
+                onClick={() => openEditorAt(idx)}
+                className="h-8 w-8 flex items-center justify-center"
+                title="Rate"
+              >
+                {r.rating ? (
+                  <span className={`font-semibold ${ratingTextColor(r.rating)}`}>
+                    {r.rating}
+                  </span>
+                ) : (
+                  <FaRegStar size={20} className="text-primary" />
+                )}
+              </button>
+            </div>
+
+            <div className="col-span-3 text-center">
+              {r.lastCompleted === "Mark Completed" ? (
+                <button
+                  type="button"
+                  className="text-primary font-semibold hover:underline"
+                  onClick={() => onMarkCompletedQuick(idx)}
+                  disabled={persistRowMutation.isPending}
+                >
+                  Mark Completed
+                </button>
+              ) : (
+                <span
+                  onClick={() => onMarkCompletedQuick(idx)}
+                  className="text-primary font-semibold inline-flex items-center justify-center gap-1 cursor-pointer"
+                  title="Mark again"
+                >
+                  {r.lastCompleted}
+                  <FaArrowRotateRight />
+                </span>
+              )}
+            </div>
+
+            <div className="col-span-1 text-center font-semibold text-gray-900">
+              {(Number(r.tally) || 0) === 0 ? "" : Number(r.tally)}
+            </div>
+          </div>
+        ))
+      ) : (
+        <div className="p-6 text-sm text-gray-500">No checklist items found.</div>
+      )}
+    </div>
+  </div>
+
+  {/* ✅ Mobile cards (below md) */}
+  <div className="md:hidden border border-border-color">
+    {selected?.rows?.length ? (
+      selected.rows.map((r, idx) => (
+        <div key={`${r.name}-${idx}`} className={`p-4    ${idx%2 ===0? "bg-white":"bg-gray-100"}`}>
+          <div className="font-semibold text-gray-900 text-lg">{r.name}</div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <div className="font-semibold text-gray-700">Comment</div>
+              {r.comment ? (
+                <div
+                  onClick={() => openEditorAt(idx)}
+                  className="mt-1 text-primary font-semibold cursor-pointer whitespace-pre-line"
+                >
+                  {r.comment}
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => openEditorAt(idx)}
+                  className="mt-1 inline-flex items-center gap-2 text-primary font-semibold"
+                >
+                  <FaRegEdit /> Add
+                </button>
+              )}
+            </div>
+
+            <div>
+              <div className="font-semibold text-gray-700">Rating</div>
+              <button
+                type="button"
+                onClick={() => openEditorAt(idx)}
+                className="mt-1 inline-flex items-center gap-2 text-primary font-semibold"
+              >
+                {r.rating ? (
+                  <span className={ratingTextColor(r.rating)}>{r.rating}/10</span>
+                ) : (
+                  <>
+                    <FaRegStar /> Add
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="col-span-2">
+              <div className="font-semibold text-gray-700">Last Completed</div>
+              {r.lastCompleted === "Mark Completed" ? (
+                <button
+                  type="button"
+                  onClick={() => onMarkCompletedQuick(idx)}
+                  disabled={persistRowMutation.isPending}
+                  className="mt-1 text-primary font-semibold"
+                >
+                  Mark Completed
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => onMarkCompletedQuick(idx)}
+                  className="mt-1 text-primary font-semibold inline-flex items-center gap-2"
+                >
+                  {r.lastCompleted} <FaArrowRotateRight />
+                </button>
+              )}
+            </div>
+
+            <div className="col-span-2">
+              <div className="font-semibold text-gray-700">Tally</div>
+              <div className="mt-1 font-semibold text-gray-900">
+                {(Number(r.tally) || 0) === 0 ? "—" : Number(r.tally)}
+              </div>
+            </div>
+          </div>
+        </div>
+      ))
+    ) : (
+      <div className="p-3 text-sm text-gray-500">No checklist items found.</div>
+    )}
+  </div>
+</div>
+
 
       {/* Modal */}
       {open && activeRow && (
@@ -623,7 +704,7 @@ export default function ClientChecklists({clientId}) {
             </h3>
           </div>
 
-          <div className="mt-6 grid grid-cols-12 gap-6">
+          <div className="mt-2 md:mt-4 grid grid-cols-12 gap-2 md:gap-4">
             <div className="col-span-12 lg:col-span-8">
               <label className="block text-sm font-semibold text-gray-900 mb-2">
                 Comment:
@@ -631,7 +712,7 @@ export default function ClientChecklists({clientId}) {
               <textarea
                 value={draftComment}
                 onChange={(e) => setDraftComment(e.target.value)}
-                className="w-full min-h-[360px] rounded-md border border-border-color p-3 outline-none"
+                className="w-full min-h-[150px] md:min-h-[360px] rounded-md border border-border-color p-3 outline-none"
                 placeholder="Write comment..."
               />
             </div>
@@ -641,7 +722,7 @@ export default function ClientChecklists({clientId}) {
                 Rating:
               </label>
 
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-3 gap-2 md:gap-4">
                 {Array.from({length: 9}).map((_, i) => {
                   const value = i + 1;
                   const isSel = draftRating === value;
@@ -654,7 +735,7 @@ export default function ClientChecklists({clientId}) {
                           prev === value ? null : value,
                         )
                       }
-                      className={`${ratingBtnColor(value)} h-20 rounded-md text-white text-2xl font-bold ${
+                      className={`${ratingBtnColor(value)} h-12 md:h-20 rounded-md text-white text-2xl font-bold ${
                         isSel ? "ring-4 ring-black/40" : ""
                       }`}
                     >
@@ -668,7 +749,7 @@ export default function ClientChecklists({clientId}) {
                   onClick={() =>
                     setDraftRating((prev) => (prev === 10 ? null : 10))
                   }
-                  className={`${ratingBtnColor(10)} col-span-3 h-20 rounded-md text-white text-2xl font-bold ${
+                  className={`${ratingBtnColor(10)} col-span-3 h-12 md:h-20 rounded-md text-white text-2xl font-bold ${
                     draftRating === 10 ? "ring-4 ring-black/20" : ""
                   }`}
                 >
@@ -676,7 +757,7 @@ export default function ClientChecklists({clientId}) {
                 </button>
               </div>
 
-              <div className="mt-5 text-sm text-gray-900">
+              <div className="mt-2 md:mt-4 text-sm text-gray-900">
                 <span className="font-semibold">Last Completed:</span>{" "}
                 <span>
                   {activeRow.lastCompleted === "Mark Completed"
@@ -687,7 +768,7 @@ export default function ClientChecklists({clientId}) {
             </div>
           </div>
 
-          <div className="mt-8 flex items-center justify-between">
+          <div className="mt-4 md:mt-6 flex items-center justify-between">
             <button
               type="button"
               className="text-primary font-semibold hover:underline"

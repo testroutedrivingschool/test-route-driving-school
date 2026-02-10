@@ -1,14 +1,14 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-import { sendMail } from "@/app/libs/mail/mailer";
+import {sendMail} from "@/app/libs/mail/mailer";
 import {
   bookingsCollection,
   emailsCollection,
   usersCollection,
   clientsCollection,
 } from "@/app/libs/mongodb/db";
-import { NextResponse } from "next/server";
+import {NextResponse} from "next/server";
 
 // ---- CONFIG ----
 const TZ = "Asia/Dhaka";
@@ -83,8 +83,8 @@ async function getTodaysBookingsByInstructor(instructorEmail) {
   const col = await bookingsCollection();
   return col
     .aggregate([
-      { $match: { instructorEmail, ...todayMatchExpr() } },
-      { $sort: { bookingDate: 1, createdAt: 1 } },
+      {$match: {instructorEmail, ...todayMatchExpr()}},
+      {$sort: {bookingDate: 1, createdAt: 1}},
       {
         $project: {
           serviceName: 1,
@@ -113,19 +113,19 @@ async function getTodaysBookingsByUser(userEmail) {
 
   return col
     .aggregate([
-      { $match: { userEmail, ...todayMatchExpr() } },
-      { $sort: { bookingDate: 1, createdAt: 1 } },
+      {$match: {userEmail, ...todayMatchExpr()}},
+      {$sort: {bookingDate: 1, createdAt: 1}},
 
       // ✅ join instructor info from users collection
       {
         $lookup: {
-          from: "users",                
+          from: "users",
           localField: "instructorEmail",
           foreignField: "email",
           as: "instructorUser",
         },
       },
-      { $unwind: { path: "$instructorUser", preserveNullAndEmptyArrays: true } },
+      {$unwind: {path: "$instructorUser", preserveNullAndEmptyArrays: true}},
 
       {
         $project: {
@@ -137,11 +137,9 @@ async function getTodaysBookingsByUser(userEmail) {
           instructorName: 1,
           instructorEmail: 1,
 
-       
           userPhone: 1,
           clientPhone: 1,
 
-       
           instructorPhone: "$instructorUser.phone",
 
           address: 1,
@@ -154,13 +152,12 @@ async function getTodaysBookingsByUser(userEmail) {
     .toArray();
 }
 
-
 async function getTodaysBookingsAll() {
   const col = await bookingsCollection();
   return col
     .aggregate([
-      { $match: { ...todayMatchExpr() } },
-      { $sort: { instructorEmail: 1, bookingTime: 1 } },
+      {$match: {...todayMatchExpr()}},
+      {$sort: {instructorEmail: 1, bookingTime: 1}},
       {
         $project: {
           instructorName: 1,
@@ -204,7 +201,9 @@ function buildInstructorDigestHtml(name, bookings) {
     <div style="font-family:Arial,sans-serif;color:#111;line-height:1.6">
       <h2>Today's Bookings</h2>
       <p>Hi ${name || "Instructor"}, here are your bookings for today.</p>
-      ${bookings.length ? `
+      ${
+        bookings.length
+          ? `
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="background:#f3f3f3">
@@ -218,7 +217,9 @@ function buildInstructorDigestHtml(name, bookings) {
           </thead>
           <tbody>${rows}</tbody>
         </table>
-      ` : `<p><b>No bookings today.</b></p>`}
+      `
+          : `<p><b>No bookings today.</b></p>`
+      }
     </div>
   `;
 }
@@ -249,7 +250,9 @@ function buildUserDigestHtml(name, bookings) {
       <h2>Today's Lesson(s)</h2>
       <p>Hi ${name || "there"}, here are your bookings for today.</p>
 
-      ${bookings.length ? `
+      ${
+        bookings.length
+          ? `
         <table style="width:100%;border-collapse:collapse">
           <thead>
             <tr style="background:#f3f3f3">
@@ -264,17 +267,19 @@ function buildUserDigestHtml(name, bookings) {
           </thead>
           <tbody>${rows}</tbody>
         </table>
-      ` : `<p><b>No bookings today.</b></p>`}
+      `
+          : `<p><b>No bookings today.</b></p>`
+      }
     </div>
   `;
 }
-
 
 function buildAdminDigestHtml(bookings) {
   const map = new Map();
   for (const b of bookings) {
     const key = b.instructorEmail || "unknown";
-    if (!map.has(key)) map.set(key, { name: b.instructorName || "Instructor", items: [] });
+    if (!map.has(key))
+      map.set(key, {name: b.instructorName || "Instructor", items: []});
     map.get(key).items.push(b);
   }
 
@@ -318,9 +323,9 @@ export async function GET(req) {
     const userReceivers = await usersCol
       .find({
         emailScheduleTime: nowHHMM,
-        role: { $in: ["user", "instructor", "admin"] },
+        role: {$in: ["user", "instructor", "admin"]},
       })
-      .project({ email: 1, name: 1, role: 1 })
+      .project({email: 1, name: 1, role: 1})
       .toArray();
 
     // 2) Clients (roleType: client)
@@ -329,43 +334,51 @@ export async function GET(req) {
         emailScheduleTime: nowHHMM,
         roleType: "client",
       })
-      .project({ email: 1, name: 1, roleType: 1 })
+      .project({email: 1, name: 1, roleType: 1})
       .toArray();
 
     // Normalize into one list
-const userEmailSet = new Set(
-  userReceivers.map(u => String(u.email).trim().toLowerCase())
-);
+    const userEmailSet = new Set(
+      userReceivers.map((u) => String(u.email).trim().toLowerCase()),
+    );
 
-// 2️⃣ Normalize users
-const receivers = userReceivers.map((u) => ({
-  email: String(u.email).trim().toLowerCase(),
-  name: u.name,
-  role: u.role, // user | instructor | admin
-}));
+    // 2️⃣ Normalize users
+    const receivers = userReceivers.map((u) => ({
+      email: String(u.email).trim().toLowerCase(),
+      name: u.name,
+      role: u.role, // user | instructor | admin
+    }));
 
-// 3️⃣ Add clients ONLY if not present in users
-for (const c of clientReceivers) {
-  const email = String(c.email || "").trim().toLowerCase();
-  if (!email) continue;
+    // 3️⃣ Add clients ONLY if not present in users
+    for (const c of clientReceivers) {
+      const email = String(c.email || "")
+        .trim()
+        .toLowerCase();
+      if (!email) continue;
 
-  if (!userEmailSet.has(email)) {
-    receivers.push({
-      email,
-      name: c.name,
-      role: "client",
-    });
-  }
-}
+      if (!userEmailSet.has(email)) {
+        receivers.push({
+          email,
+          name: c.name,
+          role: "client",
+        });
+      }
+    }
 
     if (!receivers.length) {
-      return NextResponse.json({ ok: true, sent: 0, note: "No schedules at this minute" });
+      return NextResponse.json({
+        ok: true,
+        sent: 0,
+        note: "No schedules at this minute",
+      });
     }
 
     let sent = 0;
 
     for (const u of receivers) {
-     const to = String(u.email || "").trim().toLowerCase();
+      const to = String(u.email || "")
+        .trim()
+        .toLowerCase();
       if (!to) continue;
 
       // prevent duplicate same day
@@ -373,7 +386,7 @@ for (const c of clientReceivers) {
         type: "DAILY_DIGEST",
         to,
         digestDay: dayKey,
-        digestRole: u.role, // includes "client"
+        digestRole: u.role, 
         status: "SENT",
       });
       if (already) continue;
@@ -381,19 +394,23 @@ for (const c of clientReceivers) {
       let subject = `Today's Bookings - ${dayKey}`;
       let html = "";
       let text = "";
-
+      let actorType="";
       if (u.role === "instructor") {
         const bookings = await getTodaysBookingsByInstructor(to);
         html = buildInstructorDigestHtml(u.name, bookings);
+        actorType="INSTRUCTOR";
         text = `Hi ${u.name || "Instructor"}, you have ${bookings.length} booking(s) today.`;
       } else if (u.role === "user" || u.role === "client") {
         // ✅ clients use the same logic as user (bookings by userEmail)
         const bookings = await getTodaysBookingsByUser(to);
+            actorType="USER";
         html = buildUserDigestHtml(u.name, bookings);
         text = `Hi ${u.name || "there"}, you have ${bookings.length} booking(s) today.`;
       } else if (u.role === "admin") {
+        
         const bookings = await getTodaysBookingsAll();
         html = buildAdminDigestHtml(bookings);
+            actorType="ADMIN";
         text = `Admin digest: ${bookings.length} booking(s) today.`;
       }
 
@@ -401,7 +418,7 @@ for (const c of clientReceivers) {
       let errorMsg = null;
 
       try {
-        await sendMail({ to, subject, html, text });
+        await sendMail({to, subject, html, text});
       } catch (e) {
         status = "FAILED";
         errorMsg = String(e?.message || e);
@@ -409,6 +426,7 @@ for (const c of clientReceivers) {
 
       await emailCol.insertOne({
         type: "DAILY_DIGEST",
+        actorType,
         to,
         subject,
         html,
@@ -419,16 +437,19 @@ for (const c of clientReceivers) {
         sentAt: new Date(),
         createdAt: new Date(),
         digestDay: dayKey,
-        digestRole: u.role, 
+        digestRole: u.role,
       });
 
       if (status === "SENT") sent += 1;
     }
 
-    return NextResponse.json({ ok: true, sent, scheduledAt: nowHHMM, dayKey });
+    return NextResponse.json({ok: true, sent, scheduledAt: nowHHMM, dayKey});
   } catch (e) {
     console.error("DAILY DIGEST CRON ERROR:", e);
     const code = e?.message === "FORBIDDEN" ? 403 : 500;
-    return NextResponse.json({ ok: false, error: e?.message || "Server error" }, { status: code });
+    return NextResponse.json(
+      {ok: false, error: e?.message || "Server error"},
+      {status: code},
+    );
   }
 }

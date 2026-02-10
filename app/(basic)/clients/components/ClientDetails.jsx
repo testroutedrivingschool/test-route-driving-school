@@ -10,6 +10,7 @@ import axios from "axios";
 import {toast} from "react-toastify";
 import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import NewDropdown from "../../instructor-bookings/components/NewDropdown";
 
 function safeStr(v) {
   return v === null || v === undefined ? "" : String(v);
@@ -201,9 +202,9 @@ export default function ClientDetails({client, onBack}) {
   };
   if (isLoading) return <LoadingSpinner />;
   return (
-    <div className="bg-white border border-border-color rounded-md p-4">
+    <div className="bg-white border border-border-color rounded-md ">
       {/* Header */}
-      <div className="sticky top-24 z-99 bg-white ">
+      <div className="sticky top-19 md:top-[89px] z-60 bg-white p-4">
         <div className="pt-4 px-0">
           <div className="flex items-start justify-between gap-6 mb-2">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -230,7 +231,7 @@ export default function ClientDetails({client, onBack}) {
           </div>
 
           {/* Tabs */}
-          <div className=" border-b border-border-color flex flex-wrap gap-2">
+          <div className="mt-4 border-b border-border-color flex flex-wrap gap-2">
             {[
               {key: "client", label: "Client"},
               {key: "history", label: "History"},
@@ -242,7 +243,7 @@ export default function ClientDetails({client, onBack}) {
                 key={t.key}
                 type="button"
                 onClick={() => setActiveTab(t.key)}
-                className={`px-4 py-2 text-sm font-semibold rounded-t border border-border-color border-b-0
+                className={`px-2 py-2 text-sm font-semibold rounded-t border border-border-color border-b-0
         ${
           activeTab === t.key
             ? "bg-white text-gray-900"
@@ -252,12 +253,13 @@ export default function ClientDetails({client, onBack}) {
                 {t.label}
               </button>
             ))}
+               <NewDropdown />
           </div>
         </div>
       </div>
 
       {/* Form */}
-      <div className="mt-6 ">
+      <div className="mt-6 py-2  px-4">
         {activeTab === "client" && (
           <div className="space-y-8">
             {/* Basic */}

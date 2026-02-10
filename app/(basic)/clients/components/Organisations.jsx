@@ -6,39 +6,7 @@ import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 
 const demoOrgs = [
-  {
-    id: 1,
-    organisation: "Grease Cleaners",
-    contact: "Alexander Folino",
-    account: "-$207.00",
-    unpaid: "",
-    chargeable: "",
-    charges: "",
-    vouchers: "",
-    clients: 2,
-  },
-  {
-    id: 2,
-    organisation: "ACDC Motorized Solutions",
-    contact: "Michael Karadimitris",
-    account: "",
-    unpaid: "",
-    chargeable: "",
-    charges: "",
-    vouchers: "",
-    clients: 2,
-  },
-  {
-    id: 3,
-    organisation: "Exact Labour Hire",
-    contact: "Sally McClymont",
-    account: "",
-    unpaid: "",
-    chargeable: "",
-    charges: "",
-    vouchers: "",
-    clients: 2,
-  },
+  
 ];
 
 export default function Organisations() {
@@ -67,9 +35,7 @@ export default function Organisations() {
             </p>
           </div>
 
-          <PrimaryBtn className="px-5! py-2! text-lg! w-full sm:w-auto">
-            Add Organisation
-          </PrimaryBtn>
+        
         </div>
 
         {/* Search */}

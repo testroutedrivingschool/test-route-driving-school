@@ -72,6 +72,7 @@ export async function POST(req) {
           provider: "Credential",
           loginAccess: true,
           lastLogin: new Date(),
+          emailScheduleTime:"00:00",
         },
         $setOnInsert: { registeredAt: new Date() },
       },

@@ -13,7 +13,7 @@ const tabs = [
   { label: "Web Sales", href: "/instructor/sales/web-sales" },
   {
     label: "New",
-    dropdown: [{ label: "Booking", href: "/instructor-booking" }],
+    dropdown: [{ label: "Booking", href: "/instructor-bookings" }],
   },
 ];
 

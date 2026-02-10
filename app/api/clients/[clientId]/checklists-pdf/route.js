@@ -7,7 +7,7 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { clientsCollection, clientsChecklistsCollection } from "@/app/libs/mongodb/db";
-
+import { getBrowser } from "@/app/libs/puppeteer/browser";
 function safe(v) {
   return v === null || v === undefined ? "" : String(v);
 }
@@ -246,30 +246,26 @@ const rows = templateRows.map((r) => {
       rows,
     });
 
-    const browser = await puppeteer.launch({
-      headless: "new",
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+   const browser = await getBrowser();
+const page = await browser.newPage();
 
-    try {
-      const page = await browser.newPage();
-      await page.setContent(html, { waitUntil: "networkidle0" });
+try {
+  await page.setContent(html, { waitUntil: "load" }); 
+  const pdf = await page.pdf({
+    format: "A4",
+    printBackground: true,
+    margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
+  });
 
-      const pdf = await page.pdf({
-        format: "A4",
-        printBackground: true,
-        margin: { top: "10mm", right: "10mm", bottom: "10mm", left: "10mm" },
-      });
-
-      return new NextResponse(pdf, {
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="checklist-${checklistId}-${clientId}.pdf"`,
-        },
-      });
-    } finally {
-      await browser.close();
-    }
+  return new NextResponse(pdf, {
+    headers: {
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="checklist-${checklistId}-${clientId}.pdf"`,
+    },
+  });
+} finally {
+  await page.close();
+}
   } catch (err) {
     console.error("GET /clients/:clientId/checklists-pdf error:", err);
     return NextResponse.json({ error: "Failed to generate checklist pdf" }, { status: 500 });

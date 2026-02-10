@@ -18,6 +18,7 @@ import {
 } from "firebase/auth";
 import {auth} from "../libs/firebase/firebase.config";
 import {useRouter} from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function AuthProvider({children}) {
   const [user, setUser] = useState(null);
@@ -52,7 +53,7 @@ export default function AuthProvider({children}) {
     return sendPasswordResetEmail(auth, email);
   };
   const changePassword = async (currentPassword, newPassword) => {
-    if (!auth.currentUser) throw new Error("No logged-in user found");
+    if (!auth.currentUser) return toast.error("No logged-in user found");
 
     try {
       // Reauthenticate user
@@ -69,7 +70,7 @@ export default function AuthProvider({children}) {
       return {success: true, message: "Password updated successfully!"};
     } catch (error) {
       console.error("Password change error:", error);
-      throw new Error(error.message || "Failed to change password");
+      
     }
   };
 

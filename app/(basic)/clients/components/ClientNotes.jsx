@@ -162,7 +162,7 @@ export default function ClientNotes({clientId}) {
   if (isLoading) return <LoadingSpinner />;
 
   return (
-    <div className="bg-white border border-border-color rounded-md p-6 relative">
+    <div className="bg-white border border-border-color rounded-md p-4 relative">
       {/* Top summary row */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="grid grid-cols-1 sm:grid-cols-2  gap-x-10 gap-y-2 text-sm">
@@ -231,7 +231,7 @@ export default function ClientNotes({clientId}) {
 
       {/* Table header */}
       <div className="mt-4 overflow-x-auto border border-border-color rounded-md">
-        <div className="min-w-[820px]">
+        <div className="w-full md:min-w-[820px]">
           <div className="grid grid-cols-12 bg-[#4a4a4a] text-white text-sm font-semibold px-4 py-3">
             <div className="col-span-3 text-center">Created</div>
             <div className="col-span-9">Text</div>
@@ -251,61 +251,62 @@ export default function ClientNotes({clientId}) {
               return (
                 <div
                   key={n._id}
-                  className="grid grid-cols-12 gap-3 px-4 py-4 border-t border-border-color bg-gray-100"
+                  className=" py-4 border-t border-border-color bg-gray-100"
                 >
-                  {/* Created column */}
-                  <div className="col-span-3 flex flex-col items-center gap-2">
-                    <img
-                      src={avatarSrc}
-                      alt=""
-                      className="h-16 w-16 rounded-md object-cover"
-                    />
+                  <div className="grid grid-cols-12 gap-3 ">
+                    {/* Created column */}
+                    <div className="col-span-3 flex flex-col items-start gap-2 px-4">
+                      <img
+                        src={avatarSrc}
+                        alt=""
+                        className="h-18 w-18 rounded-md object-cover"
+                      />
+                    </div>
 
-                    <div className="text-center text-sm text-primary">
-                      <div className="font-semibold">
-                        {n.createdAt
-                          ? new Date(n.createdAt).toLocaleString("en-AU")
-                          : ""}
+                    {/* Text column */}
+                    <div className="col-span-9 flex items-start gap-6">
+                      <div className="text-gray-700">
+                        <FaClipboardList className="text-5xl text-gray-700" />
                       </div>
+
                       <div>
-                        {n.type === "booking" ? "Session Note" : "General Note"}{" "}
-                        by {n.createdBy?.name || "—"}
+                        <span className="text-primary text-sm leading-6 block">
+                          {n.text || ""}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            deleteNoteMutation.mutate(n._id);
+                          }}
+                          disabled={deleteNoteMutation.isPending}
+                          className="mt-2 text-xs font-semibold text-red-600 hover:underline disabled:opacity-60"
+                        >
+                          Delete Note
+                        </button>
                       </div>
                     </div>
-
-                    <div className="text-primary text-sm">
-                      {n.bookingTitle || ""}
-                    </div>
-
-                    <div className="text-xs text-gray-500 text-center">
-                      Updated{" "}
-                      {n.updatedAt
-                        ? new Date(n.updatedAt).toLocaleDateString("en-AU")
+                  </div>
+                  <div className="text-left text-sm text-primary px-4 mt-2">
+                    <div className="font-semibold">
+                      {n.createdAt
+                        ? new Date(n.createdAt).toLocaleString("en-AU")
                         : ""}
+                    </div>
+                    <div>
+                      {n.type === "booking" ? "Session Note" : "General Note"}
+                      by <strong>{n.createdBy?.name || "—"}</strong>
                     </div>
                   </div>
 
-                  {/* Text column */}
-                  <div className="col-span-9 flex items-start gap-6">
-                    <div className="text-gray-700">
-                      <FaClipboardList className="text-5xl text-gray-700" />
-                    </div>
+                  <div className="text-primary text-sm">
+                    {n.bookingTitle || ""}
+                  </div>
 
-                    <div>
-                      <span className="text-primary text-sm leading-6 block">
-                        {n.text || ""}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          deleteNoteMutation.mutate(n._id);
-                        }}
-                        disabled={deleteNoteMutation.isPending}
-                        className="mt-2 text-xs font-semibold text-red-600 hover:underline disabled:opacity-60"
-                      >
-                        Delete Note
-                      </button>
-                    </div>
+                  <div className="text-xs text-gray-500 px-4 mt-2">
+                    Updated{" "}
+                    {n.updatedAt
+                      ? new Date(n.updatedAt).toLocaleDateString("en-AU")
+                      : ""}
                   </div>
                 </div>
               );
