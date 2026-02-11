@@ -137,11 +137,11 @@ const isActiveLink = (currentPath, linkPath) => {
               <div className="flex items-center justify-between">
                 {sidebarOpen || isMobile ? (
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10  rounded-xl flex items-center justify-center ">
+                    <div className="w-12 h-12  rounded-xl flex items-center justify-center ">
                       <Image
-                        className="w-full h-full object-cover object-top rounded-full"
-                        width={20}
-                        height={20}
+                        className="w-12 h-12 object-cover object-top rounded-full"
+                        width={200}
+                        height={200}
                         src={avatarSrc}
                         alt={userData.name || "user"}
                       />

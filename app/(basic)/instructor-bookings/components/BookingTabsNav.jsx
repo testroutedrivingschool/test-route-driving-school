@@ -15,18 +15,18 @@ const tabs = [
 
 export default function BookingTabsNav({ bookingId, activeTab }) {
   return (
-    <div className="flex flex-wrap gap-3">
+    <div className="flex flex-wrap gap-2 border-b border-border-color">
       {tabs.map((t) => {
         const active = activeTab === t.key;
         return (
           <Link
             key={t.key}
             href={`/instructor-bookings/${bookingId}/${t.key}`}
-            className={`px-5 py-2 rounded-md  text-sm font-medium transition
+            className={`px-5 py-2 rounded-md  text-sm font-semibold transition
               ${
                 active
                   ? "border-gray-300 text-gray-900 bg-white shadow-sm"
-                  : "border-transparent text-red-600 hover:bg-red-50"
+                  : "bg-gray-100 text-primary hover:bg-primary/20"
               }
             `}
           >

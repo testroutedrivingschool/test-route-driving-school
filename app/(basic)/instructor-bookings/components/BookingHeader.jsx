@@ -28,23 +28,23 @@ export default function BookingHeader({ booking }) {
 
   const status = String(safe(booking.status, "pending")).toUpperCase();
   const clientName = safe(booking.userName || booking.clientName, "Client");
-console.log(booking);
+
   return (
     <div className="rounded-xl p-5">
       <div className="flex items-start justify-between gap-4">
         {/* Left: BIG PAID + name */}
         <div className="min-w-0">
           <div
-            className={`text-3xl md:text-5xl font-extrabold tracking-wide ${
-              isPaid ? "text-primary" : "text-gray-500"
+            className={`text-xl md:text-3xl font-bold  ${
+              isPaid ? "text-primary" : "text-red-500"
             }`}
           >
-            {isPaid ? "PAID" : "UNPAID"}
+            {isPaid ? "PAID" : "Payment Required"}
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
             <Link href={`/clients?clientId=${booking.clientId}`}>
-            <h2 className="text-3xl font-bold text-primary">{clientName}</h2>
+            <h2 className="text-xl md:text-3xl font-extrabold text-primary">{clientName}</h2>
             </Link>
            
           </div>

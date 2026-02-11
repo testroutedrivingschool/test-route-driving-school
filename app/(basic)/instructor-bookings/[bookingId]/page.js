@@ -8,7 +8,9 @@ export default function BookingRootRedirect() {
   const router = useRouter();
 
   useEffect(() => {
-    if (bookingId) router.replace(`/instructor-bookings/${bookingId}/booking`);
+    if (bookingId) {
+      router.replace(`/instructor-bookings/${bookingId}/booking`);
+    }
   }, [bookingId, router]);
 
   return null;

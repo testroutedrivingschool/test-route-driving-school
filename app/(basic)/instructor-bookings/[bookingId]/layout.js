@@ -24,23 +24,35 @@ export default function BookingDetailLayout({children}) {
   if (isLoading || !booking) return <LoadingSpinner />;
 
   // Which tab is active based on URL
-  const activeTab =
-    pathname?.split(`/dashboard/bookings/${bookingId}/`)[1]?.split("/")[0] ||
-    "booking";
+const activeTab =
+  pathname?.split(`/instructor-bookings/${bookingId}/`)[1]?.split("/")[0] ||
+  "booking";
 
+if (isLoading) return <LoadingSpinner />;
+
+if (!booking) {
   return (
-    <section className="py-6">
+    <div className="py-20 text-center">
+      <h2 className="text-xl font-semibold text-red-600">Booking Not Found</h2>
+      <p className="text-sm text-gray-600 mt-2">
+        The booking does not exist or was deleted.
+      </p>
+    </div>
+  );
+}
+  return (
+    <section className="py-6 ">
       <Container>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
-          <div className="col-span-3">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 ">
+          <div className="md:col-span-3 ">
             <BookingSidebar booking={booking} />
           </div>
 
-          <div className="col-span-9 grid grid-cols-1 ">
+          <div className="md:col-span-9 grid grid-cols-1 ">
             <BookingHeader booking={booking} />
 
             {/* ✅ real route tabs */}
-            <div className="bg-white border border-gray-200 rounded-xl p-4 mb-5">
+            <div className="mb-3">
               <BookingTabsNav bookingId={bookingId} activeTab={activeTab} />
             </div>
 
