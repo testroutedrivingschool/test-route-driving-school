@@ -87,7 +87,21 @@ const whyChoosePoints = [
   },
   {
     title: "Modern Vehicles",
-    description: "Learn in well-maintained cars for a smooth experience.",
+    description: (
+      <>
+        <a
+          className="location-link"
+          href={
+            "https://www.rateddriving.com/learner-driver/how-many-driving-lessons-do-i-need-to-pass/"
+          }
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn
+        </a>{" "}
+        in well-maintained cars for a smooth experience.
+      </>
+    ),
   },
   {
     title: "Flexible Timing",
@@ -102,56 +116,47 @@ const whyChoosePoints = [
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
+    question: "What urban driving skills are taught in city driving classes?",
     answer: (
       <>
-        The number of lessons varies for every learner we teach. On average,
-        most students need between 5 and 10 lessons. This depends on your
-        experience, confidence, and current driving skills. We assess your
-        progress during every city   <a target="_blank" href={`https://www.rateddriving.com/learner-driver/how-many-driving-lessons-do-i-need-to-pass/`} className="font-semibold underline px-1">
-          driving class
-        </a> in Sydney suburbs.
+        Training covers intersections, roundabouts, and lane filtering. Traffic
+        signal timing is explained clearly. Road positioning is practised daily.
       </>
     ),
   },
   {
-    question: "Do you provide pickup and drop-off for lessons?",
+    question: "How do city driving lessons improve awareness in busy areas?",
     answer: (
       <>
-        Yes, we offer convenient pickup and drop-off for all students. We can
-        meet you at home, school, or your workplace. This service is available
-        throughout our entire service area in Sydney suburbs.
+        Learners practise multi-directional scanning techniques. Pedestrian and
+        cyclist detection is emphasised. Blind-spot checks become automatic.
       </>
     ),
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "Will you learn how to handle peak-hour traffic conditions?",
     answer: (
       <>
-        Our instructors cover a wide range of local Sydney Suburbs. This
-        includes Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and Sydney
-        suburbs. We are familiar with the local traffic patterns and roads in
-        these areas.
+        Lessons include morning and evening traffic sessions. Stop-start driving
+        is practised safely. Patience and spacing control improve.
       </>
     ),
   },
   {
-    question: "What type of car will I learn in?",
+    question: "Are city driving classes helpful for navigating narrow streets?",
     answer: (
       <>
-        You will learn in a modern automatic vehicle for your comfort. Every car
-        features dual controls to ensure your maximum safety. Our fleet is
-        perfect for city driving lessons and Sydney suburbs sessions.
+        Training includes tight-lane positioning exercises. Kerb clearance
+        techniques are taught. Mirror usage is refined.
       </>
     ),
   },
   {
-    question: "Can I book lessons online?",
+    question: "Can city driving lessons help reduce mistakes at intersections?",
     answer: (
       <>
-        Yes! You can easily book your driving lessons in Sydney suburbs online.
-        Use our website&apos;s booking form at any time to find a suitable slot.
-        We make starting your driving journey simple and very fast.
+        Right-of-way rules are practised repeatedly. Gap selection skills are
+        developed. Decision timing improves steadily.
       </>
     ),
   },
@@ -161,7 +166,22 @@ export default function CityCarDrivingPackage() {
     <div className="">
       <PageHeroSection
         title={`City Driving Class in Sydney suburbs | Book Professional Driving Lessons Today`}
-        subtitle={`At Test Route Driving School, we offer expert City Driving Classes in Sydney suburbs. We help learners of all skill levels become safe drivers. Our team offers top-tier automatic driving lessons across the local area. You will acquire the skills necessary to navigate dense urban traffic. We prioritize your safety and build your road confidence every day. Our instructors understand the unique challenges of the local Sydney suburbs streets. You can trust us to guide you toward driving success. We focus on making you a responsible and aware driver.`}
+        subtitle={
+          <>
+            At
+            <Link href="/" className="location-link">
+              Test Route Driving School,
+            </Link>
+            we offer expert City Driving Classes in Sydney suburbs. We help
+            learners of all skill levels become safe drivers. Our team offers
+            top-tier automatic driving lessons across the local area. You will
+            acquire the skills necessary to navigate dense urban traffic. We
+            prioritize your safety and build your road confidence every day. Our
+            instructors understand the unique challenges of the local Sydney
+            suburbs streets. You can trust us to guide you toward driving
+            success. We focus on making you a responsible and aware driver.
+          </>
+        }
       />
 
       {/* Main Content Section */}

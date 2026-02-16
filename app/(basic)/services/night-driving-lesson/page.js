@@ -126,52 +126,46 @@ const whyChoosePoints = [
 
 const faqs = [
   {
-    question: "How many nighttime driving lessons do I need near me?",
+    question: "What special risks do you learn to manage during night driving lessons?",
     answer: (
       <>
-        The number of sessions depends on your current confidence and
-        experience. On average, most students require 5 to 10 lessons to feel
-        fully safe. We assess your skills during the first session in the Sydney
-        Suburbs.
+       Training focuses on glare, shadows, and reduced depth perception.
+ Instructors teach safe following distances.
+ Reaction time improves in low-light conditions.
+
       </>
     ),
   },
   {
-    question: "Do you provide pickup for driving lessons at night in Kogarah?",
+    question: "How do night driving lessons improve visibility skills?",
     answer: (
       <>
-        Yes, we offer convenient pickup and drop-off from your home or
-        workplace. We serve a wide range of areas, including Allawah, Arncliffe,
-        Bexley, Rockdale, Hurstville, and Kogarah. For more details, please
-        refer to the
-        <Link href={`/area-covered`} className="font-semibold underline px-1">
-          Areas We Cover page.
-        </Link>
+        Learners practise correct headlight usage.
+ Mirror adjustment techniques are taught.
+ Road-edge tracking becomes more accurate.
+
       </>
     ),
   },
   {
-    question: "What car will I use for my night driving lessons near me?",
+    question: "Will you practise emergency responses during night lessons?",
     answer: (
       <>
-        You will drive a modern automatic vehicle equipped with dual safety
-        controls. This ensures your instructor can assist you if any dangerous
-        situation arises. Safety is our main priority for every student in the
-        Sydney Suburbs.Ready to get started?<a target="_blank" href={`https://www.transport.nsw.gov.au/roadsafety/young-drivers/learners`} className="font-semibold underline px-1">
-              See more
-            </a> about our training sessions tailored for Sydney drivers.
+       Lessons include sudden hazard simulations.
+ Braking and evasive steering are trained.
+ Decision-making improves under pressure.
+
       </>
     ),
   },
   {
-    question: "Can I book my driving lessons online?",
+    question: "Can night driving lessons help with fatigue and concentration control?",
     answer: (
       <>
-        Yes, you can easily book your sessions through our website at any time.
-        Visit our <Link href={`/blogs`} className="font-semibold underline px-1">
-              Blog
-            </Link> for more tips or use the booking form. We make the
-        process simple so you can start learning immediately.
+       Instructors teach alertness management strategies.
+ Signs of tiredness are explained clearly.
+ Focus remains strong during extended drives.
+
       </>
     ),
   },
@@ -180,10 +174,15 @@ export default function NightDrivingLesson() {
   return (
     <div className="">
       <PageHeroSection
-        title={`Night Driving Lessons in Sydney suburbsfor Beginners & Nervous Drivers`}
-        subtitle={`
-This guide explores the best Night Driving Lessons in Sydney suburbsfor all learners. You will discover how to handle low visibility and bright glares safely. Our expert instructors provide personalized coaching to boost your road confidence after dark. We cover essential safety tips and local test routes in the Sydney Suburbs. Start your journey to becoming a fearless night driver with our professional team today.
-`}
+        title={`Night Driving Lessons in Sydney suburbs for Beginners & Nervous Drivers`}
+        subtitle={<>
+        This guide explores the best Night Driving Lessons in Sydney suburbs for all learners. You will discover how to handle low visibility and bright glares safely. Our expert instructors provide personalized coaching to boost your road confidence after dark. We cover essential safety tips and local <Link
+              href={`/`}
+              className="font-semibold underline px-1"
+            >
+              test routes
+            </Link> in the Sydney Suburbs. Start your journey to becoming a fearless night driver with our professional team today.
+        </>}
       />
 
       {/* Main Content Section */}
@@ -216,7 +215,7 @@ This guide explores the best Night Driving Lessons in Sydney suburbsfor all lear
                 Do you feel nervous driving when the streetlights turn on? You
                 are certainly not alone in feeling this way. Many Sydney drivers
                 struggle with heavy glare from oncoming high-beam headlights.
-                You might find unfamiliar roads in Sydney suburbsmuch harder to
+                You might find unfamiliar roads in Sydney suburbs much harder to
                 navigate at night. We offer a{" "}
                 <a target="_blank"
                   href={`https://www.nsw.gov.au/driving-boating-and-transport/roads-safety-and-rules/safe-driving/fatigue`}
@@ -410,7 +409,7 @@ This guide explores the best Night Driving Lessons in Sydney suburbsfor all lear
       <MovingCar />
       <WhyChooseUs
         title={`Why Choose Our Driving School in Sydney suburbsat Night?`}
-        subTitle={`We provide the best driving school in Sydney suburbsat night for several reasons. You deserve an education that prioritizes both your safety and success in obtaining a license.`}
+        subTitle={`We provide the best driving school in Sydney suburbs at night for several reasons. You deserve an education that prioritizes both your safety and success in obtaining a license.`}
         points={whyChoosePoints}
       />
 

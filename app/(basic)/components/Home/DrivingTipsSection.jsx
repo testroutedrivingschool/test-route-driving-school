@@ -20,6 +20,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
       icon: <FaCalendarAlt className="h-6 w-6" />,
       color: "text-blue-600 bg-blue-50",
       duration: "Ongoing",
+      quickTips: "Prioritise Road Safety",
     },
     {
       title: "Prioritize Road Safety",
@@ -28,6 +29,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
       icon: <FaShieldAlt className="h-6 w-6" />,
       color: "text-green-600 bg-green-50",
       priority: "High",
+      quickTips: "Build Confidence Gradually",
     },
     {
       title: "Build Confidence Gradually",
@@ -36,6 +38,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
       icon: <FaChartLine className="h-6 w-6" />,
       color: "text-purple-600 bg-purple-50",
       level: "Beginner to Advanced",
+      quickTips: "Understand Manual and Automatic Vehicles",
     },
     {
       title: "Understand Both Manual & Automatic Cars",
@@ -44,6 +47,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
       icon: <FaCar className="h-6 w-6" />,
       color: "text-amber-600 bg-amber-50",
       type: "Technical",
+          quickTips:"Stay Calm and Focused"
     },
     {
       title: "Stay Calm and Focused",
@@ -52,6 +56,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
       icon: <FaBrain className="h-6 w-6" />,
       color: "text-teal-600 bg-teal-50",
       focus: "Mental",
+          quickTips:"Prepare Strategically for Driving Tests"
     },
     {
       title: "Prepare for Driving Tests",
@@ -72,6 +77,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
       icon: <FaAward className="h-6 w-6" />,
       color: "text-red-600 bg-red-50",
       goal: "Test Success",
+          quickTips:"Master Test-Day Performance"
     },
   ];
 
@@ -206,7 +212,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
                   {/* Bottom accent */}
                   <div className="mt-6 pt-4 border-t border-gray-100">
                     <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span>Tip #{index + 1}</span>
+                      <span>Tip #{index + 1} </span>
                       <div className="flex items-center space-x-2">
                         {tip.type && (
                           <span className="font-medium text-gray-700">

@@ -91,7 +91,19 @@ const drivingLessonTips = [
   },
   {
     title: "Prepare for Driving Tests",
-    description: "Learn specific tips for parking and city maneuvers.",
+    description: (
+      <>
+        <a
+          className="location-link"
+          href={"https://drivinglessons.site/blog/lessons-hours-pass-driving-test/"}
+          target="_blank"
+          rel="noreferrer"
+        >
+          Learn
+        </a>{" "}
+        specific tips for parking and city maneuvers.
+      </>
+    ),
     icon: <FaAward className="h-6 w-6" />,
     color: "text-red-600 bg-red-50",
     goal: "Test Success",
@@ -100,58 +112,57 @@ const drivingLessonTips = [
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
+    question: " Who can use dual brake car hire services in Sydney suburbs?",
     answer: (
       <>
-        The number of lessons varies for every
-        <a
-          target="_blank"
-          href={`https://drivinglessons.site/blog/lessons-hours-pass-driving-test/`}
-          className="font-semibold underline px-1"
-        >
-          learner
-        </a>{" "}
-        in Kogarah. On average, students require 5 to 10 lessons, depending on
-        their Level of Confidence. We assess your skills and help you reach your
-        goals fast.
+        Services are designed for licensed driving instructors.
+ Trainer accreditation may be required.
+ Vehicles support professional teaching environments.
+
       </>
     ),
   },
   {
-    question: "Do you provide pickup and drop-off for lessons?",
+    question: "How are dual-controlled vehicles maintained for safety?",
     answer: (
       <>
-        Yes, we offer convenient pickup and drop-off from your home or
-        workplace. This service is available throughout our entire service area
-        in the Sydney Suburbs .
+       Cars undergo regular mechanical inspections.
+ Brake systems are tested before every rental.
+ Safety standards meet NSW transport guidelines.
+
       </>
     ),
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "Can you hire a dual brake car for short-term teaching needs?",
     answer: (
       <>
-        Our instructors cover Kogarah, Hurstville, Rockdale, Bexley, Carlton,
-        and Arncliffe. We are familiar with the local roads and testing routes
-        in these areas.
+        Short-term and long-term rentals are available.
+ Daily and weekly options provide flexibility.
+ Emergency replacement cars are also offered.
+
       </>
     ),
   },
   {
-    question: "What type of car will I learn in?",
+    question: "What happens if your instructor vehicle breaks down?",
     answer: (
       <>
-        You will learn in a modern automatic vehicle with dual controls. These
-        cars ensure maximum safety during your entire training period.
+        Backup vehicles can be arranged quickly.
+ Lesson disruptions are minimised.
+ Business operations continue smoothly.
+
       </>
     ),
   },
   {
-    question: "Can I book lessons online?",
+    question: "Does dual brake car hire include insurance and compliance cover?",
     answer: (
       <>
-        Yes! You can easily book your driving lessons online through our
-        website. Our booking form is available 24/7 for your total convenience.
+        Rental packages include essential insurance protection.
+ Vehicles meet instructor licensing requirements.
+ Documentation is provided upon request.
+
       </>
     ),
   },
@@ -215,7 +226,21 @@ export default function CarHireForInstructorClient() {
     <div className="">
       <PageHeroSection
         title={`Dual Brake Car Hire in Sydney Suburbs | Flexible Timings & Professional Support`}
-        subtitle={`Test Route Driving School is your reliable source for Dual Brake Car Hire in Kogarah. We tailor our services to meet the specific needs of local driving instructors. Our team prioritizes safety and excellence in every lesson you provide. We supply well-maintained vehicles equipped with state-of-the-art dual brake systems. This allows you to teach with total peace of mind in Kogarah. You can focus on your students while we handle the vehicle quality. We ensure your business remains professional and highly safe at all times.`}
+        subtitle={
+          <>
+            <Link href="/" className="location-link">
+              Test Route Driving School
+            </Link>
+            is your reliable source for Dual Brake Car Hire in Kogarah. We
+            tailor our services to meet the specific needs of local driving
+            instructors. Our team prioritizes safety and excellence in every
+            lesson you provide. We supply well-maintained vehicles equipped with
+            state-of-the-art dual brake systems. This allows you to teach with
+            total peace of mind in Kogarah. You can focus on your students while
+            we handle the vehicle quality. We ensure your business remains
+            professional and highly safe at all times.
+          </>
+        }
       />
 
       {/* Main Content Section */}
@@ -403,7 +428,23 @@ export default function CarHireForInstructorClient() {
         </Container>
       </section>
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints} />
+      <WhyChooseUs
+        title={`Why choose Test Route driving School in Kogarah?`}
+        subTitle={
+          <>
+            We offer{" "}
+            <Link
+              href="/services/automatic-driving-lessons"
+              className="location-link"
+            >
+              professional driving lessons
+            </Link>{" "}
+            to help you obtain your license. Here is why we are the best choice
+            for your education:
+          </>
+        }
+        points={whyChoosePoints}
+      />
       <DrivingTipsSection
         title={`Expert Driving Tips & Advice for Sydney Suburbs  Learners`}
         subtitle={

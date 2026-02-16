@@ -26,10 +26,9 @@ import WhatWeOffer from "./components/Home/WhatWeOffer";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import Link from "next/link";
 
-
-
 export const metadata = {
-  title: "Driving School in Sydney suburbs| Learn to Drive Safely & Confidently",
+  title:
+    "Driving School in Sydney suburbs| Learn to Drive Safely & Confidently",
   description:
     "Gain confidence and pass your driving test with expert lessons in Sydney suburbs. Flexible packages, modern cars, and certified instructors. Book today!",
   keywords: [
@@ -48,10 +47,10 @@ export const metadata = {
     "Common questions about driving lessons	",
     "Learning to drive",
     "Driving Lessons FAQ",
-"Driving instructor advice",
-"Driving test preparation tips",
-"Beginner driving questions",
-"Driving lesson tips",
+    "Driving instructor advice",
+    "Driving test preparation tips",
+    "Beginner driving questions",
+    "Driving lesson tips",
   ],
 };
 const whatWeOfferServices = [
@@ -82,17 +81,20 @@ const whatWeOfferServices = [
   {
     icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
     title: "Pickup and Drop-off",
-    description:
+    description: (
       <>
-      For driving tests, we also offer a{" "}
-      <Link
-        href="/services/car-hire-for-instructor"
-        className="font-semibold underline text-primary"
-      >
-        car hire with instructor.
-      </Link>{" "}
-      
-      Also offer convenient pickup and drop-off services within Sydney Suburbs and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown, and more, making your lessons hassle-free and time-efficient.</>,
+        For driving tests, we also offer a{" "}
+        <Link
+          href="/services/car-hire-for-instructor"
+          className="font-semibold underline text-primary"
+        >
+          car hire with instructor.
+        </Link>{" "}
+        Also offer convenient pickup and drop-off services within Sydney Suburbs
+        and nearby Sydney suburbs. Areas include Rockdale, Bankstown, Newtown,
+        and more, making your lessons hassle-free and time-efficient.
+      </>
+    ),
   },
   {
     icon: <FaCarSide className="w-8 h-8 text-white" />,
@@ -113,10 +115,63 @@ const whatWeOfferServices = [
       "Save with our 5, 10, or 20-hour lesson packages. You can enjoy structured, high-quality lessons while saving up to $140, giving you more affordable and flexible learning options.",
   },
 ];
+const faqs = [
+  {
+    question:
+      "How does Test Route personalise driving lessons for each learner?",
+    answer: (
+      <>
+        Lessons follow your skill level and learning speed. Instructors assess
+        progress during every session. Training plans adjust as your confidence
+        improves.
+      </>
+    ),
+  },
+
+  {
+    question:
+      "Do you teach both manual and automatic driving in Sydney suburbs?",
+    answer: (
+      <>
+        Training is available for manual and automatic vehicles. Lessons cover
+        clutch control, gear changes, and smooth handling. You learn according
+        to your licence goals.
+      </>
+    ),
+  },
+  {
+    question: "What makes your driving lessons different from other schools?",
+    answer: (
+      <>
+        Training focuses on real Sydney driving conditions. Instructors use
+        structured systems and proven techniques. Each lesson builds long-term
+        driving habits.
+      </>
+    ),
+  },
+  {
+    question: "How does your learning process help students pass faster?",
+    answer: (
+      <>
+        Lessons follow a step-by-step progression system. Skills develop from
+        basic control to advanced driving. Test preparation starts early in
+        training.
+      </>
+    ),
+  },
+  {
+    question: "Can you start driving lessons with no previous experience?",
+    answer: (
+      <>
+        No prior experience is required. Lessons begin with vehicle basics and
+        road awareness. Confidence builds gradually through guided practice.
+      </>
+    ),
+  },
+];
 export default function Home() {
   return (
     <>
-    
       <Hero />
       <FeatureCards />
       <HomeAbout />
@@ -141,8 +196,20 @@ export default function Home() {
       <GoogleReviewCard />
       <Reviews />
       <HowItWorks />
-      <BlogSection />
-      <Faq />
+      <BlogSection
+        sectionTitle={`Our Blog`}
+        sectionSubTitle={
+          <>
+            Stay updated with the latest tips and insights from the world of
+            driving. Visit our
+            <Link href="/company/blogs" className="location-link">
+              blog
+            </Link>
+            for helpful guides and the latest updates.
+          </>
+        }
+      />
+      <Faq faqs={faqs} />
     </>
   );
 }

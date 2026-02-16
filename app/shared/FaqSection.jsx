@@ -32,7 +32,7 @@ const defaultFaqData = [
   },
 ];
 
-export default function FaqSection({className, faqs, title}) {
+export default function FaqSection({className, faqs, title,subtitle}) {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleFaq = (index) => {
@@ -46,7 +46,7 @@ export default function FaqSection({className, faqs, title}) {
           className={`mt-0! `}
           title={title ? title : `Frequently Asked Questions`}
           subtitle={
-            "Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"
+            subtitle?subtitle:"Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"
           }
         />
 

@@ -124,59 +124,56 @@ const whyChoosePoints = [
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
+    question: "What happens during the warm-up lesson before your driving test?",
     answer: (
       <>
-        The number of lessons varies for every learner in Sydney suburbs. On
-        average, most students require between 5 and 10 professional lessons.
-        This depends on your current experience, confidence, and basic{" "}
-        <a
-          target="_blank"
-          href={`https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia`}
-          className="font-semibold underline px-1"
-        >
-          driving skills.
-        </a>
+       The session reviews key test manoeuvres and routes.
+ Instructors correct last-minute mistakes.
+ Confidence improves before meeting the examiner.
+
       </>
     ),
   },
   {
-    question: "Do you provide pickup and drop-off for lessons?",
+    question: "How does this driving test package reduce exam-day nerves?",
     answer: (
       <>
-        Yes, we offer convenient pickup and drop-off from your home or school.
-        We can also meet you at your workplace in Carlton or Arncliffe. This
-        service is included in our primary test packages.
+       Lessons simulate real testing conditions.
+ Instructors teach breathing and focus techniques.
+ Familiar routes reduce unexpected pressure.
+
       </>
     ),
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "Will you practise on the same roads used for NSW driving tests?",
     answer: (
       <>
-        Our instructors cover a wide range of areas, including Allawah,
-        Arncliffe, Bexley, Rockdale, Hurstville, and Sydney suburbs. We know
-        these local streets and test routes intimately.
+        Training includes common local testing areas.
+ Routes near service centres are regularly practised.
+ Learners become comfortable with traffic patterns.
+
       </>
     ),
   },
   {
-    question: "What type of car will I learn in?",
+    question: "What vehicle standards apply to test day car hire?",
     answer: (
       <>
-        You will learn in a modern automatic vehicle for a smooth experience.
-        All our cars have dual controls to ensure your maximum safety. Our
-        instructors keep every vehicle in top condition for your test.
+        Cars meet NSW testing safety requirements.
+ Dual controls remain fully functional.
+ Vehicles are cleaned and inspected before use
       </>
     ),
   },
   {
-    question: "Can I book lessons online?",
+    question: "How does instructor support continue during your driving test?",
     answer: (
       <>
-        Yes! You can easily book your lessons through our website&apos;s booking
-        form at any time. We offer instant confirmation to help you plan your
-        schedule.
+        Instructors provide final guidance before the exam.
+ Key reminders are given at departure.
+ Support remains available immediately after testing.
+
       </>
     ),
   },
@@ -236,7 +233,9 @@ export default function DrivingTestPackage() {
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
-                <strong>Test Route Driving School</strong>
+                <Link href={`/`} className="font-semibold underline px-1">
+                  Test Route Driving School
+                </Link>
                 offers a specialized{" "}
                 <strong>Sydney suburbs driving test package</strong> to includes
                 expert instruction and practical make your day straightforward.
@@ -433,7 +432,14 @@ export default function DrivingTestPackage() {
           <>
             At <strong>Test Route Driving School</strong>, we provide
             professional lessons and license assistance. We are the best choice
-            for your driving education in the <stong>Sydney Suburbs.</stong>
+            for your
+            <a
+              target="_blank"
+              href={`https://www.transport.nsw.gov.au/roadsafety/young-drivers/learners`}
+              className="font-semibold underline px-1"
+            >
+              driving education
+            </a>in the <strong>Sydney Suburbs.</strong>
           </>
         }
         points={whyChoosePoints}

@@ -1,6 +1,7 @@
 import Container from "@/app/shared/ui/Container";
 import Image from "next/image";
-import aboutImg from "@/app/assets/test-route-driving-school-cover.png"; 
+import aboutImg from "@/app/assets/test-route-driving-school-cover.png";
+import Link from "next/link";
 
 export default function HomeAbout() {
   return (
@@ -15,7 +16,25 @@ export default function HomeAbout() {
             </h2>
 
             <p className="text-neutral text-lg leading-relaxed">
-              Test Route Driving School has been providing professional driving lessons in Sydney suburbs for years. Our certified instructors focus on building your confidence, road safety, and test readiness. We provide personalized training in manual and automatic vehicles, ensuring you gain practical skills for all driving situations. From high school students to adults seeking a license, we design every lesson to ensure success. Learn more about our <a href="https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/driver-licence-tests/driving-test" className="location-link" target="_blank">instructors</a> and their expertise to find the perfect match for your learning style.
+              <Link href="/" className="location-link">
+                Test Route Driving School
+              </Link>
+              has been providing professional driving lessons in Sydney suburbs
+              for years. Our certified instructors focus on building your
+              confidence, road safety, and test readiness. We provide
+              personalized training in manual and automatic vehicles, ensuring
+              you gain practical skills for all driving situations. From high
+              school students to adults seeking a license, we design every
+              lesson to ensure success. Learn more about our{" "}
+              <a
+                href="https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/driver-licence-tests/driving-test"
+                className="location-link"
+                target="_blank"
+              >
+                instructors
+              </a>{" "}
+              and their expertise to find the perfect match for your learning
+              style.
             </p>
 
             <h3 className="text-2xl font-bold mt-6">
@@ -25,8 +44,8 @@ export default function HomeAbout() {
               Our mission is to create confident, safe, and skilled drivers. We
               combine practical driving skills with road safety knowledge, so
               you are fully prepared for real-world driving scenarios and your
-              driving test. With a focus on driving lessons in Sydney suburbs, we
-              ensure every student gets expert guidance and a supportive
+              driving test. With a focus on driving lessons in Sydney suburbs,
+              we ensure every student gets expert guidance and a supportive
               learning environment. Your journey to becoming a safe driver
               starts here.
             </p>

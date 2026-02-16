@@ -1,15 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import automaticLessonImg from "@/app/assets/service-lesson-test-route-driving-school.png";
-import {
-  FaAward,
-  FaBrain,
-  FaCalendarAlt,
-  FaCar,
-  FaChartLine,
-  FaCheckCircle,
-  FaShieldAlt,
-} from "react-icons/fa";
+import {FaCheckCircle} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import MovingCar from "@/app/shared/MovingCar";
@@ -57,7 +49,7 @@ const automaticDrivingPackages = [
     originalPrice: "395",
     duration: "5 x 60 min lessons",
     features: ["Save $30", "Progress tracking", "Flexible scheduling"],
-    buttonText: "Buy 5 Hours",
+    buttonText: "Book 5 Hours",
     popular: false,
   },
   {
@@ -68,7 +60,7 @@ const automaticDrivingPackages = [
     originalPrice: "750",
     duration: "10 x 60 min lessons",
     features: ["Save $50", "Mock tests", "Highway driving"],
-    buttonText: "Buy 10 Hours",
+    buttonText: "Book 10 Hours",
     popular: true,
   },
   {
@@ -79,7 +71,7 @@ const automaticDrivingPackages = [
     originalPrice: "1500",
     duration: "20 x 60 min lessons",
     features: ["Save $140", "Advanced maneuvers", "Exam readiness"],
-    buttonText: "Buy 20 Hours",
+    buttonText: "Book 20 Hours",
     popular: false,
   },
 ];
@@ -128,65 +120,48 @@ const whyChoosePoints = [
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
+    question: "What is evaluated during a driving test assessment session?",
     answer: (
       <>
-        The number of lessons varies for every student we teach. Most learners
-        need between 5 and 10 sessions for a
-        <a target="_blank" href={`https://www.transport.nsw.gov.au/roadsafety/young-drivers/learners`} className="font-semibold underline px-1">
-          Driving Test Assessment in Kogarah.
-        </a>
-        This depends on your confidence, current skills, and previous
-        experience.
+        Assessments measure observation, signalling, and lane discipline. Speed
+        control and hazard response are reviewed. Parking accuracy is closely
+        analysed.
       </>
     ),
   },
   {
-    question: "Do you provide pickup and drop-off for lessons?",
+    question: "How accurate is the assessment compared to the real NSW test?",
     answer: (
       <>
-        Yes, we provide convenient pickup and drop-off for your sessions. We can
-        meet you at home, school, or work in Kogarah. This service is included
-        in our
-        <strong>Sydney suburbs driving test assessment package</strong>
+        Sessions follow official RMS testing procedures. Scoring reflects
+        examiner marking guidelines. Results mirror real test expectations.
       </>
     ),
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "Will you receive a written performance report after assessment?",
     answer: (
       <>
-        Our professional instructors cover a wide range of local areas. This
-        includes <strong>Kogarah, Hurstville, Rockdale, Bexley, Carlton</strong>
-        , and Arncliffe. We are familiar with the local roads and test routes in
-        these areas. Visit our
-        <Link href={`/area-covered`} className="font-semibold underline px-1">
-          Areas We Cover
-        </Link>{" "}
-        page for the complete list.
+        A detailed feedback summary is provided. Strengths and weaknesses are
+        clearly outlined. Improvement priorities are listed.
       </>
     ),
   },
   {
-    question: "What type of car will I learn in?",
+    question: "Can a driving test assessment predict your chances of passing?",
     answer: (
       <>
-        You will   <a target="_blank" href={`https://www.gov.uk/driving-lessons-learning-to-drive`} className="font-semibold underline px-1">
-          learn
-        </a> in a modern vehicle equipped with dual controls. These
-        cars are safe and very easy for students to handle. We ensure our fleet
-        is always clean and mechanically perfect for you.
+        Instructors compare your performance with the pass benchmarks. Readiness
+        levels are explained honestly. Clear recommendations are given.
       </>
     ),
   },
   {
-    question: "Can I book lessons online?",
+    question: "How soon should you book an assessment before your test?",
     answer: (
       <>
-        Yes, you can book your{" "}
-        <strong>Driving Test Assessment in Sydney suburbs online</strong>. Use
-        our website&apos;s booking form at any time to secure your preferred
-        time slot. It is the fastest way to start your journey to a license.
+        Most learners book two to three weeks early. This allows time for
+        corrections. Extra practice can be scheduled if needed.
       </>
     ),
   },
@@ -198,15 +173,19 @@ export default function DrivingTestAssessment() {
         title={`Driving Test Assessment in Sydney Suburbs | Book Online Now`}
         subtitle={
           <>
-            At<strong>Test Route driving School</strong>, we understand that
-            being prepared for your exam is crucial. That is why we offer a
-            top-tier <strong>Driving Test Assessment in Kogarah.</strong> This
-            session helps you find your strengths and fix your driving
-            weaknesses. We provide these assessments across the{" "}
-            <strong>Sydney suburbs</strong> to boost your confidence. You will
-            work with experts who understand the strict RMS testing standards.
-            Our team guides you through every step of the practical driving exam
-            process. We aim to help you pass your test on the first attempt.
+            At
+            <Link href="/" className="location-link">
+              Test Route driving School,
+            </Link>
+            we understand that being prepared for your exam is crucial. That is
+            why we offer a top-tier{" "}
+            <strong>Driving Test Assessment in Kogarah.</strong> This session
+            helps you find your strengths and fix your driving weaknesses. We
+            provide these assessments across the <strong>Sydney suburbs</strong>{" "}
+            to boost your confidence. You will work with experts who understand
+            the strict RMS testing standards. Our team guides you through every
+            step of the practical driving exam process. We aim to help you pass
+            your test on the first attempt.
           </>
         }
       />

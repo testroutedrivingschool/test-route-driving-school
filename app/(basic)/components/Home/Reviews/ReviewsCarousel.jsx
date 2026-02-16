@@ -14,23 +14,56 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import getAvatarSrc from "@/app/utils/getAvatarSrc";
 
-export default function ReviewsCarousel() {
-  const {data: reviewsData = [], isLoading} = useQuery({
-    queryKey: ["reviews", "website"],
-    queryFn: async () => {
-      const res = await axios.get("/api/reviews?targetType=website");
-      return res.data;
-    },
-  });
+const reviewsData = [
+  {
+    _id: 1,
+    authorName: "Adrita's World",
+    rating: 5,
+    email: "adritaworld@gmail.com",
+    createdAt: "2025-12-15T17:27:34.865+00:00",
+    authorImage:
+      "https://lh3.googleusercontent.com/a-/ALV-UjW26frzIQ5lA9UMjQ-ZpRw59YlM8JbrIJl0CEHavI454p-UHxk=w90-h90-p-rp-mo-br100",
+    message:
+      "Best driving instructor I could ask for ,As a student learner, I was very scared at first, but Test Route Driving School made everything easy. The lessons were well-structured and focused on test routes around the Sydney suburbs. The instructor corrected my mistakes calmly and helped me build confidence. I’m very happy with the result!",
+    targetType: "website",
+  },
+  {
+    _id: 2,
+    authorName: "porteboishobai",
+    rating: 5,
+    email: "porteboishobai@gmail.com",
+    createdAt: "2025-11-21T17:27:34.865+00:00",
+    authorImage: "",
+    message:
+      "My experience has been great ! Instructors were really patient with me and easygoing enough for me to communicate with them about my problems properly. Because of these lessons I am more confident than ever!",
+    targetType: "website",
+  },
+  {
+    _id: 3,
+    authorName: "Najeeb Zahid",
+    rating: 5,
+    email: "najeebzahid@gmail.com",
+    createdAt: "2025-11-16T17:27:34.865+00:00",
+    authorImage:
+      "https://lh3.googleusercontent.com/a-/ALV-UjVUTSfKBeBmU8-EX643CsUTkR7DK9XDwzIuhclZWYk3EizTsSrT=w45-h45-p-rp-mo-ba2-br100",
+    message:
+      "my nephew passed driving test on the first attempt thanks to Test Route Driving School. Instructor Firoj is extremely patient and explains everything clearly. Practicing real test routes made a huge difference.",
+    targetType: "website",
+  },
+  {
+    _id: "694c2595b8e4af68da593ef8",
+    authorName: "Iqbal Hossain",
+    rating: 5,
+    email: "iqbalhossain@gmail.com",
+    createdAt: "2025-08-22T17:27:34.865+00:00",
+    authorImage:
+      "https://lh3.googleusercontent.com/a-/ALV-UjXhO69RTzv5OI19axrcy0KROhPprqnmivMjY7NnOsu0SS_yhMc=w90-h90-p-rp-mo-br100",
+    message: "Nice Service",
+    targetType: "website",
+  },
+];
 
-  if (isLoading) return <LoadingSpinner />;
-  if (!reviewsData.length) {
-    return (
-      <p className="text-center text-gray-500 py-10">
-        No reviews available yet
-      </p>
-    );
-  }
+export default function ReviewsCarousel() {
   return (
     <div className="relative">
       <Swiper

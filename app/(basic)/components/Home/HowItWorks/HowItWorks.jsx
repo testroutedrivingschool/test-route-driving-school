@@ -68,7 +68,7 @@ export default function HowItWorks() {
     {/* LEFT SIDE */}
     <div className=" flex-1 lg:pr-12 text-left">
       {item.align === "left" && (
-        <div className="flex flex-row-reverse items-start justify-start lg:justify-end gap-4">
+        <div className="flex flex-row-reverse items-start justify-end lg:justify-end gap-4">
          
           <div>
             <p className="text-sm text-gray-500 font-semibold">
@@ -92,7 +92,7 @@ export default function HowItWorks() {
     <div className="w-10 shrink-0" />
 
     {/* RIGHT SIDE */}
-    <div className="flex-1 lg:pl-12 text-left">
+    <div className="flex-1 lg:pl-12 text-left ">
       {item.align === "right" && (
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center text-xl shrink-0">

@@ -14,6 +14,7 @@ import SectionHeader from "@/app/shared/ui/SectionHeader";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
+import Link from "next/link";
 const galleryImages = [
   {
     id: 1,
@@ -48,19 +49,135 @@ const galleryImages = [
     src: galleryImg8,
   },
 ];
+export const metadata = {
+  title: "Driving School Gallery – See Real Success",
+  description:
+    "View real lesson moments, student progress, and training quality. See why learners trust Test Route Driving School. Explore our gallery and book your lesson today.",
+  keywords: [
+    "Driving School in Sydney suburbs",
+    "driving school near me",
+    "driving lessons schools",
+    "driving schools in Sydney suburbs",
+    "driving schools for manual transmission",
+    "driving training school near me",
+    "affordable driving school in Sydney suburbs",
+    "driving schools near by me",
+    "driving instructor schools in Sydney suburbs",
+    "driving class Sydney suburbs",
+    "driving lessons Sydney suburbs",
+    "driving instructor in Sydney suburbs",
+  ],
+};
+
+const whyChoosePoints = [
+  {
+    title: "Professional Driving Instructors",
+    description: "Qualified trainers with real test and road experience.We focus on safety, control, and smart decision-making.",
+  },
+  {
+    title: "Complete Skill-Based Training",
+    description: (
+      <>
+        Lessons cover city driving, highways, parking, and test routes.
+ You learn practical and theory-based skills together.
+
+      </>
+    ),
+  },
+  {
+    title: "Licence Process Support",
+    description:
+      "We guide you through every licensing step.From preparation to test day, we stay with you.",
+  },
+  {
+    title: "Modern Dual-Control Vehicles",
+    description:
+     <>
+     Train in clean, safe, and well-maintained automatic cars.
+ Dual controls ensure extra    <a
+          className="location-link"
+          href={"https://www.nhtsa.gov/ten-tips-for-safe-driving"}
+          target="_blank"
+        >
+          safety
+        </a> during practice.
+     </>,
+  },
+  {
+    title: "Flexible Lesson Scheduling",
+    description:
+      " Choose lesson times that fit your routine.We offer weekday, evening, and weekend options.",
+  },
+];
+
+const faqs = [
+  {
+    question: "How many lessons do I need to pass?",
+    answer: (
+      <>
+        Most learners succeed within 15–30 professional sessions.
+
+      </>
+    ),
+  },
+  {
+    question: "Do you provide pickup and drop-off?",
+    answer: (
+      <>
+        Yes. We provide door-to-door service in most suburbs.
+
+      </>
+    ),
+  },
+  {
+    question: "Which suburbs do you cover?",
+    answer: (
+      <>
+       We operate across Kogarah and the nearby Sydney areas.
+
+      </>
+    ),
+  },
+  {
+    question: "Can I book lessons online?",
+    answer: (
+      <>
+      Yes. Online booking is fast and secure.
+
+
+      </>
+    ),
+  },
+  {
+    question: "What type of car will I learn in?",
+    answer: (
+      <>
+       You will train in a modern automatic vehicle.
+
+      </>
+    ),
+  },
+];
 export default function Gallery() {
   return (
     <>
       <PageHeroSection
-        title={`Our Gallery`}
-        subtitle={`Explore moments from our driving lessons, training sessions, and successful journeys with our students`}
+        title={`Our Driving School Gallery`}
+        subtitle={<>
+        View real lesson moments, student progress, and training quality. See why learners trust Test Route Driving School. Explore our gallery and book your lesson today.
+        </>}
       />
       <section className="py-16">
         <Container>
           <SectionHeader
             className={`mt-0!`}
-            title={`Our Gallery`}
-            subtitle={`Explore moments from our driving lessons, training sessions, and successful journeys with our students`}
+            title={`Our Driving School Gallery`}
+            subtitle={<>
+        View real moments from our   <Link href="/instructors" className="location-link">
+       driving lessons,
+        </Link>{" "} practice sessions, and student success stories.
+ See how learners grow in confidence, skill, and road awareness through professional training. Each image reflects commitment, safety, and real progress on Sydney roads.
+        </>}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8">
             {galleryImages.map((img) => (
@@ -78,7 +195,13 @@ export default function Gallery() {
         </Container>
       </section>
       <MovingCar />
-      <WhyChooseUs />
+      <WhyChooseUs title={`Why Choose Test Route Driving School in Sydney Suburbs?
+`} subTitle={<>
+  <Link href="/" className="location-link">
+       Test Route Driving School
+        </Link> supports learners with expert guidance and proven teaching methods. We help students gain confidence, pass tests, and drive safely for life. Here’s why learners trust us for quality driving education.
+
+</>} points={whyChoosePoints}/>
       <Faq />
     </>
   );

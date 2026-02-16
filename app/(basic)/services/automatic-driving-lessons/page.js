@@ -185,56 +185,58 @@ const drivingLessonTips = [
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass?",
+    question: "How long does it take to complete driving lessons in Sydney suburbs?",
     answer: (
       <>
-        The number varies for every learner in the{" "}
-        <strong>Sydney Suburbs</strong>. Most students need 5 to 10 lessons to
-        feel truly ready. For more details, please visit our{" "}
-        <Link href={`/faq`} className="font-semibold underline px-1">
-          FAQ page.
-        </Link>
+        Progress depends on your experience and practice frequency.
+ Most learners improve within structured weekly sessions.
+ Instructors track skills and adjust lesson plans.
+
       </>
     ),
   },
   {
-    question: "Do you provide pickup and drop-off?",
+    question: "Are automatic driving lessons better for beginners in Sydney suburbs?",
     answer: (
       <>
-        Yes, we offer convenient pickup from your home or school. We serve
-        <strong>
-          the areas of Sydney suburbs, Hurstville, Rockdale, Bexley, Carlton,
-          and Arncliffe.
-        </strong>
+        Automatic cars reduce control complexity.
+ Learners focus more on traffic and hazard awareness.
+ Confidence develops faster without clutch management.
+
       </>
     ),
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "Do your driving lessons include real test route practice?",
     answer: (
       <>
-        We cover a wide range of areas, including{" "}
-        <strong>Allawah, Arncliffe, Bexley, Rockdale, and Hurstville</strong>.
-        Visit our
-        <Link href={`/area-covered`} className="font-semibold underline px-1">
-          Areas We Cover
-        </Link>{" "}
-        page for the complete list.
+        Lessons include common test routes and exam locations.
+ Mock tests simulate real driving conditions.
+ Mistakes are corrected before the test day.
+
       </>
     ),
   },
   {
-    question: "Can I book lessons online?",
+    question: "Can you change lesson plans based on your learning speed?",
     answer: (
       <>
-        Yes, you can easily book through our website or{" "}
-        <Link
-          href={`/company/contact`}
-          className="font-semibold underline px-1"
-        >
-          Contact Us
-        </Link>{" "}
-        page. Our online system is available 24/7 for your convenience.
+        Training plans remain flexible throughout your course.
+ Instructors modify lessons after each assessment.
+ Weak areas receive extra attention.
+
+      </>
+    ),
+  },
+  {
+    question: "What skills do you learn during professional driving lessons?",
+    answer: (
+      <>
+      Training covers parking, lane control, and intersections.
+ Highway driving and school zones are included.
+ Defensive driving techniques improve road safety.
+
+
       </>
     ),
   },
@@ -247,7 +249,12 @@ export default function AutomaticDrivingLesson() {
         subtitle={
           <>
             Mastering the road starts with the right{" "}
-            <strong>driving school in Sydney suburbs</strong>. You deserve a
+            <Link
+              href="/"
+              className="px-1 font-bold underline"
+            >
+              driving school in Sydney suburbs.
+            </Link> You deserve a
             stress-free experience while learning to handle modern traffic
             safely. We offer top-tier{" "}
             <strong>driving lessons in Sydney suburbs</strong> that cater to

@@ -80,81 +80,105 @@ const automaticDrivingPackages = [
   },
 ];
 
-  const whyChoosePoints = [
-    {
-      title: "Expert Driving Instructors",
-      description:
-        "Our certified trainers ensure you learn safe and efficient driving skills.",
-    },
-    {
-      title: "Comprehensive Training",
-      description:
-        <>
-       We offer both practical and theoretical lessons to prepare you for real-world driving.
-        </>,
-    },
-    {
-      title: "License Assistance",
-      description:
-        " We help you through the application process to make it hassle-free.",
-    },
-    {
-      title: "Modern Vehicles",
-      description:
-        "Learn in well-maintained cars for a smooth and comfortable experience.",
-    },
-    {
-      title: "Flexible Timing",
-      description: " Choose from convenient class schedules that fit your busy routine.",
-    },
-  ];
+const whyChoosePoints = [
+  {
+    title: "Expert Driving Instructors",
+    description:
+     <>
+     Our certified trainers ensure you learn safe and efficient  <a
+      className="location-link"
+      href={"https://www.gov.uk/driving-test/what-to-take?"}
+      target="_blank"
+      rel="noreferrer"
+    >
+      driving skills.
+    </a>
+     </>,
+  },
+  {
+    title: "Comprehensive Training",
+    description: (
+      <>
+        We offer both practical and theoretical lessons to prepare you for
+        real-world driving.
+      </>
+    ),
+  },
+  {
+    title: "License Assistance",
+    description:
+      " We help you through the application process to make it hassle-free.",
+  },
+  {
+    title: "Modern Vehicles",
+    description:
+      <>
+      
+       <a
+      className="location-link"
+      href={"https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia"}
+      target="_blank"
+      rel="noreferrer"
+    >
+      Learn
+    </a>in well-maintained cars for a smooth and comfortable experience.
+      </>,
+  },
+  {
+    title: "Flexible Timing",
+    description:
+      " Choose from convenient class schedules that fit your busy routine.",
+  },
+];
 
-   const faqs = [
+const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
-    answer:
+    question:
+      "How quickly can you improve your parking skills with this package?",
+    answer: (
       <>
-      The number of lessons varies for each <a target="_blank" href={`https://en.wikipedia.org/wiki/Driver%27s_licences_in_Australia`} className="font-semibold underline px-1">
-              learner.
-            </a> On average, most students require between 5 and 10 lessons. This depends on your experience, confidence, and current driving skills. We offer various<strong>driving lesson packages in Sydney suburbs </strong>to suit your specific needs.
-      </>,
+        Most learners see improvement within one session. Focused drills
+        accelerate muscle memory. Confidence increases through repeated
+        practice.
+      </>
+    ),
   },
   {
-    question: "Do you provide pickup and drop-off for lessons?",
-    answer:
+    question: "Do parking lessons focus on NSW test marking criteria?",
+    answer: (
       <>
-       Yes, we offer convenient pickup and drop-off services. We can meet you at your home, school, or workplace. We serve a wide range of areas, including 
-     <strong>
-      Sydney suburbs, Hurstville, and Rockdale.
-     </strong>
-      </>,
+        Training follows official NSW parking standards. Instructors explain
+        common examiner expectations. Mistakes are corrected early.
+      </>
+    ),
   },
   {
-    question: "Which suburbs do your instructors cover?",
-    answer:
+    question: "Will you practise parking in real traffic conditions?",
+    answer: (
       <>
-     Our instructors cover a wide range of suburbs in the <strong>Sydney Suburbs.</strong>This includes Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and Sydney suburbs. We are familiar with the local test routes in these areas better than anyone else.
-
-      </>,
+        Lessons take place on active suburban streets. Shopping centres and
+        roadside locations are used. Real pressure improves control.
+      </>
+    ),
   },
   {
-    question: "What type of car will I learn in?",
-    answer:
+    question: "Can parking lessons fix long-term bad driving habits?",
+    answer: (
       <>
-      You will learn in a modern automatic vehicle. Every car features dual controls to ensure maximum safety and security. This allows me to intervene if you make a mistake while you <strong>learn to park in Sydney suburbs.</strong><a target="_blank" href={`https://www.gov.uk/driving-test/what-to-take?`} className="font-semibold underline px-1">
-               learn more.
-            </a>
-      </>,
+        Instructors analyse steering and positioning errors. Old habits are
+        replaced with proven techniques. Consistent methods improve accuracy.
+      </>
+    ),
   },
   {
-    question: "Can I book lessons online?",
-    answer:
+    question: "Is this package useful after passing your driving test?",
+    answer: (
       <>
-      YYes, you can! Visit our<Link href={`/packages`} className="font-semibold underline px-1">Find Your Perfect Driving Package</Link> page to book at any time. Our online form is simple and fast to use for your convenience.
-
-      </>,
+        Training helps with everyday city parking. Skills improve safety in
+        crowded areas. Confidence remains strong long-term.
+      </>
+    ),
   },
-
 ];
 
 export default function ParkingPackage() {
@@ -304,19 +328,23 @@ export default function ParkingPackage() {
               requirements of the NSW driving test.
             </li>
             <li className="text-base-300 ">
-              <strong>P-Platers:</strong> Refine your skills to navigate tricky city spots with ease.
-
+              <strong>P-Platers:</strong> Refine your skills to navigate tricky
+              city spots with ease.
             </li>
             <li className="text-base-300 ">
-              <strong>Overseas License Holders:</strong> Adapt quickly to local Australian road rules and parking signs.
-
+              <strong>Overseas License Holders:</strong> Adapt quickly to local
+              Australian road rules and parking signs.
             </li>
             <li className="text-base-300 ">
-              <strong>Returning Adults:</strong> Re-learn essential skills after a long break from the driver&apos;s seat.
+              <strong>Returning Adults:</strong> Re-learn essential skills after
+              a long break from the driver&apos;s seat.
             </li>
-           
           </ul>
-          <p className="mt-2 leading-relaxed">Anyone searching for a <strong>parking driving instructor near me</strong> to help them correct their bad habits.</p>
+          <p className="mt-2 leading-relaxed">
+            Anyone searching for a{" "}
+            <strong>parking driving instructor near me</strong> to help them
+            correct their bad habits.
+          </p>
         </Container>
       </section>
 
@@ -325,16 +353,37 @@ export default function ParkingPackage() {
         sectionTitle="Parking Packages"
         sectionSubtitle={
           <>
-         Choose the perfect package for your learning journey with our structured Parking Package designed for success.
+            Choose the perfect package for your learning journey with our
+            structured Parking Package designed for success.
           </>
         }
         packages={automaticDrivingPackages}
       />
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints} subTitle={ <>   Selecting the right <strong>driving school in Sydney suburbs, NSW</strong> makes a massive difference. At <strong>Test Route Driving School</strong>, we prioritize your success and safety above all else. I have helped hundreds of students in <strong>Allawah</strong> and <strong>Sydney suburbs</strong> find their rhythm on the road. We don&apos;t just teach you to drive; we teach you to survive and thrive.
-          </>}/>
+      <WhyChooseUs
+        points={whyChoosePoints}
+        subTitle={
+          <>
+            {" "}
+            Selecting the right{" "}
+            <strong>driving school in Sydney suburbs, NSW</strong> makes a
+            massive difference. At{" "}
+            <Link href={`/`} className="font-semibold underline px-1">
+              Test Route Driving School,
+            </Link>
+            we prioritize your success and safety above all else. I have helped
+            hundreds of students in <strong>Allawah</strong> and{" "}
+            <strong>Sydney suburbs</strong> find their rhythm on the road. We
+            don&apos;t just teach you to drive; we teach you to survive and
+            thrive.
+          </>
+        }
+      />
 
-      <Faq faqs={faqs}/>
+      <Faq
+        title={`Frequently Asked Questions About Driving Lessons Near Sydney Suburbs`}
+        faqs={faqs}
+      />
     </div>
   );
 }

@@ -34,14 +34,38 @@ const blogsData = [
     link: "#",
   },
 ];
-export default function BlogSection() {
+export default function BlogSection({sectionTitle, sectionSubTitle}) {
   return (
     <section className="py-16">
       <Container>
         <SectionHeader
           className={`mt-0!`}
-          title={`Our Blog`}
-          subtitle={`Stay updated with the latest tips and insights from the world of driving. Visit our blog for helpful guides and the latest updates.`}
+          title={sectionTitle?sectionTitle:`Our Driving School Blog`}
+          subtitle={
+            sectionSubTitle ? (
+              sectionSubTitle
+            ) : (
+              <>
+                Stay updated with fresh driving tips,{" "}
+                <Link href="/instructors" className="location-link">
+                  instructor
+                </Link>{" "}
+                insights, and learner-focused guidance. Our blog shares
+                practical lessons from real test routes, common mistakes, and
+                proven success methods. Each post helps you prepare better,
+                reduce anxiety, and progress faster toward your licence. Visit
+                regularly to sharpen your skills and stay ahead in your
+                <a
+                  className="location-link"
+                  href={"https://en.wikipedia.org/wiki/Driving_Lessons"}
+                  target="_blank"
+                >
+                  learning
+                </a>
+                journey.
+              </>
+            )
+          }
         />
 
         {/* Blog Grid */}
