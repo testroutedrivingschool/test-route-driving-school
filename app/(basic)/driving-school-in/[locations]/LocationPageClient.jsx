@@ -9,17 +9,15 @@ import locationImg from "@/app/assets/test-route-driving-school-cover.png";
 import locationImg2 from "@/app/assets/test-lesson-test-route-driving-school.png";
 import WhatWeOffer from "../../components/Home/WhatWeOffer";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
-import {
-  FaCar,
-  
-  FaTrafficLight,
-} from "react-icons/fa";
+import {FaCar, FaEnvelope, FaPhoneAlt, FaTrafficLight} from "react-icons/fa";
 import {IoIosWarning} from "react-icons/io";
 import {FaArrowRotateLeft} from "react-icons/fa6";
-
-
+import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
+import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
+import {useRouter} from "next/navigation";
 
 export default function LocationPageClient({locationData}) {
+  const router = useRouter();
   const location = "Kograh nsw";
   return (
     <div>
@@ -72,7 +70,7 @@ export default function LocationPageClient({locationData}) {
             <div className="w-full lg:w-auto flex-1 ">
               <Image
                 src={locationImg2}
-               alt={`${locationData?.pageTitle}`}
+                alt={`${locationData?.pageTitle}`}
                 width={600}
                 height={400}
                 className="rounded-xl shadow-lg object-cover w-full h-full"
@@ -86,13 +84,13 @@ export default function LocationPageClient({locationData}) {
               </h2>
 
               <p className="text-gray-700 text-lg">
-              {locationData.section2SubTitle
+                {locationData.section2SubTitle
                   ? locationData.section2SubTitle
                   : "You deserve an affordable driving school that truly cares about your success. Many learners feel nervous during their first few lessons, which is completely normal. We create a calm, patient, and supportive learning environment to help you build confidence step by step. Our experienced instructors focus on real-world driving skills and proper test preparation, so you feel ready for any traffic situation."}
               </p>
 
               <ul className="list-disc list-inside text-gray-700 space-y-2">
-                  {locationData?.section2Features?.map((feature, idx) => (
+                {locationData?.section2Features?.map((feature, idx) => (
                   <li key={idx}>{feature}</li>
                 ))}
               </ul>
@@ -107,19 +105,27 @@ export default function LocationPageClient({locationData}) {
             <div>
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                 {locationData?.section3Title1?locationData.section3Title1:""}
+                  {locationData?.section3Title1
+                    ? locationData.section3Title1
+                    : ""}
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">
-                   {locationData?.section3Description1?locationData.section3Description1:""}
+                  {locationData?.section3Description1
+                    ? locationData.section3Description1
+                    : ""}
                 </p>
               </div>
 
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                    {locationData?.section3Title2?locationData.section3Title2:""}
+                  {locationData?.section3Title2
+                    ? locationData.section3Title2
+                    : ""}
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">
-                     {locationData?.section3Description2?locationData.section3Description2:""}
+                  {locationData?.section3Description2
+                    ? locationData.section3Description2
+                    : ""}
                 </p>
               </div>
             </div>
@@ -145,12 +151,10 @@ export default function LocationPageClient({locationData}) {
                   <FaCar />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
-               {locationData.lessonTips[0].name || ""}
+                  {locationData.lessonTips[0].name || ""}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                  {
-                        locationData.lessonTips[0].description || ""
-                  }
+                  {locationData.lessonTips[0].description || ""}
                 </p>
               </div>
 
@@ -159,12 +163,10 @@ export default function LocationPageClient({locationData}) {
                   <IoIosWarning />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
-                {locationData.lessonTips[1].name || ""}
+                  {locationData.lessonTips[1].name || ""}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                    {
-                        locationData.lessonTips[1].description || ""
-                  }
+                  {locationData.lessonTips[1].description || ""}
                 </p>
               </div>
 
@@ -173,12 +175,10 @@ export default function LocationPageClient({locationData}) {
                   <FaTrafficLight />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
-                    {locationData.lessonTips[2].name || ""}
+                  {locationData.lessonTips[2].name || ""}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                     {
-                        locationData.lessonTips[2].description || ""
-                  }
+                  {locationData.lessonTips[2].description || ""}
                 </p>
               </div>
 
@@ -187,38 +187,73 @@ export default function LocationPageClient({locationData}) {
                   <FaArrowRotateLeft />
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-yellow-500 transition-colors">
-                     {locationData.lessonTips[3].name || ""}
+                  {locationData.lessonTips[3].name || ""}
                 </h3>
                 <p className="text-gray-700 leading-relaxed">
-                     {
-                        locationData.lessonTips[3].description || ""
-                  }
+                  {locationData.lessonTips[3].description || ""}
                 </p>
               </div>
             </div>
           </div>
         </Container>
       </section>
-
-      <Faq faqs={locationData?.faqs}/>
-{/* Map*/}
-    <section className="py-16">
-<Container>
-
-  <div className="w-full h-[450px] rounded-xl overflow-hidden border border-border-color">
-      <iframe
-        src={locationData.mapUrl}
-        width="100%"
-        height="100%"
-        style={{ border: 0 }}
-        allowFullScreen
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
-        />
-    </div>
+      <section className="mt-10 mb-10">
+        <Container>
+          {/* CTA Section */}
+          <div className=" bg-primary rounded-xl p-8 text-white text-center">
+            <h3 className="text-2xl font-bold mb-4">Call to Action</h3>
+            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+              {locationData.ctaDescription
+                ? locationData.ctaDescription
+                : "Start your driving journey today with Test Route Driving School in Carlton. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <SecondaryBtn onClick={() => router.push("/bookings")}>
+                Book Now
+              </SecondaryBtn>
+              <OutlineBtn
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary!`}
+              >
+                <a
+                  href="tel:61412018593"
+                  className="flex items-center gap-2 px-0 rounded-lg  text-white font-bold  transition "
+                >
+                  <FaPhoneAlt className="text-xl" />
+                  <span>Call Now</span>
+                </a>
+              </OutlineBtn>
+              <OutlineBtn
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary!`}
+              >
+                <a
+                  href="mailto:testroutedrivingschool@gmail.com"
+                  className="flex items-center gap-2 rounded-lg  text-white font-bold text-lg  transition "
+                >
+                  <FaEnvelope className="text-lg" />
+                  <span>Sent Email</span>
+                </a>
+              </OutlineBtn>
+            </div>
+          </div>
         </Container>
-        </section>
-    
+      </section>
+      <Faq faqs={locationData?.faqs} />
+      {/* Map*/}
+      <section className="py-16">
+        <Container>
+          <div className="w-full h-[450px] rounded-xl overflow-hidden border border-border-color">
+            <iframe
+              src={locationData.mapUrl}
+              width="100%"
+              height="100%"
+              style={{border: 0}}
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
+          </div>
+        </Container>
+      </section>
     </div>
   );
 }

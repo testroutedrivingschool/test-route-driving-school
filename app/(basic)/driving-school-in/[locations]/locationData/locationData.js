@@ -2575,6 +2575,7 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
         ),
       },
     ],
-
+  ctaDescription:"Start your driving journey today with Test Route Driving School in Carlton. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."
   },
+
 };
