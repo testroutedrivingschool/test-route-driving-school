@@ -99,7 +99,7 @@ export default function HomePackage() {
                       {pkg.duration}
                     </span>
                   </div>
-                  <p className="text-gray-600">{pkg.description}</p>
+                  <p className="text-neutral">{pkg.description}</p>
                 </div>
 
                 {/* Pricing */}

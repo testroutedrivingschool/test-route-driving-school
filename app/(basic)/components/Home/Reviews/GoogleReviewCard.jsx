@@ -47,13 +47,13 @@ export default function GoogleReviewCard() {
                           <FaStar key={i} className="text-yellow-500 text-lg" />
                         ))}
                       </div>
-                      <span className="text-sm text-gray-600 mt-1">
+                      <span className="text-sm text-neutral mt-1">
                         Excellent
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 text-gray-600">
+                  <div className="flex items-center gap-3 text-neutral">
                     <span className="text-sm font-bold bg-gray-100 px-3 py-1 rounded-full">
                       850+ reviews
                     </span>
@@ -85,7 +85,7 @@ export default function GoogleReviewCard() {
                       style={{width: "90%"}}
                     ></div>
                   </div>
-                  <span className="text-sm text-gray-600">98% positive</span>
+                  <span className="text-sm text-neutral">98% positive</span>
                 </div>
               </div>
             </div>

@@ -11,7 +11,7 @@ import {
   FaAward,
 } from "react-icons/fa";
 
-export default function DrivingTipsSection({title,subtitle,tips}) {
+export default function DrivingTipsSection({title, subtitle, tips}) {
   const defaultTips = [
     {
       title: "Practice Regularly",
@@ -55,17 +55,20 @@ export default function DrivingTipsSection({title,subtitle,tips}) {
     },
     {
       title: "Prepare for Driving Tests",
-      description:
+      description: (
         <>
-        
-        Learn practical test strategies, including parking, highway driving, and city navigation. Our instructors provide expert guidance, helping you understand requirements, build confidence, and pass your driving test efficiently and successfully. View our <Link
-        href="/services/driving-test-package"
-        className="text-primary font-semibold underline px-1"
-      >
-         Driving Test Packages.
-      </Link>
-      </>
-      ,
+          Learn practical test strategies, including parking, highway driving,
+          and city navigation. Our instructors provide expert guidance, helping
+          you understand requirements, build confidence, and pass your driving
+          test efficiently and successfully. View our{" "}
+          <Link
+            href="/services/driving-test-package"
+            className="text-primary font-semibold underline px-1"
+          >
+            Driving Test Packages.
+          </Link>
+        </>
+      ),
       icon: <FaAward className="h-6 w-6" />,
       color: "text-red-600 bg-red-50",
       goal: "Test Success",
@@ -78,143 +81,153 @@ export default function DrivingTipsSection({title,subtitle,tips}) {
         {/* Header with subtle gradient */}
         <div className="text-center space-y-6 mb-12">
           <SectionHeader
-          className={`mt-0!`}
-            title={title?title:"Expert Driving Tips & Advice"}
-            subtitle={subtitle?subtitle:"Learning to drive can be challenging, but with the right guidance, practice, and mindset, you can become a confident and safe driver. Our professional instructors provide expert advice for learners of all levels."}
+            className={`mt-0!`}
+            title={title ? title : "Expert Driving Tips & Advice"}
+            subtitle={
+              subtitle
+                ? subtitle
+                : "Learning to drive can be challenging, but with the right guidance, practice, and mindset, you can become a confident and safe driver. Our professional instructors provide expert advice for learners of all levels."
+            }
           />
         </div>
 
         {/* Tips Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {tips?tips.map((tip, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-xl border border-gray-200 p-6 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
-            >
-              {/* Icon and title section */}
-              <div className="flex items-start space-x-4 mb-4">
+          {tips
+            ? tips.map((tip, index) => (
                 <div
-                  className={`p-3 rounded-lg ${tip.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                  key={index}
+                  className="group bg-white rounded-xl border border-gray-200 p-6 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
                 >
-                  {tip.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300">
-                    {tip.title}
-                  </h3>
-                  {/* Tip metadata */}
-                  <div className="flex items-center space-x-3 mt-2">
-                    {tip.duration && (
-                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                        {tip.duration}
-                      </span>
-                    )}
-                    {tip.priority && (
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
-                        {tip.priority} Priority
-                      </span>
-                    )}
-                    {tip.level && (
-                      <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
-                        {tip.level}
-                      </span>
-                    )}
+                  {/* Icon and title section */}
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div
+                      className={`p-3 rounded-lg ${tip.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {tip.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300">
+                        {tip.title}
+                      </h3>
+                      {/* Tip metadata */}
+                      <div className="flex items-center space-x-3 mt-2">
+                        {tip.duration && (
+                          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                            {tip.duration}
+                          </span>
+                        )}
+                        {tip.priority && (
+                          <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                            {tip.priority} Priority
+                          </span>
+                        )}
+                        {tip.level && (
+                          <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
+                            {tip.level}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-neutral leading-relaxed">
+                    {tip.description}
+                  </p>
+
+                  {/* Bottom accent */}
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>Tip #{index + 1}</span>
+                      <div className="flex items-center space-x-2">
+                        {tip.type && (
+                          <span className="font-medium text-gray-700">
+                            {tip.type}
+                          </span>
+                        )}
+                        {tip.goal && (
+                          <span className="font-medium text-gray-700">
+                            {tip.goal}
+                          </span>
+                        )}
+                        {tip.focus && (
+                          <span className="font-medium text-gray-700">
+                            {tip.focus}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Description */}
-              <p className="text-gray-600 leading-relaxed">{tip.description}</p>
-
-              {/* Bottom accent */}
-              <div className="mt-6 pt-4 border-t border-gray-100">
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>Tip #{index + 1}</span>
-                  <div className="flex items-center space-x-2">
-                    {tip.type && (
-                      <span className="font-medium text-gray-700">
-                        {tip.type}
-                      </span>
-                    )}
-                    {tip.goal && (
-                      <span className="font-medium text-gray-700">
-                        {tip.goal}
-                      </span>
-                    )}
-                    {tip.focus && (
-                      <span className="font-medium text-gray-700">
-                        {tip.focus}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )):defaultTips.map((tip, index) => (
-            <div
-              key={index}
-              className="group bg-white rounded-xl border border-gray-200 p-6 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
-            >
-              {/* Icon and title section */}
-              <div className="flex items-start space-x-4 mb-4">
+              ))
+            : defaultTips.map((tip, index) => (
                 <div
-                  className={`p-3 rounded-lg ${tip.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                  key={index}
+                  className="group bg-white rounded-xl border border-gray-200 p-6 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
                 >
-                  {tip.icon}
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300">
-                    {tip.title}
-                  </h3>
-                  {/* Tip metadata */}
-                  <div className="flex items-center space-x-3 mt-2">
-                    {tip.duration && (
-                      <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                        {tip.duration}
-                      </span>
-                    )}
-                    {tip.priority && (
-                      <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
-                        {tip.priority} Priority
-                      </span>
-                    )}
-                    {tip.level && (
-                      <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
-                        {tip.level}
-                      </span>
-                    )}
+                  {/* Icon and title section */}
+                  <div className="flex items-start space-x-4 mb-4">
+                    <div
+                      className={`p-3 rounded-lg ${tip.color} shrink-0 group-hover:scale-110 transition-transform duration-300`}
+                    >
+                      {tip.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-semibold text-gray-900 group-hover:text-primary transition-colors duration-300">
+                        {tip.title}
+                      </h3>
+                      {/* Tip metadata */}
+                      <div className="flex items-center space-x-3 mt-2">
+                        {tip.duration && (
+                          <span className="text-xs px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
+                            {tip.duration}
+                          </span>
+                        )}
+                        {tip.priority && (
+                          <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                            {tip.priority} Priority
+                          </span>
+                        )}
+                        {tip.level && (
+                          <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
+                            {tip.level}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Description */}
+                  <p className="text-neutral leading-relaxed">
+                    {tip.description}
+                  </p>
+
+                  {/* Bottom accent */}
+                  <div className="mt-6 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between text-sm text-gray-500">
+                      <span>Tip #{index + 1}</span>
+                      <div className="flex items-center space-x-2">
+                        {tip.type && (
+                          <span className="font-medium text-gray-700">
+                            {tip.type}
+                          </span>
+                        )}
+                        {tip.goal && (
+                          <span className="font-medium text-gray-700">
+                            {tip.goal}
+                          </span>
+                        )}
+                        {tip.focus && (
+                          <span className="font-medium text-gray-700">
+                            {tip.focus}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Description */}
-              <p className="text-gray-600 leading-relaxed">{tip.description}</p>
-
-              {/* Bottom accent */}
-              <div className="mt-6 pt-4 border-t border-gray-100">
-                <div className="flex items-center justify-between text-sm text-gray-500">
-                  <span>Tip #{index + 1}</span>
-                  <div className="flex items-center space-x-2">
-                    {tip.type && (
-                      <span className="font-medium text-gray-700">
-                        {tip.type}
-                      </span>
-                    )}
-                    {tip.goal && (
-                      <span className="font-medium text-gray-700">
-                        {tip.goal}
-                      </span>
-                    )}
-                    {tip.focus && (
-                      <span className="font-medium text-gray-700">
-                        {tip.focus}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
+              ))}
         </div>
       </Container>
     </section>

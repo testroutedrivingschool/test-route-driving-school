@@ -1,16 +1,26 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import React, { useState, useEffect } from "react";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import React, {useState, useEffect} from "react";
+import {FaChevronLeft, FaChevronRight} from "react-icons/fa";
 
 const months = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 // ✅ Monday → Sunday
 const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
-export default function BookingCalendar({ selectedDate, setSelectedDate }) {
+export default function BookingCalendar({selectedDate, setSelectedDate}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
 
@@ -19,8 +29,8 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
     const startOfWeek = new Date(selectedDate);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    const day = startOfWeek.getDay();       // Sun=0..Sat=6
-    const diffToMonday = (day + 6) % 7;     // Mon=0..Sun=6
+    const day = startOfWeek.getDay(); // Sun=0..Sat=6
+    const diffToMonday = (day + 6) % 7; // Mon=0..Sun=6
     startOfWeek.setDate(startOfWeek.getDate() - diffToMonday);
 
     const dates = [];
@@ -84,9 +94,13 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
 
   // Navigate months
   const prevMonth = () =>
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1),
+    );
   const nextMonth = () =>
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    setCurrentDate(
+      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
+    );
 
   // ✅ Week highlight check
   const isInSelectedWeek = (date) =>
@@ -102,26 +116,37 @@ export default function BookingCalendar({ selectedDate, setSelectedDate }) {
     <div className="rounded-xl shadow-sm border border-border-color">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 px-4 py-4 rounded-t-xl text-center bg-primary">
-        <h2 className="text-base font-bold text-white">Find Next Available Time</h2>
+        <h2 className="text-base font-bold text-white">
+          Find Next Available Time
+        </h2>
       </div>
 
       {/* Month Navigation */}
       <div className="flex items-center justify-between mb-4 px-2">
-        <button onClick={prevMonth} className="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
-          <FaChevronLeft className="h-4 w-4 text-gray-600" />
+        <button
+          onClick={prevMonth}
+          className="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
+        >
+          <FaChevronLeft className="h-4 w-4 text-neutral" />
         </button>
         <h3 className="text-lg font-semibold text-gray-800">
           {currentMonth} {currentYear}
         </h3>
-        <button onClick={nextMonth} className="p-2 hover:bg-gray-100 rounded-lg transition duration-200">
-          <FaChevronRight className="h-4 w-4 text-gray-600" />
+        <button
+          onClick={nextMonth}
+          className="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
+        >
+          <FaChevronRight className="h-4 w-4 text-neutral" />
         </button>
       </div>
 
       {/* Weekday Headers (Mon → Sun) */}
       <div className="grid grid-cols-7 gap-1 mb-2 bg-secondary px-2">
         {weekdays.map((day) => (
-          <div key={day} className="text-center text-sm font-medium text-white py-2">
+          <div
+            key={day}
+            className="text-center text-sm font-medium text-white py-2"
+          >
             {day}
           </div>
         ))}

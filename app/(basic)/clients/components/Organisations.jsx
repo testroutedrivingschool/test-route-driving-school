@@ -2,12 +2,10 @@
 
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
-import { useMemo, useState } from "react";
-import { FiSearch } from "react-icons/fi";
+import {useMemo, useState} from "react";
+import {FiSearch} from "react-icons/fi";
 
-const demoOrgs = [
-  
-];
+const demoOrgs = [];
 
 export default function Organisations() {
   const [q, setQ] = useState("");
@@ -34,8 +32,6 @@ export default function Organisations() {
               invoicing and chargeable accounts.
             </p>
           </div>
-
-        
         </div>
 
         {/* Search */}
@@ -96,7 +92,7 @@ export default function Organisations() {
                 <tr>
                   <td
                     colSpan={8}
-                    className="px-4 py-10 text-center text-gray-600"
+                    className="px-4 py-10 text-center text-neutral"
                   >
                     No organisations found.
                   </td>

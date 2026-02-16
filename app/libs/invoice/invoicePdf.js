@@ -91,7 +91,7 @@ function invoiceHtml(data, logoUrl) {
       <div class="brand">
         <h1>TEST ROUTE DRIVING SCHOOL</h1>
         <p>67 Warialda St, Kogarah NSW 2217, Australia</p>
-        <p>Phone: 61 412 018 593</p>
+        <p>Phone: 0412 018 593</p>
         <p>https://testroutedrivingschool.com.au</p>
         <p>ABN: 60 328 717 194</p>
       </div>

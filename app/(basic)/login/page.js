@@ -124,7 +124,7 @@ export default function Login() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Welcome Back
           </h1>
-          <p className="text-gray-600">
+          <p className="text-neutral">
             Sign in to your account to continue your driving journey
           </p>
         </div>
@@ -184,7 +184,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
               >
                 {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
@@ -210,7 +210,7 @@ export default function Login() {
 
         {/* Sign Up Link */}
         <div className="mt-4 text-center">
-          <p className="text-gray-600">
+          <p className="text-neutral">
             Don&apos;t have an account?{" "}
             <Link href="/register" className="text-primary font-semibold">
               Register

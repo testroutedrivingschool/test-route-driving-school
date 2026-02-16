@@ -5,12 +5,12 @@ import {useMemo, useState} from "react";
 import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {FaFilePdf, FaPrint} from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import {useRouter} from "next/navigation";
 
 export default function ClientHistory({clientId}) {
   const [q, setQ] = useState("");
   const [pdfLoading, setPdfLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
   // 1) load client to get email
   const {data: client, isLoading: loadingClient} = useQuery({
     queryKey: ["client", clientId],
@@ -82,84 +82,84 @@ export default function ClientHistory({clientId}) {
   }, [bookings, q]);
 
   const summary = useMemo(() => {
-  let paid = 0;
-  let unpaid = 0;
+    let paid = 0;
+    let unpaid = 0;
 
-  let internetCount = 0;
-  let salesCount = 0;
+    let internetCount = 0;
+    let salesCount = 0;
 
-  let internetTotal = 0;
-  let salesTotal = 0;
+    let internetTotal = 0;
+    let salesTotal = 0;
 
-  let totalMinutes = 0;
-  let cancelledCount = 0;
+    let totalMinutes = 0;
+    let cancelledCount = 0;
 
-  for (const b of bookings) {
-    const price = Number(b.price || 0);
+    for (const b of bookings) {
+      const price = Number(b.price || 0);
 
-    // ⏱️ duration → minutes
-    const mins =
-      Number(b.minutes) ||
-      (typeof b.duration === "string" &&
-      b.duration.toLowerCase().includes("hour")
-        ? Number(b.duration) * 60
-        : 0);
+      // ⏱️ duration → minutes
+      const mins =
+        Number(b.minutes) ||
+        (typeof b.duration === "string" &&
+        b.duration.toLowerCase().includes("hour")
+          ? Number(b.duration) * 60
+          : 0);
 
-    if (Number.isFinite(mins)) totalMinutes += mins;
+      if (Number.isFinite(mins)) totalMinutes += mins;
 
-    // 🌐 booking type
-    const type = (b.bookingType || "").toLowerCase();
-    if (type === "website") {
-      internetCount += 1;
-      internetTotal += price;
-    } else if (type === "manual") {
-      salesCount += 1;
-      salesTotal += price;
+      // 🌐 booking type
+      const type = (b.bookingType || "").toLowerCase();
+      if (type === "website") {
+        internetCount += 1;
+        internetTotal += price;
+      } else if (type === "manual") {
+        salesCount += 1;
+        salesTotal += price;
+      }
+
+      // 💰 payment
+      if ((b.paymentStatus || "").toLowerCase() === "paid") {
+        paid += price;
+      } else {
+        unpaid += price;
+      }
+
+      // ❌ cancelled
+      if ((b.status || "").toLowerCase() === "cancelled") {
+        cancelledCount += 1;
+      }
     }
 
-    // 💰 payment
-    if ((b.paymentStatus || "").toLowerCase() === "paid") {
-      paid += price;
-    } else {
-      unpaid += price;
+    return {
+      paid,
+      unpaid,
+      internetCount,
+      salesCount,
+      internetTotal,
+      salesTotal,
+      totalMinutes,
+      totalHours: totalMinutes / 60,
+      cancelledCount,
+    };
+  }, [bookings]);
+
+  const bottomTotals = useMemo(() => {
+    let paid = 0;
+    let unpaid = 0;
+    let penalty = 0; // keep 0 for now
+
+    for (const b of filtered) {
+      const price = Number(b.price || 0);
+
+      // (Optional) ignore cancelled in totals
+      if ((b.status || "").toLowerCase() === "cancelled") continue;
+
+      if ((b.paymentStatus || "").toLowerCase() === "paid") paid += price;
+      else unpaid += price;
     }
 
-    // ❌ cancelled
-    if ((b.status || "").toLowerCase() === "cancelled") {
-      cancelledCount += 1;
-    }
-  }
-
-  return {
-    paid,
-    unpaid,
-    internetCount,
-    salesCount,
-    internetTotal,
-    salesTotal,
-    totalMinutes,
-    totalHours: totalMinutes / 60,
-    cancelledCount,
-  };
-}, [bookings]);
-
-const bottomTotals = useMemo(() => {
-  let paid = 0;
-  let unpaid = 0;
-  let penalty = 0; // keep 0 for now
-
-  for (const b of filtered) {
-    const price = Number(b.price || 0);
-
-    // (Optional) ignore cancelled in totals
-    if ((b.status || "").toLowerCase() === "cancelled") continue;
-
-    if ((b.paymentStatus || "").toLowerCase() === "paid") paid += price;
-    else unpaid += price;
-  }
-
-  return { paid, unpaid, penalty };
-}, [filtered]);
+    return {paid, unpaid, penalty};
+  }, [filtered]);
 
   if (loadingClient || loadingBookings) return <LoadingSpinner />;
 
@@ -167,29 +167,26 @@ const bottomTotals = useMemo(() => {
     <div className="bg-white border border-border-color rounded-md  p-4">
       {/* Summary (like screenshot top section) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-      <div>
-  <h3 className="font-semibold text-gray-900">Bookings</h3>
-  <div className="mt-2 text-sm text-gray-700 space-y-1">
-    <p>
-      Previous{" "}
-      <span className="font-semibold">
-        ({bookings.length - summary.cancelledCount})
-      </span>
-      :{" "}
-      <span className="font-semibold">
-        {summary.totalHours.toFixed(1)}h
-      </span>
-    </p>
+        <div>
+          <h3 className="font-semibold text-gray-900">Bookings</h3>
+          <div className="mt-2 text-sm text-gray-700 space-y-1">
+            <p>
+              Previous{" "}
+              <span className="font-semibold">
+                ({bookings.length - summary.cancelledCount})
+              </span>
+              :{" "}
+              <span className="font-semibold">
+                {summary.totalHours.toFixed(1)}h
+              </span>
+            </p>
 
-    <p>
-      Cancelled:{" "}
-      <span className="font-semibold">
-        {summary.cancelledCount}
-      </span>
-    </p>
-  </div>
-</div>
-
+            <p>
+              Cancelled:{" "}
+              <span className="font-semibold">{summary.cancelledCount}</span>
+            </p>
+          </div>
+        </div>
 
         <div>
           <h3 className="font-semibold text-gray-900">Purchases</h3>
@@ -237,7 +234,7 @@ const bottomTotals = useMemo(() => {
               height="18"
               viewBox="0 0 24 24"
               fill="none"
-              className="text-gray-600"
+              className="text-neutral"
             >
               <path
                 d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 11-14 0 7 7 0 0114 0z"
@@ -301,7 +298,13 @@ const bottomTotals = useMemo(() => {
               </tr>
             ) : (
               filtered.map((b) => (
-                <tr onClick={()=>router.push(`/instructor-bookings/${b._id}/booking`)} key={b._id} className="border-t border-border-color text-xs font-medium cursor-pointer">
+                <tr
+                  onClick={() =>
+                    router.push(`/instructor-bookings/${b._id}/booking`)
+                  }
+                  key={b._id}
+                  className="border-t border-border-color text-xs font-medium cursor-pointer"
+                >
                   <td className="p-3">
                     {b.bookingDate
                       ? new Date(b.bookingDate).toLocaleString("en-AU")
@@ -328,29 +331,29 @@ const bottomTotals = useMemo(() => {
           </tbody>
         </table>
         <div className="px-4 py-3 text-sm">
-  <div className="flex justify-end">
-    <div className="w-48 space-y-1 text-right">
-      <div>Paid:</div>
-      <div>Unpaid:</div>
-      <div>Penalty:</div>
-    </div>
+          <div className="flex justify-end">
+            <div className="w-48 space-y-1 text-right">
+              <div>Paid:</div>
+              <div>Unpaid:</div>
+              <div>Penalty:</div>
+            </div>
 
-    <div className="w-32 space-y-1 text-right font-semibold">
-      <div>${bottomTotals.paid.toFixed(2)}</div>
-      <div>${bottomTotals.unpaid.toFixed(2)}</div>
-      <div>${bottomTotals.penalty.toFixed(2)}</div>
-    </div>
-  </div>
-</div>
+            <div className="w-32 space-y-1 text-right font-semibold">
+              <div>${bottomTotals.paid.toFixed(2)}</div>
+              <div>${bottomTotals.unpaid.toFixed(2)}</div>
+              <div>${bottomTotals.penalty.toFixed(2)}</div>
+            </div>
+          </div>
+        </div>
       </div>
       {pdfLoading && (
         <div className="fixed inset-0 z-9999 bg-black/40 flex items-center justify-center">
           <div className="bg-white rounded-lg shadow-xl w-[340px] h-[260px] flex flex-col items-center justify-center gap-4">
-           <div className="flex space-x-2">
-      <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-      <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-      <div className="h-4 w-4 bg-primary rounded-full animate-bounce"></div>
-    </div>
+            <div className="flex space-x-2">
+              <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+              <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+              <div className="h-4 w-4 bg-primary rounded-full animate-bounce"></div>
+            </div>
             <p className="text-gray-800 font-semibold text-lg">Generating...</p>
           </div>
         </div>

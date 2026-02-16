@@ -239,7 +239,7 @@ export default function JoinAsInstructor() {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Join As Instructor
           </h1>
-          <p className="text-gray-600">
+          <p className="text-neutral">
             Join our team of skilled instructors and help learners gain
             confidence on the road.
           </p>
@@ -504,7 +504,7 @@ export default function JoinAsInstructor() {
 
         <button
           type="submit"
-         disabled={formLoading || !formData.phone}
+          disabled={formLoading || !formData.phone}
           className="w-full mt-10 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-primary/90 transition"
         >
           Apply as Instructor

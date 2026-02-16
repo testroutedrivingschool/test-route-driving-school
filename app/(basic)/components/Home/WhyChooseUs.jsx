@@ -5,7 +5,7 @@ import Container from "@/app/shared/ui/Container";
 import whyChooseImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import {useRouter} from "next/navigation";
-export default function WhyChooseUs({className,title, subTitle, points}) {
+export default function WhyChooseUs({className, title, subTitle, points}) {
   const defaultPoints = [
     {
       title: "Expert Driving Instructors",
@@ -39,16 +39,16 @@ export default function WhyChooseUs({className,title, subTitle, points}) {
         <div className="flex flex-col md:flex-row gap-10 items-center ">
           {/* Left Content */}
           <div className="flex-1 flex flex-col gap-4">
-         <h2 className="text-2xl md:text-4xl font-bold">
-  {title ? (
-    title
-  ) : (
-    <>
-      Why Choose Test Route Driving School
-      <span className="text-primary"> in Sydney Suburbs?</span>
-    </>
-  )}
-</h2>
+            <h2 className="text-2xl md:text-4xl font-bold">
+              {title ? (
+                title
+              ) : (
+                <>
+                  Why Choose Test Route Driving School
+                  <span className="text-primary"> in Sydney Suburbs?</span>
+                </>
+              )}
+            </h2>
             <p className="text-neutral">
               {subTitle
                 ? subTitle
@@ -66,7 +66,7 @@ export default function WhyChooseUs({className,title, subTitle, points}) {
                         <h3 className="font-semibold text-gray-900">
                           {point.title}
                         </h3>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-neutral text-sm">
                           {point.description}
                         </p>
                       </div>
@@ -81,7 +81,7 @@ export default function WhyChooseUs({className,title, subTitle, points}) {
                         <h3 className="font-semibold text-gray-900">
                           {point.title}
                         </h3>
-                        <p className="text-gray-600 text-sm">
+                        <p className="text-neutral text-sm">
                           {point.description}
                         </p>
                       </div>

@@ -123,7 +123,7 @@ export default function UserMessages() {
                 <div className="font-semibold text-gray-900 flex items-center gap-2">
                   {m.subject || "(No subject)"}
                   {m.hasAttachment ? (
-                    <span className="text-xs font-semibold text-gray-600">
+                    <span className="text-xs font-semibold text-neutral">
                       (📎 {m.attachmentName || "Attachment"})
                     </span>
                   ) : null}
@@ -157,7 +157,7 @@ export default function UserMessages() {
           </div>
 
           {/* Meta */}
-          <div className="mt-3 text-sm text-gray-600 space-y-1">
+          <div className="mt-3 text-sm text-neutral space-y-1">
             <div>
               <span className="font-semibold">Sent:</span>{" "}
               {formatAU(selected.sentAt || selected.createdAt)}

@@ -1,5 +1,6 @@
 import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
+import Link from "next/link";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -29,11 +30,20 @@ export default function Contact() {
         subtitle={
           <>
             Have questions or ready to start your driving journey? At{" "}
-            <strong>Test Route Driving School,</strong> we make it easy for you
-            to <strong>book a driving class</strong> and start learning
-            confidently. Whether you are a teen learner, a young professional,
-            or an adult seeking a license, our team is here to guide you every
-            step of the way.
+            <Link className="font-semibold underline px-1" href={`/`}>
+              Test Route Driving School,
+            </Link>{" "}
+            we make it easy for you to{" "}
+            <Link
+              className="font-semibold underline px-1"
+              href={`/company/contact`}
+            >
+              {" "}
+              book a driving class
+            </Link>{" "}
+            and start learning confidently. Whether you are a teen learner, a
+            young professional, or an adult seeking a license, our team is here
+            to guide you every step of the way.
           </>
         }
       />
@@ -50,12 +60,15 @@ export default function Contact() {
                     Test Route Driving School
                   </span>
                 </h2>
-                <p className="text-gray-600 mt-2 max-w-md">
+                <p className="text-neutral mt-2 max-w-md">
                   Are you ready to <strong>learn driving</strong> or want to
                   enrol in <strong>driving classes for adults? </strong>Reach
                   out to us anytime. Our friendly instructors are here to answer
-                  your questions and help you schedule your{" "}
-                  <strong>driving lessons</strong> around your busy life.
+                  your questions and help you schedule your
+                  <Link className="font-semibold underline px-1" href={`/services/automatic-driving-lessons`}>
+                    driving lessons
+                  </Link>
+                  around your busy life.
                 </p>
               </div>
 
@@ -66,7 +79,7 @@ export default function Contact() {
                   className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-lg md:text-xl transition hover:underline"
                 >
                   <FaPhoneAlt className="text-xl" />
-                  <span>412 018 593</span>
+                  <span>0412 018 593</span>
                 </a>
 
                 <a
@@ -174,7 +187,7 @@ export default function Contact() {
                   Manual/Automatic Driving Lesson or Become a Driving Instructor
                   *
                 </p>
-                <div className="space-y-1 text-gray-600">
+                <div className="space-y-1 text-neutral">
                   <label className="flex items-center gap-2">
                     <input type="radio" name="lesson" /> Manual
                   </label>
@@ -204,7 +217,7 @@ export default function Contact() {
               </select>
 
               {/* Checkbox */}
-              <label className="flex items-start gap-2 text-sm text-gray-600">
+              <label className="flex items-start gap-2 text-sm text-neutral">
                 <input type="checkbox" />I agree to receiving other offers from
                 time to time.
               </label>

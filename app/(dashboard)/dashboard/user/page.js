@@ -1,11 +1,11 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { FiBarChart2, FiCalendar } from "react-icons/fi";
-import { FaCar, FaUserGraduate } from "react-icons/fa";
+import React, {useEffect} from "react";
+import {FiBarChart2, FiCalendar} from "react-icons/fi";
+import {FaCar, FaUserGraduate} from "react-icons/fa";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import { useUserData } from "@/app/hooks/useUserData";
-import { useRouter } from "next/navigation";
+import {useUserData} from "@/app/hooks/useUserData";
+import {useRouter} from "next/navigation";
 
 const mockUserStats = {
   stats: {
@@ -24,7 +24,7 @@ const mockUserStats = {
 
 export default function UserDashboard() {
   const router = useRouter();
-  const { data: userData, isLoading } = useUserData();
+  const {data: userData, isLoading} = useUserData();
 
   // ✅ redirect instructors
   useEffect(() => {
@@ -52,8 +52,9 @@ export default function UserDashboard() {
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
           Welcome back, {mergedUser?.name || ""}! 👋
         </h1>
-        <p className="text-gray-600">
-          Track your progress, manage bookings, and continue your driving journey.
+        <p className="text-neutral">
+          Track your progress, manage bookings, and continue your driving
+          journey.
         </p>
       </div>
 
@@ -96,7 +97,7 @@ export default function UserDashboard() {
                 </div>
               </div>
               <h3 className="text-3xl font-bold text-gray-900">{item.value}</h3>
-              <p className="text-gray-600">{item.title}</p>
+              <p className="text-neutral">{item.title}</p>
             </div>
           ))}
         </div>
@@ -111,7 +112,9 @@ export default function UserDashboard() {
             <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50">
               <div>
                 <p className="font-semibold">{mergedUser.nextLesson.type}</p>
-                <p className="text-sm text-gray-600">{mergedUser.nextLesson.date}</p>
+                <p className="text-sm text-neutral">
+                  {mergedUser.nextLesson.date}
+                </p>
                 <p className="text-sm text-gray-500">
                   Instructor: {mergedUser.nextLesson.instructor}
                 </p>

@@ -101,7 +101,7 @@ export default function ManageUsers() {
           <h3 className="text-xl font-semibold text-gray-800 mb-2">
             Failed to load users
           </h3>
-          <p className="text-gray-600">Please try again later</p>
+          <p className="text-neutral">Please try again later</p>
         </div>
       </div>
     );

@@ -17,7 +17,6 @@ export default function StripeCardInput() {
         color: "#1f2937",
         fontFamily: "sans-serif",
         "::placeholder": {color: "#9ca3af"},
-       
       },
       invalid: {color: "#ef4444"},
     },
@@ -31,7 +30,7 @@ export default function StripeCardInput() {
 
       {/* Card Number */}
       <div className="flex flex-col">
-        <label className="text-gray-600 text-sm mb-1">Card Number</label>
+        <label className="text-neutral text-sm mb-1">Card Number</label>
         <div className="input-class">
           <CardNumberElement options={CARD_STYLE} />
         </div>
@@ -40,26 +39,26 @@ export default function StripeCardInput() {
       {/* Expiry and CVC */}
       <div className="flex gap-4">
         <div className="flex-1 flex flex-col">
-          <label className="text-gray-600 text-sm mb-1">Expiry</label>
+          <label className="text-neutral text-sm mb-1">Expiry</label>
           <div className="input-class">
             <CardExpiryElement options={CARD_STYLE} />
           </div>
         </div>
         <div className="flex-1 flex flex-col">
-  <label className="text-gray-600 text-sm mb-1">Security Code</label>
-  <div className="border border-gray-300 rounded-xl p-2 bg-gray-50 flex items-center gap-2">
-    <div className="flex-1">
-      <CardCvcElement options={CARD_STYLE} />
-    </div>
-    <Image
-      src={cvcIcon}
-      alt="CVC icon"
-      width={24}
-      height={24}
-      className="w-6 h-6"
-    />
-  </div>
-</div>
+          <label className="text-neutral text-sm mb-1">Security Code</label>
+          <div className="border border-gray-300 rounded-xl p-2 bg-gray-50 flex items-center gap-2">
+            <div className="flex-1">
+              <CardCvcElement options={CARD_STYLE} />
+            </div>
+            <Image
+              src={cvcIcon}
+              alt="CVC icon"
+              width={24}
+              height={24}
+              className="w-6 h-6"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

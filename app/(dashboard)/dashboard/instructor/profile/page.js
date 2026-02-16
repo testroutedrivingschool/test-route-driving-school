@@ -1,4 +1,3 @@
-
 "use client";
 import useAuth from "@/app/hooks/useAuth";
 import {useUserData} from "@/app/hooks/useUserData";
@@ -138,7 +137,7 @@ export default function InstructorProfile() {
       await axios.patch("/api/instructors", {
         email: profile.email,
         photoKey,
-        photo: "", 
+        photo: "",
       });
 
       toast.success("Profile photo updated!");
@@ -234,7 +233,7 @@ export default function InstructorProfile() {
             <h1 className="text-2xl font-bold text-gray-800">
               Instructor Profile
             </h1>
-            <p className="text-gray-600">
+            <p className="text-neutral">
               View and manage your profile information
             </p>
           </div>
@@ -242,62 +241,61 @@ export default function InstructorProfile() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
             {/* Left Column - Profile Information */}
             <div className="lg:col-span-2 space-y-6">
-               {/* Photo Card */}
-                <div className=" border border-gray-200 rounded-lg shadow">
-                  <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-semibold">Profile Photo</h2>
-                  </div>
+              {/* Photo Card */}
+              <div className=" border border-gray-200 rounded-lg shadow">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold">Profile Photo</h2>
+                </div>
 
-                  <div className="p-6 space-y-4">
-                    <div className="flex items-center gap-4">
-                      <div className="w-20 h-20 rounded-full overflow-hidden border bg-gray-50">
-                        <Image
-                          src={avatarSrc}
-                          alt="Profile"
-                          width={80}
-                          height={80}
-                          className="w-20 h-20 object-cover"
-                        />
-                      </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-full overflow-hidden border bg-gray-50">
+                      <Image
+                        src={avatarSrc}
+                        alt="Profile"
+                        width={80}
+                        height={80}
+                        className="w-20 h-20 object-cover"
+                      />
+                    </div>
 
-                      <div className="flex-1 space-y-2">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handlePhotoChange}
-                          className="block w-full text-sm text-gray-600 border p-3 border-gray-200 rounded-md cursor-pointer"
-                        />
+                    <div className="flex-1 space-y-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        className="block w-full text-sm text-neutral border p-3 border-gray-200 rounded-md cursor-pointer"
+                      />
 
-                        <div className="flex gap-2">
-                          <PrimaryBtn
+                      <div className="flex gap-2">
+                        <PrimaryBtn
+                          type="button"
+                          onClick={handleUploadPhoto}
+                          disabled={isUploadingPhoto || !photoFile}
+                          className="justify-center"
+                        >
+                          {isUploadingPhoto ? "Uploading..." : "Update Photo"}
+                        </PrimaryBtn>
+
+                        {photoFile && (
+                          <button
                             type="button"
-                            onClick={handleUploadPhoto}
-                            disabled={isUploadingPhoto || !photoFile}
-                            className="justify-center"
+                            onClick={handleCancelPhoto}
+                            className="px-4 py-2 border border-border-color rounded-md text-gray-700 hover:bg-gray-50 transition duration-200"
                           >
-                            {isUploadingPhoto ? "Uploading..." : "Update Photo"}
-                          </PrimaryBtn>
-
-                          {photoFile && (
-                            <button
-                              type="button"
-                              onClick={handleCancelPhoto}
-                              className="px-4 py-2 border border-border-color rounded-md text-gray-700 hover:bg-gray-50 transition duration-200"
-                            >
-                              Cancel
-                            </button>
-                          )}
-                        </div>
-
-                        <p className="text-xs text-gray-500">
-                          Allowed: JPG/PNG/WebP • Max size: 1MB
-                        </p>
+                            Cancel
+                          </button>
+                        )}
                       </div>
+
+                      <p className="text-xs text-gray-500">
+                        Allowed: JPG/PNG/WebP • Max size: 1MB
+                      </p>
                     </div>
                   </div>
                 </div>
+              </div>
               <div className="bg-white border border-border-color rounded-lg shadow-sm">
-               
                 <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-gray-800">
                     Personal Information
@@ -594,7 +592,7 @@ export default function InstructorProfile() {
                   <div className="p-6">
                     {!isChangingPassword ? (
                       <div className="text-center">
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-neutral mb-4">
                           For security, you should change your password
                           regularly
                         </p>
@@ -623,7 +621,7 @@ export default function InstructorProfile() {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                             >
                               {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -644,7 +642,7 @@ export default function InstructorProfile() {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                             >
                               {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -665,7 +663,7 @@ export default function InstructorProfile() {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                             >
                               {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>

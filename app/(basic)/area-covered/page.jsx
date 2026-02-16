@@ -28,44 +28,55 @@ import WhatWeOffer from "../components/Home/WhatWeOffer";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
+    question: "Which Sydney suburbs do you cover for driving lessons?",
     answer:
       <>
-      Most<a target="_blank" className="location-link" href={`https://www.gov.uk/driving-lessons-learning-to-drive/taking-driving-lessons`}>learners</a>   typically need between 5 and 10 lessons, depending on their experience, confidence, and skill. Our driving lessons for beginners help you prepare thoroughly to pass your driving test successfully.
+      Test Route serves over 80 Sydney suburbs.
+ Coverage includes Southern Sydney, Inner West, Eastern Suburbs, and Sutherland Shire.
+ Local instructors know nearby test routes and traffic patterns.
       </>,
   },
 
 
   {
-    question: "Do you provide pickup and drop-off for lessons?",
+    question: "Can you find a driving instructor near you easily?",
     answer:
       <>
-       Yes! We offer convenient pickup and drop-off from your home, school, or workplace in Kogarah and nearby Sydney suburbs, making your lessons stress-free, time-efficient, and perfectly suited to your busy schedule.
+      Yes, instructors operate across multiple Sydney locations.
+ Lessons are available close to your home, school, or workplace.
+ Pickup and drop-off make learning more convenient.
+
       </>,
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "Do you offer driving lessons for beginners in all areas?",
     answer:
       <>
-       Our instructors provide professional driving lessons in Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and surrounding Sydney suburbs, ensuring you receive expert guidance and confidence-building instruction wherever you are located.
+       Beginner lessons are available in all service suburbs.
+ Training starts with basic controls and road awareness.
+ Confidence builds through guided local practice.
       </>,
   },
   {
-    question: "What type of car will I learn in?",
+    question: "Are lesson times flexible in different Sydney suburbs?",
     answer:
       <>
-    You’ll learn in a modern automatic vehicle with dual controls, giving maximum safety and comfort. Our professional instructors guide you confidently through every lesson across Sydney suburbs.
+ Weekday, evening, and weekend lessons are available.
+ Schedules adjust to your availability and learning pace.
+ Custom plans support steady progress.
       </>,
   },
   {
-    question: "Can I book lessons online?",
+    question: "Do you provide the same quality service in every location?",
     answer:
      <>
-     
-      Absolutely! You can book your driving lessons anytime online through our website. It’s quick, simple, and convenient, allowing you to secure your preferred time and instructor without any hassle.
+     All instructors follow the same training standards.
+ Modern dual-controlled vehicles are used in every suburb.
+ Lesson quality remains consistent across Sydney.
      </>,
   },
 
@@ -85,7 +96,9 @@ const services = [
     icon: <FaCar className="w-8 h-8 text-white" />,
     title: "Dual-Controlled Vehicles",
     description:
-      "All lessons utilize modern, dual-controlled cars, ensuring maximum safety. Instructors can take control if needed, helping you feel secure while learning essential driving skills efficiently.",
+      <>
+       Learn in modern, <Link className="font-semibold underline px-1" href={`/services/car-hire-for-instructor`}>dual-controlled cars</Link> that maximise your safety. Your instructor can take control whenever needed, allowing you to practise confidently and focus on improving your driving skills efficiently.
+      </>,
   },
   {
     icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
@@ -115,7 +128,7 @@ const services = [
     icon: <FaCarSide className="w-8 h-8 text-white" />,
     title: "Car Hire for Test Day",
     description:
-      "Use our modern vehicles for your driving test with our Test Day Packages. We also rent dual-controlled Kia, Toyota Hybrid, and Nissan cars, ensuring a smooth experience on test day.",
+      "Rent our modern dual-controlled Kia, Toyota Hybrid, or Nissan cars for your driving test. This ensures you feel comfortable, safe, and fully prepared for your practical exam.",
   },
   {
     icon: <FaFileAlt className="w-8 h-8 text-white" />,
@@ -131,6 +144,7 @@ const services = [
   },
 ];
 export default function AreaCovered() {
+  const router = useRouter()
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedZone, setSelectedZone] = useState("All");
   const [showMore, setShowMore] = useState(false);
@@ -142,7 +156,6 @@ export default function AreaCovered() {
     }
   })
   if(isLoading) return <LoadingSpinner/>
-  // Filter locations based on search and zone
   const filteredLocations = locations.filter((location) => {
     const matchesSearch = location.name
       .toLowerCase()
@@ -161,7 +174,7 @@ export default function AreaCovered() {
       <PageHeroSection
         title="Areas Covered by Driving School in Sydney Suburbs"
         subtitle={<>
-     Our <strong>driving school</strong> provides professional lessons across Sydney suburbs. You’ll practise real-life scenarios, learn local traffic rules, and navigate test routes with guidance from expert instructors. Pickup and drop-off services make every lesson stress-free.
+     Our <Link className="font-semibold underline px-1" href={`/`}>driving school</Link> provides professional lessons across Sydney suburbs. You’ll practise real-life scenarios, learn local traffic rules, and navigate test routes with guidance from expert instructors. Pickup and drop-off services make every lesson stress-free.
         </>}
       />
 
@@ -173,12 +186,12 @@ export default function AreaCovered() {
             {[
               {
                 icon: <FaMapMarkerAlt className="text-primary" />,
-                value: "40+",
+                value: "80+",
                 label: "Suburbs Covered",
               },
               {
                 icon: <FaCar className="text-green-600" />,
-                value: "15+",
+                value: "30+",
                 label: "Service Areas",
               },
               {
@@ -199,10 +212,10 @@ export default function AreaCovered() {
                 <div className="text-3xl mb-3 flex justify-center">
                   {stat.icon}
                 </div>
-                <div className="text-3xl font-bold text-gray-900 mb-1">
+                <div className="text-3xl font-bold  mb-1">
                   {stat.value}
                 </div>
-                <div className="text-gray-600">{stat.label}</div>
+                <div className="text-neutral">{stat.label}</div>
               </div>
             ))}
           </div>
@@ -211,21 +224,24 @@ export default function AreaCovered() {
             {/* Left Column - Content */}
             <div className="lg:w-1/2 space-y-8">
               <div>
-                <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+                <h2 className="text-2xl lg:text-3xl font-bold  mb-6">
                   Comprehensive Areas Covered by Driving School for 
                   <span className="text-primary px-1">Driving Lessons</span>
                 </h2>
 
                 <p className="text-neutral  leading-relaxed mb-6">
-                  We serve over 40 Sydney suburbs, offering professional <strong>driving classes</strong> in Southern Sydney, Inner West, Eastern Suburbs, and Sutherland Shire. Whether you are a student, professional, or nervous beginner, our instructors help you feel ready for real-life driving and your test
+                  We serve over 80 Sydney suburbs, offering professional <strong>driving classes</strong> in Southern Sydney, Inner West, Eastern Suburbs, and Sutherland Shire. Whether you are a student, professional, or nervous beginner, our instructors help you feel ready for real-life driving and your test
                 </p>
               </div>
 
               {/* Features */}
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-gray-900">
+                <h3 className="text-xl font-bold ">
                   Why Choose Our Service:
                 </h3>
+                <p className="text-neutral  leading-relaxed mt-2">
+                  Choosing the <Link className="font-semibold underline px-1" href={`/`}>best driving school near me</Link> ensures quality instruction and results. We provide flexible schedules, modern dual-controlled vehicles, and instructors with extensive local road knowledge. Every lesson is tailored to your learning pace and goals.
+                </p>
                 {[
                   "Pick-up and drop-off included in all covered areas",
                   "Local knowledge of test routes in each suburb",
@@ -235,7 +251,7 @@ export default function AreaCovered() {
                 ].map((feature, index) => (
                   <div key={index} className="flex items-center gap-3">
                     <FaCheckCircle className="text-green-500 shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-black">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -248,7 +264,7 @@ export default function AreaCovered() {
                 <div className="mb-6">
                   <div className="flex flex-col sm:flex-row gap-4 mb-4">
                     <div className="relative flex-1">
-                      <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-neutral" />
                       <input
                         type="text"
                         placeholder="Search for your suburb..."
@@ -271,7 +287,7 @@ export default function AreaCovered() {
                     </select>
                   </div>
 
-                  <div className="text-sm text-gray-600 mb-2">
+                  <div className="text-sm text-neutral mb-2">
                     Showing {displayedLocations.length} of{" "}
                     {filteredLocations.length} suburbs
                     {selectedZone !== "All" && ` in ${selectedZone}`}
@@ -296,7 +312,7 @@ export default function AreaCovered() {
                         >
                           <FaMapMarkerAlt className="text-primary " />
                           <div>
-                            <div className="font-medium text-gray-900">
+                            <div className="font-medium ">
                               {location.name}
                             </div>
                             <div className="text-xs text-gray-500">
@@ -329,15 +345,15 @@ export default function AreaCovered() {
                 {filteredLocations.length === 0 && (
                   <div className="text-center py-8">
                     <FaMapMarkerAlt className="text-4xl text-gray-400 mx-auto mb-4" />
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                    <h4 className="text-lg font-semibold  mb-2">
                       Suburb Not Found?
                     </h4>
-                    <p className="text-gray-600 mb-4">
+                    <p className="text-neutral mb-4">
                       Don&apos;t see your suburb in the list? We might still
                       service your area.
                     </p>
-                    <button className="px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition-colors">
-                      Contact Us to Check
+                    <button onClick={()=>router.push("/company/contact")} className="px-6 py-2 bg-primary text-white font-semibold rounded-lg hover:bg-primary/80 transition-colors">
+                      Contact Us to Check 
                     </button>
                   </div>
                 )}
@@ -351,7 +367,7 @@ export default function AreaCovered() {
                 <div className="space-y-4">
                   <div>
                     <div className="mb-8">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                      <h3 className="text-2xl font-bold  mb-4">
                          Flexible Automatic Driving Lessons Across Sydney
                       </h3>
                       <p className="text-gray-700 text-lg mb-3">
@@ -360,21 +376,11 @@ export default function AreaCovered() {
                     </div>
       
                     <div className="mb-8">
-                      <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                      <h3 className="text-2xl font-bold  mb-4">
                         Flexible Schedules and Tailored Learning Plans
                       </h3>
                       <p className="text-gray-700 text-lg mb-3">
-                        We understand that every learner has a unique schedule and
-                        learning pace. That’s why we offer flexible lesson timings
-                        throughout , including evenings and weekends, to accommodate
-                        students, professionals, and busy parents. Our instructors
-                        create customized lesson plans based on your progress,
-                        strengths, and areas that need improvement. With consistent
-                        feedback and practical exercises, you’ll steadily advance your
-                        driving skills while maintaining safety and confidence on the
-                        road. By the end of your course, you’ll not only be ready for
-                        your driving test but also for real-life driving scenarios
-                        with ease.
+                        Every learner is unique, so we create custom lesson plans based on your skills and progress. You’ll practise real-life scenarios, receive continuous feedback, and enjoy lessons that fit your schedule, including evenings and weekends. By the end, you’ll be ready for both your driving test and independent driving. Test Route Driving School is a trusted local driving school supporting you every step of the way.
                       </p>
                     </div>
                   </div>
@@ -382,8 +388,12 @@ export default function AreaCovered() {
               </Container>
             </section>
       <MovingCar />
-      <WhatWeOffer services={services}/>
-      <WhyChooseUs className={`bg-base-300`}/>
+      <WhatWeOffer sectionSubtitle={`We provide a variety of services to make your learning experience safe, convenient, and confidence-building, ensuring you gain practical skills while enjoying every lesson with professional guidance.`} services={services} extra={<p className="mt-6">
+        Every service is designed to make your driving lessons productive, enjoyable, and tailored to your unique <a className="location-link" href={"https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/learner-driver-licence"}>driving lessons</a> pace and goals.
+        </p>}/>
+      <WhyChooseUs subTitle={<>
+        We are considered one of the <strong>best driving schools</strong> in Sydney suburbs. Our certified instructors teach safe, efficient driving skills, cover all theoretical and practical lessons, guide you through the Australian license process, and provide flexible lesson schedules with modern vehicles for maximum comfort. Whether you’re searching for a local driving school or a driving instructor near me, we provide professional lessons tailored to your needs. 
+        </>} className={`bg-base-300`}/>
       <section className="mt-16 mb-16">
         <Container>
           {/* CTA Section */}
@@ -392,8 +402,7 @@ export default function AreaCovered() {
               Ready to Start Your Driving Journey?
             </h3>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
-              Book your first lesson today and experience professional driving
-              instruction in your local area.
+           Book your first lesson today and enjoy professional <Link className="font-semibold underline px-1" href={`/services/automatic-driving-lessons`}>driving lessons</Link>  in your local area. Our instructors help you feel confident, prepared, and comfortable on the road. Start <a className="location-link" href={"https://www.gov.uk/driving-lessons-learning-to-drive/taking-driving-lessons"} >learning</a> today with Test Route Driving School.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <SecondaryBtn>Check Availability</SecondaryBtn>

@@ -247,7 +247,7 @@ export default function Register() {
                   type="file"
                   accept="image/*"
                   onChange={handlePhotoChange}
-                  className="block text-sm text-gray-600 border p-4 border-border-color font-medium cursor-pointer"
+                  className="block text-sm text-neutral border p-4 border-border-color font-medium cursor-pointer"
                   disabled={isLoading}
                 />
               </div>
@@ -332,7 +332,7 @@ export default function Register() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                 >
                   {showPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -342,7 +342,7 @@ export default function Register() {
               {formData.password && (
                 <div className="mt-2">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs font-medium text-gray-600">
+                    <span className="text-xs font-medium text-neutral">
                       Password strength
                     </span>
                     <span className={`text-xs font-bold ${strength.color}`}>
@@ -523,7 +523,7 @@ export default function Register() {
 
           {/* Login Link */}
           <div className="mt-8 text-center">
-            <p className="text-gray-600">
+            <p className="text-neutral">
               Already have an account?{" "}
               <Link
                 href="/login"

@@ -186,7 +186,7 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
           )}
 
           {!isLoading && !clients?.length && filters && (
-            <p className="mt-4 text-sm text-gray-600">No clients found.</p>
+            <p className="mt-4 text-sm text-neutral">No clients found.</p>
           )}
 
           {!!clients?.length && (

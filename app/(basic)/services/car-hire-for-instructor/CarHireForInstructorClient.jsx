@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import carHireImg from "@/app/assets/car-hire.jpg";
@@ -16,128 +16,145 @@ import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
 import DrivingTipsSection from "../../components/Home/DrivingTipsSection";
-import { FaAward, FaBrain, FaCalendarAlt, FaCar, FaChartLine, FaShieldAlt } from "react-icons/fa";
+import {
+  FaAward,
+  FaBrain,
+  FaCalendarAlt,
+  FaCar,
+  FaChartLine,
+  FaShieldAlt,
+} from "react-icons/fa";
 
-  const whyChoosePoints = [
-    {
-      title: "Expert Driving Instructors",
-      description:
-        "Our trainers teach safe and efficient driving skills.",
-    },
-    {
-      title: "Comprehensive Training",
-      description:
-        <>
-        We offer practical and theoretical lessons for real-world driving.
-        </>,
-    },
-    {
-      title: "License Assistance",
-      description:
-        "We simplify and streamline the application process.",
-    },
-    {
-      title: "Modern Vehicles",
-      description:
-        "Learn in well-maintained cars for a smooth and enjoyable experience.",
-    },
-    {
-      title: "Flexible Timing",
-      description: "Choose class schedules that fit your routine in Kogarah.",
-    },
-  ];
+const whyChoosePoints = [
+  {
+    title: "Expert Driving Instructors",
+    description: "Our trainers teach safe and efficient driving skills.",
+  },
+  {
+    title: "Comprehensive Training",
+    description: (
+      <>We offer practical and theoretical lessons for real-world driving.</>
+    ),
+  },
+  {
+    title: "License Assistance",
+    description: "We simplify and streamline the application process.",
+  },
+  {
+    title: "Modern Vehicles",
+    description:
+      "Learn in well-maintained cars for a smooth and enjoyable experience.",
+  },
+  {
+    title: "Flexible Timing",
+    description: "Choose class schedules that fit your routine in Kogarah.",
+  },
+];
 
-    const drivingLessonTips = [
-      {
-        title: "Practice Regularly",
-        description:
-          "Consistent practice builds your Confidence behind the wheel.",
-        icon: <FaCalendarAlt className="h-6 w-6" />,
-        color: "text-blue-600 bg-blue-50",
-        duration: "Ongoing",
-      },
-      {
-        title: "Prioritize Road Safety",
-        description:
-          "Always follow traffic rules and maintain safe distances.",
-        icon: <FaShieldAlt className="h-6 w-6" />,
-        color: "text-green-600 bg-green-50",
-        priority: "High",
-      },
-      {
-        title: "Build Confidence Gradually",
-        description:
-          "Begin with simple exercises before progressing to more challenging ones.",
-        icon: <FaChartLine className="h-6 w-6" />,
-        color: "text-purple-600 bg-purple-50",
-        level: "Beginner to Advanced",
-      },
-      {
-        title: "Understand Both Manual & Automatic Cars",
-        description:
-          " Knowing both manual and automatic controls enhances your driving skills.",
-        icon: <FaCar className="h-6 w-6" />,
-        color: "text-amber-600 bg-amber-50",
-        type: "Technical",
-      },
-      {
-        title: "Stay Calm and Focused",
-        description:
-          "Focus on the road and avoid any mental distractions.",
-        icon: <FaBrain className="h-6 w-6" />,
-        color: "text-teal-600 bg-teal-50",
-        focus: "Mental",
-      },
-      {
-        title: "Prepare for Driving Tests",
-        description:
-          "Learn specific tips for parking and city maneuvers.",
-        icon: <FaAward className="h-6 w-6" />,
-        color: "text-red-600 bg-red-50",
-        goal: "Test Success",
-      },
-    ];
+const drivingLessonTips = [
+  {
+    title: "Practice Regularly",
+    description: "Consistent practice builds your Confidence behind the wheel.",
+    icon: <FaCalendarAlt className="h-6 w-6" />,
+    color: "text-blue-600 bg-blue-50",
+    duration: "Ongoing",
+  },
+  {
+    title: "Prioritize Road Safety",
+    description: "Always follow traffic rules and maintain safe distances.",
+    icon: <FaShieldAlt className="h-6 w-6" />,
+    color: "text-green-600 bg-green-50",
+    priority: "High",
+  },
+  {
+    title: "Build Confidence Gradually",
+    description:
+      "Begin with simple exercises before progressing to more challenging ones.",
+    icon: <FaChartLine className="h-6 w-6" />,
+    color: "text-purple-600 bg-purple-50",
+    level: "Beginner to Advanced",
+  },
+  {
+    title: "Understand Both Manual & Automatic Cars",
+    description:
+      " Knowing both manual and automatic controls enhances your driving skills.",
+    icon: <FaCar className="h-6 w-6" />,
+    color: "text-amber-600 bg-amber-50",
+    type: "Technical",
+  },
+  {
+    title: "Stay Calm and Focused",
+    description: "Focus on the road and avoid any mental distractions.",
+    icon: <FaBrain className="h-6 w-6" />,
+    color: "text-teal-600 bg-teal-50",
+    focus: "Mental",
+  },
+  {
+    title: "Prepare for Driving Tests",
+    description: "Learn specific tips for parking and city maneuvers.",
+    icon: <FaAward className="h-6 w-6" />,
+    color: "text-red-600 bg-red-50",
+    goal: "Test Success",
+  },
+];
 
-   const faqs = [
+const faqs = [
   {
     question: "How many lessons do I need to pass my driving test?",
-    answer:
+    answer: (
       <>
-     The number of lessons varies for every<a target="_blank" href={`https://drivinglessons.site/blog/lessons-hours-pass-driving-test/`} className="font-semibold underline px-1">
-         learner
-        </a> in Kogarah. On average, students require 5 to 10 lessons, depending on their Level of Confidence. We assess your skills and help you reach your goals fast.
-      </>,
+        The number of lessons varies for every
+        <a
+          target="_blank"
+          href={`https://drivinglessons.site/blog/lessons-hours-pass-driving-test/`}
+          className="font-semibold underline px-1"
+        >
+          learner
+        </a>{" "}
+        in Kogarah. On average, students require 5 to 10 lessons, depending on
+        their Level of Confidence. We assess your skills and help you reach your
+        goals fast.
+      </>
+    ),
   },
   {
     question: "Do you provide pickup and drop-off for lessons?",
-    answer:
+    answer: (
       <>
-       Yes, we offer convenient pickup and drop-off from your home or workplace. This service is available throughout our entire service area in the Sydney Suburbs  .
-      </>,
+        Yes, we offer convenient pickup and drop-off from your home or
+        workplace. This service is available throughout our entire service area
+        in the Sydney Suburbs .
+      </>
+    ),
   },
   {
     question: "Which suburbs do your instructors cover?",
-    answer:
+    answer: (
       <>
-     Our instructors cover Kogarah, Hurstville, Rockdale, Bexley, Carlton, and Arncliffe. We are familiar with the local roads and testing routes in these areas.
-      </>,
+        Our instructors cover Kogarah, Hurstville, Rockdale, Bexley, Carlton,
+        and Arncliffe. We are familiar with the local roads and testing routes
+        in these areas.
+      </>
+    ),
   },
   {
     question: "What type of car will I learn in?",
-    answer:
+    answer: (
       <>
-You will learn in a modern automatic vehicle with dual controls. These cars ensure maximum safety during your entire training period.
-      </>,
+        You will learn in a modern automatic vehicle with dual controls. These
+        cars ensure maximum safety during your entire training period.
+      </>
+    ),
   },
   {
     question: "Can I book lessons online?",
-    answer:
+    answer: (
       <>
-Yes! You can easily book your driving lessons online through our website. Our booking form is available 24/7 for your total convenience.
-      </>,
+        Yes! You can easily book your driving lessons online through our
+        website. Our booking form is available 24/7 for your total convenience.
+      </>
+    ),
   },
-
-
 ];
 
 const fleets = [
@@ -221,12 +238,21 @@ export default function CarHireForInstructorClient() {
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
               <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
-               Dual-controlled Vehicles Available
+                Dual-controlled Vehicles Available
                 <span className="pl-2 inline-block text-primary">for Hire</span>
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
-               We offer a wide range of cars for your driving instructor car hire in Kogarah. You can choose the perfect vehicle to match your specific teaching style. We provide flexible rental options and competitive pricing for all Sydney Suburbs  trainers. Our packages are designed to be both affordable and very convenient. If your car breaks down, we have the perfect cover for you. Do not lose work while your vehicle is being repaired. Our support team makes the dual control car hire near Sydney Suburbs  process seamless. Trust us to enhance the quality of your driving school business.
+                We offer a wide range of cars for your driving instructor car
+                hire in Kogarah. You can choose the perfect vehicle to match
+                your specific teaching style. We provide flexible rental options
+                and competitive pricing for all Sydney Suburbs trainers. Our
+                packages are designed to be both affordable and very convenient.
+                If your car breaks down, we have the perfect cover for you. Do
+                not lose work while your vehicle is being repaired. Our support
+                team makes the dual control car hire near Sydney Suburbs process
+                seamless. Trust us to enhance the quality of your driving school
+                business.
               </p>
               <p className="text-neutral leading-relaxed mb-6">
                 Our wide range of cars allows you to choose the perfect vehicle
@@ -312,7 +338,7 @@ export default function CarHireForInstructorClient() {
                     </div>
 
                     {/* Features */}
-                    <ul className="flex flex-col gap-2 text-gray-600 text-sm">
+                    <ul className="flex flex-col gap-2 text-neutral text-sm">
                       {fleet.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-2">
                           <span className="text-primary">•</span> {feature}
@@ -322,10 +348,7 @@ export default function CarHireForInstructorClient() {
                   </div>
 
                   {/* CTA Button */}
-                  <PrimaryBtn
-                    onClick={handleBookCar}
-                    className="w-full!"
-                  >
+                  <PrimaryBtn onClick={handleBookCar} className="w-full!">
                     Book This Car
                   </PrimaryBtn>
                 </div>
@@ -341,19 +364,38 @@ export default function CarHireForInstructorClient() {
             <div>
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                 Why Instructors Choose Our Dual Brake Car Hire
+                  Why Instructors Choose Our Dual Brake Car Hire
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">
-                 Driving instructors face many challenges, and we are here to help you solve them. Our Dual Brake Car Hire for instructors in Sydney Suburbs  ensures your lessons run smoothly without any interruptions. We offer the best service and price in the area to ensure your business stays profitable. Many local trainers prefer our dual brake car hire Sydney Suburbs  because of our flexible schedules. You can hire a car for a few days or several weeks, depending on your needs. We take the stress out of vehicle maintenance so you can focus on your learners. Choosing our Dual Controlled Car Hire means you always have a safe backup plan. We are the most reliable source for car hire for driving instructors in Kogarah.
+                  Driving instructors face many challenges, and we are here to
+                  help you solve them. Our Dual Brake Car Hire for instructors
+                  in Sydney Suburbs ensures your lessons run smoothly without
+                  any interruptions. We offer the best service and price in the
+                  area to ensure your business stays profitable. Many local
+                  trainers prefer our dual brake car hire Sydney Suburbs because
+                  of our flexible schedules. You can hire a car for a few days
+                  or several weeks, depending on your needs. We take the stress
+                  out of vehicle maintenance so you can focus on your learners.
+                  Choosing our Dual Controlled Car Hire means you always have a
+                  safe backup plan. We are the most reliable source for car hire
+                  for driving instructors in Kogarah.
                 </p>
               </div>
 
               <div className="mb-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-4">
-                 Flexible Schedules and Tailored Learning Plans in Kogarah
+                  Flexible Schedules and Tailored Learning Plans in Kogarah
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">
-                  Every learner has a unique schedule and a different learning pace. That is why we offer flexible lesson timings throughout Sydney Suburbs  for our students. This includes evenings and weekends, allowing you to fit your busy life perfectly. Our instructors create custom plans based on your current progress and strengths. You will receive consistent feedback to improve your skills on the road. We ensure you are ready for real-life driving scenarios with ease. Our dual brake car hire near me ensures that even if our main car is busy, we stay active.
+                  Every learner has a unique schedule and a different learning
+                  pace. That is why we offer flexible lesson timings throughout
+                  Sydney Suburbs for our students. This includes evenings and
+                  weekends, allowing you to fit your busy life perfectly. Our
+                  instructors create custom plans based on your current progress
+                  and strengths. You will receive consistent feedback to improve
+                  your skills on the road. We ensure you are ready for real-life
+                  driving scenarios with ease. Our dual brake car hire near me
+                  ensures that even if our main car is busy, we stay active.
                 </p>
               </div>
             </div>
@@ -361,15 +403,26 @@ export default function CarHireForInstructorClient() {
         </Container>
       </section>
       <MovingCar />
-      <WhyChooseUs points={whyChoosePoints}/>
-      <DrivingTipsSection title={`Expert Driving Tips & Advice for Sydney Suburbs  Learners`} subtitle={
-        <>
-          <a target="_blank" href={`https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/learner-driver-licence/supervising`} className="font-semibold underline px-1">
-          Learning
-        </a> to drive is challenging but rewarding with the right mindset. Our professional instructors offer expert guidance to learners of all skill levels.
-        </>
-      } tips={drivingLessonTips}/>
-      <Faq className={`bg-white`} faqs={faqs}/>
+      <WhyChooseUs points={whyChoosePoints} />
+      <DrivingTipsSection
+        title={`Expert Driving Tips & Advice for Sydney Suburbs  Learners`}
+        subtitle={
+          <>
+            <a
+              target="_blank"
+              href={`https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/learner-driver-licence/supervising`}
+              className="font-semibold underline px-1"
+            >
+              Learning
+            </a>{" "}
+            to drive is challenging but rewarding with the right mindset. Our
+            professional instructors offer expert guidance to learners of all
+            skill levels.
+          </>
+        }
+        tips={drivingLessonTips}
+      />
+      <Faq className={`bg-white`} faqs={faqs} />
     </div>
   );
 }

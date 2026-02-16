@@ -14,14 +14,15 @@ export async function POST(req) {
     const usersCol = await usersCollection();
     const clientsCol = await clientsCollection();
 
-    // get user info (optional, but good)
+    // ✅ get user info (optional)
     const user = await usersCol.findOne({ email });
 
     const fullName = user?.name || body?.name || "";
     const firstName = body?.firstName || fullName.split(" ")[0] || "";
-    const lastName = body?.lastName || fullName.split(" ").slice(1).join(" ") || "";
+    const lastName =
+      body?.lastName || fullName.split(" ").slice(1).join(" ") || "";
 
-    // ✅ upsert client (create if not exists, update if exists)
+    // ✅ upsert client
     await clientsCol.updateOne(
       { email },
       {
@@ -46,7 +47,26 @@ export async function POST(req) {
       { upsert: true }
     );
 
-    return NextResponse.json({ success: true });
+    // ✅ fetch the client id
+    const client = await clientsCol.findOne({ email });
+    if (!client?._id) {
+      return NextResponse.json({ error: "Client sync failed" }, { status: 500 });
+    }
+
+   
+    if (user?._id) {
+      await usersCol.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            clientId: client._id, 
+            updatedAt: new Date(),
+          },
+        }
+      );
+    }
+
+    return NextResponse.json({ success: true, clientId: client._id });
   } catch (e) {
     console.error("SYNC CLIENT ERROR:", e);
     return NextResponse.json({ error: "Sync failed" }, { status: 500 });

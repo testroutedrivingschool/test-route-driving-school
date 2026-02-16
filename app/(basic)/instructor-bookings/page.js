@@ -761,7 +761,7 @@ export default function InstructorBookings() {
                           <h2 className="text-lg md:text-2xl font-bold text-gray-900">
                             {user?.name}&apos;s Schedule
                           </h2>
-                          <p className="text-gray-600 mt-1">
+                          <p className="text-neutral mt-1">
                             Week of{" "}
                             {weekDates[0].toLocaleDateString("en-US", {
                               month: "short",

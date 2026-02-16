@@ -60,10 +60,10 @@ export default function BlogSection() {
               />
               <div className="p-4">
                 <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
-                <p className="text-gray-600 mb-4">{blog.excerpt}</p>
+                <p className="text-neutral mb-4">{blog.excerpt}</p>
                 <Link
                   href={`/blogs/${blog.slug}`}
-                   aria-label={` Read the full article: ${blog.title}`}
+                  aria-label={` Read the full article: ${blog.title}`}
                   className="text-primary font-semibold hover:underline"
                 >
                   Read More

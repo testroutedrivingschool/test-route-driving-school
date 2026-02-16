@@ -30,11 +30,9 @@ const defaultFaqData = [
     answer:
       "Yes! You can easily book your driving lessons online at any time through our Website, offering a convenient, fast, and simple way to secure your preferred schedule.",
   },
- 
-
 ];
 
-export default function FaqSection({className,faqs,title}) {
+export default function FaqSection({className, faqs, title}) {
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleFaq = (index) => {
@@ -44,52 +42,60 @@ export default function FaqSection({className,faqs,title}) {
   return (
     <section className={`bg-base-300  py-16 ${className}`}>
       <Container>
-        <SectionHeader className={`mt-0! `} title={title?title:`Frequently Asked Questions`} subtitle={"Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"}/>
+        <SectionHeader
+          className={`mt-0! `}
+          title={title ? title : `Frequently Asked Questions`}
+          subtitle={
+            "Learn everything you need to know about our lessons, pricing, booking process, and instructor qualifications in one place"
+          }
+        />
 
         <div className="space-y-4">
-          {faqs?faqs.map((faq, index) => (
-            <div
-              key={index}
-              className="border border-border-color rounded-lg p-4 shadow-sm"
-            >
-              <button
-                className="w-full flex justify-between items-center text-left"
-                onClick={() => toggleFaq(index)}
-              >
-                <h3 className="text-lg font-bold">{faq.question}</h3>
-                <FaChevronDown
-                  className={`transition-transform duration-300 ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+          {faqs
+            ? faqs.map((faq, index) => (
+                <div
+                  key={index}
+                  className="border border-border-color rounded-lg p-4 shadow-sm"
+                >
+                  <button
+                    className="w-full flex justify-between items-center text-left"
+                    onClick={() => toggleFaq(index)}
+                  >
+                    <h3 className="text-lg font-bold">{faq.question}</h3>
+                    <FaChevronDown
+                      className={`transition-transform duration-300 ${
+                        openIndex === index ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
-              {openIndex === index && (
-                <p className="mt-3 text-gray-600">{faq.answer}</p>
-              )}
-            </div>
-          )):defaultFaqData.map((faq, index) => (
-            <div
-              key={index}
-              className="border border-border-color rounded-lg p-4 shadow-sm"
-            >
-              <button
-                className="w-full flex justify-between items-center text-left"
-                onClick={() => toggleFaq(index)}
-              >
-                <h3 className="text-lg font-bold">{faq.question}</h3>
-                <FaChevronDown
-                  className={`transition-transform duration-300 ${
-                    openIndex === index ? "rotate-180" : ""
-                  }`}
-                />
-              </button>
+                  {openIndex === index && (
+                    <p className="mt-3 text-neutral">{faq.answer}</p>
+                  )}
+                </div>
+              ))
+            : defaultFaqData.map((faq, index) => (
+                <div
+                  key={index}
+                  className="border border-border-color rounded-lg p-4 shadow-sm"
+                >
+                  <button
+                    className="w-full flex justify-between items-center text-left"
+                    onClick={() => toggleFaq(index)}
+                  >
+                    <h3 className="text-lg font-bold">{faq.question}</h3>
+                    <FaChevronDown
+                      className={`transition-transform duration-300 ${
+                        openIndex === index ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
 
-              {openIndex === index && (
-                <p className="mt-3 text-gray-600">{faq.answer}</p>
-              )}
-            </div>
-          ))}
+                  {openIndex === index && (
+                    <p className="mt-3 text-neutral">{faq.answer}</p>
+                  )}
+                </div>
+              ))}
         </div>
       </Container>
     </section>

@@ -6,17 +6,25 @@ import SectionHeader from "@/app/shared/ui/SectionHeader";
 import Link from "next/link";
 import Script from "next/script";
 import React, {useMemo, useState} from "react";
-import { FaChevronDown } from "react-icons/fa";
-
-
+import {FaChevronDown} from "react-icons/fa";
 
 const faqs = [
   {
     question: "Do you offer automatic driving lessons near me?",
-    answer:
-     <>
-     Yes. You receive <Link className="location-link" href={"/services/automatic-driving-lessons"} >automatic driving lessons</Link> across Sydney&apos;s suburbs with licensed instructors. You practise on real test routes and local roads. This helps you build confidence faster.
-     </>,
+    answer: (
+      <>
+        Yes. You receive{" "}
+        <Link
+          className="location-link"
+          href={"/services/automatic-driving-lessons"}
+        >
+          automatic driving lessons
+        </Link>{" "}
+        across Sydney&apos;s suburbs with licensed instructors. You practise on
+        real test routes and local roads. This helps you build confidence
+        faster.
+      </>
+    ),
   },
   {
     question: "Are automatic lessons good for beginner drivers?",
@@ -30,10 +38,16 @@ const faqs = [
   },
   {
     question: "How many automatic lessons do I need before testing?",
-    answer:
+    answer: (
       <>
-      You need lessons based on your driving skills and confidence level. Most learners require regular practice on test routes. Your <Link className="location-link" href={"/instructors"} >instructor</Link>guides you on readiness.
-      </>,
+        You need lessons based on your driving skills and confidence level. Most
+        learners require regular practice on test routes. Your{" "}
+        <Link className="location-link" href={"/instructors"}>
+          instructor
+        </Link>
+        guides you on readiness.
+      </>
+    ),
   },
   {
     question: "What is a driving test assessment?",
@@ -47,10 +61,18 @@ const faqs = [
   },
   {
     question: "Does the assessment follow Service NSW standards?",
-    answer:
+    answer: (
       <>
-      Yes. You practise according to the current NSW testing guidelines. Your <Link className="location-link" href={"/services/driving-test-assessment"} >assessment</Link> reflects real examiner expectations.
-      </>,
+        Yes. You practise according to the current NSW testing guidelines. Your{" "}
+        <Link
+          className="location-link"
+          href={"/services/driving-test-assessment"}
+        >
+          assessment
+        </Link>{" "}
+        reflects real examiner expectations.
+      </>
+    ),
   },
   {
     question: "Can assessments help nervous learners?",
@@ -59,10 +81,16 @@ const faqs = [
   },
   {
     question: "What is included in your driving test package?",
-    answer:
-     <>
-      You receive practice lessons, a mock assessment, and test-day support. The<Link className="location-link" href={"/services/driving-test-package"} >package</Link> consists of car hire if required. This prepares you fully.
-     </>,
+    answer: (
+      <>
+        You receive practice lessons, a mock assessment, and test-day support.
+        The
+        <Link className="location-link" href={"/services/driving-test-package"}>
+          package
+        </Link>{" "}
+        consists of car hire if required. This prepares you fully.
+      </>
+    ),
   },
   {
     question: "Is a test package better than single lessons?",
@@ -71,8 +99,16 @@ const faqs = [
   },
   {
     question: "Can beginners book a driving test package?",
-    answer:
-      <>Yes. You start from basic skills and progress step by step. Your instructor adapts the <Link className="location-link" href={"/services/driving-test-package"} >package</Link> to your level.</>,
+    answer: (
+      <>
+        Yes. You start from basic skills and progress step by step. Your
+        instructor adapts the{" "}
+        <Link className="location-link" href={"/services/driving-test-package"}>
+          package
+        </Link>{" "}
+        to your level.
+      </>
+    ),
   },
   {
     question: "Do you help with last-minute test preparation?",
@@ -106,11 +142,15 @@ const faqs = [
   },
   {
     question: "Who needs parking lesson packages?",
-    answer:
+    answer: (
       <>
-      
-      You benefit if you struggle with tight spaces. These <Link className="location-link" href={"/services/parking-package"} >package</Link> focus only on parking skills.
+        You benefit if you struggle with tight spaces. These{" "}
+        <Link className="location-link" href={"/services/parking-package"}>
+          package
+        </Link>{" "}
+        focus only on parking skills.
       </>
+    ),
   },
   {
     question: "How long does parking training take?",
@@ -134,13 +174,24 @@ const faqs = [
   },
   {
     question: "Are highway lessons good for new drivers?",
-    answer:
-      <>Yes. You gain confidence on faster roads. You learn how to handle traffic safely.</>,
+    answer: (
+      <>
+        Yes. You gain confidence on faster roads. You learn how to handle
+        traffic safely.
+      </>
+    ),
   },
   {
     question: "Are highway lessons included in packages?",
-    answer:
-      <>Yes. You can add <Link className="location-link" href={"/services/driving-test-package"} >highway training</Link> to your learning plan. This improves overall driving ability.</>,
+    answer: (
+      <>
+        Yes. You can add{" "}
+        <Link className="location-link" href={"/services/driving-test-package"}>
+          highway training
+        </Link>{" "}
+        to your learning plan. This improves overall driving ability.
+      </>
+    ),
   },
   {
     question: "Do you provide night driving lessons?",
@@ -154,8 +205,15 @@ const faqs = [
   },
   {
     question: "Who should take night driving classes?",
-    answer:
-      <>You benefit if you feel unsure after sunset. These<Link className="location-link" href={"/services/night-driving-lesson"} >lessons </Link> improve safety awareness.</>,
+    answer: (
+      <>
+        You benefit if you feel unsure after sunset. These
+        <Link className="location-link" href={"/services/night-driving-lesson"}>
+          lessons{" "}
+        </Link>{" "}
+        improve safety awareness.
+      </>
+    ),
   },
   {
     question: "Are night lessons flexible in timing?",
@@ -169,11 +227,19 @@ const faqs = [
   },
   {
     question: "Do you provide car hire for instructor service?",
-    answer:
+    answer: (
       <>
-       Yes, we offer car hire for instructor services. Our dual-controlled vehicles
-      are available for lessons and test preparation.<Link className="location-link" href={"/services/car-hire-for-instructor"} > Learn more about car hire.</Link>
-      </>,
+        Yes, we offer car hire for instructor services. Our dual-controlled
+        vehicles are available for lessons and test preparation.
+        <Link
+          className="location-link"
+          href={"/services/car-hire-for-instructor"}
+        >
+          {" "}
+          Learn more about car hire.
+        </Link>
+      </>
+    ),
   },
   {
     question: "What skills do city driving lessons build?",
@@ -182,17 +248,32 @@ const faqs = [
   },
   {
     question: "Are city lessons helpful before the test?",
-    answer:
-     <>
-     
-     Yes. You face complex routes during exams. <Link className="location-link" href={"/services/city-driving-package"} >City lessons</Link> prepare you for these conditions.
-     </>
+    answer: (
+      <>
+        Yes. You face complex routes during exams.{" "}
+        <Link className="location-link" href={"/services/city-driving-package"}>
+          City lessons
+        </Link>{" "}
+        prepare you for these conditions.
+      </>
+    ),
   },
   {
     question: "Why choose city driving packages?",
-    answer:
-     <>You gain real-world urban driving experience. This improves <a target="_blank" className="location-link" href={"https://www.nhtsa.gov/ten-tips-for-safe-driving"} > safety</a> and test performance.
-</>,
+    answer: (
+      <>
+        You gain real-world urban driving experience. This improves{" "}
+        <a
+          target="_blank"
+          className="location-link"
+          href={"https://www.nhtsa.gov/ten-tips-for-safe-driving"}
+        >
+          {" "}
+          safety
+        </a>{" "}
+        and test performance.
+      </>
+    ),
   },
 ];
 
@@ -202,29 +283,31 @@ export default function FAQPAGE() {
   const toggleFaq = (index) => {
     setOpenIndex(openIndex === index ? null : index);
   };
-const faqSchema = useMemo(() => {
-  const clean = (v) => String(v || "").replace(/\s+/g, " ").trim();
+  const faqSchema = useMemo(() => {
+    const clean = (v) =>
+      String(v || "")
+        .replace(/\s+/g, " ")
+        .trim();
 
-  return {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: clean(f.question),
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: clean(f.answer),
-      },
-    })),
-  };
-}, []);
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: faqs.map((f) => ({
+        "@type": "Question",
+        name: clean(f.question),
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: clean(f.answer),
+        },
+      })),
+    };
+  }, []);
   return (
     <div>
-
-       <Script
+      <Script
         id="faq-schema"
         type="application/ld+json"
-        strategy="beforeInteractive" 
+        strategy="beforeInteractive"
         dangerouslySetInnerHTML={{__html: JSON.stringify(faqSchema)}}
       />
       <PageHeroSection
@@ -241,27 +324,27 @@ const faqSchema = useMemo(() => {
           />
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-                        <div
-                          key={index}
-                          className="border border-border-color rounded-lg p-4 shadow-sm"
-                        >
-                          <button
-                            className="w-full flex justify-between items-center text-left"
-                            onClick={() => toggleFaq(index)}
-                          >
-                            <h3 className="text-lg font-bold">{faq.question}</h3>
-                            <FaChevronDown
-                              className={`transition-transform duration-300 ${
-                                openIndex === index ? "rotate-180" : ""
-                              }`}
-                            />
-                          </button>
-            
-                          {openIndex === index && (
-                            <p className="mt-3 text-gray-600">{faq.answer}</p>
-                          )}
-                        </div>
-                      ))}
+              <div
+                key={index}
+                className="border border-border-color rounded-lg p-4 shadow-sm"
+              >
+                <button
+                  className="w-full flex justify-between items-center text-left"
+                  onClick={() => toggleFaq(index)}
+                >
+                  <h3 className="text-lg font-bold">{faq.question}</h3>
+                  <FaChevronDown
+                    className={`transition-transform duration-300 ${
+                      openIndex === index ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+
+                {openIndex === index && (
+                  <p className="mt-3 text-neutral">{faq.answer}</p>
+                )}
+              </div>
+            ))}
           </div>
         </Container>
       </section>

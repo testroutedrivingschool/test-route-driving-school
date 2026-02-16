@@ -25,43 +25,51 @@ export const metadata = {
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass my driving test?",
+    question: "What types of driving lessons do you offer in Sydney?",
     answer:
       <>
-      The number varies based on your experience, confidence, and skill. Most learners require 5–10 lessons. Our structured <Link className="location-link" href={`/services/driving-test-package`}>driving test lessons</Link> ensure you are fully prepared.
+      Test Route offers automatic, test preparation, and specialised driving lessons.
+ Packages include parking, highway, night, and city driving training.
+ Each lesson follows NSW road and testing standards.
       </>,
   },
 
 
   {
-    question: "Do you provide pickup and drop-off for lessons?",
+    question: "Are your driving lessons suitable for fast learners?",
     answer:
       <>
-      Yes! We offer convenient pickup and drop-off within Sydney suburbs. This makes your <strong>learn to drive</strong> experience stress-free and flexible.
+    Yes, lessons are structured for quick skill development.
+ Professional instructors focus on efficient learning methods.
+ You progress faster with personalised coaching and feedback.
       </>,
   },
   {
-    question: "Which suburbs do your instructors cover?",
+    question: "How do driving test lessons help you pass faster?",
     answer:
       <>
-      Our instructors serve Kogarah, Allawah, Arncliffe, Bexley, Rockdale, Hurstville, and surrounding Sydney suburbs. You get professional driving lessons wherever you are located.
+      Test lessons follow real RMS test routes and conditions.
+ You practise parking, merging, and hazard awareness.
+ Instructors correct mistakes before test day.
       </>,
   },
   {
-    question: "What type of car will I learn in?",
+    question: "Do you provide affordable and cheap driving lesson packages?",
     answer:
       <>
-     You will <a target="_blank" className="location-link" href={"https://en.wikipedia.org/wiki/Newly_licensed_driver_plate"} >learn</a>in a modern automatic vehicle with dual controls, ensuring safety and confidence during lessons.
+   Flexible packages are available for different learning needs.
+ Bulk hours reduce the overall cost of lessons.
+ Quality training stays consistent across all plans.
       </>,
   },
   {
-    question: "Can I book lessons online?",
+    question: "Can you use your instructor’s car for practice and test day?",
     answer:
      <>
      
-     Absolutely! Booking is fast, easy, and convenient through our <Link href={`/`} className="underline font-bold px-1">
-     website.
-     </Link> Reserve your <strong>driving lessons</strong> at any time.
+    Modern dual-controlled vehicles are available for hire.
+ Cars meet NSW testing requirements.
+ An instructor supports you throughout the session.
      </>,
   },
 
@@ -76,7 +84,7 @@ export default function Service() {
       <PageHeroSection
         title={`Top-Rated Driving Lessons Services for Fast Learners`}
         subtitle={<>
-        At <strong>Test Route Driving School,</strong> we provide expert <strong>driving lessons services</strong> across Sydney. Our lessons help you gain confidence, learn quickly, and become a safe driver. Flexible packages suit every learner.
+        At <Link className="font-semibold underline px-1" href={`/`}>Test Route Driving School,</Link> we provide expert <strong>driving lessons services</strong> across Sydney. Our lessons help you gain confidence, learn quickly, and become a safe driver. Flexible packages suit every learner.
         </>}
       />
 

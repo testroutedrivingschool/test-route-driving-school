@@ -66,10 +66,10 @@ export default function FeatureCards() {
         const entry = entries[0];
         if (entry.isIntersecting) {
           setStartCount(true);
-          observer.disconnect(); 
+          observer.disconnect();
         }
       },
-      {threshold: 0.3}
+      {threshold: 0.3},
     );
 
     if (sectionRef.current) {
@@ -81,7 +81,7 @@ export default function FeatureCards() {
     <section ref={sectionRef} className="py-17">
       <Container>
         <SectionHeader
-        className={`mt-0!`}
+          className={`mt-0!`}
           title="Trusted by Thousands of Drivers"
           subtitle="Years of excellence in driver education with proven results and satisfied students"
         />
@@ -103,9 +103,9 @@ export default function FeatureCards() {
                   className={`w-16 h-16 ${item.bgColor} rounded-2xl flex items-center justify-center mb-4 `}
                 >
                   <div
-                    className={`text-2xl ${item.color
-                      .replace("from-", "text-")
-                      .split(" ")[0]}`}
+                    className={`text-2xl ${
+                      item.color.replace("from-", "text-").split(" ")[0]
+                    }`}
                   >
                     {item.icon}
                   </div>
@@ -122,19 +122,17 @@ export default function FeatureCards() {
                         separator=","
                       />
                     ) : (
-                      <CountUp
-                        end={item.value}
-                        duration={2.5}
-                        separator=","
-                      />
+                      <CountUp end={item.value} duration={2.5} separator="," />
                     )
+                  ) : item.isFloat ? (
+                    "0.0"
                   ) : (
-                    item.isFloat ? "0.0" : "0"
+                    "0"
                   )}
                   <span
-                    className={`text-3xl ml-1 ${item.color
-                      .replace("from-", "text-")
-                      .split(" ")[0]}`}
+                    className={`text-3xl ml-1 ${
+                      item.color.replace("from-", "text-").split(" ")[0]
+                    }`}
                   >
                     {item.suffix}
                   </span>
@@ -144,12 +142,11 @@ export default function FeatureCards() {
                 <h4 className="text-lg font-semibold text-gray-900">
                   {item.title}
                 </h4>
-                <p className="text-gray-600 text-sm">{item.description}</p>
+                <p className="text-neutral text-sm">{item.description}</p>
               </div>
             </div>
           ))}
         </div>
-
       </Container>
     </section>
   );

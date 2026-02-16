@@ -24,22 +24,24 @@ export default function BookingDetailLayout({children}) {
   if (isLoading || !booking) return <LoadingSpinner />;
 
   // Which tab is active based on URL
-const activeTab =
-  pathname?.split(`/instructor-bookings/${bookingId}/`)[1]?.split("/")[0] ||
-  "booking";
+  const activeTab =
+    pathname?.split(`/instructor-bookings/${bookingId}/`)[1]?.split("/")[0] ||
+    "booking";
 
-if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <LoadingSpinner />;
 
-if (!booking) {
-  return (
-    <div className="py-20 text-center">
-      <h2 className="text-xl font-semibold text-red-600">Booking Not Found</h2>
-      <p className="text-sm text-gray-600 mt-2">
-        The booking does not exist or was deleted.
-      </p>
-    </div>
-  );
-}
+  if (!booking) {
+    return (
+      <div className="py-20 text-center">
+        <h2 className="text-xl font-semibold text-red-600">
+          Booking Not Found
+        </h2>
+        <p className="text-sm text-neutral mt-2">
+          The booking does not exist or was deleted.
+        </p>
+      </div>
+    );
+  }
   return (
     <section className="py-6 ">
       <Container>

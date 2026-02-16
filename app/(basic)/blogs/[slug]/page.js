@@ -89,7 +89,7 @@ export default function BlogDetails() {
     return (
       <div className="text-center py-20">
         <h2 className="text-2xl font-bold">Blog Not Found</h2>
-        <p className="mt-2 text-gray-600">
+        <p className="mt-2 text-neutral">
           The blog you are looking for does not exist.
         </p>
       </div>

@@ -11,14 +11,13 @@ import {useRouter} from "next/navigation";
 import {useUserData} from "@/app/hooks/useUserData";
 import Modal from "@/app/shared/ui/Modal";
 
-
-export default function ClientMessages({ clientId }) {
+export default function ClientMessages({clientId}) {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
- 
+
   const {data: client = []} = useQuery({
     queryKey: ["client"],
-    enabled: !!clientId, 
+    enabled: !!clientId,
     queryFn: async () => {
       const res = await axios.get(`/api/clients/${clientId}`);
       return res.data;
@@ -36,13 +35,13 @@ export default function ClientMessages({ clientId }) {
       const res = await axios.get("/api/emails", {
         params: {
           to: client.email,
-          actorType: "USER" ,
+          actorType: "USER",
         },
       });
       return res.data.items;
     },
   });
-console.log(emails);
+  console.log(emails);
   const rows = useMemo(() => emails || [], [emails]);
 
   const downloadAttachment = async (key) => {
@@ -50,7 +49,7 @@ console.log(emails);
     window.open(data.url, "_blank", "noopener,noreferrer");
   };
 
-  if (isLoading ) return <LoadingSpinner />;
+  if (isLoading) return <LoadingSpinner />;
 
   if (isError) {
     return (
@@ -68,7 +67,7 @@ console.log(emails);
     );
   }
   return (
-     <div className="bg-white  overflow-hidden">
+    <div className="bg-white  overflow-hidden">
       {/* header */}
       <div className="bg-secondary text-white px-4 py-2 flex items-center">
         <div className="w-[90px] font-semibold">Type</div>
@@ -116,7 +115,7 @@ console.log(emails);
                 <div className="font-semibold text-gray-900 flex items-center gap-2">
                   {m.subject || "(No subject)"}
                   {m.hasAttachment ? (
-                    <span className="text-xs font-semibold text-gray-600">
+                    <span className="text-xs font-semibold text-neutral">
                       (📎 {m.attachmentName || "Attachment"})
                     </span>
                   ) : null}
@@ -150,7 +149,7 @@ console.log(emails);
           </div>
 
           {/* Meta */}
-          <div className="mt-3 text-sm text-gray-600 space-y-1">
+          <div className="mt-3 text-sm text-neutral space-y-1">
             <div>
               <span className="font-semibold">Sent:</span>{" "}
               {formatAU(selected.sentAt || selected.createdAt)}
@@ -193,7 +192,11 @@ console.log(emails);
           <div className="mt-6 flex items-center justify-end gap-3">
             {!selected.checklistId && (
               <PrimaryBtn
-                onClick={() => router.push(`/instructor-bookings/${selected.bookingId}/booking`)}
+                onClick={() =>
+                  router.push(
+                    `/instructor-bookings/${selected.bookingId}/booking`,
+                  )
+                }
                 className="px-6!"
               >
                 View Booking
@@ -213,7 +216,6 @@ console.log(emails);
   );
 }
 
-
 function formatAU(d) {
   if (!d) return "—";
   const dt = new Date(d);
@@ -227,4 +229,3 @@ function formatAU(d) {
     hour12: true,
   });
 }
-

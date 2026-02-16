@@ -132,7 +132,7 @@ function historyHtml({ client, bookings, logoDataUri }) {
         ${logoDataUri ? `<img class="logo" src="${logoDataUri}" />` : ""}
         <div style="margin-top:6px;">
           67 Warialda St, Kogarah NSW 2217<br/>
-          Phone: 61 412 018 593
+          Phone: 0412 018 593
         </div>
       </div>
     </div>

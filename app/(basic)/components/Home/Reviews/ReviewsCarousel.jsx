@@ -50,8 +50,6 @@ export default function ReviewsCarousel() {
         }}
       >
         {reviewsData.map((item) => {
-       
-
           return (
             <SwiperSlide key={item._id} className="h-auto">
               <div
@@ -108,13 +106,13 @@ export default function ReviewsCarousel() {
           aria-label="Left Arrow"
           className="reviews-prev p-3 rounded-full bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors"
         >
-          <FiChevronLeft className="text-gray-600 text-xl" />
+          <FiChevronLeft className="text-neutral text-xl" />
         </button>
         <button
           aria-label="Right Arrow"
           className="reviews-next p-3 rounded-full bg-white border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors"
         >
-          <FiChevronRight className="text-gray-600 text-xl" />
+          <FiChevronRight className="text-neutral text-xl" />
         </button>
       </div>
     </div>

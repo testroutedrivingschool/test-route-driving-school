@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FaShieldAlt } from "react-icons/fa";
+import {FaShieldAlt} from "react-icons/fa";
 
 export default function UnauthorizedPage() {
   return (
@@ -20,7 +20,7 @@ export default function UnauthorizedPage() {
         </h1>
 
         {/* Message */}
-        <p className="mt-4 text-gray-600 leading-relaxed">
+        <p className="mt-4 text-neutral leading-relaxed">
           You have attempted to access a page that you are not authorized to
           view. This area is restricted based on your account role.
         </p>

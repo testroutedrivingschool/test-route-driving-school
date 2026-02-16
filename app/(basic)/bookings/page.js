@@ -422,7 +422,7 @@ export default function BookingsPage() {
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               No Instructors Available
             </h2>
-            <p className="text-gray-600">
+            <p className="text-neutral">
               Please check back later or contact support.
             </p>
           </div>
@@ -464,7 +464,7 @@ export default function BookingsPage() {
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   No Instructors Available
                 </h2>
-                <p className="text-gray-600 mb-4">
+                <p className="text-neutral mb-4">
                   There are no instructors available in this location.
                 </p>
                 <button
@@ -494,7 +494,7 @@ export default function BookingsPage() {
                           <h2 className="text-xl font-bold text-gray-900">
                             Select Your Instructor
                           </h2>
-                          <p className="text-gray-600 text-sm mt-1">
+                          <p className="text-neutral text-sm mt-1">
                             Click on an instructor to view their schedule
                           </p>
                         </div>
@@ -620,7 +620,7 @@ export default function BookingsPage() {
                     </div>
 
                     {!selectedInstructor ? (
-                      <div className="rounded-xl border border-border-color bg-white p-8 text-center text-gray-600">
+                      <div className="rounded-xl border border-border-color bg-white p-8 text-center text-neutral">
                         Please select an instructor to view the schedule.
                       </div>
                     ) : (
@@ -633,7 +633,7 @@ export default function BookingsPage() {
                                 {selectedInstructor.name}&apos;s Schedule
                               </h2>
                               <div className="flex justify-between">
-                                <p className="text-gray-600 mt-1">
+                                <p className="text-neutral mt-1">
                                   Week of{" "}
                                   {weekDates[0].toLocaleDateString("en-US", {
                                     month: "short",
@@ -671,13 +671,13 @@ export default function BookingsPage() {
                               <div className="flex items-center space-x-2">
                                 <div className="flex items-center">
                                   <div className="w-3 h-3 bg-[#A2B5D8] rounded mr-2"></div>
-                                  <span className="text-sm text-gray-600">
+                                  <span className="text-sm text-neutral">
                                     Booked
                                   </span>
                                 </div>
                                 <div className="flex items-center">
                                   <div className="w-3 h-3 bg-[#7DA730] rounded mr-2"></div>
-                                  <span className="text-sm text-gray-600">
+                                  <span className="text-sm text-neutral">
                                     Available
                                   </span>
                                 </div>
@@ -921,7 +921,7 @@ export default function BookingsPage() {
                   href="tel:61412018593"
                   className="px-1 rounded-lg  font-bold "
                 >
-                  <span>+61412 018 593</span>
+                  <span>0412 018 593</span>
                 </a>
               </p>
             </div>

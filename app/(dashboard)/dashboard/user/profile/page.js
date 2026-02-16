@@ -6,19 +6,19 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import Link from "next/link";
 import React, {useEffect, useState} from "react";
-import { FaEye, FaEyeSlash, FaInbox} from "react-icons/fa";
-import { FiCalendar } from "react-icons/fi";
+import {FaEye, FaEyeSlash, FaInbox} from "react-icons/fa";
+import {FiCalendar} from "react-icons/fi";
 import {toast} from "react-toastify";
 import Image from "next/image";
-import { useMemo } from "react";
-import { uploadProfilePhotoToMinio } from "@/app/utils/uploadProfilePhotoToMinio";
+import {useMemo} from "react";
+import {uploadProfilePhotoToMinio} from "@/app/utils/uploadProfilePhotoToMinio";
 export default function UserProfile() {
   const {data: userData, isLoading} = useUserData();
   const {changePassword} = useAuth();
 
-const [photoFile, setPhotoFile] = useState(null);
-const [localPreview, setLocalPreview] = useState("");
-const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
+  const [localPreview, setLocalPreview] = useState("");
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [profile, setProfile] = useState({
     name: "",
     email: "",
@@ -61,57 +61,57 @@ const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     setProfile((prev) => ({...prev, [name]: value}));
   };
 
-const handlePhotoChange = (e) => {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-  if (!file.type.startsWith("image/")) {
-    toast.error("Please select an image file");
-    return;
-  }
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file");
+      return;
+    }
 
-  // ✅ you asked: max 1MB
-  if (file.size > 1 * 1024 * 1024) {
-    toast.error("Image size should be under 1MB");
-    return;
-  }
+    // ✅ you asked: max 1MB
+    if (file.size > 1 * 1024 * 1024) {
+      toast.error("Image size should be under 1MB");
+      return;
+    }
 
-  setPhotoFile(file);
-  setLocalPreview(URL.createObjectURL(file));
-};
+    setPhotoFile(file);
+    setLocalPreview(URL.createObjectURL(file));
+  };
 
-const handleCancelPhoto = () => {
-  setPhotoFile(null);
-  setLocalPreview("");
-};
-
-const handleUploadPhoto = async () => {
-  if (!photoFile) return toast.error("Please select a photo first");
-
-  try {
-    setIsUploadingPhoto(true);
-
-    // 1) upload to MinIO
-    const photoKey = await uploadProfilePhotoToMinio(photoFile);
-
-    // 2) update user doc (clear old url so photoKey is used)
-    await axios.patch("/api/users", {
-      email: profile.email,
-      photoKey,
-      photo: "", 
-    });
-
-    toast.success("Profile photo updated!");
-
+  const handleCancelPhoto = () => {
     setPhotoFile(null);
-    setLocalPreview(`/api/storage/proxy?key=${encodeURIComponent(photoKey)}`);
-  } catch (error) {
-    console.error(error);
-    toast.error(error?.response?.data?.error || "Failed to update photo");
-  } finally {
-    setIsUploadingPhoto(false);
-  }
-};
+    setLocalPreview("");
+  };
+
+  const handleUploadPhoto = async () => {
+    if (!photoFile) return toast.error("Please select a photo first");
+
+    try {
+      setIsUploadingPhoto(true);
+
+      // 1) upload to MinIO
+      const photoKey = await uploadProfilePhotoToMinio(photoFile);
+
+      // 2) update user doc (clear old url so photoKey is used)
+      await axios.patch("/api/users", {
+        email: profile.email,
+        photoKey,
+        photo: "",
+      });
+
+      toast.success("Profile photo updated!");
+
+      setPhotoFile(null);
+      setLocalPreview(`/api/storage/proxy?key=${encodeURIComponent(photoKey)}`);
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.error || "Failed to update photo");
+    } finally {
+      setIsUploadingPhoto(false);
+    }
+  };
 
   const handlePasswordChange = (e) => {
     const {name, value} = e.target;
@@ -168,14 +168,14 @@ const handleUploadPhoto = async () => {
     }
   };
   const avatarSrc = useMemo(() => {
-  if (localPreview) return localPreview;
+    if (localPreview) return localPreview;
 
-  return userData?.photo
-    ? userData.photo
-    : userData?.photoKey
-    ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
-    : "/profile-avatar.png";
-}, [localPreview, userData]);
+    return userData?.photo
+      ? userData.photo
+      : userData?.photoKey
+        ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
+        : "/profile-avatar.png";
+  }, [localPreview, userData]);
 
   if (isLoading) return <LoadingSpinner />;
   return (
@@ -185,7 +185,7 @@ const handleUploadPhoto = async () => {
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
-            <p className="text-gray-600">
+            <p className="text-neutral">
               View and manage your profile information
             </p>
           </div>
@@ -194,60 +194,59 @@ const handleUploadPhoto = async () => {
             {/* Left Column - Profile Information */}
             <div className="lg:col-span-2 space-y-6">
               <div className=" border border-gray-200 rounded-lg shadow">
-  <div className="px-6 py-4 border-b border-gray-200">
-    <h2 className="text-lg font-semibold">Profile Photo</h2>
-  </div>
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold">Profile Photo</h2>
+                </div>
 
-  <div className="p-6 space-y-4">
-    <div className="flex items-center gap-4">
-      <div className="w-20 h-20 rounded-full overflow-hidden border bg-gray-50">
-        <Image
-          src={avatarSrc}
-          alt="Profile"
-          width={80}
-          height={80}
-          className="w-20 h-20 object-cover"
-        />
-      </div>
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="w-20 h-20 rounded-full overflow-hidden border bg-gray-50">
+                      <Image
+                        src={avatarSrc}
+                        alt="Profile"
+                        width={80}
+                        height={80}
+                        className="w-20 h-20 object-cover"
+                      />
+                    </div>
 
-      <div className="flex-1 space-y-2">
-        <input
-          type="file"
-          accept="image/*"
-          onChange={handlePhotoChange}
-          className="block w-full text-sm text-gray-600 border p-3 border-gray-200 rounded-md cursor-pointer"
-        />
+                    <div className="flex-1 space-y-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        className="block w-full text-sm text-neutral border p-3 border-gray-200 rounded-md cursor-pointer"
+                      />
 
-        <div className="flex gap-2">
-          <PrimaryBtn
-            onClick={handleUploadPhoto}
-            disabled={isUploadingPhoto || !photoFile}
-            className="justify-center"
-          >
-            {isUploadingPhoto ? "Uploading..." : "Update Photo"}
-          </PrimaryBtn>
+                      <div className="flex gap-2">
+                        <PrimaryBtn
+                          onClick={handleUploadPhoto}
+                          disabled={isUploadingPhoto || !photoFile}
+                          className="justify-center"
+                        >
+                          {isUploadingPhoto ? "Uploading..." : "Update Photo"}
+                        </PrimaryBtn>
 
-          {photoFile && (
-            <button
-              type="button"
-              onClick={handleCancelPhoto}
-              className="px-4 py-2 border border-border-color rounded-md text-gray-700 hover:bg-gray-50 transition duration-200"
-            >
-              Cancel
-            </button>
-          )}
-        </div>
+                        {photoFile && (
+                          <button
+                            type="button"
+                            onClick={handleCancelPhoto}
+                            className="px-4 py-2 border border-border-color rounded-md text-gray-700 hover:bg-gray-50 transition duration-200"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                      </div>
 
-        <p className="text-xs text-gray-500">
-          Allowed: JPG/PNG/WebP • Max size: 1MB
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+                      <p className="text-xs text-gray-500">
+                        Allowed: JPG/PNG/WebP • Max size: 1MB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
                 {/* Photo Card */}
-
 
                 <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-gray-800">
@@ -430,7 +429,7 @@ const handleUploadPhoto = async () => {
                   <div className="p-6">
                     {!isChangingPassword ? (
                       <div className="text-center">
-                        <p className="text-gray-600 mb-4">
+                        <p className="text-neutral mb-4">
                           For security, you should change your password
                           regularly
                         </p>
@@ -459,7 +458,7 @@ const handleUploadPhoto = async () => {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                             >
                               {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -480,7 +479,7 @@ const handleUploadPhoto = async () => {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                             >
                               {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -501,7 +500,7 @@ const handleUploadPhoto = async () => {
                             <button
                               type="button"
                               onClick={() => setShowPassword(!showPassword)}
-                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                              className="absolute inset-y-0  top-5 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
                             >
                               {showPassword ? <FaEyeSlash /> : <FaEye />}
                             </button>
@@ -541,12 +540,11 @@ const handleUploadPhoto = async () => {
                       className="flex items-center justify-between w-full p-4 border border-gray-200 rounded-lg hover:bg-primary/10 transition duration-200"
                     >
                       <div className="flex items-center gap-3">
-                        <FiCalendar   className="h-6 w-6 text-primary" />
+                        <FiCalendar className="h-6 w-6 text-primary" />
                         <div>
                           <p className="font-medium text-gray-900">
                             My Bookings
                           </p>
-                          
                         </div>
                       </div>
                     </Link>
@@ -555,20 +553,12 @@ const handleUploadPhoto = async () => {
                       className="flex items-center justify-between w-full p-4 border border-gray-200 rounded-lg hover:bg-primary/10 transition duration-200"
                     >
                       <div className="flex items-center gap-3">
-                     
                         <FaInbox className="h-6 w-6 text-primary" />
                         <div>
-                          <p className="font-medium text-gray-900">
-                            Messages
-                          </p>
-                          
+                          <p className="font-medium text-gray-900">Messages</p>
                         </div>
                       </div>
                     </Link>
-                
-                  
-
-                   
                   </div>
                 </div>
               )}

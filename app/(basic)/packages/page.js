@@ -11,11 +11,8 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
-import { addToCartLS } from "@/app/utils/cart";
-import { useRouter } from "next/navigation";
-
-
-
+import {addToCartLS} from "@/app/utils/cart";
+import {useRouter} from "next/navigation";
 
 export default function Packages() {
   const {data: packagesData = [], isLoading} = useQuery({
@@ -25,9 +22,8 @@ export default function Packages() {
       return res.data;
     },
   });
- 
 
-const router = useRouter()
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("default");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -52,7 +48,7 @@ const router = useRouter()
     .filter(
       (pkg) =>
         pkg.name.toLowerCase().includes(search.toLowerCase()) ||
-        pkg.description.toLowerCase().includes(search.toLowerCase())
+        pkg.description.toLowerCase().includes(search.toLowerCase()),
     )
     .filter((pkg) => {
       if (selectedCategory === "all") return true;
@@ -77,8 +73,8 @@ const router = useRouter()
         sort === "low"
           ? "Price Low to High"
           : sort === "high"
-          ? "Price High to Low"
-          : "Most Popular"
+            ? "Price High to Low"
+            : "Most Popular"
       }`,
   ].filter(Boolean);
 
@@ -90,10 +86,10 @@ const router = useRouter()
   };
 
   const handleAddToCart = (pkg, e) => {
-  e.preventDefault();
-  addToCartLS(pkg);
-  router.push("/cart");
-};
+    e.preventDefault();
+    addToCartLS(pkg);
+    router.push("/cart");
+  };
 
   if (isLoading) return <LoadingSpinner />;
 
@@ -102,10 +98,23 @@ const router = useRouter()
       <PageHeroSection
         title="Learn Faster with Our Professional Driving Package"
         subtitle={
-
           <>
-          
-          Are you looking for the <strong>best driving package near me</strong> in Kogarah? At <strong>Test Route Driving School</strong>, we offer <strong>professional driving packages</strong> designed to help you learn faster, build confidence, and pass your driving test with ease. Whether you’re a beginner or need extra practice, our <a href="https://en.wikipedia.org/wiki/Driver%27s_license" target="_blank" className="location-link">driving school packages</a> cater to every learner’s needs.
+            Are you looking for the{" "}
+            <strong>best driving package near me</strong> in Kogarah? At{" "}
+            <Link className="font-semibold underline px-1" href={`/`}>
+              Test Route Driving School,
+            </Link>{" "}
+            we offer <strong>professional driving packages</strong> designed to
+            help you learn faster, build confidence, and pass your driving test
+            with ease. Whether you’re a beginner or need extra practice, our{" "}
+            <a
+              href="https://en.wikipedia.org/wiki/Driver%27s_license"
+              target="_blank"
+              className="location-link"
+            >
+              driving school packages
+            </a>{" "}
+            cater to every learner’s needs.
           </>
         }
       />
@@ -114,11 +123,18 @@ const router = useRouter()
           <SectionHeader
             title="Find Your Perfect Driving Package"
             subtitle={
-<>
-
-Choosing the right <strong>driving lesson package</strong> is simple. Our <strong>driving school packages</strong> fit your schedule, skill, and needs, making learning easy, flexible, and confidence-boosting in every session.
-</>
-
+              <>
+                Choosing the right{" "}
+                <Link
+                  className="font-semibold underline px-1"
+                  href={`/services/automatic-driving-lessons`}
+                >
+                  driving lesson package
+                </Link>{" "}
+                is simple. Our <strong>driving school packages</strong> fit your
+                schedule, skill, and needs, making learning easy, flexible, and
+                confidence-boosting in every session.
+              </>
             }
           />
         </div>
@@ -192,7 +208,7 @@ Choosing the right <strong>driving lesson package</strong> is simple. Our <stron
             {/* Active Filters */}
             {activeFilters.length > 0 && (
               <div className="mt-4 flex flex-wrap items-center gap-2">
-                <span className="text-sm text-gray-600 font-medium">
+                <span className="text-sm text-neutral font-medium">
                   Active filters:
                 </span>
                 {activeFilters.map((filter, index) => (
@@ -244,7 +260,7 @@ Choosing the right <strong>driving lesson package</strong> is simple. Our <stron
             <h3 className="text-2xl font-bold text-gray-800 mb-3">
               No packages match your criteria
             </h3>
-            <p className="text-gray-600 max-w-md mx-auto mb-6">
+            <p className="text-neutral max-w-md mx-auto mb-6">
               Try adjusting your filters or search term to find the perfect
               driving package.
             </p>
@@ -260,7 +276,7 @@ Choosing the right <strong>driving lesson package</strong> is simple. Our <stron
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredPackages.map((pkg) => (
               <Link
-                href={`/packages/${(pkg.slug)}`}
+                href={`/packages/${pkg.slug}`}
                 key={pkg._id}
                 className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
               >
@@ -281,7 +297,7 @@ Choosing the right <strong>driving lesson package</strong> is simple. Our <stron
                   <h3 className="text-xl font-bold mb-2">{pkg.name}</h3>
 
                   {/* Description */}
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  <p className="text-neutral text-sm mb-4 line-clamp-3">
                     {pkg.description.length > 60
                       ? pkg.description.slice(0, 60) + "..."
                       : pkg.description}

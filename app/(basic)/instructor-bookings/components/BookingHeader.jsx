@@ -22,7 +22,7 @@ function formatBookingDate(dateLike, timeText) {
   }
 }
 
-export default function BookingHeader({ booking }) {
+export default function BookingHeader({booking}) {
   const paymentStatus = String(safe(booking.paymentStatus)).toLowerCase();
   const isPaid = paymentStatus === "paid" || paymentStatus.includes("voucher");
 
@@ -36,7 +36,7 @@ export default function BookingHeader({ booking }) {
         <div className="min-w-0">
           <div
             className={`text-xl md:text-3xl font-bold  ${
-              isPaid ? "text-primary" : "text-red-500"
+              isPaid ? "text-gray-500" : "text-red-500"
             }`}
           >
             {isPaid ? "PAID" : "Payment Required"}
@@ -44,9 +44,10 @@ export default function BookingHeader({ booking }) {
 
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
             <Link href={`/clients?clientId=${booking.clientId}`}>
-            <h2 className="text-xl md:text-3xl font-extrabold text-primary">{clientName}</h2>
+              <h2 className="text-xl md:text-3xl font-extrabold text-primary">
+                {clientName}
+              </h2>
             </Link>
-           
           </div>
         </div>
 
@@ -56,21 +57,13 @@ export default function BookingHeader({ booking }) {
             className={`px-4 py-1.5 rounded-md border-2 font-bold tracking-wide ${
               status === "confirmed"
                 ? "border-green-600 text-green-600"
-                : "border-gray-400 text-gray-600"
+                : "border-gray-400 text-neutral"
             }`}
           >
             {status === "confirmed" ? "CONFIRMED" : status}
           </div>
-
-          
         </div>
       </div>
-
-    
-
-    
     </div>
   );
 }
-
-

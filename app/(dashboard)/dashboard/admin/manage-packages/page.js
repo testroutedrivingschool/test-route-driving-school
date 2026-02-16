@@ -48,7 +48,7 @@ export default function ManagePackages() {
 
     const res = await axios.post(
       `https://api.imgbb.com/1/upload?key=${process.env.NEXT_PUBLIC_IMGBB_API_KEY}`,
-      form
+      form,
     );
 
     return res.data.data.url;
@@ -77,7 +77,8 @@ export default function ManagePackages() {
       !durationNum ||
       !price ||
       !description ||
-      !features ||!imageFile
+      !features ||
+      !imageFile
     ) {
       return toast.error(`Please fill all fields`);
     }
@@ -191,7 +192,7 @@ export default function ManagePackages() {
             />
 
             <h3 className="font-bold text-lg">{pkg.name}</h3>
-            <p className="text-gray-600 text-sm ">
+            <p className="text-neutral text-sm ">
               {pkg.description.length > 60
                 ? pkg.description.slice(0, 60) + "..."
                 : pkg.description}

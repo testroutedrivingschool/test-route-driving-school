@@ -1,19 +1,19 @@
 "use client";
 import useAuth from "@/app/hooks/useAuth";
-import { useUserData } from "@/app/hooks/useUserData";
+import {useUserData} from "@/app/hooks/useUserData";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import Link from "next/link";
-import React, { useEffect, useMemo, useState } from "react";
-import { FaEye, FaEyeSlash, FaUsersCog } from "react-icons/fa";
-import { toast } from "react-toastify";
+import React, {useEffect, useMemo, useState} from "react";
+import {FaEye, FaEyeSlash, FaUsersCog} from "react-icons/fa";
+import {toast} from "react-toastify";
 import Image from "next/image";
-import { uploadProfilePhotoToMinio } from "@/app/utils/uploadProfilePhotoToMinio";
+import {uploadProfilePhotoToMinio} from "@/app/utils/uploadProfilePhotoToMinio";
 
 export default function AdminProfile() {
-  const { changePassword } = useAuth();
-  const { data: userData, isLoading } = useUserData();
+  const {changePassword} = useAuth();
+  const {data: userData, isLoading} = useUserData();
 
   const [profile, setProfile] = useState({
     name: "",
@@ -49,8 +49,8 @@ export default function AdminProfile() {
     return userData?.photo
       ? userData.photo
       : userData?.photoKey
-      ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
-      : "/profile-avatar.png";
+        ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
+        : "/profile-avatar.png";
   }, [localPreview, userData]);
 
   const [passwordData, setPasswordData] = useState({
@@ -64,13 +64,13 @@ export default function AdminProfile() {
   const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handleProfileChange = (e) => {
-    const { name, value } = e.target;
-    setProfile((prev) => ({ ...prev, [name]: value }));
+    const {name, value} = e.target;
+    setProfile((prev) => ({...prev, [name]: value}));
   };
 
   const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswordData((prev) => ({ ...prev, [name]: value }));
+    const {name, value} = e.target;
+    setPasswordData((prev) => ({...prev, [name]: value}));
   };
 
   const handlePhotoChange = (e) => {
@@ -148,7 +148,7 @@ export default function AdminProfile() {
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
 
-    const { currentPassword, newPassword, confirmPassword } = passwordData;
+    const {currentPassword, newPassword, confirmPassword} = passwordData;
 
     if (newPassword !== confirmPassword) {
       toast.error("New passwords do not match!");
@@ -179,7 +179,7 @@ export default function AdminProfile() {
           {/* Header */}
           <div className="px-6 py-4 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-800">Admin Profile</h1>
-            <p className="text-gray-600">
+            <p className="text-neutral">
               View and manage your profile information
             </p>
           </div>
@@ -202,7 +202,6 @@ export default function AdminProfile() {
                         width={80}
                         height={80}
                         className="w-20 h-20 object-cover"
-                        
                       />
                     </div>
 
@@ -211,7 +210,7 @@ export default function AdminProfile() {
                         type="file"
                         accept="image/*"
                         onChange={handlePhotoChange}
-                        className="block w-full text-sm text-gray-600 border p-3 border-gray-200 rounded-md cursor-pointer"
+                        className="block w-full text-sm text-neutral border p-3 border-gray-200 rounded-md cursor-pointer"
                       />
 
                       <div className="flex gap-2">
@@ -245,7 +244,9 @@ export default function AdminProfile() {
               {/* Personal info */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
                 <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                  <h2 className="text-lg font-semibold">Personal Information</h2>
+                  <h2 className="text-lg font-semibold">
+                    Personal Information
+                  </h2>
                   {!isEditing && (
                     <PrimaryBtn onClick={() => setIsEditing(true)}>
                       Edit Profile
@@ -375,8 +376,9 @@ export default function AdminProfile() {
                   <div className="p-6">
                     {!isChangingPassword ? (
                       <div className="text-center">
-                        <p className="text-gray-600 mb-4">
-                          For security, you should change your password regularly
+                        <p className="text-neutral mb-4">
+                          For security, you should change your password
+                          regularly
                         </p>
                         <button
                           onClick={() => setIsChangingPassword(true)}
@@ -388,34 +390,36 @@ export default function AdminProfile() {
                     ) : (
                       <form onSubmit={handlePasswordSubmit}>
                         <div className="space-y-4">
-                          {["currentPassword", "newPassword", "confirmPassword"].map(
-                            (field, idx) => (
-                              <div key={idx} className="relative">
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                  {field === "currentPassword"
-                                    ? "Current Password"
-                                    : field === "newPassword"
+                          {[
+                            "currentPassword",
+                            "newPassword",
+                            "confirmPassword",
+                          ].map((field, idx) => (
+                            <div key={idx} className="relative">
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                {field === "currentPassword"
+                                  ? "Current Password"
+                                  : field === "newPassword"
                                     ? "New Password"
                                     : "Confirm New Password"}
-                                </label>
-                                <input
-                                  type={showPassword ? "text" : "password"}
-                                  name={field}
-                                  value={passwordData[field]}
-                                  onChange={handlePasswordChange}
-                                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  required
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => setShowPassword(!showPassword)}
-                                  className="absolute inset-y-0 top-6 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                                >
-                                  {showPassword ? <FaEyeSlash /> : <FaEye />}
-                                </button>
-                              </div>
-                            )
-                          )}
+                              </label>
+                              <input
+                                type={showPassword ? "text" : "password"}
+                                name={field}
+                                value={passwordData[field]}
+                                onChange={handlePasswordChange}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                required
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute inset-y-0 top-6 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
+                              >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                              </button>
+                            </div>
+                          ))}
 
                           <div className="flex justify-end space-x-3 pt-4">
                             <button
@@ -452,15 +456,15 @@ export default function AdminProfile() {
                       <div className="flex items-center gap-3">
                         <FaUsersCog className="h-6 w-6 text-primary" />
                         <div>
-                          <p className="font-medium text-gray-900">Manage Users</p>
+                          <p className="font-medium text-gray-900">
+                            Manage Users
+                          </p>
                           <p className="text-sm text-gray-500">
                             View, edit, and manage administrator accounts
                           </p>
                         </div>
                       </div>
                     </Link>
-
-                   
                   </div>
                 </div>
               )}

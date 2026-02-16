@@ -7,7 +7,7 @@ import {toast} from "react-toastify";
 import useAuth from "@/app/hooks/useAuth";
 import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import {FaEye, FaEyeSlash} from "react-icons/fa";
 
 export default function FinancialPage() {
   const {user} = useAuth();
@@ -17,11 +17,8 @@ export default function FinancialPage() {
     accountNumber: "",
   });
   const [loading, setLoading] = useState(false);
-  const [showPassword,setShowPassword] = useState(false)
-  const {
-    data: instructorData = {},
-    isLoading,
-  } = useQuery({
+  const [showPassword, setShowPassword] = useState(false);
+  const {data: instructorData = {}, isLoading} = useQuery({
     queryKey: ["instructor"],
     queryFn: async () => {
       const res = await axios.get(`/api/instructors?email=${user.email}`);
@@ -110,12 +107,12 @@ export default function FinancialPage() {
             className="input-class"
           />
           <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute inset-y-0 top-6 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
-                        >
-                          {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </button>
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 top-6 right-0 pr-3 flex items-center text-gray-400 hover:text-neutral"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
         </div>
 
         <PrimaryBtn

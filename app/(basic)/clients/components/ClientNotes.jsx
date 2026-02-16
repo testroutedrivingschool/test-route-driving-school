@@ -210,7 +210,7 @@ export default function ClientNotes({clientId}) {
             height="18"
             viewBox="0 0 24 24"
             fill="none"
-            className="text-gray-600"
+            className="text-neutral"
           >
             <path
               d="M21 21l-4.3-4.3m1.3-5.2a7 7 0 11-14 0 7 7 0 0114 0z"

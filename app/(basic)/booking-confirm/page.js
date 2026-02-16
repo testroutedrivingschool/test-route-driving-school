@@ -59,6 +59,7 @@ export default function BookingConfirmPage() {
     if (booking.bookingType === "website") {
       const bookingData = {
         userId: userData._id,
+        clientId:userData.clientId,
         userEmail: userData.email,
         userName: userData.name,
         userAddress: userData.address,
@@ -80,42 +81,7 @@ export default function BookingConfirmPage() {
       };
       console.log(userData);
       console.log("Booking:", bookingData);
-      // const clientPayload = {
-      //   firstName: userData?.name,
-      //   lastName: "",
-      //   organization: "None",
-      //   mobile: userData.phone || "",
-      //   homePhone: "",
-      //   workPhone: "",
-      //   email: userData?.email,
-      //   anotherEmail: "",
-      //   dob:userData.dateOfBirth || "",
-      //   gender: "",
-      //   emergencyContact: userData.emergencyContact || "",
-      //   emergencyPhone: "",
-      //   address: userData.address || "",
-      //   suburb: userData.suburb || "",
-      //   state: userData.state || "",
-      //   postCode: userData.postCode || "",
-      //   accountBalance: "",
-      //   referredBy: "Not Specified",
-
-      //   activeClient: true,
-      //   marketingSubscriber: true,
-      //   receiveReminders: true,
-      //   loginAccess: true,
-      //   onlineBooking: true,
-      //   showPhoto: true,
-
-      //   actionShot: "No Action Set",
-      //   actionRequired: "",
-      //   assignedTo: "Anyone",
-      //   actionBy: "",
-      //   alerts: "",
-      //   clientNote: "",
-      //   comments: "",
-      // };
-      // await axios.post("/api/clients", clientPayload);
+  
       sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
       router.push("/booking-confirm/payment-confirm");

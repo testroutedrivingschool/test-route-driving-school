@@ -42,6 +42,7 @@ export default function WhatWeOffer({
   sectionSubtitle,
   services,
   className,
+  extra
 }) {
   return (
     <section className={`relative py-20 bg-white overflow-hidden ${className}`}>
@@ -81,6 +82,7 @@ bg-primary shadow-lg"
             </div>
           ))}
         </div>
+        {extra && extra}
       </Container>
     </section>
   );
