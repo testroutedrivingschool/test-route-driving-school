@@ -1937,4 +1937,644 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
+    "beverly-hills": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31373.397688993184!2d151.05772309013835!3d-33.948301384535796!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b96173212bf1%3A0x5017d681632a9e0!2sBeverly%20Hills%20NSW%202209%2C%20Australia!5e1!3m2!1sen!2sbd!4v1770643050291!5m2!1sen!2sbd",
+    pageTitle: "Trusted Driving Lessons in Beverly Hills",
+    metaDescription:
+      "Safe Driving Lessons in Beverly Hills – expert instructors, personalized lessons. Call +61 412 018 593 to schedule and get bonus learning tips!",
+    keywords: [
+      "Driving Lessons in Beverly Hills",
+      "driving lessons near me in Beverly Hills",
+      "driving lesson in Beverly Hills",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Beverly Hills",
+      "cheap driving lessons",
+      "driving school in Beverly Hills",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Beverly Hills",
+      "drivers education school near me",
+      "driver education course in Beverly Hills",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Beverly Hills",
+    ],
+    heroTitle: "Driving Lessons in Beverly Hills – Master the Road with Confidence",
+    heroDescription: (
+      <>
+      Unlock your freedom with the best <strong><Link className="location-link" href={"/services/automatic-driving-lessons"} >Driving Lessons</Link> in Beverly Hills,</strong> tailored for your success. We provide patient coaching and modern dual-controlled cars for all local learners. Our expert instructors help you pass the driving test on your first attempt. Whether you are a student or a busy professional, we offer flexible timing. Join our elite <Link className="location-link" href={"services/automatic-driving-lessons"} >driving school</Link> and become a safe, skilled driver in the <strong>Sydney Suburbs.</strong>
+      </>
+    ),
+
+    section1Title: "Why Learners Choose Our Driving Lessons in Beverly Hills, NSW",
+    section1SubTitle: (
+      <>
+        You deserve an instructor who knows the busy King Georges Road intersections intimately. Many students fear heavy traffic, but I teach you to remain calm and composed. I have guided hundreds of locals through the tricky <strong>Beverly Hills</strong> shopping strip. Our focus remains on low-risk driving habits that protect you for a lifetime. You will gain the skills needed to navigate any road condition with ease.
+      </>
+    ),
+    section1Features: [
+      <> Expert <strong>Driving Lessons in Beverly Hills.</strong></>,
+      <>Safe modern dual-controlled training vehicles.</>,
+      <>Patient and very supportive local instructors.</>,
+      <>High first-time driving test pass rates.</>,
+    ],
+    section2Title: "Service Areas For Driving Lessons in Beverly Hills and Nearby",
+    section2SubTitle: (
+      <>
+       You can access our premium <strong>Driving Lessons in Beverly Hills</strong> and all surrounding areas. We offer convenient pick-up from your home in Narwee or Kingsgrove. My team is familiar with the specific road layouts across the entire St. George region. We ensure you practice on the exact routes used by the Kogarah testing centre. <Link className="location-link" href={"/services"} >Our Driving Services</Link> provide the local knowledge you need to succeed quickly. We make professional driver education accessible to every resident in our community.
+      </>
+    ),
+    section2Features: [
+      <>Expert coaching in Roselands.</>,
+      <>Quality training in Penshurst.</>,
+      <>Driving skills in Hurstville.</>,
+      <>Local lessons in Mortdale.</>,
+    ],
+    section3Title1: "Main Road and High-Traffic Driving Training in Beverly Hills",
+    section3Description1: (
+      <>
+        Beverly Hills features a mix of busy arterial roads and complex intersections, making it an ideal place for developing advanced driving skills. During lessons, you will practise safe merging, gap selection, and lane discipline on major streets like King George’s Road, where heavy traffic and signal-controlled junctions test your focus and reaction time. Your instructor will guide you through real-world scenarios such as sudden stops, lane changes, and multi-lane intersections to build confidence under pressure. <br/>
+        You’ll also learn defensive driving strategies, including anticipating other drivers’ actions, adjusting speed safely during congestion, and maintaining consistent control during peak-hour traffic. Lessons cover high-traffic connecting routes to nearby suburbs, preparing you for everyday urban driving. Real-time feedback helps you refine steering, braking, and acceleration skills, while also improving hazard awareness. By the end of this training, you will feel confident navigating both residential and high-traffic areas of Beverly Hills, ready to tackle your practical <Link className="location-link" href={"/services/driving-test-assessment"} >driving test</Link> and safely manage complex road situations independently.
+
+      </>
+    ),
+    section3Title2: "Residential Street Skills and Driving Test Preparation in Beverly Hills",
+    section3Description2: (
+      <>
+       Residential streets in Beverly Hills present their own challenges, including narrow lanes, parked cars, hidden driveways, and pedestrian crossings near schools and parks. Lessons focus on precise manoeuvring, maintaining safe spacing, and developing keen observation skills. You will practise essential test skills such as reverse parallel parking, kerbside stops, three-point turns, and careful turning in confined spaces. <br/>
+       <Link className="location-link" href={"/instructors"} >Your instructor</Link> conducts realistic mock assessments based on NSW RMS standards, covering local examiner routes. You will practise signalling, speed adjustment, lane discipline, and hazard perception under test-style conditions. Each session includes detailed feedback to correct mistakes, improve consistency, and build confidence behind the wheel. Special attention is given to school zones and pedestrian-heavy areas, ensuring you understand how to maintain safety and compliance with traffic rules. After completing these lessons, you’ll be fully prepared to handle both residential and main roads with ease, ready to pass your driving test and enjoy safe independent driving throughout Beverly Hills.
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Automatic Driving Lessons",
+        description: (
+          <>
+            You will find our <Link className="location-link" href={"/services/automatic-driving-lessons"} >Automatic Driving Lessons</Link> smooth and very easy to learn. This service is perfect for navigating the dense traffic in <strong>Beverly Hills.</strong>
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment ",
+        description: (
+          <>
+            You can book a Driving Test Assessment to check your current readiness level. I provide a detailed report to help you correct any minor errors.
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Package ",
+       description: (
+          <>
+           Our <Link className="location-link" href={"/services/driving-test-package"} >Driving Test Package</Link> includes a warm-up lesson before your actual practical exam. You will feel relaxed and ready when you meet the testing officer.
+          </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire for an Instructor ",
+        description: (
+          <>
+          You can use our Car Hire Service for an instructor on your test day. Driving a familiar car helps you perform manoeuvres with much higher accuracy.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Night Driving Lesson ",
+        description: (
+          <>
+           Master low-visibility conditions with a professional <Link className="location-link" href={"/services/night-driving-lesson"} >Night Driving Lesson.</Link> I teach you how to manage headlight glare and stay safe after dark.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Highway Package",
+        description: (
+          <>
+          Gain confidence on high-speed roads with our specialised Highway Package. You will learn safe overtaking and merging techniques on the M5 motorway.
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice",
+    lessonTips: [
+      {
+        name: "Check Your Blind Spots",
+        description: (
+          <>
+            You must always perform a head check before changing lanes in <strong>Beverly Hills.</strong> This simple habit prevents collisions and ensures you pass your learners driving lessons.
+          </>
+        ),
+      },
+      {
+        name: "Watch for School Zones",
+        description: (
+          <>
+          You need to be extra careful around Regina Coeli Catholic Primary School. Slowing down to 40 km/h is vital for safety and your <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">driver education.</a>
+          </>
+        ),
+      },
+      {
+        name: "Maintain Following Distance",
+        description: (
+          <>
+           You should keep a three-second gap behind the car in front of you. This gives you plenty of time to react if traffic stops suddenly.
+          </>
+        ),
+      },
+      {
+        name: "Use Your Indicators Early",
+        description: (
+          <>
+            You must signal your intentions at least five seconds before making a turn. Clear communication keeps everyone on the <strong>Beverly Hills</strong> roads much <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">safer.</a>
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I learn to drive safely on King George’s Road during peak hours?",
+        answer: (
+          <>
+           Yes, we focus on merging, lane changes, and gap judgment on King George’s Road. You’ll practise handling heavy traffic calmly and confidently.
+          </>
+        ),
+      },
+      {
+        question: "Do you provide training for freeway driving on the M5?",
+        answer: (
+          <>
+         Absolutely, our Highway Package includes M5 motorway lessons. You’ll gain experience merging, overtaking, and maintaining safe speeds on high-speed roads.
+          </>
+        ),
+      },
+      {
+        question:
+          "Do you offer pick-up from Narwee or Kingsgrove?",
+        answer: (
+          <>
+            Yes, we pick you up from home or train station in Narwee, Kingsgrove, or Beverly Hills. Your lessons are convenient and start right where you live.
+          </>
+        ),
+      },
+      {
+        question: "Will I practise parking near shopping areas?",
+        answer: (
+          <>
+           Yes, we focus on reverse parallel and angle parking near the busy Beverly Hills shopping strip. You’ll learn to park safely in tight, high-traffic spaces.
+          </>
+        ),
+      },
+      {
+        question: "Are school zones included in the lessons?",
+        answer: (
+          <>
+            Yes, lessons include all local school zones like Regina Coeli Primary. You’ll learn to reduce speed to 40 km/h and maintain full awareness to avoid fines and test errors.
+          </>
+        ),
+      },
+    ],
+  },
+    "botany": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31373.11032713907!2d151.17763219014014!3d-33.94908093451683!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b10ed30f7db3%3A0x5017d681632ade0!2sBotany%20NSW%202019%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771258124052!5m2!1sen!2sbd",
+    pageTitle: "Driving Lessons in Botany with Professional Instructors",
+    metaDescription:
+      "Get safe, stress-free Driving Lessons in Botany with Test Route Driving School. Boost your skills and pass your test. Call +61 412 018 593 today!",
+    keywords: [
+      "Driving Lessons in Botany",
+      "Driving Lessons in Botany",
+      "driving lessons near me in Botany",
+      "driving lesson in Botany",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Botany",
+      "cheap driving lessons",
+      "driving school in Botany",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Botany",
+      "drivers education school near me",
+      "driver education course in Botany",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Botany",
+      
+    ],
+    heroTitle: "Driving Lessons in Botany with Professional Instructors",
+    heroDescription: (
+      <>
+      Master the roads with premium <strong><Link className="location-link" href={"/services/automatic-driving-lessons"} >Driving Lessons</Link> in Botany</strong> designed for your ultimate success. We provide patient, expert coaching to help you pass your driving test with total confidence. Our modern fleet features safe, dual-controlled cars perfect for every new <strong>learner driving lesson.</strong> Whether you are a teen or an adult, we tailor every session to your needs. Start your journey toward freedom today with the most trusted <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >driving school in Botany.</Link>
+      </>
+    ),
+
+    section1Title: "Why Learners Choose Our Driving Lessons in Botany, NSW",
+    section1SubTitle: (
+      <>
+        You deserve an instructor who understands the unique, industrial roads of <strong>Botany.</strong> Many local students feel anxious about merging near heavy port traffic and large trucks. I use my years of expertise to calm your nerves and build your technical skills. Our <strong>driving training school, located near you,</strong> focuses on safety, precision, and mastering local test routes. You will learn to handle every intersection with the poise of a professional driver.
+      </>
+    ),
+    section1Features: [
+      <> Professional  <strong>Driving Lessons in Botany.</strong></>,
+      <>Safe modern dual-controlled cars.</>,
+      <>Patient and very experienced instructors.</>,
+      <>High first-time test pass rates.</>,
+    ],
+    section2Title: "Service Areas For Driving Lessons in Botany and Nearby Suburbs",
+    section2SubTitle: (
+      <>
+       You can enjoy our top-rated <strong>car driving lessons near me in Botany</strong> and the surrounding areas. We pick you up from your home or school in Banksia or Mascot. My team is familiar with the specific challenges of the Bayside region like the back of our hands. We ensure you get enough practice near the Kogarah testing center to feel ready. Our Driving Services cover every street where you might face your practical driving assessment. We make sure you feel at home behind the wheel in every local suburb.
+      </>
+    ),
+    section2Features: [
+      <>Expert lessons in Eastgardens.</>,
+      <>Quality training in Pagewood.</>,
+      <>Driver education in Port Botany.</>,
+      <>Local coaching in Eastlakes.</>,
+    ],
+    section3Title1: "Industrial and Heavy Vehicle Area Driving Training in Botany",
+    section3Description1: (
+      <>
+        Botany presents unique driving challenges due to its busy industrial streets, frequent container trucks, and commercial traffic zones. During lessons, you will learn how to maintain safe following distances, manage large vehicle blind spots, and position your car correctly when sharing the road with heavy transport. Your instructor will guide you through real-world scenarios such as sudden stops, wide-turning trucks, and multi-lane merges near the port. <br/>
+        Lessons emphasise defensive driving skills and hazard awareness, helping you anticipate other drivers’ actions and maintain full control in high-pressure environments. You will practise smooth steering, controlled braking, and accurate lane positioning to navigate confined industrial areas safely. Real-time coaching ensures you build confidence quickly while learning the habits needed to prevent accidents. By the end of these lessons, you will feel competent driving independently across Botany’s industrial corridors, ready for your practical driving test, and prepared to safely interact with freight traffic and commercial vehicles.
+
+      </>
+    ),
+    section3Title2: "Port Route and Driving Test Preparation in Botany",
+    section3Description2: (
+      <>
+      Your training also includes structured preparation on local examiner routes, including freight-access roads, intersections near Port Botany, and surrounding residential streets. You will practise essential test skills such as observation, signalling, kerbside stops, and controlled lane changes in real test-style conditions. Mock assessments simulate the pressure of an official driving test while  <Link className="location-link" href={"/instructors"} >your instructor provides</Link> step-by-step feedback. <br/>
+      Special attention is given to high-traffic areas where port vehicles, delivery vans, and industrial machinery operate. You will learn to adjust speed safely, judge gaps accurately, and maintain consistent vehicle control. Lessons also cover pedestrian crossings, school zones, and shared-use areas to ensure you develop well-rounded road awareness. After completing these sessions, you will be fully prepared to handle both industrial and residential streets with confidence, pass your practical assessment, and drive safely throughout Botany and the surrounding Bayside suburbs.
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Automatic Driving Lessons",
+        description: (
+          <>
+            You will find our <Link className="location-link" href={"/services/automatic-driving-lessons"} >Automatic Driving Lessons</Link> simple and perfect for busy Sydney traffic. We use new cars that make every <strong>driving lesson in Botany</strong> a comfortable experience.
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment ",
+        description: (
+          <>
+            You can book a <Link className="location-link" href={"/services/driving-test-assessment"} >Driving Test Assessment</Link> to see if you are truly ready. I identify your habits to ensure you pass the real exam.
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Package ",
+       description: (
+          <>
+           Our <Link className="location-link" href={"/services/driving-test-package"} >Driving Test Package</Link> gives you a warm-up and car use for the test. This reduces stress, allowing you to focus on your driving.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire for an Instructor ",
+        description: (
+          <>
+         You can choose our  <Link className="location-link" href={"/services/car-hire-for-instructor"} >Car Hire for an instructor</Link> for your big day at Service NSW. Using a familiar vehicle helps you perform your best manoeuvres.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Parking Package ",
+        description: (
+          <>
+         Master your reverse parallel parking with our specialised  <Link className="location-link" href={"/services/parking-package"} >Parking Package.</Link> I show you easy markers to park perfectly every single time.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Highway Package",
+        description: (
+          <>
+          Gain confidence on high-speed roads with our  <Link className="location-link" href={"/services/highway-package"} >Highway Package.</Link> You will learn safe overtaking and merging techniques on the M5 motorway.
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice",
+    lessonTips: [
+      {
+        name: "Check Your Mirrors Often",
+        description: (
+          <>
+           You need to check your mirrors every few seconds to stay aware. This awareness is a core part of any driver education course in Botany.
+          </>
+        ),
+      },
+      {
+        name: "Look Further Ahead",
+        description: (
+          <>
+          You must scan the road 15 seconds ahead to spot potential hazards early. This expert habit prevents sudden braking and keeps your  <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">drivers education</a> safe.
+          </>
+        ),
+      },
+      {
+        name: "Practice Your Steering",
+        description: (
+          <>
+          You should keep your hands at the ten and two positions for control. Smooth steering is vital during your Night Driving Lesson for maximum  <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">safety.</a>
+          </>
+        ),
+      },
+      {
+        name: "Watch for Pedestrians",
+        description: (
+          <>
+            You must always give way to pedestrians at crossings in Botany. Busy foot traffic near local shops requires your constant and sharp attention.
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you teach learners to handle port and freight traffic?",
+        answer: (
+          <>
+           Yes, lessons include navigating industrial roads and port-access routes. You’ll learn to manage wide turns, large vehicles, and high-volume traffic safely.
+          </>
+        ),
+      },
+      {
+        question: "Are automatic driving lessons available in Botany?",
+        answer: (
+          <>
+         Absolutely. Our automatic cars simplify stop-start traffic situations, allowing you to focus on hazards and road positioning.
+          </>
+        ),
+      },
+      {
+        question:
+          "Do you provide pick-up from Eastgardens and Pagewood?",
+        answer: (
+          <>
+            Yes, we offer convenient door-to-door pick-up from Eastgardens, Pagewood, and surrounding suburbs. Lessons start wherever it’s easiest for you.
+          </>
+        ),
+      },
+      {
+        question: "Will I practise near the Kogarah testing centre?",
+        answer: (
+          <>
+           Yes, we take you on the exact routes used by examiners, ensuring familiarity and confidence for your practical driving test.
+          </>
+        ),
+      },
+      {
+        question: "Are lessons suitable for nervous beginners in busy areas?",
+        answer: (
+          <>
+           Definitely. Our patient instructors gradually introduce you to industrial roads, port traffic, and high-activity intersections, building your skills and confidence safely.
+          </>
+        ),
+      },
+    ],
+  },
+    "carlton": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31365.12638394688!2d151.10091904019018!3d-33.9707333339908!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b98b4735bf83%3A0x5017d681632afe0!2sCarlton%20NSW%202218%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771260854077!5m2!1sen!2sbd",
+    pageTitle: "Driving Lessons in Carlton | Professional Local Driving School",
+    metaDescription:
+      "Professional Driving Lessons in Carlton made easy – Beginner-friendly and test-focused training. Book your lesson today.",
+    keywords: [
+      "Driving Lessons in Carlton",
+      "driving lessons near me in Carlton",
+      "driving lesson in Carlton",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Carlton",
+      "cheap driving lessons",
+      "driving school in Carlton",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Carlton",
+      "drivers education school near me",
+      "driver education course in Carlton",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Carlton",
+      
+    ],
+    heroTitle: "Professional Driving Lessons in Carlton",
+    heroDescription: (
+      <>
+      At <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School,</Link> our highly qualified and friendly instructors deliver expert <strong>driving lessons in Carlton.</strong> We focus on building your confidence, road safety, and real-world driving skills. Our structured training programs are tailored for beginners, learners, and refresher drivers alike.<br/>
+      Whether you are just starting or improving your driving skills, our <strong>driving school in Carlton</strong> ensures you learn <Link className="location-link" href={"/instructors"} >safely and effectively.</Link> Meet our instructors and see how their experience can guide you.
+      </>
+    ),
+
+    section1Title: "Learn to Drive with Driving Lessons in Carlton",
+    section1SubTitle: (
+      <>
+        Our experienced instructors provide personalised <strong>driving lessons in Carlton</strong> designed to help you gain confidence and pass your driving test with ease. Lessons cover all aspects of driving: road safety, parking, and highway skills.
+      </>
+    ),
+    section1Features: [
+      <>Flexible lesson schedules to suit your lifestyle</>,
+      <>Personalised learning plans for your skill level</>,
+      <>Certified and experienced instructors</>,
+      <>Modern dual-control vehicles for safety</>,
+    ],
+    section2Title: "Driving Test Preparation with Driving Lessons in Carlton",
+    section2SubTitle: (
+      <>
+       Preparing for your driving test requires expert guidance and local knowledge. At Test Route Driving School, our <strong>driving lessons in Carlton</strong> give you structured practice, familiarise you with common test routes, highlight typical mistakes, and build your confidence for a smooth exam experience. You will also learn defensive driving techniques, traffic rules, and hazard awareness. Regular feedback ensures you understand your progress clearly, making your preparation practical and stress-free.
+      </>
+    ),
+    section2Features: [
+      <>Mock driving tests under real exam conditions</>,
+      <>Practice on common test routes in Carlton.</>,
+      <>Parking, hill starts, and hazard perception training</>,
+      <>Pre-test confidence and error correction sessions</>,
+    ],
+    section3Title1: "Advanced Driving Lessons in Carlton",
+    section3Description1: (
+      <>
+        Learning to drive is an exciting journey, but it can feel overwhelming without the right guidance. At Test Route Driving School in Carlton, our certified instructors provide tailored, one-on-one coaching to suit every skill level, whether you’re a complete beginner or returning for a refresher. Each lesson is designed to gradually build confidence, practical ability, and road awareness. You’ll gain experience in handling city traffic, managing complex intersections, and performing essential manoeuvres like parallel parking, lane changes, and roundabouts. <br/>
+        We also focus on real-world driving skills, including highway navigation, night driving, and dealing with unpredictable road conditions. Our flexible scheduling means lessons fit around your school, work, or family commitments. Every session includes personalised feedback to highlight strengths, address weaknesses, and track your progress, so you’re always aware of your improvement.<br/>
+        By the end of your advanced training, you won’t just be ready for your driving test—you’ll be prepared for independent, confident driving anywhere in Sydney. Our supportive instructors ensure you feel safe behind the wheel, understand traffic rules deeply, and develop defensive driving habits that last a lifetime. With hands-on practice and structured guidance, you’ll transform nervousness into confidence and become a skilled, responsible driver ready to face any road scenario in Carlton and beyond.
+      </>
+    ),
+    section3Title2: "Comprehensive Driving Education in Carlton",
+    section3Description2: (
+      <>
+     At Test Route Driving School, we go beyond standard driving lessons to offer a complete, structured education for learner drivers in Carlton. Our comprehensive program blends theoretical knowledge, practical skills, and situational awareness to create confident, safe drivers. Lessons cover everything from defensive driving techniques and hazard perception to urban navigation, highway driving, and precise parking strategies. Every class includes exercises tailored to your ability, ensuring you steadily improve while building long-term driving competence. <br/>
+     We place strong emphasis on understanding NSW road rules, traffic signs, and local regulations. Students practice common test routes, school zones, and busy intersections, gaining familiarity with challenging traffic scenarios in a controlled, low-stress environment. Real-time feedback during lessons helps you correct mistakes quickly, while repetition and guided exercises reinforce safe driving habits.<br/>
+     Our structured approach also addresses emotional aspects of learning to drive, including stress management, anxiety reduction, and confidence-building. By combining skill development, local route knowledge, and road awareness, students leave each session feeling empowered and fully prepared for their driving test and everyday driving. Whether you’re learning manual or automatic, our program ensures a smooth transition from beginner to skilled, independent driver.
+
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Dual-Controlled Vehicles",
+        description: (
+          <>
+          <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >At Test Route Driving School,</Link> you will learn safely in modern dual-controlled cars. Our instructors provide step-by-step guidance in every lesson, ensuring your confidence and safety on all types of roads, traffic conditions, and driving situations.
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment ",
+        description: (
+          <>
+           Our qualified instructors give detailed feedback on your driving performance, highlighting strengths and areas for improvement. This personalised guidance helps you prepare thoroughly. <Link className="location-link" href={"/services/driving-test-assessment"} >Book your assessment here </Link>to understand your readiness and focus your learning.
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Pick Up and Drop Off",
+       description: (
+          <>
+           We offer convenient pickup and drop-off services across Sydney suburbs, including Rockdale, Bankstown, and Newtown. This ensures lessons fit your schedule, reduces travel stress, and gives you more time to focus on learning and practising driving skills effectively.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire ",
+        description: (
+          <>
+         Our Test Day Packages include modern vehicles such as Kia, Toyota Hybrid, or Nissan, equipped with dual controls for your driving test. This allows you to take your test in a familiar, safe, and comfortable car, making the experience less stressful and more confident.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Support ",
+        description: (
+          <>
+         On test days, we provide professional lesson guidance and support. This includes a warm-up session and car hire, ensuring you are fully prepared for the exam. Our instructors help you stay calm and confident while performing at your best.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Lesson Package",
+        description: (
+          <>
+          We offer flexible 5, 10, or 20-hour lesson packages to suit your learning pace. These packages help you progress steadily, save money, and build confidence behind the wheel. <Link className="location-link" href={"/packages"} >Explore all packages</Link> to find the best option for your learning needs.
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice ",
+    lessonTips: [
+      {
+        name: "Practice Regularly",
+        description: (
+          <>
+         Consistent practice helps you gain confidence, understand traffic flow, and navigate parking situations safely while reinforcing key driving skills learned during lessons.
+          </>
+        ),
+      },
+      {
+        name: "Focus on Road Safety",
+        description: (
+          <>
+           Understanding hazards, following traffic rules, and maintaining safe distances is critical. Our instructors guide you on  <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">safe driving</a> habits and real-life scenarios for better preparedness.
+          </>
+        ),
+      },
+      {
+        name: "Build Confidence Gradually",
+        description: (
+          <>
+          Begin with basic exercises and slowly advance to busy city streets, highways, and night <a className="location-link" href="https://en.wikipedia.org/wiki/Driving" target="blank">driving,</a> ensuring you master each skill with confidence and control.
+          </>
+        ),
+      },
+      {
+        name: "Learn Manual and Automatic",
+        description: (
+          <>
+            Even if you plan to drive automatic cars, learning manual basics enhances vehicle control. Our Carlton driving courses offer comprehensive training in both types for a complete learning experience.
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you offer lessons for adults learning later in life?",
+        answer: (
+          <>
+           Yes, we customise lessons for adult learners. Each session focuses on confidence and real-world skills. You’ll progress at your own pace safely.
+          </>
+        ),
+      },
+      {
+        question: "Can I take both manual and automatic lessons?",
+        answer: (
+          <>
+         Absolutely. You can choose the vehicle type that fits your licence goal. Learning both enhances control and driving versatility.
+          </>
+        ),
+      },
+      {
+        question:
+          "Do you teach driving in high-traffic areas?",
+        answer: (
+          <>
+            Yes, we guide you through busy streets and intersections. You’ll gain confidence navigating real traffic. Lessons are gradual and fully supervised.
+          </>
+        ),
+      },
+      {
+        question: "Will I get help with tricky parking and manoeuvres?",
+        answer: (
+          <>
+           Yes, our instructors provide step-by-step guidance. We practice parallel parking, hill starts, and tight spots. You’ll master these skills confidently.
+          </>
+        ),
+      },
+      {
+        question: "Do you provide support on test day?",
+        answer: (
+          <>
+          Yes, we offer car hire and pre-test warm-up sessions. You’ll feel calm and prepared. Our instructors stay with you until you’re confident.
+          </>
+        ),
+      },
+    ],
+
+  },
 };
