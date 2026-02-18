@@ -23,14 +23,26 @@ function formatBookingDate(dateLike, timeText) {
 }
 
 export default function BookingHeader({booking}) {
+  
   const paymentStatus = String(safe(booking.paymentStatus)).toLowerCase();
   const isPaid = paymentStatus === "paid" || paymentStatus.includes("voucher");
 
-  const status = String(safe(booking.status, "pending")).toUpperCase();
+const status = String(safe(booking.status, "pending")).toLowerCase();
+
+const isConfirmed = status === "confirmed";
+const isCancelled = status === "cancelled";
+const isUnattended = status === "unattended";
+
+const statusClass = isConfirmed
+  ? "border-green-600 text-green-600"
+  : isCancelled || isUnattended
+  ? "border-red-600 text-red-600"
+  : "border-gray-400 text-neutral";
+
   const clientName = safe(booking.userName || booking.clientName, "Client");
 
   return (
-    <div className="rounded-xl p-5">
+    <div className="rounded-xl p-5 ">
       <div className="flex items-start justify-between gap-4">
         {/* Left: BIG PAID + name */}
         <div className="min-w-0">
@@ -40,6 +52,7 @@ export default function BookingHeader({booking}) {
             }`}
           >
             {isPaid ? "PAID" : "Payment Required"}
+            
           </div>
 
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
@@ -53,15 +66,11 @@ export default function BookingHeader({booking}) {
 
         {/* Right: status badge */}
         <div className="flex flex-col items-end gap-3">
-          <div
-            className={`px-4 py-1.5 rounded-md border-2 font-bold tracking-wide ${
-              status === "confirmed"
-                ? "border-green-600 text-green-600"
-                : "border-gray-400 text-neutral"
-            }`}
-          >
-            {status === "confirmed" ? "CONFIRMED" : status}
-          </div>
+         <div
+  className={`px-4 py-1.5 rounded-md border-2 font-bold tracking-wide ${statusClass}`}
+>
+  {status.toUpperCase()}
+</div>
         </div>
       </div>
     </div>

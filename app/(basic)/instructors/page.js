@@ -2,41 +2,53 @@
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 
 
-const instructors = [
-  {
-    id: 1,
-    name: "MD Firoj Hossain",
-    experience: "15 years of Driving experience",
-    image: "/instructor1.png",
-  },
 
-];
 
 export default function Instructors() {
-  const router = useRouter()
+  const router = useRouter();
+  const {data:instructors,isLoading} = useQuery({
+    queryKey:["instructors"],
+    queryFn:async()=>{
+      const res = await axios.get("/api/instructors?status=approved");
+      return res.data;
+    }
+  })
+  console.log(instructors);
+  
+  if(isLoading) return <LoadingSpinner/>
   return (
-    <section>
+  
+     <section>
       <PageHeroSection title={`Our Instructors`} subtitle={`Our team of skilled and passionate instructors is dedicated to helping you achieve your goals. With years of experience and a commitment to personalized learning, they provide the guidance, support, and motivation you need to master every skill confidently. Whether you’re just starting out or looking to sharpen your abilities, our instructors are here to make your learning journey engaging, effective, and inspiring.`}/>
       <Container className={`pb-16`}>
         <SectionHeader title="Our Instructors" />
-        <div className="p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {instructors.map((inst) => (
+        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {instructors.map((inst) =>{
+              const avatarSrc = inst?.photo
+    ? inst.photo
+    : inst?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(inst.photoKey)}`
+      : "/profile-avatar.png";
+            return (
             <div
               key={inst.id}
               className="bg-white shadow-lg rounded-lg overflow-hidden"
             >
               <Image
-                width={80}
-                height={80}
+                width={800}
+                height={800}
                 className="w-full h-56 object-cover"
-                src={inst.image}
+                src={avatarSrc}
                 alt={inst.name}
               />
               <div className="p-4">
@@ -49,9 +61,10 @@ export default function Instructors() {
                 </div>
               </div>
             </div>
-          ))}
+          )})}
         </div>
       </Container>
-    </section>
+    </section> 
+  
   );
 }

@@ -292,13 +292,18 @@ export default function ClientNotes({clientId}) {
                         ? new Date(n.createdAt).toLocaleString("en-AU")
                         : ""}
                     </div>
-                    <div>
-                      {n.type === "booking" ? "Session Note" : "General Note"}
-                      by <strong>{n.createdBy?.name || "—"}</strong>
-                    </div>
+                   <div>
+  {n.type === "booking"
+    ? "Booking Note"
+    : n.type === "session"
+      ? "Session Note"
+      : "General Note"}{" "}
+  by <strong>{n.createdBy?.name || "—"}</strong>
+</div>
+
                   </div>
 
-                  <div className="text-primary text-sm">
+                  <div className="text-primary text-sm px-4 mt-1">
                     {n.bookingTitle || ""}
                   </div>
 

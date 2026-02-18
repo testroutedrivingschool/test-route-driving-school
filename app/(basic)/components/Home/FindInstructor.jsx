@@ -43,7 +43,7 @@ const highlightMatch = (name) => {
         <div className="flex flex-col gap-8">
           {/* Left Column */}
           <div className="">
-            <h2 className="text-2xl md:text-4xl font-bold mb-4 ">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold mb-4 ">
               Find a driving instructor <span className="text-primary">near you</span>
             </h2>
             <p className="mb-6 text-neutral">

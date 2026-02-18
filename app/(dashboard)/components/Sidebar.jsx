@@ -136,10 +136,10 @@ const isActiveLink = (currentPath, linkPath) => {
             <div className="p-6 border-b border-border-color">
               <div className="flex items-center justify-between">
                 {sidebarOpen || isMobile ? (
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12  rounded-xl flex items-center justify-center ">
+                  <div className="flex items-center gap-1 justify-between ">
+                    <div className="flex-1  rounded-xl flex items-center justify-center ">
                       <Image
-                        className="w-12 h-12 object-cover object-top rounded-full"
+                        className="w-12 h-12 object-cover object-center rounded-full"
                         width={200}
                         height={200}
                         src={avatarSrc}
@@ -147,7 +147,7 @@ const isActiveLink = (currentPath, linkPath) => {
                       />
                     </div>
                     <div
-                      className={`transition-all duration-300 ${
+                      className={`flex-1 transition-all duration-300 ${
                         !isMobile && !sidebarOpen
                           ? "opacity-0 w-0"
                           : "opacity-100"

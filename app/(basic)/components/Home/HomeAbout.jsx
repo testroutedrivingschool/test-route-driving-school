@@ -10,12 +10,12 @@ export default function HomeAbout() {
         <div className="flex flex-col lg:flex-row items-center gap-12">
           {/* Left Text Content */}
           <div className="flex-1 space-y-4">
-            <h2 className="text-2xl md:text-4xl font-bold">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold">
               About Test Route Driving School
               <span className="text-primary"> in Sydney suburbs</span>
             </h2>
 
-            <p className="text-neutral text-lg leading-relaxed">
+            <p className="text-neutral md:text-lg leading-relaxed">
               <Link href="/" className="location-link">
                 Test Route Driving School
               </Link>
@@ -37,10 +37,10 @@ export default function HomeAbout() {
               style.
             </p>
 
-            <h3 className="text-2xl font-bold mt-6">
+            <h3 className="text-xl sm:text-2xl md:text-4xl font-bold mt-6">
               Our Mission at Your Sydney suburbs Driving School
             </h3>
-            <p className=" text-neutral text-lg">
+            <p className=" text-neutral md:text-lg">
               Our mission is to create confident, safe, and skilled drivers. We
               combine practical driving skills with road safety knowledge, so
               you are fully prepared for real-world driving scenarios and your
@@ -52,13 +52,13 @@ export default function HomeAbout() {
           </div>
 
           {/* Right Image */}
-          <div className="w-full md:w-auto md:flex-1">
+          <div className=" w-full md:w-auto md:flex-1">
             <Image
               src={aboutImg}
               alt="Test Route Driving School Cover"
               className="rounded-xl shadow-lg object-cover w-full h-full"
-              width={600}
-              height={400}
+              width={1000}
+              height={1000}
             />
           </div>
         </div>

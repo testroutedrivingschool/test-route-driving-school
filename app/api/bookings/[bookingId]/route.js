@@ -65,6 +65,7 @@ export async function PATCH(req, {params}) {
 
     // Allow only the fields you want to update
     const allowed = [
+      "status",
       "paymentStatus", // "paid" | "partial" | "unpaid"
       "paymentMethod", // "card" | "cash" | "bank" | "mixed"
       "paymentIntentId",
@@ -78,6 +79,8 @@ export async function PATCH(req, {params}) {
       "userPhone",
       "address",
       "suburb",
+       "bookingDate",
+  "bookingTime",
     ];
 
     const $set = {updatedAt: new Date()};
@@ -85,6 +88,17 @@ export async function PATCH(req, {params}) {
       if (body[k] !== undefined) $set[k] = body[k];
     }
 
+    if ($set.bookingDate !== undefined) {
+  const d = new Date($set.bookingDate);
+  if (Number.isNaN(d.getTime())) {
+    return NextResponse.json({ error: "Invalid bookingDate" }, { status: 400 });
+  }
+  $set.bookingDate = d; // store as Date in Mongo
+}
+
+if ($set.bookingTime !== undefined) {
+  $set.bookingTime = String($set.bookingTime).trim();
+}
     // tiny validation
     if ($set.paymentStatus) {
       const ok = ["paid", "partial", "unpaid"].includes(
@@ -101,6 +115,12 @@ export async function PATCH(req, {params}) {
     if ($set.paymentMethod) {
       $set.paymentMethod = String($set.paymentMethod).toLowerCase();
     }
+if ($set.status !== undefined) {
+  const v = String($set.status).toLowerCase();
+  const ok = ["pending", "confirmed", "cancelled", "completed", "unattended"].includes(v);
+  if (!ok) return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  $set.status = v;
+}
 
     const bookingsCol = await bookingsCollection();
 

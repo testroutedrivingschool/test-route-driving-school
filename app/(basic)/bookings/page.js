@@ -125,7 +125,7 @@ export default function BookingsPage() {
       }
     },
   });
-  console.log(instructors);
+
   const {data: locations = [], isLoading: isLoadingLocations} = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -397,10 +397,33 @@ export default function BookingsPage() {
   const displayedInstructors = selectedInstructor
     ? filteredInstructors.filter((inst) => inst._id !== selectedInstructor._id)
     : filteredInstructors;
+  const LS_KEY = "bookingLocationModalLastShown";
+  const LS_SELECTED_LOC = "bookingSelectedLocation";
 
+  const getTodayYMD = () => {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  };
   useEffect(() => {
-    setShowLocationModal(true);
+    const saved = localStorage.getItem(LS_SELECTED_LOC);
+    if (saved) setSelectedLocations(saved);
   }, []);
+  useEffect(() => {
+    const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
+    if (savedLocation) return; // already selected before
+
+    const today = getTodayYMD();
+    const lastShown = localStorage.getItem(LS_KEY);
+
+    if (lastShown !== today) {
+      setShowLocationModal(true);
+      localStorage.setItem(LS_KEY, today);
+    }
+  }, []);
+
   // Show loading spinner
   if (isLoading || isLoadingLocations) {
     return <LoadingSpinner />;
@@ -517,8 +540,11 @@ export default function BookingsPage() {
                                 <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3">
                                   <Image
                                     src={
-                                      selectedInstructor.photo ||
-                                      "/profile-avatar.png"
+                                      selectedInstructor?.photo
+                                        ? selectedInstructor.photo
+                                        : selectedInstructor?.photoKey
+                                          ? `/api/storage/proxy?key=${encodeURIComponent(selectedInstructor.photoKey)}`
+                                          : "/profile-avatar.png"
                                     }
                                     alt={selectedInstructor.name}
                                     width={80}
@@ -558,42 +584,39 @@ export default function BookingsPage() {
                               }
                               modules={[Autoplay]}
                             >
-                              {displayedInstructors.map((instructor) => (
-                                <SwiperSlide
-                                  key={instructor._id}
-                                  className="h-auto!"
-                                >
-                                  <div
-                                    onClick={() =>
-                                      setSelectedInstructor(instructor)
-                                    }
-                                    className="w-full flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color"
+                              {displayedInstructors.map((instructor) => {
+                                const avatarSrc = instructor?.photo
+                                  ? instructor.photo
+                                  : instructor?.photoKey
+                                    ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
+                                    : "/profile-avatar.png";
+                                return (
+                                  <SwiperSlide
+                                    key={instructor._id}
+                                    className="h-auto!"
                                   >
-                                    <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
-                                      {instructor.photo ? (
+                                    <div
+                                      onClick={() =>
+                                        setSelectedInstructor(instructor)
+                                      }
+                                      className="w-full flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color"
+                                    >
+                                      <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
                                         <Image
-                                          src={instructor.photo}
-                                          alt={instructor.name}
+                                          src={avatarSrc}
+                                          alt={instructor.name || ""}
                                           width={64}
                                           height={64}
                                           className="w-full h-full object-cover"
                                         />
-                                      ) : (
-                                        <Image
-                                          src={"/profile-avatar.png"}
-                                          alt={instructor.name}
-                                          width={64}
-                                          height={64}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      )}
+                                      </div>
+                                      <h3 className="font-bold text-gray-900 text-sm mb-1 truncate max-w-[120px]">
+                                        {instructor.name}
+                                      </h3>
                                     </div>
-                                    <h3 className="font-bold text-gray-900 text-sm mb-1 truncate max-w-[120px]">
-                                      {instructor.name}
-                                    </h3>
-                                  </div>
-                                </SwiperSlide>
-                              ))}
+                                  </SwiperSlide>
+                                );
+                              })}
                             </Swiper>
 
                             {/* show arrows only if sliding is needed */}
@@ -950,9 +973,10 @@ export default function BookingsPage() {
                 <li key={idx}>
                   <button
                     onClick={() => {
+                      localStorage.setItem(LS_SELECTED_LOC, location.name);
                       setSelectedLocations(location.name);
                       setShowLocationModal(false);
-                      setLocationSearch(""); // clear search after selection
+                      setLocationSearch("");
                     }}
                     className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 transition"
                   >

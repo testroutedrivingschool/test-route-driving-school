@@ -46,7 +46,7 @@ const features = [
   {
     id: 4,
     title: "Expert Instructors",
-    value: 25,
+    value: 5,
     suffix: "+",
     icon: <FaChalkboardTeacher />,
     color: "from-purple-500 to-purple-600",

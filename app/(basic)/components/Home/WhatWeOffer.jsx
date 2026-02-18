@@ -64,7 +64,7 @@ export default function WhatWeOffer({
               key={index}
               className="group relative 
   bg-base-300 
-  rounded-xl p-8 lg:p-12 
+  rounded-xl p-8 lg:p-10 
   shadow 
   transition-all duration-500
    hover:-translate-y-2 border-b-8 border-primary"
@@ -76,7 +76,7 @@ bg-primary shadow-lg"
                 {service.icon}
               </div>
               <Link href={whatWeOfferLinks[index]?.pathname || "/services"}>
-                <h3 className="text-xl font-semibold mb-2">{service.title}</h3>
+                <h3 className="text-xl font-semibold mb-2 hover:underline">{service.title}</h3>
               </Link>
               <p className="text-neutral">{service.description}</p>
             </div>

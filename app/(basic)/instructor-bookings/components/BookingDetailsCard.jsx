@@ -17,6 +17,7 @@ import {
   CardNumberElement,
 } from "@stripe/react-stripe-js";
 import StripeCardInput from "@/app/shared/ui/StripeCardInput";
+import {useBooking} from "../[bookingId]/BookingContext";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_Stripe_Publishable_key,
 );
@@ -45,13 +46,13 @@ function formatMoney(n) {
 function oid(v) {
   if (!v) return "";
   if (typeof v === "string") return v;
-  if (typeof v === "object" && v.$oid) return v.$oid; // if serialized
+  if (typeof v === "object" && v.$oid) return v.$oid;
   return String(v);
 }
 
-export default function BookingDetailsCard({booking}) {
+export default function BookingDetailsCard() {
   const router = useRouter();
-
+  const booking = useBooking();
   const {data: user} = useUserData();
   const queryClient = useQueryClient();
   const [noteModal, setNoteModal] = useState({
@@ -60,10 +61,7 @@ export default function BookingDetailsCard({booking}) {
   });
   const [saving, setSaving] = useState(false);
   const clientId = booking?.clientId || booking?.userId;
-  const [bookingNoteModalOpen, setBookingNoteModalOpen] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-
-  const [showPaymentDetail, setShowPaymentDetail] = useState(false);
 
   const [clientNoteModalOpen, setClientNoteModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
@@ -107,8 +105,6 @@ export default function BookingDetailsCard({booking}) {
 
   const clientName = safe(booking.userName || booking.clientName, "Client");
   const phone = safe(booking.userPhone || booking.clientPhone);
-  const address = safe(booking.address || booking.clientAddress);
-  const suburb = safe(booking.suburb, "");
   const instructor = safe(booking.instructorName);
   const invoiceNo = safe(booking.invoiceNo);
   const bookingDate = formatDate(booking.bookingDate);
@@ -733,54 +729,48 @@ function PaymentDetailModal({
 }
 
 function PayNowModal({booking, client, onClose, onSuccess}) {
-  const stripe = useStripe();
+   const stripe = useStripe();
   const elements = useElements();
+  const queryClient = useQueryClient();
 
-  const cost = Number(booking?.price || 0);
+  const bookingId = oid(booking?._id);
+const [emailInvoice, setEmailInvoice] = useState(false);
+  const price = Number(booking?.price || 0);
+  const alreadyPaid = Number(booking?.paidAmount || 0);
+  const outstanding = Number(booking?.outstanding ?? Math.max(0, price - alreadyPaid));
 
-  const [cash, setCash] = useState("");
-  const [credit, setCredit] = useState("");
-  const [emailInvoice, setEmailInvoice] = useState(false);
+  // entered payment for THIS transaction only
+  const [enteredCash, setEnteredCash] = useState("");
+  const [enteredCard, setEnteredCard] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const cashNum = Number(cash || 0);
-  const creditNum = Number(credit || 0);
+  const cashNum = Number(enteredCash || 0);
+  const cardNum = Number(enteredCard || 0);
+  const enteredTotal = cashNum + cardNum;
 
-  const totalPaid = cashNum + creditNum;
-  const outstanding = Math.max(0, cost - totalPaid);
-
-  const showCardSection = creditNum > 0;
+const outstandingAfter = Math.max(0, outstanding - enteredTotal);
+  const showCardSection = cardNum > 0;
 
   const handleSavePayment = async () => {
-    if (totalPaid <= 0) return toast.error("Enter cash or credit amount");
-    if (totalPaid > cost)
-      return toast.error("Total cannot be greater than cost");
+    if (enteredTotal <= 0) return toast.error("Enter cash or card amount");
+    if (enteredTotal > outstanding) return toast.error("Cannot pay more than outstanding");
 
+    setLoading(true);
     try {
-      setLoading(true);
-
       let paymentIntentId = null;
-      let processingFee = 0;
 
-      // ✅ CARD PAYMENT (Stripe)
-      if (creditNum > 0) {
-        if (!stripe || !elements) {
-          toast.error("Stripe not ready");
-          return;
-        }
+      // ✅ Card payment ONLY for cardNum
+      if (cardNum > 0) {
+        if (!stripe || !elements) throw new Error("Stripe not ready");
 
         const cardElement = elements.getElement(CardNumberElement);
-        if (!cardElement) {
-          toast.error("Card input not ready");
-          return;
-        }
+        if (!cardElement) throw new Error("Card input not ready");
 
-        // 1) create payment intent for credit amount ONLY
-        const {data} = await axios.post("/api/create-payment-intent", {
-          amount: creditNum,
+        const { data } = await axios.post("/api/create-payment-intent", {
+          bookingId,
+          amount: cardNum, 
         });
 
-        // 2) confirm
         const result = await stripe.confirmCardPayment(data.clientSecret, {
           payment_method: {
             card: cardElement,
@@ -790,47 +780,52 @@ function PayNowModal({booking, client, onClose, onSuccess}) {
                 booking?.clientName ||
                 `${client?.firstName || ""} ${client?.lastName || ""}`.trim(),
               email: booking?.userEmail || client?.email || "",
-              address: {line1: client?.address || booking?.address || ""},
             },
           },
         });
 
-        if (result.error) {
-          toast.error(result.error.message);
-          return;
-        }
-
+        if (result.error) throw new Error(result.error.message);
         paymentIntentId = result.paymentIntent?.id || null;
       }
 
-      // ✅ Save payment into booking (you create this route)
-      const bookingId = oid(booking?._id);
-      await axios.patch(`/api/bookings/${bookingId}`, {
-        paymentStatus: outstanding === 0 ? "paid" : "partial",
-        paymentMethod:
-          creditNum > 0 && cashNum > 0
-            ? "mixed"
-            : creditNum > 0
-              ? "card"
-              : "cash",
-        paymentIntentId,
-        paidAmount: totalPaid,
-        cashAmount: cashNum,
-        cardAmount: creditNum,
-        outstanding,
-        processingFee,
+      // ✅ compute new totals (accumulate)
+      const newCashAmount = Number(booking?.cashAmount || 0) + cashNum;
+      const newCardAmount = Number(booking?.cardAmount || 0) + cardNum;
+      const newPaidAmount = newCashAmount + newCardAmount;
+      const finalOutstanding = Math.max(0, price - newPaidAmount);
+      const paymentStatus = finalOutstanding === 0 ? "paid" : "partial";
 
-        // optional
-        userPhone: booking?.userPhone || "",
-        cardBrand: null,
-        cardLast4: null,
-      });
+      // method for display
+      const method =
+        cashNum > 0 && cardNum > 0
+          ? "mixed"
+          : cardNum > 0
+            ? "card"
+            : "cash";
 
+  const patchRes = await axios.patch(`/api/bookings/${bookingId}`, {
+  paymentStatus,
+  paymentMethod: method,
+  paymentIntentId,
+  cashAmount: newCashAmount,
+  cardAmount: newCardAmount,
+  paidAmount: newPaidAmount,
+  outstanding: finalOutstanding,
+});
+
+const updatedBooking = patchRes.data;
+if (emailInvoice) {
+  await axios.post("/api/pdf/send-paid-invoice", {
+    bookingId,
+    to: booking?.userEmail || client?.email,
+  });
+}
+
+      await queryClient.invalidateQueries({ queryKey: ["booking", bookingId] });
       onSuccess?.();
-      await queryClient.invalidateQueries({queryKey: ["booking"]});
+      onClose?.();
     } catch (err) {
-      console.log(err?.response?.data || err);
-      toast.error(err?.response?.data?.error || "Payment failed");
+      toast.error(err?.message || err?.response?.data?.error || "Payment failed");
     } finally {
       setLoading(false);
     }
@@ -847,9 +842,9 @@ function PayNowModal({booking, client, onClose, onSuccess}) {
         <div className="px-8 py-6">
           {/* Cost */}
           <div className="flex justify-between items-center">
-            <p className="text-lg font-bold">Cost:</p>
+            <p className="text-lg font-bold">Total Cost:</p>
             <p className="text-2xl font-bold text-green-600">
-              {formatMoney(cost)}
+             {formatMoney(price)}
             </p>
           </div>
 
@@ -859,16 +854,14 @@ function PayNowModal({booking, client, onClose, onSuccess}) {
           <div className="grid grid-cols-12 gap-4 items-center">
             <p className="col-span-4 text-lg font-bold">Cash:</p>
             <input
-              value={cash}
-              onChange={(e) => setCash(e.target.value)}
+              value={enteredCash} onChange={(e)=>setEnteredCash(e.target.value)}
               className="col-span-8 border border-gray-300 rounded-md px-3 py-2 text-right"
               placeholder="0.00"
             />
 
             <p className="col-span-4 text-lg font-bold">Credit:</p>
             <input
-              value={credit}
-              onChange={(e) => setCredit(e.target.value)}
+              value={enteredCard} onChange={(e)=>setEnteredCard(e.target.value)}
               className="col-span-8 border border-gray-300 rounded-md px-3 py-2 text-right"
               placeholder="0.00"
             />
@@ -877,21 +870,43 @@ function PayNowModal({booking, client, onClose, onSuccess}) {
           <div className="my-6 border-t border-gray-300" />
 
           {/* Total/Outstanding */}
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <p className="text-lg font-bold">Total:</p>
-              <p className="text-2xl font-bold text-green-600">
-                {formatMoney(totalPaid)}
-              </p>
-            </div>
+         <div className="space-y-2">
+  <div className="flex justify-between">
+    <p className="text-lg font-bold">Already Paid:</p>
+    <p className="text-2xl font-bold text-green-600">
+      {formatMoney(alreadyPaid)}
+    </p>
+  </div>
 
-            <div className="flex justify-between">
-              <p className="text-lg font-bold">Outstanding:</p>
-              <p className="text-2xl font-bold text-red-600">
-                {formatMoney(outstanding)}
-              </p>
-            </div>
-          </div>
+  {(cashNum > 0 || cardNum > 0) && (
+    <div className="text-sm text-neutral-600">
+      {cashNum > 0 && <div className="flex justify-end">Cash now: {formatMoney(cashNum)}</div>}
+      {cardNum > 0 && <div className="flex justify-end">Card now: {formatMoney(cardNum)}</div>}
+    </div>
+  )}
+
+  <div className="flex justify-between">
+    <p className="text-lg font-bold">Outstanding (before):</p>
+    <p className="text-2xl font-bold text-red-600">
+      {formatMoney(outstanding)}
+    </p>
+  </div>
+
+  <div className="flex justify-between">
+    <p className="text-lg font-bold">Paying now:</p>
+    <p className="text-2xl font-bold text-green-600">
+      {formatMoney(enteredTotal)}
+    </p>
+  </div>
+
+  <div className="flex justify-between">
+    <p className="text-lg font-bold">Outstanding After:</p>
+<p className="text-2xl font-bold text-red-600">
+  {formatMoney(outstandingAfter)}
+</p>
+  </div>
+</div>
+
 
           {/* Stripe section only if credit > 0 */}
           {showCardSection && (
@@ -911,7 +926,7 @@ function PayNowModal({booking, client, onClose, onSuccess}) {
                 </div>
                 <div className="mt-1 flex justify-between text-sm">
                   <span>Total Card Charge:</span>
-                  <span>{formatMoney(creditNum)}</span>
+                  <span>{formatMoney(cardNum)}</span>
                 </div>
               </div>
             </div>

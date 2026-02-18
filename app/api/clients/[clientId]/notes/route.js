@@ -67,7 +67,7 @@ console.log("type:", body.type, "text:", body.text, "bookingTitle:", body.bookin
   );
 }
 
-if (!["booking", "general"].includes(type)) {
+if (!["booking", "general","session"].includes(type)) {
   return NextResponse.json(
     { error: "Invalid note type", got: body.type },
     { status: 400 }

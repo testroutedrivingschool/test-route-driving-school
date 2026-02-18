@@ -86,28 +86,68 @@ export default function BookingConfirmPage() {
 
       router.push("/booking-confirm/payment-confirm");
     } else {
-      const bookingData = {
-        instructorEmail: instructor.email,
-        instructorName: instructor.name,
-        instructorId: instructor._id,
-        serviceName: selectedBooking.service,
-        duration: selectedBooking.duration,
-        minutes: selectedBooking.minutes,
-        price: selectedBooking.price,
+     
 
-        bookingDate: booking.date,
-        bookingTime: booking.time,
-        location: booking.location,
-        status: "pending",
-        bookingType: booking.bookingType,
-      };
-      sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+      const hasClient = !!(booking?.clientId || booking?.skipClientSelect);
 
-      router.push("/select-client");
-      console.log(bookingData);
-    }
+if (hasClient) {
+  const bookingData = {
+    instructorEmail: instructor.email,
+    instructorName: instructor.name,
+    instructorId: instructor._id,
+
+    serviceName: selectedBooking.service,
+    duration: selectedBooking.duration,
+    minutes: selectedBooking.minutes,
+    price: selectedBooking.price,
+
+    bookingDate: booking.date,
+    bookingTime: booking.time,
+    location: booking.location,
+    status: "pending",
+    bookingType: "manual",
+
+    // ✅ keep client details
+    clientId: booking.clientId,
+    clientName: booking.clientName,
+    clientEmail: booking.clientEmail,
+    clientPhone: booking.clientPhone,
+    clientAddress: booking.clientAddress,
+    suburb: booking.suburb,
   };
 
+  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+  router.push("/booking-confirm/payment-confirm");
+  return;
+}
+
+// fallback: normal manual flow
+const bookingData = {
+  instructorEmail: instructor.email,
+  instructorName: instructor.name,
+  instructorId: instructor._id,
+  serviceName: selectedBooking.service,
+  duration: selectedBooking.duration,
+  minutes: selectedBooking.minutes,
+  price: selectedBooking.price,
+  bookingDate: booking.date,
+  bookingTime: booking.time,
+  location: booking.location,
+  status: "pending",
+  bookingType: "manual",
+};
+
+sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
+router.push("/select-client");
+
+      
+    }
+  };
+    const avatarSrc = instructor?.photo
+    ? instructor.photo
+    : instructor?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
+      : "/profile-avatar.png";
   if (isLoading || isUserLoading || !instructor || !booking)
     return <LoadingSpinner />;
   const services =
@@ -132,11 +172,11 @@ export default function BookingConfirmPage() {
               {/* Instructor Photo */}
               <div className="mt-5 flex justify-center ">
                 <Image
-                  src={instructor.photo || "/profile-avatar.png"}
+                  src={avatarSrc}
                   alt={instructor.name}
                   width={180}
                   height={180}
-                  className="border object-cover "
+                  className="border object-cover rounded-full w-40 h-40"
                   onError={(e) => {
                     e.target.style.display = "none";
                     e.target.parentElement.innerHTML = `<img src="/profile-avatar.png" width="100" height="100" className="h-10 w-10 object-cover border ring-2 text-gray-500" />`;

@@ -10,7 +10,7 @@ import {FiChevronRight} from "react-icons/fi";
 export const packages = [
   {
     _id: "6952e6047fe9723b87c6aafe",
-    name: "1 hour lesson",
+    name: "1 Hours Lesson Package",
     packageThumbline: "/pkg.png",
     description:
       "The 1 Hour Lesson Package is designed to give learner drivers to prepare for their driving test.",
@@ -39,7 +39,7 @@ export const packages = [
       "One-to-one in-vehicle coaching",
       "Teaching materials are provided",
     ],
-    popular: true,
+  
   },
   {
     _id: "695bfb6b1f72e6c2fa81e09e",
@@ -55,6 +55,8 @@ export const packages = [
       "Pick up and drop off at your desired location",
       "One-to-one in-vehicle coaching",
       "Teaching materials are provided",
+    
+
     ],
   },
 ];

@@ -39,7 +39,7 @@ export default function HomeDrivingJourney() {
                 <span className="block text-accent">Starts Here</span>
               </h2>
 
-              <p className="text-lg text-blue-100 max-w-lg leading-relaxed">
+              <p className="md:text-lg text-blue-100 max-w-lg leading-relaxed">
                 Transform from a beginner to a confident driver with our expert instructors.
               </p>
             </div>
@@ -64,7 +64,7 @@ export default function HomeDrivingJourney() {
                   <div className="p-1.5 bg-white/20 rounded-lg">
                     <FaCheckCircle className="text-green-300" />
                   </div>
-                  <span className="text-lg">{benefit}</span>
+                  <span className="md:text-lg">{benefit}</span>
                 </div>
               ))}
             </div>

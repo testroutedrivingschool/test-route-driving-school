@@ -111,48 +111,23 @@ const drivingLessonTips = [
 const faqs = [
   {
     question: "How many lessons do I need to pass?",
-    answer: (
-      <>
-        Most learners succeed within 15–30 professional sessions.
-
-      </>
-    ),
+    answer: <>Most learners succeed within 15–30 professional sessions.</>,
   },
   {
     question: "Do you provide pickup and drop-off?",
-    answer: (
-      <>
-        Yes. We provide door-to-door service in most suburbs.
-
-      </>
-    ),
+    answer: <>Yes. We provide door-to-door service in most suburbs.</>,
   },
   {
     question: "Which areas do you cover?",
-    answer: (
-      <>
-        We serve Kogarah and the surrounding Sydney suburbs.
-      </>
-    ),
+    answer: <>We serve Kogarah and the surrounding Sydney suburbs.</>,
   },
   {
     question: "Can I book lessons online?",
-    answer: (
-      <>
-      Yes. Online booking is fast and secure.
-
-
-      </>
-    ),
+    answer: <>Yes. Online booking is fast and secure.</>,
   },
   {
     question: "What vehicle will I learn in?",
-    answer: (
-      <>
-        You will train in a modern automatic car.
-
-      </>
-    ),
+    answer: <>You will train in a modern automatic car.</>,
   },
 ];
 export default function Resources() {
@@ -173,31 +148,44 @@ export default function Resources() {
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
-            <h2 className="text-neutral underline mt-2">
-              NSW Department of Transport
-            </h2>
+            <a href="https://www.transport.nsw.gov.au/" target="_blank">
+              <h2 className="text-neutral underline mt-2">
+                NSW Department of Transport
+              </h2>
+            </a>
           </div>
           <div className="flex flex-col justify-center items-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
-            <h2 className="text-neutral underline mt-2">
+            <a href="https://www.nsw.gov.au/sites/default/files/2022-11/Road-User-Handbook-English.pdf" target="_blank">
+              <h2 className="text-neutral underline mt-2">
               NSW Road User Handbook
-            </h2>
+              </h2>
+            </a>
+           
           </div>
           <div className="flex flex-col justify-center items-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
-            <h2 className="text-neutral underline mt-2">
+            <a href="https://www.service.nsw.gov.au/transaction/book-a-driver-or-rider-licence-test" target="_blank">
+              <h2 className="text-neutral underline mt-2">
               Practical Test Booking
-            </h2>
+              </h2>
+            </a>
+           
           </div>
           <div className="flex flex-col justify-center items-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
-            <h2 className="text-neutral underline mt-2">Tutorial Videos</h2>
+            <a href="https://www.youtube.com/results?search_query=driving+school" target="_blank">
+              <h2 className="text-neutral underline mt-2">
+              Tutorial Videos
+              </h2>
+            </a>
+          
           </div>
         </section>
       </Container>

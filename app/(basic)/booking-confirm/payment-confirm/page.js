@@ -71,7 +71,6 @@ function PaymentForm() {
   }, []);
 
   if (!booking) return <LoadingSpinner />;
-  console.log(booking);
   const handleConfirmPayment = async () => {
     if (!acceptedTerms) {
       toast.error("Please accept the terms and conditions");
@@ -83,9 +82,8 @@ function PaymentForm() {
     setLoading(true);
 
     try {
-      const clientId = String(booking?.clientId);
-      console.log("PATCH URL:", `/api/clients/${clientId}`);
-      console.log("clientId type:", typeof clientId, clientId);
+     const clientId = String(booking?.clientId);
+
       // ✅ MANUAL booking => NO payment
       if (booking.bookingType === "manual") {
         if (clientId) {
@@ -103,7 +101,7 @@ function PaymentForm() {
 
         sessionStorage.removeItem("pendingBooking");
         toast.success("Booking created (Unpaid) ✅");
-        router.push("/dashboard/instructor/bookings");
+        router.push("/instructor-bookings");
         return;
       } else {
         // ✅ WEBSITE booking => Stripe payment required

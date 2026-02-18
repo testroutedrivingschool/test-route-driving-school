@@ -11,28 +11,43 @@ export async function GET(req) {
   try {
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
+    const status = url.searchParams.get("status");
 
     const query = {};
-    if (email) query.email = email;
+
+    if (email) {
+      query.email = email;
+    }
+
+    if (status) {
+      query.status = status; 
+    }
 
     const collection = await instructorsCollection();
 
+    // If filtering by email (single result expected)
     if (email) {
       const instructor = await collection.findOne(query);
       if (!instructor) {
         return NextResponse.json(
-          {error: "Instructor not found"},
-          {status: 404},
+          { error: "Instructor not found" },
+          { status: 404 }
         );
       }
       return NextResponse.json(instructor);
-    } else {
-      const instructors = await collection.find(query).toArray();
-      return NextResponse.json(instructors);
     }
+
+   
+    const instructors = await collection.find(query).toArray();
+
+    return NextResponse.json(instructors);
+
   } catch (err) {
     console.error(err);
-    return NextResponse.json({error: "Something went wrong"}, {status: 500});
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }
 
@@ -87,8 +102,8 @@ export async function PATCH(req) {
       phone,
       homePhone,
       workPhone,
-      dob, // instructors collection uses dob
-      dateOfBirth, // (optional if sometimes sent from frontend)
+      dob, 
+      dateOfBirth, 
       emergencyContact,
       address,
       suburb,
@@ -233,8 +248,7 @@ export async function PATCH(req) {
           {upsert: true}, // if client doc missing, create minimal one
         );
       } else {
-        // ✅ optional: revert back to normal client when not approved
-        // (If you DON'T want to revert, delete this else block.)
+        
         await clientsCol.updateOne(
           {email: emailLower},
           {

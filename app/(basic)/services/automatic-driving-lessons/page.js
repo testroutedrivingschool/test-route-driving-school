@@ -51,7 +51,7 @@ const automaticDrivingPackages = [
     price: "75",
     duration: "1 x 60 min lesson",
     features: ["Single session", "Basic fundamentals", "Instructor feedback"],
-    buttonText: "Book 1 Hour",
+    buttonText: "Book 1 Lesson",
     popular: false,
   },
   {

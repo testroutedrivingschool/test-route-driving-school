@@ -16,8 +16,6 @@ function safeStr(v) {
   return v === null || v === undefined ? "" : String(v);
 }
 
-
-
 export default function ClientDetails({client, onBack}) {
   const {data: suburbs, isLoading} = useQuery({
     queryKey: ["suburbs"],
@@ -253,7 +251,7 @@ export default function ClientDetails({client, onBack}) {
                 {t.label}
               </button>
             ))}
-               <NewDropdown />
+            <NewDropdown />
           </div>
         </div>
       </div>
@@ -330,7 +328,13 @@ export default function ClientDetails({client, onBack}) {
                       type="button"
                       className="text-primary text-sm font-semibold hover:underline"
                     >
-                      Email
+                      <a
+                        href="mailto:testroutedrivingschool@gmail.com"
+                        className=""
+                      >
+                        Email
+                      </a>
+                      
                     </button>
                   </div>
 

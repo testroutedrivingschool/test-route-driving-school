@@ -26,15 +26,18 @@ export default function AuthProvider({children}) {
   const router = useRouter();
   const GoogleProvider = new GoogleAuthProvider();
 
-  const loginWithGoogle = () => {
-    setLoading(true);
-    return signInWithPopup(auth, GoogleProvider);
-  };
+const loginWithGoogle = async () => {
+  setLoading(true);
+  const result = await signInWithPopup(auth, GoogleProvider);
+  router.refresh(); 
+  return result;
+};
 
-  const logoutUser = () => {
-    setLoading(true);
-    return signOut(auth);
-  };
+const logoutUser = async () => {
+  setLoading(true);
+  await signOut(auth);
+  router.refresh();
+};
 
   const signUpUserWithCredential = (email, password) => {
     setLoading(true);
@@ -151,47 +154,39 @@ export default function AuthProvider({children}) {
     }
   };
 
-  useEffect(() => {
-    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      try {
-        if (currentUser) {
-          setUser(currentUser);
+ useEffect(() => {
+  const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    try {
+      if (currentUser) {
+        setUser(currentUser);
 
-          const token = await currentUser.getIdToken(true);
-    
-            const r = await fetch("/api/auth/session", {
-              method: "POST",
-              headers: {authorization: `Bearer ${token}`},
-              credentials: "include",
-              cache: "no-store",
-            });
+        const token = await currentUser.getIdToken(true);
 
-            if (!r.ok) {
-              console.log("session failed", await r.text());
-            }
-       
+        await fetch("/api/auth/session", {
+          method: "POST",
+          headers: { authorization: `Bearer ${token}` },
+          credentials: "include",
+          cache: "no-store",
+        });
 
-          // ✅ refresh so middleware sees cookie immediately
-          router.refresh();
-
-          setLoading(false);
-        } else {
-          setUser(null);
-          await fetch("/api/auth/logout", {
-            method: "POST",
-            credentials: "include",
-          });
-          router.refresh();
-          setLoading(false);
-        }
-      } catch (e) {
-        console.error(e);
-        setLoading(false);
+      } else {
+        setUser(null);
+        await fetch("/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        });
       }
-    });
 
-    return () => unSubscribe();
-  }, [router]);
+      setLoading(false);
+    } catch (e) {
+      console.error(e);
+      setLoading(false);
+    }
+  });
+
+  return () => unSubscribe();
+}, []);
+
 
   const authInfo = {
     user,

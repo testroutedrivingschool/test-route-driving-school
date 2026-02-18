@@ -202,32 +202,32 @@ export default function LocationPageClient({locationData}) {
           {/* CTA Section */}
           <div className=" bg-primary rounded-xl p-8 text-white text-center">
             <h3 className="text-2xl font-bold mb-4">Call to Action</h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
+            <p className="text-blue-100 mb-6 md:max-w-2xl mx-auto">
               {locationData.ctaDescription
                 ? locationData.ctaDescription
                 : "Start your driving journey today with Test Route Driving School in Carlton. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <SecondaryBtn onClick={() => router.push("/bookings")}>
+            <div className="flex  gap-2 justify-center">
+              <SecondaryBtn className={`text-xs! md:text-lg!`} onClick={() => router.push("/bookings")}>
                 Book Now
               </SecondaryBtn>
               <OutlineBtn
-                className={`border-white! text-white hover:bg-secondary hover:border-secondary!`}
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! py-1 md:py-2`}
               >
                 <a
                   href="tel:61412018593"
                   className="flex items-center gap-2 px-0 rounded-lg  text-white font-bold  transition "
                 >
-                  <FaPhoneAlt className="text-xl" />
+                  <FaPhoneAlt className="md:text-xl" />
                   <span>Call Now</span>
                 </a>
               </OutlineBtn>
               <OutlineBtn
-                className={`border-white! text-white hover:bg-secondary hover:border-secondary!`}
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg!`}
               >
                 <a
                   href="mailto:testroutedrivingschool@gmail.com"
-                  className="flex items-center gap-2 rounded-lg  text-white font-bold text-lg  transition "
+                  className="flex items-center gap-2 rounded-lg  text-white font-bold   transition "
                 >
                   <FaEnvelope className="text-lg" />
                   <span>Sent Email</span>

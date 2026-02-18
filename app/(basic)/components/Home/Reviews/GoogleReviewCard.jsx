@@ -28,8 +28,9 @@ export default function GoogleReviewCard() {
                         width={50}
                         height={50}
                         alt="Google Logo"
+                        className="w-8 h-8"
                       />
-                      <span className="text-center md:text-left font-bold text-gray-900 text-lg">
+                      <span className="text-center md:text-left font-bold text-gray-900 md:text-lg">
                         Google <br />
                         Reviews
                       </span>

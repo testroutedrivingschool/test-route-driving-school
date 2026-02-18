@@ -9,8 +9,6 @@ const tabs = [
   { key: "notes", label: "Notes" },
   { key: "checklists", label: "Checklists" },
   { key: "messages", label: "Messages" },
-  { key: "client", label: "Client" },
-  { key: "audit", label: "Audit" },
 ];
 
 export default function BookingTabsNav({ bookingId, activeTab }) {

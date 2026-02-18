@@ -248,7 +248,7 @@ export default function About() {
                   Learn to Drive with Confidence & Safety
                 </h2>
                 <div className="space-y-4">
-                  <p className="text-gray-700 text-lg leading-relaxed">
+                  <p className="text-gray-700 md:text-lg leading-relaxed">
                     At
                     <Link
                       className="font-bold px-1 underline"
@@ -295,7 +295,7 @@ export default function About() {
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="flex items-start gap-3 p-3 bg-base-300 rounded-xl border border-border-color hover:shadow-md transition-shadow"
+                className="flex flex-col md:flex-row items-start gap-3 p-3 bg-base-300 rounded-xl border border-border-color hover:shadow-md transition-shadow"
               >
                 <div className="p-2 bg-white rounded-lg">{feature.icon}</div>
                 <div>
@@ -321,7 +321,7 @@ export default function About() {
                   <span className="text-primary">Can Trust</span>
                 </h2>
 
-                <p className="text-neutral">
+                <p className="text-neutral md:text-lg">
                   <Link className="font-semibold underline px-1" href={`/`}>
                     Test Route Driving School
                   </Link>
@@ -332,7 +332,7 @@ export default function About() {
                   international students gain confidence behind the wheel.
                 </p>
 
-                <p className="text-neutral">
+                <p className="text-neutral md:text-lg">
                   We provide structured{" "}
                   <Link
                     className="font-semibold underline px-1"
@@ -346,7 +346,7 @@ export default function About() {
                   personalised feedback and a supportive environment.
                 </p>
 
-                <p className="text-neutral">
+                <p className="text-neutral md:text-lg">
                   At <strong>Test Route Driving School</strong>, you’ll learn in
                   safe, modern vehicles, enjoy flexible{" "}
                   <strong>lesson packages</strong>, and gain the confidence to

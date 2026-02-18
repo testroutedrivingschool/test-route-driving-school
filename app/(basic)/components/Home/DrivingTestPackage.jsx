@@ -4,7 +4,7 @@ import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import Image from "next/image";
 import React from "react";
-import testPackageImg1 from "@/app/assets/test-packageimg1.png";
+import testPackageImg1 from "@/app/assets/test-packageimg1.jpg";
 import testPackageImg2 from "@/app/assets/test-packageimg2.png";
 import {FaCheckCircle, FaStar, FaArrowRight} from "react-icons/fa";
 import {addToCartLS} from "@/app/utils/cart";
@@ -60,20 +60,20 @@ export default function DrivingTestPackage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Package Card 1*/}
-          <div className="group bg-base-300 rounded-xl overflow-hidden shadow hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
+          <div className="group  rounded-xl overflow-hidden shadow hover:shadow-md transition-all duration-500 hover:-translate-y-1">
             {/* Image */}
-            <div className="relative h-60 w-full overflow-hidden">
+            <div className="relative h-75 w-full overflow-hidden">
               <Image
                 src={testPackageImg1}
                 alt="Driving Test Package Test Route Driving School"
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
               />
             </div>
 
             {/* Content */}
             <div className="p-8">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-2xl text-gray-800">
                   Car Hire with 1 Hour Lesson
                 </h2>
@@ -83,7 +83,7 @@ export default function DrivingTestPackage() {
               </div>
 
               {/* Features */}
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 mb-4">
                 {[
                   "Pick up 1 hour before driving test",
                   "45 mins warm-up lesson before test",
@@ -92,7 +92,7 @@ export default function DrivingTestPackage() {
                 ].map((text, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 hover:bg-primary/5 transition"
+                    className="flex items-start gap-3 "
                   >
                     <div className="w-6 h-6 flex items-center justify-center rounded-full bg-green-100 shrink-0">
                       <FaCheckCircle className="text-green-500 text-sm" />
@@ -106,7 +106,7 @@ export default function DrivingTestPackage() {
 
               {/* CTA */}
               <div className="flex items-center justify-between">
-                <PrimaryBtn onClick={(e) => handleAddToCart(packages[0], e)}>
+                <PrimaryBtn className={`text-sm! md:text-lg!`} onClick={(e) => handleAddToCart(packages[0], e)}>
                   Get this package <FaArrowRight className="ml-2" />
                 </PrimaryBtn>
 
@@ -120,18 +120,18 @@ export default function DrivingTestPackage() {
           {/* Package Card 2 */}
           <div className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-1">
             {/* Image */}
-            <div className="relative h-60 w-full overflow-hidden">
+            <div className="relative h-75 w-full overflow-hidden">
               <Image
                 src={testPackageImg2}
                 alt="Driving Test Package Test Route Driving School"
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
               />
             </div>
 
             {/* Content */}
             <div className="p-8">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-2xl text-gray-800">
                   Car Hire with 2 Hour lesson
                 </h2>
@@ -141,7 +141,7 @@ export default function DrivingTestPackage() {
               </div>
 
               {/* Features */}
-              <div className="space-y-4 mb-8">
+              <div className="space-y-3 mb-4">
                 {[
                   "Pick up 2 hour before driving test",
                   "1 hour 45 mins of warm up lesson before test",
@@ -150,7 +150,7 @@ export default function DrivingTestPackage() {
                 ].map((text, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 hover:bg-primary/5 transition"
+                    className="flex items-start gap-3 "
                   >
                     <div className="w-6 h-6 flex items-center justify-center rounded-full bg-green-100 shrink-0">
                       <FaCheckCircle className="text-green-500 text-sm" />
@@ -164,7 +164,7 @@ export default function DrivingTestPackage() {
 
               {/* CTA */}
               <div className="flex items-center justify-between">
-                <PrimaryBtn onClick={(e) => handleAddToCart(packages[1], e)}>
+                <PrimaryBtn className={`text-sm! md:text-lg!`} onClick={(e) => handleAddToCart(packages[1], e)}>
                   Get this package <FaArrowRight className="ml-2" />
                 </PrimaryBtn>
 

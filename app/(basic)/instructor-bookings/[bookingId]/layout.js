@@ -8,6 +8,7 @@ import Container from "@/app/shared/ui/Container";
 import BookingSidebar from "../components/BookingSidebar";
 import BookingHeader from "../components/BookingHeader";
 import BookingTabsNav from "../components/BookingTabsNav";
+import {BookingProvider} from "./BookingContext";
 
 export default function BookingDetailLayout({children}) {
   const {bookingId} = useParams();
@@ -59,7 +60,9 @@ export default function BookingDetailLayout({children}) {
             </div>
 
             {/* ✅ tab page content */}
-            {children}
+      
+    <BookingProvider value={booking}>{children}</BookingProvider>
+ 
           </div>
         </div>
       </Container>

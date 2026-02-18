@@ -1,8 +1,10 @@
 "use client";
+import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Link from "next/link";
 import {useRouter} from "next/navigation";
 import {useEffect, useState} from "react";
+import { FaPhoneVolume } from "react-icons/fa";
 
 export default function Hero() {
   const router = useRouter();
@@ -17,7 +19,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-[81vh] overflow-hidden py-25">
+    <section className="relative w-full md:min-h-[82vh] overflow-hidden pt-15 md:pt-28 pb-15 md:pb-25">
       {/* ✅ Poster  */}
       <div
         className="absolute inset-0 bg-center bg-cover"
@@ -46,12 +48,12 @@ export default function Hero() {
       <div className="absolute inset-0 bg-linear-to-b from-black/60 to-black/80"></div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 animate-fadeUp">
-        <h1 className="text-white text-3xl md:text-3xl lg:text-4xl font-extrabold leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-w-6xl">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-2 md:px-4 animate-fadeUp">
+        <h1 className="text-white text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.6)] max-w-6xl">
           Driving School in Sydney Suburbs | Learn to Drive Safely & Confidently
         </h1>
 
-        <p className="text-gray-200 mt-5 md:text-lg max-w-6xl leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
+        <p className="text-gray-200 mt-5 text-sm md:text-lg md:max-w-6xl leading-relaxed drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]">
           Join our expert instructors and gain confidence behind the wheel. At{" "}
           <Link href="/" className="location-link">
             Test Route Driving School,
@@ -69,13 +71,22 @@ export default function Hero() {
           and start your journey with a trusted driving school near you in
           Sydney Suburbs.
         </p>
-
-        <PrimaryBtn
-          onClick={() => router.push("/bookings")}
-          className="mt-8 text-lg px-10 py-4 shadow-xl shadow-black/20"
-        >
-          Book Your First Lesson
-        </PrimaryBtn>
+        <div className="mt-8 flex items-center gap-4 md:gap-6 ">
+          <PrimaryBtn
+            onClick={() => router.push("/bookings")}
+            className="text-xs md:text-lg px-2! md:px-6 py-4 shadow-xl shadow-black/20"
+          >
+            Book Driving Lesson
+          </PrimaryBtn>
+     
+            <a
+              className="bg-transparent text-white transition font-bold text-xs md:text-lg px-2 md:px-5  border-2 border-white hover:bg-primary hover:text-white rounded-md py-3.5 hover:border-transparent flex  sm:flex-row items-center gap-2"
+              href="tel:61412018593"
+            >
+             <FaPhoneVolume className="text-sm md:text-lg"/> 0412 018 593
+            </a>
+       
+        </div>
       </div>
     </section>
   );

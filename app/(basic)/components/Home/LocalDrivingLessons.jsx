@@ -12,12 +12,12 @@ export default function LocalDrivingLessons() {
         <div className="flex flex-col-reverse lg:flex-row items-center gap-12">
           {/* Left Text Content */}
           <div className="flex-1 space-y-6">
-            <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900">
               Professional Driving Lessons in
               <span className="text-primary"> Sydney Suburbs, NSW</span>
             </h2>
 
-            <p className="text-neutral text-lg leading-relaxed">
+            <p className="text-neutral md:text-lg leading-relaxed">
               Seeking reputable <strong className="px-1">driving schools in Sydney Suburbs</strong>? We provide both
               automatic and manual lessons designed for beginners, learners, and
               those preparing for their driving test. Our instructors focus on
@@ -49,7 +49,7 @@ export default function LocalDrivingLessons() {
               driver.
             </p>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-4">
+            <div className="mt-6 flex  gap-4">
               <Link href={"/bookings"}>
                 <PrimaryBtn>Book a Lesson</PrimaryBtn>
               </Link>
@@ -73,52 +73,52 @@ export default function LocalDrivingLessons() {
 
         {/* Enhanced SEO Section */}
         <div
-          className="mt-16 p-12 rounded-xl shadow-2xl  space-y-8"
+          className="mt-16 p-6 md:p-12 rounded-xl shadow-2xl  space-y-8"
           style={{
             background: "linear-gradient(135deg, #301b92 0%, #4623c2 100%)",
             color: "#ffffff",
           }}
         >
-          <h3 className="text-2xl md:text-4xl font-extrabold text-center">
+          <h3 className="text-xl sm:text-2xl md:text-4xl font-extrabold text-center">
             Benefits of Local Driving Lessons in Sydney Suburbs
           </h3>
 
-          <p className="text-lg md:text-xl leading-relaxed text-center max-w-4xl mx-auto">
+          <p className="md:text-lg leading-relaxed text-center max-w-4xl mx-auto">
             Learning to drive in  <a className="location-link" href={"/services/automatic-driving-lessons"} >Sydney suburbs</a>with Test Route Driving School offers many benefits: 
 
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
             <div className="flex items-center gap-4 bg-white/10 p-4 rounded-xl shadow-md hover:shadow-xl transition">
-              <span className="text-3xl font-bold text-accent">✔</span>
+              <span className="text-xl md:text-2xl font-bold text-accent">✔</span>
               <p className="text-white text-base">
                 Learn local traffic rules and road conditions in Sydney Suburbs and the surrounding areas.
               </p>
             </div>
 
             <div className="flex items-start gap-4 bg-white/10 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-              <span className="text-3xl font-bold text-accent">✔</span>
+              <span className="text-xl md:text-2xl font-bold text-accent">✔</span>
               <p className="text-white text-base">
                 Personalized lessons tailored to your skill level and learning pace.
               </p>
             </div>
 
             <div className="flex items-start gap-4 bg-white/10 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-              <span className="text-3xl font-bold text-accent">✔</span>
+              <span className="text-xl md:text-2xl font-bold text-accent">✔</span>
               <p className="text-white text-base">
                 Gain experience in city streets, highways, parking, and night driving.
               </p>
             </div>
 
             <div className="flex items-start gap-4 bg-white/10 p-6 rounded-2xl shadow-md hover:shadow-xl transition">
-              <span className="text-3xl font-bold text-accent">✔</span>
+              <span className="text-xl md:text-2xl font-bold text-accent">✔</span>
               <p className="text-white text-base">
                 Flexible schedules with professional instructors guiding you step-by-step.
               </p>
             </div>
           </div>
 
-          <p className="text-lg md:text-xl leading-relaxed text-center mt-8 max-w-2xl mx-auto">
+          <p className="md:text-lg leading-relaxed text-center mt-8 max-w-2xl mx-auto">
             Hundreds of learners have successfully passed their driving tests with our structured local lessons. Start your journey today!
           </p>
         </div>

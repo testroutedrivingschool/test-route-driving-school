@@ -2,7 +2,7 @@
 import {useEffect, useRef, useState} from "react";
 
 import Container from "@/app/shared/ui/Container";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
 import axios from "axios";
@@ -17,7 +17,8 @@ import {
   FaChevronRight,
   FaEyeSlash,
 } from "react-icons/fa";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
+import Swal from "sweetalert2";
 
 const weekdays = [
   "Monday",
@@ -111,13 +112,26 @@ export default function InstructorBookings() {
       return res.data;
     },
   });
+  const searchParams = useSearchParams();
+  const moveBookingId = searchParams.get("moveBookingId"); // string | null
+  const moveMode = !!moveBookingId;
+  const rebookClientId = searchParams.get("rebookClientId");
+const rebookMode = !!rebookClientId;
 
+const { data: rebookClient } = useQuery({
+  queryKey: ["client", rebookClientId],
+  enabled: !!rebookClientId,
+  queryFn: async () => {
+    const res = await axios.get(`/api/clients/${rebookClientId}`);
+    return res.data;
+  },
+});
   const tableRef = useRef(null);
-
+const queryClient = useQueryClient()
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showSlotModal, setShowSlotModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
-
+const [moving, setMoving] = useState(false);
   const [showMoreTimes, setShowMoreTimes] = useState(false);
   const [suburbSearch, setSuburbSearch] = useState("");
   const [selectedSuburbs, setSelectedSuburbs] = useState([]);
@@ -146,6 +160,49 @@ export default function InstructorBookings() {
     "2 hours",
     "2 hours 15 mins",
   ];
+
+
+const moveBookingHere = async ({ date, time }) => {
+  if (!moveBookingId) return;
+  if (moving) return;
+
+  const dateStr = new Date(date).toLocaleDateString("en-AU", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+
+  const res = await Swal.fire({
+    title: "Move booking?",
+    html: `Move this booking to <b>${dateStr}</b> at <b>${time}</b>?`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, move it",
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
+  });
+
+  if (!res.isConfirmed) return;
+
+  setMoving(true);
+  try {
+    await axios.patch(`/api/bookings/${moveBookingId}`, {
+      bookingDate: new Date(date).toISOString(),
+      bookingTime: time,
+    });
+
+    toast.success("Booking moved ✅");
+    await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+    router.push(`/instructor-bookings/${moveBookingId}`);
+  } catch (err) {
+    toast.error(err?.response?.data?.error || "Failed to move booking");
+  } finally {
+    setMoving(false);
+  }
+};
+
+
 
   const formatDate = (d) => {
     const date = new Date(d);
@@ -709,27 +766,43 @@ export default function InstructorBookings() {
     }
   };
 
-  const handleBooking = (date, slot, time) => {
-    if (!slot?._id) return toast.error("Slot not found!");
+const handleBooking = (date, slot, time) => {
+  if (!slot?._id) return toast.error("Slot not found!");
 
-    const bookingInfo = {
-      instructorEmail: instructor?.email,
-      instructorName: instructor?.name,
-      instructorId: instructor?._id,
+  const bookingInfo = {
+    instructorEmail: instructor?.email,
+    instructorName: instructor?.name,
+    instructorId: instructor?._id,
 
-      date: new Date(date).toISOString(),
-      time,
-      location: "",
+    date: new Date(date).toISOString(),
+    time,
+    location: "",
 
-      slotId: slot._id,
-      duration: slot.duration,
+    slotId: slot._id,
+    duration: slot.duration,
 
-      bookingType: "manual",
-    };
-    console.log(bookingInfo);
-    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-    router.push("/booking-confirm");
+    bookingType: "manual",
+
+    // ✅ rebook payload
+    ...(rebookMode
+      ? {
+          clientId: rebookClientId,
+          clientName: rebookClient
+            ? `${rebookClient.firstName || ""} ${rebookClient.lastName || ""}`.trim()
+            : "",
+          clientEmail: rebookClient?.email || "",
+          clientPhone: rebookClient?.mobile || rebookClient?.phone || "",
+          clientAddress: rebookClient?.address || "",
+          suburb: rebookClient?.suburb || "",
+          skipClientSelect: true, // ✅ flag for booking-confirm
+        }
+      : {}),
   };
+
+  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+  router.push("/booking-confirm");
+};
+
 
   if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
 
@@ -797,6 +870,28 @@ export default function InstructorBookings() {
                     </div>
 
                     {/* Schedule Table */}
+                   {moveMode && (
+  <div className="m-3 p-3 rounded-md border border-primary bg-primary text-white text-sm flex justify-between items-center">
+    <span>Move Mode: click a new date/time to move the booking.</span>
+    <button
+      className="underline font-semibold"
+      onClick={() => router.push("/instructor-bookings")}
+    >
+      Cancel
+    </button>
+  </div>
+)}
+{rebookMode && (
+  <div className="m-3 p-3 rounded-md border border-secondary bg-secondary text-white text-sm flex justify-between items-center">
+    <span>
+      Rebook Mode: choose a slot for{" "}
+      <b>{rebookClient?.firstName} {rebookClient?.lastName}</b>
+    </span>
+    <button className="underline font-semibold" onClick={() => router.push("/instructor-bookings")}>
+      Cancel
+    </button>
+  </div>
+)}
                     <div
                       ref={tableRef}
                       className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
@@ -928,9 +1023,10 @@ export default function InstructorBookings() {
                                     {/* IMPORTANT: button must fill the cell */}
                                     {visibility === "empty" ? (
                                       <button
-                                        onClick={() =>
-                                          openSlotModal({date, time})
-                                        }
+                                        onClick={() => {
+      if (moveMode) return moveBookingHere({ date, time });
+      openSlotModal({ date, time });
+    }}
                                         className="w-full h-full min-h-11 bg-white hover:bg-gray-50 border border-border-color flex items-center justify-center"
                                         title="Add"
                                       >
@@ -940,9 +1036,18 @@ export default function InstructorBookings() {
                                       </button>
                                     ) : visibility === "hidden" ? (
                                       <button
-                                        onClick={() =>
-                                          handleBooking(date, slot, time)
-                                        }
+                                        onClick={() => {
+                                          if (moveMode)
+                                            return moveBookingHere({
+                                              date,
+                                              time,
+                                            });
+                                          return handleBooking(
+                                            date,
+                                            slot,
+                                            time,
+                                          );
+                                        }}
                                         className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col md:flex-row md:justify-between items-center justify-center gap-2"
                                       >
                                         <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
@@ -957,6 +1062,7 @@ export default function InstructorBookings() {
                                         <IoMdAdd
                                           onClick={(e) => {
                                             e.stopPropagation();
+                                            if (moveMode) return;
                                             openSlotModal({date, time});
                                           }}
                                           className="h-5 w-5 text-primary shrink-0"
@@ -964,9 +1070,18 @@ export default function InstructorBookings() {
                                       </button>
                                     ) : visibility === "privateBooked" ? (
                                       <button
-                                        onClick={() =>
-                                          handleBooking(date, slot, time)
-                                        }
+                                        onClick={() => {
+                                          if (moveMode)
+                                            return moveBookingHere({
+                                              date,
+                                              time,
+                                            });
+                                          return handleBooking(
+                                            date,
+                                            slot,
+                                            time,
+                                          );
+                                        }}
                                         className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
                                       >
                                         <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
@@ -981,6 +1096,7 @@ export default function InstructorBookings() {
                                         <IoMdAdd
                                           onClick={(e) => {
                                             e.stopPropagation();
+                                            if (moveMode) return;
                                             openSlotModal({date, time});
                                           }}
                                           className="h-5 w-5 text-white shrink-0"
@@ -1005,9 +1121,18 @@ export default function InstructorBookings() {
                                       </button>
                                     ) : (
                                       <button
-                                        onClick={() =>
-                                          handleBooking(date, slot, time)
-                                        }
+                                        onClick={() => {
+                                          if (moveMode)
+                                            return moveBookingHere({
+                                              date,
+                                              time,
+                                            });
+                                          return handleBooking(
+                                            date,
+                                            slot,
+                                            time,
+                                          );
+                                        }}
                                         className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center flex-wrap gap-2 text-xs font-semibold text-white px-1 py-2"
                                       >
                                         <span>Available</span>
@@ -1020,6 +1145,7 @@ export default function InstructorBookings() {
                                           <IoMdAdd
                                             onClick={(e) => {
                                               e.stopPropagation();
+                                              if (moveMode) return;
                                               openSlotModal({date, time});
                                             }}
                                             className="h-4 w-4"
