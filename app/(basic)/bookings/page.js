@@ -191,7 +191,7 @@ export default function BookingsPage() {
     queryKey: ["instructors"],
     queryFn: async () => {
       try {
-        const res = await axios.get("/api/instructors");
+        const res = await axios.get("/api/instructors?status=approved");
         const data = res.data;
 
         return data.map((instructor) => ({
