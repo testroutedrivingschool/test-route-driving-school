@@ -307,7 +307,6 @@ export const locationData = {
       },
     ],
   },
-
   "sans-souci": {
     pageTitle: "Driving Lessons in Sans Souci – Your Local Driving Experts",
     metaDescription:
@@ -546,7 +545,6 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
-  
   "sylvania-waters": {
     pageTitle: "Professional Driving Lessons in Sylvania Waters",
     metaDescription:
@@ -778,7 +776,6 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
-
     "wali-creek": {
     pageTitle: "Driving Lessons in Wali Creek – Personalized Training for Every Learner",
     metaDescription:
@@ -1012,7 +1009,6 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
-
     "kogarah-bay": {
     pageTitle: "Expert Driving Lessons in Kogarah Bay – Learn to Drive with Confidence",
     metaDescription:
@@ -1243,8 +1239,7 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
-
-      "monterey": {
+    "monterey": {
     pageTitle: "Professional Driving Lessons in Monterey – Book Today",
     metaDescription:
       "Improve your driving skills with Driving Lessons in Monterey – Safe, affordable, and convenient. Ring +61 412 018 593 to start.",
@@ -1475,8 +1470,7 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
-
-       "ramsgate": {
+    "ramsgate": {
     pageTitle: "Expert Driving Lessons in Ramsgate for Beginners & Learners",
     metaDescription:
       "Learn safe driving with Driving Lessons in Ramsgate. Expert instructors, flexible timings. Call +61 412 018 593 and start your journey today!",
@@ -1709,7 +1703,6 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
       },
     ],
   },
-
     "arncliffe": {
 
    mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15705.726181729488!2d151.13516147093367!3d-33.93860326905279!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b0a15e20ceb5%3A0x5017d681632abb0!2sArncliffe%20NSW%202205%2C%20Australia!5e1!3m2!1sen!2sbd!4v1769532458545!5m2!1sen!2sbd",
@@ -2575,7 +2568,1074 @@ new cars that make every <strong> driving lesson in Sans Souci </strong> a comfo
         ),
       },
     ],
-  ctaDescription:"Start your driving journey today with Test Route Driving School in Carlton. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."
+  ctaDescription:(
+    <>
+    Start your driving journey today with <strong>Test Route Driving School in Carlton.</strong> Expert instructors, flexible schedules, and safe vehicles make learning fun and easy.
+    </>
+  )
   },
+    "dolls-point": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15678.347618508076!2d151.13425931875605!3d-33.99358537086324!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b77eeea1e66f%3A0x5017d681632b4b0!2sDolls%20Point%20NSW%202219%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771319933744!5m2!1sen!2sbd",
+    pageTitle: "Driving Lessons in Dolls Point | Professional Local Driving Instructors",
+    metaDescription:"Get safe, affordable Driving Lessons in Dolls Point – One-on-one training for learners & test prep – Book now – Patient instructors guaranteed.",
+    keywords: [
+    "Driving Lessons in Dolls Point",
+    "driving lessons near me in Dolls Point",
+    "driving lesson in Dolls Point",
+    "driving lessons schools",
+    "manual driving lessons",
+    "learners driving lessons",
+    "car driving lessons near me in Dolls Point",
+    "cheap driving lessons",
+    "driving school in Dolls Point",
+    "driving lessons schools",
+    "driving training school near me",
+    "affordable driving school in Dolls Point",
+    "drivers education school near me",
+    "driver education course in Dolls Point",
+    "drivers education",
+    "driver education",
+    "learn to drive schools",
+    "manual driving lessons near me",
+    "cheap driving lessons near me",
+    "Teen driving lessons",
+    "book driving lesson in Dolls Point",
+        ],
+    heroTitle: "Professional Driving Lessons in Dolls Point",
+    heroDescription: (
+      <>
+      At <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School,</Link> our highly qualified and friendly instructors deliver expert <strong>driving lessons in Dolls Point.</strong> We focus on building your confidence, road safety, and real-world driving skills. Our structured training programs are tailored for beginners, learners, and refresher drivers alike.<br/>
+      Whether you are just starting or improving your driving skills, our driving school in Dolls Point ensures you learn safely and effectively. <Link className="location-link" href={"/instructors"} >Meet our instructors</Link> and see how their experience can guide you.
+      </>
+    ),
+    section1Title: "Learn to Drive with Driving Lessons in Dolls Point",
+    section1SubTitle: (
+      <>
+      Our experienced instructors provide personalised <strong><Link className="location-link" href={"/services/automatic-driving-lessons"} >driving lessons</Link> in Dolls Point</strong> designed to help you gain confidence and pass your driving test with ease. Lessons cover all aspects of driving: road safety, parking, and highway skills.<br/>
+      Flexible lesson schedules and <strong>personalised learning plans</strong> accommodate your lifestyle. Our certified instructors use modern dual-control vehicles for safe, hands-on learning. Whether you need manual driving lessons near me or automatic, <Link className="location-link" href={"/packages"} >book a driving lesson</Link> in Dolls Point today.
+      </>
+    ),
+    section1Features: [
+      <>Gain confidence with practical driving experience in various road conditions.</>,
+      <>Learn defensive driving and hazard perception from expert instructors.</>,
+      <>Flexible lesson packages tailored to your skill level and schedule.</>,
+      <>Access safe, modern dual-control vehicles for all lessons.</>,
+    ],
+    section2Title: "Driving Test Preparation with Driving Lessons in Dolls Point",
+    section2SubTitle: (
+      <>
+      Preparing for your driving test in Dolls Point requires expert guidance, structured practice, and a deep understanding of local road conditions. Our <strong>driving lessons near me in Dolls Point</strong> focus on examiner expectations, test routes, and common mistakes.<br/>
+      Instructors familiar with local test centres, road layouts, roundabouts, school zones, and high-traffic areas design lessons that reflect real test conditions. Practice includes mock tests, parking, hill starts, and hazard perception training, giving you confidence on test day.
+      </>
+    ),
+    section2Features: [
+      <>Experience mock driving tests under real exam conditions to identify areas for improvement.</>,
+      <>Learn common mistakes and how to avoid them during your driving test.</>,
+      <>Gain hands-on training in challenging road scenarios, including roundabouts and school zones</>,
+      <>Receive personalised feedback to build confidence and master driving skills effectively</>,
+    ],
+    section3Title1: "Advanced Driving Lessons in Dolls Point",
+    section3Description1: (
+      <>
+       Learning to drive in Dolls Point can feel daunting without the right guidance, but our certified instructors make it an enjoyable and confidence-building experience. At Test Route Driving School, each lesson is carefully tailored to your skill level, whether you’re a complete beginner, a returning learner, or someone refining specific skills. You’ll gain hands-on experience in everyday driving scenarios, including city streets, highways, busy intersections, and tricky parking situations.<br/>
+       Our lessons also emphasise defensive driving, hazard perception, and anticipating the actions of other drivers. This approach not only helps you pass your driving test but also equips you with practical skills for real-world road conditions. We integrate scenario-based exercises to simulate challenging situations like sudden stops, lane merges, and night driving, ensuring you’re prepared for anything on the road.<br/>
+       Every session includes personalised feedback to highlight your strengths and areas for improvement. With consistent guidance, your confidence grows, your decision-making sharpens, and your driving skills become instinctive. Flexible schedules accommodate students, professionals, and busy parents, making it easy to fit lessons into your lifestyle. By the end of your advanced program, you’ll feel capable, calm, and fully prepared to drive safely and independently throughout Dolls Point and across Sydney.
+
+      </>
+    ),
+    section3Title2: "Flexible Schedules and Tailored Learning Plans",
+    section3Description2: (
+      <>
+      At  <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School</Link> in Dolls Point, we understand that every learner has a unique pace and schedule. That’s why our lessons are fully flexible, with options in evenings, weekends, and school holidays, so you never have to compromise on your training. Our instructors create personalised lesson plans designed around your progress, strengths, and specific challenges. Each session combines practical exercises, real-world driving, and guided feedback to ensure steady, measurable improvement.<br/>
+      We focus on complete driving education: mastering NSW road rules, roundabouts, traffic signals, school zones, and high-traffic areas. You’ll practice parking, hill starts, highway merging, and night driving under safe supervision. Each lesson builds not just skills but confidence and decision-making ability, preparing you for both your driving test and independent driving in all road conditions.<br/>
+      Our structured program also addresses common learner concerns such as anxiety, hesitation in heavy traffic, and difficulty with complex manoeuvres. With personalised guidance, step-by-step coaching, and scenario-based practice, you’ll steadily transform nervousness into competence. By the end of your course, you’ll feel ready to handle any driving situation confidently, equipped with both practical experience and a deep understanding of safe driving habits. Learning in Dolls Point has never been easier, safer, or more effective.
+
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Dual-Controlled Vehicles",
+        description: (
+          <>
+          Learn safely in modern dual-controlled cars. Instructors provide step-by-step guidance, ensuring your confidence and safety on all types of roads, traffic conditions, and driving situations.
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment",
+        description: (
+          <>
+           Our qualified instructors give detailed feedback on your driving performance. This personalised guidance helps you prepare thoroughly.
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Pick Up and Drop Off",
+       description: (
+          <>
+          Convenient pickup and drop-off across Sydney suburbs, bs including Rockdale, Bankstown, Newtown, and more. This saves travel time and allows you to focus fully on learning.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire ",
+        description: (
+          <>
+        Test Day Packages include modern vehicles like Kia, Toyota Hybrid, or Nissan, equipped with dual controls for your driving test. Take your test in a safe, familiar, and comfortable car.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Support ",
+        description: (
+          <>
+         Professional lesson guidance and support on your test day, including warm-up sessions and car hire, ensure you remain calm, confident, and ready for success.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Lesson Package",
+        description: (
+          <>
+          Flexible 5, 10, or 20-hour packages help you progress faster while saving money.<Link className="location-link" href={"/packages"} >Explore all packages</Link> and choose what fits your learning needs.
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice ",
+    lessonTips: [
+      {
+        name: "Practice Regularly",
+        description: (
+          <>
+        Learning to drive becomes easier with guidance, preparation, and regular practice. Our manual driving lessons near me and automatic courses in Dolls Point provide practical <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">tips</a> for learners at all levels.
+          </>
+        ),
+      },
+      {
+        name: "Focus on Road Safety",
+        description: (
+          <>
+           Practice consistently to gain confidence, understand traffic flow, and navigate parking situations safely. Focus on hazards, follow traffic rules, and maintain safe distances. Gradually advance from simple exercises to city traffic, highways, and night driving.
+          </>
+        ),
+      },
+      {
+        name: "Build Confidence Gradually",
+        description: (
+          <>
+          Even if you plan to drive automatically, learning manual basics improves overall vehicle control. Our school offers complete training for a comprehensive <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">driving experience.</a> 
+          </>
+        ),
+      },
+      {
+        name: "Learn Manual and Automatic",
+        description: (
+          <>
+            Even if you plan to drive automatic cars, learning manual basics enhances vehicle control. Our Carlton driving courses offer comprehensive training in both types for a complete learning experience.
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I start lessons if I’m an older learner?",
+        answer: (
+          <>
+           Yes, we offer customised lessons for adult learners. Training focuses on building confidence and practical skills. You progress at a comfortable pace.
+          </>
+        ),
+      },
+      {
+        question: "Do you provide test-day preparation cars?",
+        answer: (
+          <>
+        Yes, you can hire dual-controlled cars for your test. You’ll feel familiar and safe in a vehicle you’ve practised in. Instructors support you until you’re ready.
+          </>
+        ),
+      },
+      {
+        question:
+          "Will I learn defensive driving for busy roads?",
+        answer: (
+          <>
+            Absolutely. We teach hazard perception, safe distances, and anticipatory driving. This helps you stay calm in high-traffic areas.
+          </>
+        ),
+      },
+      {
+        question: "Can I practise in school zones and near roundabouts?",
+        answer: (
+          <>
+           Yes, lessons include real local routes and tricky intersections. You’ll gain hands-on experience navigating them confidently. This reduces surprises on test day
+          </>
+        ),
+      },
+      {
+        question: "Do you provide personalised lesson plans?",
+        answer: (
+          <>
+          Yes, each plan is tailored to your progress and learning goals. Instructors adjust exercises based on strengths and weaknesses. You’ll improve steadily and safely.
+          </>
+        ),
+      },
+    ],
+  ctaDescription:(
+    <>
+    Start your driving journey today with <strong>Test Route Driving School in Dolls Point.</strong> Expert instructors, flexible schedules, and safe vehicles make learning fun and easy.
+    </>
+  )
+  },
+    "gymea": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31341.085614108466!2d151.06291884034067!3d-34.03585853241451!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12c773bd544bad%3A0x5017d681632b950!2sGymea%20NSW%202227%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771323206754!5m2!1sen!2sbd",
+    pageTitle: "Driving Lessons in Gymea | Professional Local Driving School",
+    metaDescription:"Professional Driving Lessons in Gymea – Patient instructors and step-by-step training. Book now and enjoy beginner-friendly learning support.",
+    keywords: [
+      "Driving Lessons in Gymea",
+      "driving lessons near me in Gymea",
+      "driving lesson in Gymea",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Gymea",
+      "cheap driving lessons",
+      "driving school in Gymea",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Gymea",
+      "drivers education school near me",
+      "driver education course in Gymea",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Gymea",
+        ],
+    heroTitle: "Professional Driving Lessons in Gymea",
+    heroDescription: (
+      <>
+      At <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School,</Link>our highly qualified and friendly instructors deliver expert driving lessons in Gymea. We focus on building your confidence, road safety, and real-world driving skills through structured training programs tailored for beginners, learners, and refresher drivers alike.<br/>
+      Whether you are just starting or improving your driving skills, our <strong>driving school in Gymea</strong> ensures you learn safely and effectively. <Link className="location-link" href={"/instructors"} >Meet our instructors</Link> and see how their experience can guide you.
+      </>
+    ),
+    section1Title: "Learn to Drive with Driving Lessons in Gymea",
+    section1SubTitle: (
+      <>
+      Our experienced instructors provide personalised <strong>driving lessons in Gymea</strong> designed to help you gain confidence and pass your driving test with ease. Lessons cover all aspects of driving: road safety, parking, and highway skills.<br/>
+      Flexible lesson schedules and <strong>personalised learning plans</strong> accommodate your lifestyle. Our certified instructors use modern dual-control vehicles for safe, hands-on learning. Whether you need <strong>manual driving lessons near me</strong> or automatic, <Link className="location-link" href={"/packages"} >book a driving lesson in Gymea</Link> today.
+      </>
+    ),
+    section1Features: [
+      <>Gain confidence through practical driving exercises in real-world scenarios.</>,
+      <>Learn defensive driving and hazard perception to stay safe on the road.</>,
+      <>Receive tailored lesson plans that match your experience level and schedule.</>,
+      <>Access modern dual-control vehicles to practice safely in all conditions</>,
+    ],
+    section2Title: "Driving Test Preparation with Driving Lessons in Gymea",
+    section2SubTitle: (
+      <>
+     Preparing for your driving test in Gymea requires expert guidance, structured practice, and a deep understanding of local road conditions. <strong>Our driving lessons near me in Gymea</strong> focus on examiner expectations, test routes, and common mistakes.<br/>
+     Instructors familiar with local test centres, road layouts, roundabouts, school zones, and high-traffic areas design lessons that reflect real test conditions. Practice includes mock tests, parking, hill starts, and hazard perception training, giving you confidence on test day.
+      </>
+    ),
+    section2Features: [
+      <>Participate in realistic mock tests to evaluate your driving readiness.</>,
+      <>Identify and correct common mistakes before the actual driving test.</>,
+      <>Practice critical skills like parking, hill starts, and roundabout navigation.</>,
+      <>Receive personalised feedback to improve skills and boost test confidence.</>,
+      <>Learn practical strategies for challenging road scenarios like busy intersections..</>,
+      <>Build hazard awareness for safer driving in different traffic conditions.</>,
+      <>Strengthen confidence when driving in unfamiliar areas around Gymea.</>,
+      <>Track progress with detailed instructor assessments and actionable tips.</>,
+    ],
+    section3Title1: "Professional Driving Lessons in Gymea",
+    section3Description1: (
+      <>
+       Learning to drive in Gymea can feel intimidating, but at Test Route Driving School, our friendly, certified instructors make it a smooth and confidence-building experience. Every lesson is tailored to your skill level, whether you’re a complete beginner, returning for refresher training, or working on advanced driving techniques. We focus on practical skills like navigating city streets, highways, and roundabouts, as well as parking, lane changes, and safe merging in traffic.<br/>
+       Our program emphasises defensive driving and hazard awareness, teaching you how to anticipate risks, respond calmly to unexpected situations, and make confident decisions behind the wheel. You’ll also gain insight into NSW road rules, traffic regulations, and test-specific scenarios to ensure you’re fully prepared for your driving assessment. Each lesson includes personalised guidance and real-time feedback, helping you recognise strengths and areas for improvement.<br/>
+       By combining hands-on practice with theoretical knowledge, you’ll build not only the skills but also the confidence required to drive independently and safely. Lessons are structured to progressively challenge you, covering everything from basic manoeuvres to complex traffic scenarios, ensuring you are fully ready for your test day and everyday driving across Gymea and the surrounding Sydney suburbs.
+
+      </>
+    ),
+    section3Title2: "Flexible Schedules and Tailored Learning Plans",
+    section3Description2: (
+      <>
+      At  <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School</Link> in Gymea, we understand that every learner has unique needs and schedules. That’s why our lessons are fully flexible, available during evenings, weekends, and school holidays to suit students, working professionals, and busy parents. Our instructors develop personalised lesson plans based on your experience, learning pace, and goals, ensuring that every session is relevant and effective.<br/>
+      We focus on a complete driving education: mastering local test routes, understanding NSW road rules, building hazard perception, practising defensive driving, and gaining confidence in high-traffic areas, school zones, and roundabouts. Practical exercises include parking, hill starts, night driving, and highway navigation, all under close supervision to maintain safety and comfort.<br/>
+      In addition to practical skills, our lessons help learners overcome anxiety and nervousness, gradually building confidence for real-world driving. Instructors provide continuous feedback, track progress, and adjust exercises to address weaknesses while reinforcing strengths. By the end of your training, you’ll be able to drive confidently anywhere in Sydney, ready for both your driving test and independent driving in all conditions.
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Dual-Controlled Vehicles",
+        description: (
+          <>
+          Learn safely in modern dual-controlled cars. Instructors provide step-by-step guidance, ensuring your confidence and safety on all types of roads, traffic conditions, and driving situations.
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment",
+        description: (
+          <>
+          Our qualified instructors give detailed feedback on your driving performance. This personalised guidance helps you prepare thoroughly. <Link className="location-link" href={"/company/contact"} >Book your assessment here.</Link>
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Pick Up and Drop Off",
+       description: (
+          <>
+          Convenient pickup and drop-off across Sydney suburbs, including Rockdale, Bankstown, Newtown, and more. This saves travel time and allows you to focus fully on learning.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire ",
+        description: (
+          <>
+         Test Day Packages include modern vehicles like Kia, Toyota Hybrid, or Nissan, equipped with dual controls for your driving test. Take your test in a safe, familiar, and comfortable car.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Support ",
+        description: (
+          <>
+         Professional lesson guidance and support on your test day, including warm-up sessions and car hire, ensure you remain calm, confident, and ready for success.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Lesson Package",
+        description: (
+          <>
+          Flexible 5, 10, or 20-hour packages help you progress faster while saving money.<Link className="location-link" href={"/packages"} >Explore all packages</Link> and choose what fits your learning needs.
+          <ul className="list-disc">
+            <li>Learn with experienced instructors familiar with Gymea roads and test routes.</li>
+            <li>Practice safe driving in real traffic conditions with professional supervision.</li>
+            <li>Flexible lesson packages save money and improve skill development.</li>
+            <li>Benefit from dual-control vehicles to gain confidence and control while learning.</li>
+          </ul>
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice ",
+    lessonTips: [
+      {
+        name: "Practice Regularly",
+        description: (
+          <>
+        Learning to drive can be challenging, but with the right guidance, preparation, and mindset, you can become a confident and safe driver in Gymea. At Test Route Driving School, we provide expert tips and advice for learners of all levels, helping you make the most out of every lesson.
+          </>
+        ),
+      },
+      {
+        name: "Focus on Road Safety",
+        description: (
+          <>
+           Practice regularly to build confidence behind the wheel. Focus on road safety, anticipate hazards, follow traffic rules, and maintain safe distances. Gradually advance from simple exercises to city traffic, highways, and night driving.
+          </>
+        ),
+      },
+      {
+        name: "Build Confidence Gradually",
+        description: (
+          <>
+          Even if you plan to drive automatically, learning manual basics improves overall vehicle control. Our school offers complete training for a comprehensive <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">driving experience.</a> Read more <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">driving tips.</a>
+          </>
+        ),
+      },
+      {
+        name: "Learn Manual and Automatic",
+        description: (
+          <>
+            Even if you plan to drive automatic cars, learning manual basics enhances vehicle control. Our Carlton driving courses offer comprehensive training in both types for a complete learning experience.
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I schedule lessons around my work or study?",
+        answer: (
+          <>
+           Yes, we offer lessons during evenings, weekends, and school holidays. You can fit driving practice into your busy schedule. Flexibility ensures consistent progress.
+          </>
+        ),
+      },
+      {
+        question: "Will I learn advanced defensive driving techniques?",
+        answer: (
+          <>
+       Absolutely. You’ll practice hazard awareness, safe following distances, and anticipating other drivers’ actions. These skills keep you safe in all traffic conditions.
+          </>
+        ),
+      },
+      {
+        question:
+          "Do you provide mock tests before the actual exam?",
+        answer: (
+          <>
+            Yes, we conduct realistic mock tests on local test routes. You’ll receive feedback to correct mistakes. This builds confidence for your driving test.
+          </>
+        ),
+      },
+      {
+        question: "Can I get help if I’m nervous about driving?",
+        answer: (
+          <>
+           Yes, our patient instructors guide nervous learners step-by-step. We focus on building confidence gradually. You’ll feel safe and supported in every lesson.
+          </>
+        ),
+      },
+      {
+        question: "Do you cover both manual and automatic driving lessons?",
+        answer: (
+          <>
+          Yes, you can choose either manual or automatic lessons. Learning both improves overall vehicle control. Your plan is tailored to your licence goal.
+          </>
+        ),
+      },
+    ],
+  ctaDescription:(
+    <>
+   Start your driving journey today with <strong>Test Route Driving School in Gymea.</strong> Expert instructors, flexible schedules, and safe vehicles make learning fun and easy.
+    </>
+  )
+  },
+    "kangaroo-point": {
+
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d16777.353366542022!2d153.02490656533112!3d-27.474327471068065!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b915a19cbe1fdbb%3A0x502a35af3de8d10!2sKangaroo%20Point%20QLD%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771327060210!5m2!1sen!2sbd",
+    pageTitle: "Driving Lessons in Kangaroo Point | Local Expert Driving Instructors",
+    metaDescription:"Drive safely and independently – Professional Driving Lessons in Kangaroo Point designed for beginners and test prep. Contact us today and boost your pass chances.",
+    keywords: [
+      "Driving Lessons in Kangaroo Point",
+      "driving lessons near me in Kangaroo Point",
+      "driving lesson in Kangaroo Point",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Kangaroo Point",
+      "cheap driving lessons",
+      "driving school in Kangaroo Point",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Kangaroo Point",
+      "drivers education school near me",
+      "driver education course in Kangaroo Point",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Kangaroo Point",
+      ],
+    heroTitle: "Professional Driving Lessons in Kangaroo Point",
+    heroDescription: (
+      <>
+      At <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School,</Link> our highly qualified and friendly instructors deliver expert <strong>driving lessons in Kangaroo Point.</strong> We focus on building your confidence, road safety, and real-world driving skills. Our structured training programs are tailored for beginners, learners, and refresher drivers alike. Whether you are searching for <strong>driving lessons near me in Kangaroo Point</strong> or want expert guidance, our instructors ensure a safe and supportive learning experience.
+      </>
+    ),
+    section1Title: "Learn to Drive in Kangaroo Point",
+    section1SubTitle: (
+      <>
+      Our experienced instructors provide <strong><Link className="location-link" href={"/services/automatic-driving-lessons"} >driving lessons</Link> in Kangaroo Point</strong> designed for your success. You’ll gain confidence and pass your driving test with ease. We cover all aspects of driving, including road safety, parking, highway skills, and handling complex traffic scenarios. Whether you are a beginner or preparing for a test, our <strong>learner driving lessons</strong> give you practical experience. If you are looking for <strong>manual driving lessons near me</strong> or <strong>car driving lessons near me in Kangaroo Point,</strong> we have flexible packages to suit your needs.
+      </>
+    ),
+    section2Title: "Driving Test Preparation in Kangaroo Point",
+    section2SubTitle: (
+      <>
+     Preparing for your driving test in Kangaroo Point requires expert guidance, structured practice, and local road knowledge. At <strong>Test Route Driving School,</strong> we help learners pass their driving test on the first attempt. Our instructors focus on examiner expectations, common mistakes, and realistic test routes.<br/>
+    We are familiar with local test centres, road layouts, roundabouts, school zones, and high-traffic areas. This local insight ensures your lessons mimic real test conditions. With our <strong>driver education courses in Kangaroo Point,</strong> you’ll feel confident, calm, and ready for any driving scenario.
+      </>
+    ),
+    section3Title1: "Professional Driving Lessons in Kangaroo Point",
+    section3Description1: (
+      <>
+       Learning to drive in Kangaroo Point can be exciting but also nerve-wracking without the right guidance. At Test Route Driving School, our certified instructors provide personalised, hands-on lessons designed to build your confidence and practical driving skills. Each session is tailored to your experience, whether you’re a complete beginner, refreshing your licence, or developing advanced skills like highway merging, roundabout navigation, and complex traffic handling.<br/>
+       We focus on real-world driving situations, from residential streets to busy intersections and school zones. Our lessons also teach defensive driving, hazard perception, and decision-making strategies that keep you safe in unexpected scenarios. Students gain in-depth knowledge of NSW road rules, signage, and local test routes, which ensures readiness for the driving test and day-to-day driving alike.<br/>
+       Our structured approach combines practical exercises, instructor feedback, and scenario-based practice, helping learners overcome anxiety and build confidence behind the wheel. By the end of the program, you’ll be able to drive independently and safely throughout Kangaroo Point and the surrounding Sydney suburbs. Whether learning manual or automatic, every lesson equips you with the skills and mindset to become a competent, responsible, and confident driver.
+      </>
+    ),
+    section3Title2: "Flexible Schedules and Tailored Learning Plans",
+    section3Description2: (
+      <>
+      At  <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School in Kangaroo Point,</Link> we know every learner has a unique schedule and pace. That’s why our lessons are flexible, with options during evenings, weekends, and school holidays. Students, working professionals, and busy parents can fit lessons easily into their routines without compromising learning quality.<br/>
+      Our instructors design personalised lesson plans based on your skill level, learning goals, and progress. Lessons cover practical skills like parking, lane changes, highway driving, roundabouts, night driving, and hazard perception. You’ll receive real-time feedback after each session, highlighting strengths and areas needing improvement, ensuring steady and measurable progress.<br/>
+      We also focus on confidence-building, teaching students how to handle stressful situations, unfamiliar routes, and heavy traffic with calm, decisive driving. By combining theoretical knowledge, local route familiarity, and hands-on practice, learners gradually transform nervousness into competence. By the end of your training, you’ll not only be ready to pass your driving test in Kangaroo Point but also capable of driving safely and confidently in any real-world scenario across Sydney.
+
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Dual-Controlled Vehicles",
+        description: (
+          <>
+         All lessons use safe, modern dual-controlled vehicles. These cars allow instructors to intervene when needed, ensuring maximum safety during your lessons.
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment",
+        description: (
+          <>
+         Our accredited instructors provide driving assessments and reports. You’ll know exactly which areas to focus on to pass your driving test <Link className="location-link" href={"/company/contact"} >Book your assessment here.</Link>
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Pick Up and Drop Off",
+       description: (
+          <>
+         We offer convenient pickup and drop-off within our service area, covering Sydney suburbs like Rockdale, Bankstown, and Newtown.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire ",
+        description: (
+          <>
+         You can hire modern vehicles for your driving test with our Test Day Packages. We also provide dual-controlled Kia, Toyota Hybrid, and Nissan vehicles for instructors or supervisors in a pinch.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Support ",
+        description: (
+          <>
+         Our instructors provide professional test day support. Packages include a warm-up lesson and vehicle hire.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Lesson Package",
+        description: (
+          <>
+          We make lessons affordable with discounted packages. Choose from 5, 10, or 20 hours and save up to $140. Our packages suit learners searching for <strong>cheap driving lessons</strong> or <strong>manual driving lessons near me.</strong>
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice ",
+    lessonTips: [
+      {
+        name: "Practice Regularly",
+        description: (
+          <>
+       Consistent practice builds confidence behind the wheel. Cover roads, traffic, and parking scenarios in Kangaroo Point.
+          </>
+        ),
+      },
+      {
+        name: "Focus on Road Safety",
+        description: (
+          <>
+           Safety is key. Learn to anticipate hazards, follow traffic rules, and maintain safe distances. Our instructors emphasise <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">safe driving</a> habits.
+          </>
+        ),
+      },
+      {
+        name: "Build Confidence Gradually",
+        description: (
+          <>
+          Start simple and progress to city traffic, highways, or night <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">driving.</a> Step-by-step learning ensure mastery.
+          </>
+        ),
+      },
+      {
+        name: "Learn Both Manual and Automatic",
+        description: (
+          <>
+            Even if you choose automatic, learning manual basics improves control. We provide manual driving lessons and automatic lessons for a complete experience.
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Do you offer lessons for nervous or anxious drivers?",
+        answer: (
+          <>
+           Yes, we specialise in coaching anxious learners. Instructors provide calm, step-by-step guidance. You’ll gain confidence gradually in every lesson.
+          </>
+        ),
+      },
+      {
+        question: "Will I practise in busy Kangaroo Point intersections?",
+        answer: (
+          <>
+       Absolutely. We take you through high-traffic areas, roundabouts, and school zones. This hands-on experience prepares you for any driving challenge.
+          </>
+        ),
+      },
+      {
+        question:
+          "Can I switch between manual and automatic lessons?",
+        answer: (
+          <>
+            Yes, we offer both options. Learning manual basics also improves overall control and driving skills. Your plan adapts to your goals.
+          </>
+        ),
+      },
+      {
+        question: "Do you provide progress tracking during lessons?",
+        answer: (
+          <>
+           Yes, instructors give detailed feedback after each session. You’ll know your strengths and areas to focus on. This ensures steady improvement.
+          </>
+        ),
+      },
+      {
+        question: "Are your vehicles safe for beginners?",
+        answer: (
+          <>
+          Yes, all cars are modern dual-controlled vehicles. Instructors can intervene instantly if needed. This lets you learn safely and confidently.
+          </>
+        ),
+      },
+    ],
+  ctaDescription:(
+    <>
+   Ready to start your driving journey? Contact <strong>Test Route Driving School now.</strong>
+    </>
+  )
+  },
+    "pagewood": {
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d62755.25928810171!2d151.1725194407861!3d-33.936819189130276!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b174737bef7b%3A0x5017d681632c5a0!2sPagewood%20NSW%202035%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771338957028!5m2!1sen!2sbd",
+    pageTitle: "Driving Lessons in Pagewood | Local Instructors & Test-Ready Training",
+    metaDescription:"Build real driving skills with affordable Driving Lessons in Pagewood – automatic and manual options available. Call now for flexible lesson schedules.",
+    keywords: [
+      "Driving Lessons in Pagewood",
+      "driving lesson in Pagewood",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Pagewood",
+      "cheap driving lessons",
+      "driving school in Pagewood",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Pagewood",
+      "drivers education school near me",
+      "driver education course in Pagewood",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Pagewood",
+      ],
+    heroTitle: "Professional Driving Lessons in Pagewood",
+    heroDescription: (
+      <>
+      At <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School,</Link>  you get highly qualified, friendly instructors delivering expert <strong>driving lessons in Pagewood.</strong> We help you build confidence, master road safety, and learn real-world driving skills. Our structured programs suit beginners, learners, and refresher drivers.<br/>
+      We focus on making your lessons enjoyable and practical. You’ll practice city driving, highway skills, and parking maneuvers. Each lesson is tailored to your pace. Whether you want  <Link className="location-link" href={"/services/automatic-driving-lessons"} >manual driving lessons</Link> or automatic training, we have you coverd.
+      </>
+    ),
+    section1Title: "Learn to Drive in PagewoodTop-Rated Driving Lessons in Sydney suburbs| Book Your Lesson Today",
+    section1SubTitle: (
+      <>
+      Our experienced instructors provide personalised learner driving lessons in Pagewood. You’ll gain confidence quickly and prepare effectively to pass your driving test. We cover all essentials: road safety, roundabouts, school zones, parking, and highway skills.<br/>
+      If you’re searching for <Link className="location-link" href={"/services/automatic-driving-lessons"} >car driving lessons near me in Pagewood,</Link> our school offers flexible options. From <strong>teen driving lessons to driver education courses in Pagewood,</strong> we design lessons around your needs. You’ll also get practical tips to handle traffic and common driving challenges.
+      </>
+    ),
+    section2Title: "Driving Test Preparation in Pagewood",
+    section2SubTitle: (
+      <>
+     Passing your driving test in Pagewood requires expert guidance and local knowledge. At Test Route Driving School, we specialise in helping learners succeed on their first attempt.<br/>
+     Our instructors know test routes, examiner expectations, and common mistakes. You’ll practice real conditions, including roundabouts, busy intersections, school zones, and high-traffic areas. By the time your test arrives, you’ll feel confident and ready.<br/>
+     We support driving training schools near me, including mock tests and assessment reports. This ensures you understand what areas to improve before your test day.<br/>
+     <Link className="location-link" href={"/company/contact"} >Book your driving lesson in Pagewood</Link> today and start practising with a local expert.
+      </>
+    ),
+    section3Title1: "Advanced Driving Lessons in Pagewood",
+    section3Description1: (
+      <>
+       Learning to drive in Pagewood can feel overwhelming, but <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving Schools</Link> certified instructors make every lesson practical, engaging, and confidence-building. Whether you are a beginner or refining advanced skills, our program focuses on developing real-world driving abilities that go beyond passing your test. You will gain hands-on experience navigating residential streets, busy intersections, roundabouts, highways, and school zones, while mastering parking, lane changes, merging, and night driving.<br/>
+       Our lessons also emphasise defensive driving, hazard perception, and situational awareness, so you can anticipate and respond safely to the actions of other drivers. Each session blends practical driving exercises with theoretical knowledge of traffic rules, signage, and road regulations. Instructors provide personalised guidance and step-by-step feedback, helping you recognise strengths and target areas for improvement.<br/>
+       By gradually increasing the complexity of driving scenarios, we ensure your confidence grows alongside your skillset. Students leave prepared not only for their driving test but also for independent, safe driving in any situation around Pagewood and across Sydney. Lessons are flexible, enjoyable, and designed to make learning stress-free while fostering competence, responsibility, and long-term road safety habits.
+
+      </>
+    ),
+    section3Title2: "Flexible Schedules and Tailored Learning Plans",
+    section3Description2: (
+      <>
+      At Test Route Driving School in Pagewood, we understand that learners have different schedules and paces. That’s why we offer fully flexible lesson timings, including evenings, weekends, and school holidays, to suit students, working professionals, and busy parents. Our <Link className="location-link" href={"/instructors"} >instructors</Link> create customised lesson plans based on your skills, progress, and personal goals, ensuring that every session is productive and relevant.<br/>
+      Lessons cover a full spectrum of driving skills: parking, roundabouts, highway navigation, night driving, and defensive driving techniques. Instructors provide continuous feedback, track improvements, and adjust lessons to challenge you safely while reinforcing strengths. This personalised approach builds competence, reduces anxiety, and ensures steady, measurable progress.<br/>
+      We also focus on developing confidence in unfamiliar or high-pressure situations. Scenario-based exercises, such as navigating busy intersections and complex traffic patterns, prepare learners for any real-world driving challenge. By the end of your course, you’ll not only be test-ready but also equipped to drive safely and confidently throughout Pagewood and beyond, making independent driving a natural and stress-free experience.
+
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Dual-Controlled Vehicles",
+        description: (
+          <>
+         Modern, safe cars allow instructors to guide you safely. You will feel secure while learning and gain confidence with hands-on driving experience.
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment",
+        description: (
+          <>
+         Accredited instructors provide assessment reports. These evaluations help you identify strengths and focus on areas needing improvement before your test.
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Pick Up and Drop Off",
+       description: (
+          <>
+            Lessons include home or work pick-up across Sydney suburbs. Convenience makes learning easier and ensures you attend every session without stress.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire for Tests ",
+        description: (
+          <>
+          Rent vehicles for your test day, including Kia, Toyota Hybrid, and Nissan. Driving familiar, modern cars increases comfort and improves test performance.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Support ",
+        description: (
+          <>
+         Test day packages include warm-up lessons and professional support. This ensures you start your test confident and calm, ready to succeed.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Lesson Package",
+        description: (
+          <>
+          Save up to $140 with 5, 10, or 20-hour bundles. Multiple lessons give you extended practice, improving skills, and increasing your test success rate.
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice ",
+    lessonTips: [
+      {
+        name: "Practice Regularly",
+        description: (
+          <>
+       Consistency builds confidence and skill. Cover roads, traffic, and parking in Pagewood. Practising daily helps reinforce habits, improve reaction time, and strengthen decision-making skills.
+          </>
+        ),
+      },
+      {
+        name: "Priorities Road Safety",
+        description: (
+          <>
+            Anticipate hazards, follow traffic rules, and maintain safe distances. Staying alert, wearing seatbelts, and understanding traffic signs keep you and others safe on every drive.
+          </>
+        ),
+      },
+      {
+        name: "Build Confidence Gradually",
+        description: (
+          <>
+          Start simple, then move to highways, city traffic, and night driving. Gradual exposure lets you adapt to complex situations and enhances your ability to handle unexpected challenges.
+          </>
+        ),
+      },
+      {
+        name: "Learn Both Manual and Automatic",
+        description: (
+          <>
+             Even if you prefer automatic, manual basics improve vehicle control. Practising both allows flexibility, improves technical understanding, and builds strong overall <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">driving skills.</a>
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Can I book lessons for adult learners new to driving?",
+        answer: (
+          <>
+           Yes, we provide lessons specifically for adult beginners. You’ll receive patient, tailored guidance. Learning progresses at a comfortable pace.
+          </>
+        ),
+      },
+      {
+        question: "Do you cover real-world traffic scenarios in lessons?",
+        answer: (
+          <>
+            Absolutely. Lessons include city streets, highways, and roundabouts. This prepares you for everyday driving challenges.
+          </>
+        ),
+      },
+      {
+        question:
+          "Will I get feedback after each lesson?",
+        answer: (
+          <>
+            Yes, instructors provide practical feedback every session. You’ll know what to improve and how. This accelerates your learning.
+          </>
+        ),
+      },
+      {
+        question: "Can I practise both manual and automatic vehicles?",
+        answer: (
+          <>
+          Yes, we offer both options. Learning manual basics also enhances overall vehicle control. Your plan matches your licence goals.
+          </>
+        ),
+      },
+      {
+        question: "Do you offer support on driving test day?",
+        answer: (
+          <>
+          Yes, we include test-day warm-up sessions and guidance. You’ll start your test calm and confident. Instructors ensure you are fully prepared.
+          </>
+        ),
+      },
+    ],
+  ctaDescription:(
+    <>
+       Contact Us & Book Your Driving Lessons
+    </>
+  )
+  },
+    "rockdale": {
+   mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31371.20936450905!2d151.11996079015196!3d-33.95423743439148!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b75550c96bf5%3A0x5017d681632c8b0!2sRockdale%20NSW%202216%2C%20Australia!5e1!3m2!1sen!2sbd!4v1771340776455!5m2!1sen!2sbdDriving Lessons in Rockdale | Professional Local InstructorsDriving Lessons in Pagewood | Local Instructors & Test-Ready Training",
+    metaDescription:"Stress-free driving experience – Reliable Driving Lessons in Rockdale with modern training methods. Enroll today. Automatic & manual cars.",
+    keywords: [
+      "Driving Lessons in Rockdale",
+      "driving lesson in Rockdale",
+      "driving lessons schools",
+      "manual driving lessons",
+      "learners driving lessons",
+      "car driving lessons near me in Rockdale",
+      "cheap driving lessons",
+      "driving school in Rockdale",
+      "driving lessons schools",
+      "driving training school near me",
+      "affordable driving school in Rockdale",
+      "drivers education school near me",
+      "driver education course in Rockdale",
+      "drivers education",
+      "driver education",
+      "learn to drive schools",
+      "manual driving lessons near me",
+      "cheap driving lessons near me",
+      "Teen driving lessons",
+      "book driving lesson in Rockdale",
+      ],
+    heroTitle: "Professional Driving Lessons in Rockdale",
+    heroDescription: (
+      <>
+      At <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving School,</Link>  your driving lessons in Rockdale are led by highly skilled, friendly instructors. We focus on building your confidence, improving road safety, and teaching practical driving skills. Our structured programs suit beginners, learners, and refresher drivers. Whether you want <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >automatic driving lessons,</Link> learner driving lessons, or teen driving lessons, we tailor each session to your pace and learning style for a comfortable, safe experience.
+
+      </>
+    ),
+    section1Title: "Learn to Drive in Rockdale",
+    section1SubTitle: (
+      <>
+      Our experienced instructors help you learn to drive in Rockdale safely and confidently. Lessons cover all aspects, including road safety, parking, highway driving, and city traffic. You can choose from car driving lessons near me in Rockdale, manual driving lessons, or automatic lessons. We guide you step by step, ensuring your skills grow quickly and that you are fully prepared for your <Link className="location-link" href={"/services/driving-test-package"} >driver education course in Rockdale.</Link> Every lesson is structured to meet your goals.
+      </>
+    ),
+    section2Title: "Driving Test Preparation in Rockdale",
+    section2SubTitle: (
+      <>
+    Preparing for your driving test in Rockdale requires expert guidance and structured practice. At Test Route Driving School, we help you <strong>pass your driving test on the first attempt.</strong> Our instructors focus on examiner expectations, common mistakes, and test routes. You’ll practise in real conditions, covering school zones, roundabouts, and high-traffic areas. With our <strong>driver education</strong> approach, learners gain confidence, reduce anxiety, and feel fully prepared for their driving test in Rockdale and the surrounding Sydney suburbs.
+      </>
+    ),
+    section3Title1: "Professional Driving Lessons in Rockdale",
+    section3Description1: (
+      <>
+      Learning to drive in Rockdale can feel daunting, but <Link className="location-link" href={"https://testroutedrivingschool.com.au/"} >Test Route Driving Schools</Link>makes the process structured, supportive, and practical. Our certified instructors deliver personalised lessons tailored to your skill level, whether you’re a beginner starting from scratch or an experienced learner refining advanced techniques. Each session combines hands-on driving experience with practical instruction in parking, city streets, highways, roundabouts, and complex traffic scenarios. <br/>
+      Beyond basic skills, we emphasise defensive driving, hazard perception, and decision-making under real-world conditions. Lessons also include theory reinforcement, covering road rules, signage, and examiner expectations. This ensures you not only pass your driving test but also gain confidence for independent driving in any situation across Rockdale and the surrounding Sydney suburbs.<br/>
+      Students experience step-by-step guidance, continuous feedback, and scenario-based training designed to gradually increase difficulty as confidence grows. By blending practical exercises, instructor support, and real-world road exposure, we help learners overcome anxiety, master vehicle control, and develop safe, responsible driving habits. Every session is designed to build competence and comfort behind the wheel, making learning both effective and enjoyable
+      </>
+    ),
+    section3Title2: "Flexible Schedules and Tailored Learning Plans",
+    section3Description2: (
+      <>
+      At Test Route Driving School in Rockdale, we understand that every learner has unique availability and learning needs. That’s why we offer flexible lesson schedules, including evenings, weekends, and school holidays, to accommodate students, professionals, and busy parents. Our instructors design customised lesson plans that adapt to your progress, strengths, and areas needing improvement.<br/>
+      Lessons include all key driving skills: city traffic navigation, highway driving, roundabouts, <Link className="location-link" href={"/services/night-driving-lesson"} >night driving,</Link> parking, and defensive driving strategies. Each session comes with real-time feedback and actionable tips, helping you steadily build confidence and competence. Scenario-based practice ensures you can handle high-pressure or unfamiliar driving situations safely and calmly.<br/>
+      Our structured approach gradually increases complexity, preparing learners to manage busy intersections, school zones, and unexpected traffic events with ease. By the end of your course, you’ll not only be fully prepared for your driving test in Rockdale but also equipped to drive independently, confidently, and safely in any environment. Every lesson is tailored to make learning convenient, stress-free, and effective, giving you the skills and mindset needed for lifelong safe driving.
+      </>
+    ),
+    services: [
+      {
+        icon: <FaCar className="w-8 h-8 text-white" />,
+        title: "Dual-Controlled Vehicles",
+        description: (
+          <>
+          Learn safely in modern dual-controlled cars. Our instructors can step in if needed, ensuring safe practice. Every session in Rockdale or nearby Sydney suburbs helps you gain confidence behind the wheel
+          </>
+        ),
+      },
+      {
+        icon: <FaClipboardCheck className="w-8 h-8 text-white" />,
+        title: "Driving Test Assessment",
+        description: (
+          <>
+         Our accredited instructors provide personalised driving assessments. You’ll receive feedback on your strengths and weaknesses. This helps you prepare fully for your driving test in Rockdale. <Link className="location-link" href={"/services"} >Book here.</Link>
+          </>
+        ),
+      },
+      {
+        icon: <FaFileAlt className="w-8 h-8 text-white" />,
+        title: "Pick Up and Drop Off",
+       description: (
+          <>
+           Each lesson includes convenient pick up and drop off from your home, school, or workplace. We cover Rockdale, Bankstown, Newtown, and surrounding suburbs for stress-free driving lessons.
+           </>
+        ),
+      },
+      {
+        icon: <FaCarSide className="w-8 h-8 text-white" />,
+        title: "Car Hire ",
+        description: (
+          <>
+           Rent a modern vehicle for your driving test or practice sessions. We provide dual-controlled Kia, Toyota Hybrid, and Nissan vehicles, making it easy and safe to learn in Rockdale.
+          </>
+        ),
+      },
+      {
+        icon: <FaMapMarkerAlt className="w-8 h-8 text-white" />,
+        title: "Driving Test Support ",
+        description: (
+          <>
+         Our test-day packages include warm-up lessons, professional guidance, and car hire, giving you confidence and calmness for your Rockdale driving test.
+          </>
+        ),
+      },
+
+      {
+        icon: <FaGift className="w-8 h-8 text-white" />,
+        title: "Lesson Package",
+        description: (
+          <>
+          Save money with flexible packages. Choose 5, 10, or 20-hour lessons for <strong>affordable driving lessons</strong> in Rockdale. Consistent lessons help you progress quickly and confidently.
+          </>
+        ),
+      },
+    ],
+    lessonTipsSectionTitle: "Driving Lesson Tips & Advice ",
+    lessonTips: [
+      {
+        name: "Practice Regularly",
+        description: (
+          <>
+       Consistent practice is the key to building confidence behind the wheel. Schedule lessons in Rockdale and practise local roads, traffic scenarios, and parking. This hands-on approach helps you gain real-world driving experience safely and effectively.
+          </>
+        ),
+      },
+      {
+        name: "Focus on Road Safety",
+        description: (
+          <>
+             Always prioritise safety during lessons. Learn to anticipate hazards, maintain safe distances, follow traffic rules, and handle unexpected situations. Our Rockdale instructors emphasise developing  <a className="location-link" href="https://www.nhtsa.gov/ten-tips-for-safe-driving" target="blank">safe driving</a> habits consistently.
+          </>
+        ),
+      },
+      {
+        name: "Build Confidence Gradually",
+        description: (
+          <>
+          Start with simple exercises, then progress to highways, night driving, and busy city streets. Gradual learning reduces anxiety and helps you handle complex driving scenarios across Rockdale confidently.
+          </>
+        ),
+      },
+      {
+        name: "Learn Both Manual and Automatic",
+        description: (
+          <>Even if you plan to drive automatic, learning manual basics improves vehicle control and understanding. Our Rockdale lessons cover both to give you  <a className="location-link" href="https://en.wikipedia.org/wiki/Driver%27s_education" target="blank">complete driving</a> confidence.
+          </>
+        ),
+      },
+    ],
+    faqs: [
+      {
+        question: "Do I get to practise on high-traffic roads in Rockdale?",
+        answer: (
+          <>
+          Yes, lessons include busy streets, intersections, and school zones. You’ll learn to navigate traffic safely and confidently.
+          </>
+        ),
+      },
+      {
+        question: "Can I take lessons in both manual and automatic cars?",
+        answer: (
+          <>
+            Yes, we offer both options. Learning manual basics improves overall vehicle control, even if you plan to drive automatically.
+          </>
+        ),
+      },
+      {
+        question:
+          "Will instructors provide feedback after each session?",
+        answer: (
+          <>
+           Absolutely. You’ll receive detailed guidance highlighting strengths and areas to improve. This helps you progress faster.
+          </>
+        ),
+      },
+      {
+        question: "Do you offer support on driving test day?",
+        answer: (
+          <>
+          Yes, our test-day packages include warm-up lessons and guidance. You’ll feel calm, confident, and ready for your test.
+          </>
+        ),
+      },
+      {
+        question: "Can I book lessons online at flexible times?",
+        answer: (
+          <>
+         Yes, you can check availability and book your lessons online anytime. Scheduling is easy, convenient, and stress-free.
+          </>
+        ),
+      },
+    ],
+  ctaDescription:(
+    <>
+       Contact Test Route Driving School Today
+    </>
+  )
+  },
+
 
 };
