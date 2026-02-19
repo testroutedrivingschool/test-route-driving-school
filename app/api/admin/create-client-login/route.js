@@ -73,6 +73,7 @@ export async function POST(req) {
           loginAccess: true,
           lastLogin: new Date(),
           emailScheduleTime:"00:00",
+          clientId
         },
         $setOnInsert: { registeredAt: new Date() },
       },

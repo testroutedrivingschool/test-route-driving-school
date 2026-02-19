@@ -768,6 +768,7 @@ const outstandingAfter = Math.max(0, outstanding - enteredTotal);
 
         const { data } = await axios.post("/api/create-payment-intent", {
           bookingId,
+          type:"booking-existing",
           amount: cardNum, 
         });
 

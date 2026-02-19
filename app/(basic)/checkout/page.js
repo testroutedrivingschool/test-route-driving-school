@@ -18,7 +18,10 @@ import {toast} from "react-toastify";
 import Container from "@/app/shared/ui/Container";
 import {useMemo} from "react";
 import {useQuery} from "@tanstack/react-query";
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_Stripe_Publishable_key);
+import useAuth from "@/app/hooks/useAuth";
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_Stripe_Publishable_key,
+);
 
 export default function CheckoutWrapper() {
   return (
@@ -32,29 +35,36 @@ function CheckoutPage() {
   const [total, setTotal] = useState(0);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const {data: user, isLoading} = useUserData();
+   const { user: authUser, loading: authLoading } = useAuth(); 
+  const { data: user, isLoading: profileLoading } = useUserData();
+
   useEffect(() => {
-    if (!isLoading && !user) {
-      const redirectUrl = "/checkout";
-      router.push(`/login?redirect=${encodeURIComponent(redirectUrl)}`);
+    if (authLoading) return; 
+    if (!authUser) {
+      router.replace(`/login?redirect=${encodeURIComponent("/checkout")}`);
     }
-  }, [user, isLoading, router]);
+  }, [authLoading, authUser, router]);
 
-  const { data: locations = [], isLoading: isLocationsLoading } = useQuery({
-  queryKey: ["locations"],
-  queryFn: async () => {
-    const res = await axios.get("/api/locations");
-    return res.data || [];
-  },
-});
+  const {data: locations = [], isLoading: isLocationsLoading} = useQuery({
+    queryKey: ["locations"],
+    queryFn: async () => {
+      const res = await axios.get("/api/locations");
+      return res.data || [];
+    },
+  });
+  const {data: instructors = [], isLoading: isInstructorsLoading} = useQuery({
+    queryKey: ["instructors"],
+    queryFn: async () => {
+      const res = await axios.get("/api/instructors?status=approved");
+      return res.data || [];
+    },
+  });
 
-const suburbOptions = useMemo(() => {
-  const names = locations
-    .map((l) => (l?.name || "").trim())
-    .filter(Boolean);
+  const suburbOptions = useMemo(() => {
+    const names = locations.map((l) => (l?.name || "").trim()).filter(Boolean);
 
-  return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b));
-}, [locations]);
+    return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b));
+  }, [locations]);
   const elements = useElements();
   const stripe = useStripe();
   const [billing, setBilling] = useState({
@@ -65,6 +75,7 @@ const suburbOptions = useMemo(() => {
     suburb: "",
     state: "",
     postCode: "",
+    instructorId: "",
   });
 
   useEffect(() => {
@@ -77,6 +88,7 @@ const suburbOptions = useMemo(() => {
         suburb: user.suburb || "",
         state: user.state || "",
         postCode: user.postCode || "",
+
       });
     }
   }, [user]);
@@ -87,7 +99,7 @@ const suburbOptions = useMemo(() => {
     // calculate total from storedCart
     const calculatedTotal = storedCart.reduce(
       (sum, item) => sum + item.price * item.quantity,
-      0
+      0,
     );
     setTotal(calculatedTotal);
   }, []);
@@ -100,50 +112,106 @@ const suburbOptions = useMemo(() => {
     }));
   };
 
-  const handleProceed = async () => {
-    if (!billing.state) {
-      return toast.error("Select your State");
+const handleProceed = async () => {
+  if (!billing.state) return toast.error("Select your State");
+
+  const selectedInstructorId = billing.instructorId || instructors?.[0]?._id;
+  if (!selectedInstructorId) return toast.error("No instructor available");
+
+  if (!stripe || !elements) return;
+
+  setLoading(true);
+
+  try {
+    // 1) Read cart
+    const storedCart = JSON.parse(sessionStorage.getItem("checkoutCart")) || [];
+    if (!Array.isArray(storedCart) || storedCart.length === 0) {
+      toast.error("Cart is empty");
+      return;
     }
-    if (!stripe || !elements) return;
-    setLoading(true);
 
-    try {
-      const {data} = await axios.post("/api/create-payment-intent", {
-        amount: total,
-      });
+    // 2) Send ONLY packageId + quantity to backend
+    const items = storedCart.map((x) => ({
+      packageId: x.packageId || x._id,
+      quantity: Number(x.quantity || 1),
+    }));
 
-      const cardElement = elements.getElement(CardNumberElement);
-      const result = await stripe.confirmCardPayment(data.clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: billing.name,
-            email: billing.email,
-            address: {line1: billing.address},
-          },
+    // 3) Create payment intent (backend computes amount from DB)
+    const { data } = await axios.post("/api/create-payment-intent", {
+      type: "purchase",
+      instructorId: selectedInstructorId,
+      userEmail: billing.email,
+      userName: billing.name,
+      items,
+    });
+
+    const clientSecret = data?.clientSecret;
+    if (!clientSecret) throw new Error("No clientSecret returned");
+setTotal(Number(data.amount || 0));
+    // Optional: use backend amount for UI consistency
+    const serverAmount = Number(data?.amount || 0);
+
+    // 4) Confirm payment
+    const cardElement = elements.getElement(CardNumberElement);
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: cardElement,
+        billing_details: {
+          name: billing.name,
+          email: billing.email,
+          address: { line1: billing.address },
         },
-      });
+      },
+    });
 
-      if (result.error) {
-        toast.error(result.error.message);
-        setLoading(false);
-        return;
-      }
-
-      // Payment succeeded
-      toast.success("Payment Successful 🎉");
-      localStorage.removeItem("cart");
-      sessionStorage.removeItem("checkoutCart");
-      router.push("/dashboard/my-bookings");
-    } catch (err) {
-      console.error(err);
-      toast.error("Payment failed");
-    } finally {
-      setLoading(false);
+    if (result.error) {
+      toast.error(result.error.message);
+      return;
     }
-  };
 
-  if (isLoading || isLocationsLoading || !user) return <LoadingSpinner />;
+    const paymentIntentId = result?.paymentIntent?.id;
+    if (!paymentIntentId) throw new Error("Missing paymentIntentId");
+
+    // 5) Save purchase (send minimal + trustworthy data)
+    await axios.post("/api/purchases", {
+      userId: user?._id || "",
+      userEmail: user?.email || billing.email,
+      instructorId: selectedInstructorId,
+      items,                 
+      amount: serverAmount,  
+      currency: "aud",
+      paymentIntentId,
+      billing: {
+        name: billing.name,
+        email: billing.email,
+        mobile: billing.mobile,
+        address: billing.address,
+        suburb: billing.suburb,
+        state: billing.state,
+        postCode: billing.postCode,
+      },
+    });
+
+    toast.success("Payment Successful 🎉");
+    localStorage.removeItem("cart");
+    sessionStorage.removeItem("checkoutCart");
+    router.push("/dashboard/user/purchases");
+  } catch (err) {
+    console.error(err);
+    toast.error(err?.response?.data?.error || err.message || "Payment failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+// ✅ show spinner until auth is known
+  if (authLoading) return <LoadingSpinner />;
+
+  // ✅ if logged in, wait profile fetch
+  if (profileLoading) return <LoadingSpinner />;
+  if ( isLocationsLoading || isInstructorsLoading)
+    return <LoadingSpinner />;
   return (
     <section className="py-16">
       <Container className={`max-w-4xl!`}>
@@ -187,20 +255,20 @@ const suburbOptions = useMemo(() => {
           />
 
           <div className="grid grid-cols-3 gap-4">
-           <select
-  name="suburb"
-  value={billing.suburb}
-  onChange={handleBillingChange}
-  required
-  className="input-class"
->
-  <option value="">Choose Suburb</option>
-  {suburbOptions.map((s) => (
-    <option key={s} value={s}>
-      {s}
-    </option>
-  ))}
-</select>
+            <select
+              name="suburb"
+              value={billing.suburb}
+              onChange={handleBillingChange}
+              required
+              className="input-class"
+            >
+              <option value="">Choose Suburb</option>
+              {suburbOptions.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
 
             <select
               name="state"
@@ -234,8 +302,23 @@ const suburbOptions = useMemo(() => {
             Total Amount: ${total.toFixed(2)}
           </p>
         </div>
-
-        <div className=" space-y-2">
+        <div>
+          <label className="font-bold text-lg mb-4 block">Select Instructor:</label>
+          <select
+  name="instructorId"
+  value={billing.instructorId}
+  onChange={handleBillingChange}
+  className="input-class"
+>
+  <option value="">Choose Instructor</option>
+  {instructors.map((inst) => (
+    <option key={inst._id} value={inst._id}>
+      {inst.name}
+    </option>
+  ))}
+</select>
+        </div>
+        <div className="mt-4  space-y-2">
           <StripeCardInput />
         </div>
 

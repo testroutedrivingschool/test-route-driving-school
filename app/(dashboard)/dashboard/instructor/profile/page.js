@@ -1,6 +1,5 @@
 "use client";
 import useAuth from "@/app/hooks/useAuth";
-import {useUserData} from "@/app/hooks/useUserData";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
@@ -10,46 +9,52 @@ import {FaEye, FaEyeSlash} from "react-icons/fa";
 import {FaGear, FaLocationDot} from "react-icons/fa6";
 import {GoPackage} from "react-icons/go";
 import {toast} from "react-toastify";
-import {useQuery} from "@tanstack/react-query";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import Image from "next/image";
 import {useMemo} from "react";
 import {uploadProfilePhotoToMinio} from "@/app/utils/uploadProfilePhotoToMinio";
 export default function InstructorProfile() {
-  const {data: userData, isLoading} = useUserData();
-  const {changePassword} = useAuth();
+  const {user,loading,changePassword} = useAuth();
+  const { data: userData, isLoading, error } = useQuery({
+  queryKey: ["mergeduserDaata", user?.email],
+  queryFn: async () => {
+    const res = await axios.get(
+      `/api/merged-instructor?email=${encodeURIComponent(user?.email || "")}`
+    );
+    return res.data; 
+  },
+  enabled: !loading && !!user?.email,
+});
+
+    const qc = useQueryClient();
   const [photoFile, setPhotoFile] = useState(null);
   const [localPreview, setLocalPreview] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
-  const [profile, setProfile] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    homePhone: "",
-    workPhone: "",
-    mobile: "",
-    dateOfBirth: "",
-    emergencyContact: "",
-    emergencyPhone: "",
-    address: "",
-    suburb: "",
-    state: "",
-    postCode: "",
-    abn: "",
-    vehicleModel: "",
-    licencePlate: "",
-    carInsuranceNumber: "",
-    carInsuranceExpiry: "",
-    instructorLicenceNumber: "",
-    instructorLicenceExpiry: "",
-    licenceNumber: "",
-    licenceExpiry: "",
-    piPlInsuranceNumber: "",
-    piPlInsuranceExpiry: "",
-    workingWithChildrenNumber: "",
-    workingWithChildrenExpiry: "",
-    vouchers: "None",
-  });
+ const [profile, setProfile] = useState({
+  name: "",
+  email: "",
+  phone: "",
+  homePhone: "",
+  workPhone: "",
+  dateOfBirth: "",
+  emergencyContact: "",
+  address: "",
+  suburb: "",
+  state: "",
+  postCode: "",
+  bio: "",
+  qualifications: "",
+  languages: [],
 
+  abn: "",
+  vehicleModel: "",
+  licencePlate: "",
+  carInsuranceNumber: "",
+  carInsuranceExpiry: "",
+  vouchers: "None",
+});
+
+console.log("user data",userData);
   const {data: locations = [], isLoading: isLocationsLoading} = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -64,29 +69,37 @@ export default function InstructorProfile() {
     return Array.from(new Set(names)).sort((a, b) => a.localeCompare(b));
   }, [locations]);
 
-  useEffect(() => {
-    if (userData) {
-      setProfile({
-        name: userData?.name || "",
-        email: userData?.email || "",
-        phone: userData?.phone || "",
-        homePhone: userData?.homePhone || "",
-        workPhone: userData?.workPhone || "",
-        dateOfBirth: userData?.dateOfBirth || "",
-        emergencyContact: userData?.emergencyContact || "",
-        address: userData?.address || "",
-        suburb: userData?.suburb || "",
-        state: userData?.state || "",
-        postCode: userData?.postCode || "",
-        abn: userData?.abn || "",
-        licencePlate: userData?.licencePlate || "",
-        carInsuranceNumber: userData?.carInsuranceNumber || "",
-        carInsuranceExpiry: userData?.carInsuranceExpiry || "",
-        vouchers: userData?.vouchers || "None",
-        vehicleModel: userData?.vehicleModel || "",
-      });
-    }
-  }, [userData]);
+  const [serverProfile, setServerProfile] = useState(null);
+
+useEffect(() => {
+  if (!userData) return;
+
+  setServerProfile(userData);
+
+  setProfile((prev) => ({
+    ...prev,
+    name: userData.name || "",
+    email: userData.email || "",
+    phone: userData.phone || "",
+    homePhone: userData.homePhone || "",
+    workPhone: userData.workPhone || "",
+    dateOfBirth: userData.dateOfBirth || "",
+    emergencyContact: userData.emergencyContact || "",
+    address: userData.address || "",
+    suburb: userData.suburb || "",
+    state: userData.state || "",
+    postCode: userData.postCode || "",
+    abn: userData.abn || "",
+    licencePlate: userData.licencePlate || "",
+    vehicleModel: userData.vehicleModel || "",
+    carInsuranceNumber: userData.carInsuranceNumber || "",
+    carInsuranceExpiry: userData.carInsuranceExpiry || "",
+    bio: userData.bio || "",
+    qualifications: userData.qualifications || "",
+    languages: Array.isArray(userData.languages) ? userData.languages : [],
+  }));
+}, [userData]);
+
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -101,6 +114,7 @@ export default function InstructorProfile() {
     const {name, value} = e.target;
     setProfile((prev) => ({...prev, [name]: value}));
   };
+  
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -166,39 +180,39 @@ export default function InstructorProfile() {
     const {name, value} = e.target;
     setPasswordData((prev) => ({...prev, [name]: value}));
   };
+const buildPatch = (original = {}, current = {}) => {
+  const patch = {};
+  for (const key of Object.keys(current)) {
+    if (current[key] !== original?.[key]) patch[key] = current[key];
+  }
+  return patch;
+};
+const handleProfileSubmit = async (e) => {
+  e.preventDefault();
+  if (!serverProfile) return;
 
-  const handleProfileSubmit = async (e) => {
-    e.preventDefault();
+  try {
+    const changes = buildPatch(serverProfile, profile);
+    changes.email = profile.email;
 
-    try {
-      const response = await axios.patch("/api/instructors", {
-        email: profile.email,
-        name: profile.name,
-        phone: profile.phone,
-        homePhone: profile.homePhone,
-        workPhone: profile.workPhone,
-        dob: profile.dateOfBirth,
-        emergencyContact: profile.emergencyContact,
-        address: profile.address,
-        suburb: profile.suburb,
-        state: profile.state,
-        postCode: profile.postCode,
-        abn: profile.abn,
-        licencePlate: profile.licencePlate,
-        carInsuranceNumber: profile.carInsuranceNumber,
-        carInsuranceExpiry: profile.carInsuranceExpiry,
-        vouchers: profile.vouchers,
-        vehicleModel: profile.vehicleModel,
-      });
-
-      console.log("Profile updated:", response.data);
-      toast.success("Profile updated successfully!");
+    if (Object.keys(changes).length <= 1) {
+      toast.info("No changes to save");
       setIsEditing(false);
-    } catch (error) {
-      console.error(error);
-      toast.error(error.response?.data?.error || "Failed to update profile");
+      return;
     }
-  };
+
+    await axios.patch("/api/instructors", changes);
+
+    toast.success("Profile updated successfully!");
+    await qc.invalidateQueries({ queryKey: ["mergeduserDaata", user?.email] });
+    setIsEditing(false);
+  } catch (error) {
+    console.error(error);
+    toast.error(error.response?.data?.error || "Failed to update profile");
+  }
+};
+
+
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
@@ -344,6 +358,7 @@ export default function InstructorProfile() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                         />
                       </div>
+                      
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Phone
@@ -455,7 +470,32 @@ export default function InstructorProfile() {
                           className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                         />
                       </div>
+                      
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Bio
+                        </label>
+                        <textarea
+                          type="bio"
+                          name="bio"
+                          value={profile.bio}
+                          onChange={handleProfileChange}
+                          className={`w-full px-3 py-2 min-h-32 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500`}
+                        />
+                      </div>
+                    <div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">
+    Qualifications
+  </label>
+  <textarea
+    name="qualifications"
+    value={profile.qualifications}
+    onChange={handleProfileChange}
+    disabled={!isEditing}
+    className="w-full px-3 py-2 border min-h-20 border-gray-300 rounded-md"
+  />
+</div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">

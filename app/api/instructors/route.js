@@ -198,10 +198,19 @@ export async function PATCH(req) {
     setUser("workPhone", workPhone);
     setUser("emergencyContact", emergencyContact);
     setUser("address", address);
+    setUser("bio",bio);
     setUser("suburb", suburb);
     setUser("state", state);
     setUser("postCode", postCode);
     setUser("emailScheduleTime", emailScheduleTime);
+    setUser("bio", bio);
+setUser("qualifications", qualifications);
+setUser("abn", abn);
+setUser("vehicleModel", vehicleModel);
+setUser("licencePlate", licencePlate);
+setUser("carInsuranceNumber", carInsuranceNumber);
+setUser("carInsuranceExpiry", carInsuranceExpiry);
+setUser("languages", languages);
 
     if (dob !== undefined) setUser("dateOfBirth", dob);
     if (dateOfBirth !== undefined) setUser("dateOfBirth", dateOfBirth);

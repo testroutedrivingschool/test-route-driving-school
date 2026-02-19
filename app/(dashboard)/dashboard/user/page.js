@@ -1,133 +1,160 @@
 "use client";
 
-import React, {useEffect} from "react";
-import {FiBarChart2, FiCalendar} from "react-icons/fi";
-import {FaCar, FaUserGraduate} from "react-icons/fa";
+import React, { useEffect } from "react";
+import { FiBarChart2, FiCalendar, FiArrowRight } from "react-icons/fi";
+import { FaCar, FaUserGraduate } from "react-icons/fa";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import {useUserData} from "@/app/hooks/useUserData";
-import {useRouter} from "next/navigation";
-
-const mockUserStats = {
-  stats: {
-    totalBookings: 12,
-    completedLessons: 8,
-    upcomingLessons: 3,
-    hoursDriven: 26,
-  },
-  nextLesson: {
-    type: "Beginner Driving",
-    date: "Tomorrow, 10:00 AM",
-    instructor: "John Smith",
-    status: "Confirmed",
-  },
-};
+import { useUserData } from "@/app/hooks/useUserData";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export default function UserDashboard() {
   const router = useRouter();
-  const {data: userData, isLoading} = useUserData();
+  const { data: userData, isLoading } = useUserData();
 
-  // ✅ redirect instructors
   useEffect(() => {
     if (userData?.role === "instructor") {
-      router.replace("/dashboard/instructor-dashboard"); // replace is better than push for redirect
+      router.replace("/dashboard/instructor-dashboard");
     }
   }, [userData?.role, router]);
 
-  // ✅ loading
-  if (isLoading) return <LoadingSpinner />;
+  const { data: dash, isLoading: dashLoading } = useQuery({
+    queryKey: ["user-dashboard", userData?.email],
+    enabled: !!userData?.email && userData?.role === "user",
+    queryFn: async () => {
+      const res = await axios.get(`/api/stats?role=user&email=${userData.email}`);
+      return res.data;
+    },
+  });
 
-  // ✅ prevent UI flicker while redirecting
+  if (isLoading || dashLoading) return <LoadingSpinner />;
   if (userData?.role === "instructor") return null;
 
-  // ✅ merge mock only for normal user
-  const mergedUser = {
-    ...userData,
-    ...(userData?.role === "user" ? mockUserStats : {}),
-  };
+  const stats = dash?.stats || {};
+const nextLessons = dash?.nextLessons || [];
+
+  const cards = [
+    {
+      title: "Total Bookings",
+      value: stats.totalBookings ?? 0,
+      icon: <FiCalendar />,
+    },
+    {
+      title: "Completed Lessons",
+      value: stats.completedLessons ?? 0,
+      icon: <FaCar />,
+    },
+    {
+      title: "Upcoming Lessons",
+      value: stats.upcomingLessons ?? 0,
+      icon: <FiBarChart2 />,
+    },
+    {
+      title: "Hours Driven",
+      value: `${stats.hoursDriven ?? 0}h`,
+      icon: <FaUserGraduate />,
+    },
+  ];
 
   return (
     <>
-      {/* Welcome Banner */}
-      <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          Welcome back, {mergedUser?.name || ""}! 👋
-        </h1>
-        <p className="text-neutral">
-          Track your progress, manage bookings, and continue your driving
-          journey.
-        </p>
+      {/* Welcome */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            Welcome back, {userData?.name || ""}! 👋
+          </h1>
+          <p className="text-neutral mt-1">
+            Track your progress, manage bookings, and keep moving toward your licence.
+          </p>
+        </div>
+
+        {/* Quick actions */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => router.push("/bookings")}
+            className="px-4 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition inline-flex items-center gap-2"
+          >
+            Book a Lesson <FiArrowRight />
+          </button>
+          <button
+            onClick={() => router.push("/dashboard/user/my-bookings")}
+            className="px-4 py-2 rounded-xl border border-border-color bg-white font-semibold hover:bg-gray-50 transition"
+          >
+            My Bookings
+          </button>
+        </div>
       </div>
 
-      {/* Stats Cards */}
-      {mergedUser?.role === "user" && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[
-            {
-              title: "Total Bookings",
-              value: mergedUser?.stats?.totalBookings ?? 0,
-              icon: <FiCalendar className="text-blue-600" />,
-              bg: "bg-blue-50",
-            },
-            {
-              title: "Completed Lessons",
-              value: mergedUser?.stats?.completedLessons ?? 0,
-              icon: <FaCar className="text-green-600" />,
-              bg: "bg-green-50",
-            },
-            {
-              title: "Upcoming Lessons",
-              value: mergedUser?.stats?.upcomingLessons ?? 0,
-              icon: <FiBarChart2 className="text-purple-600" />,
-              bg: "bg-purple-50",
-            },
-            {
-              title: "Hours Driven",
-              value: `${mergedUser?.stats?.hoursDriven ?? 0}h`,
-              icon: <FaUserGraduate className="text-orange-600" />,
-              bg: "bg-orange-50",
-            },
-          ].map((item, i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div className={`p-3 rounded-xl ${item.bg}`}>
-                  <div className="text-xl">{item.icon}</div>
-                </div>
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        {cards.map((c, i) => (
+          <div
+            key={i}
+            className="bg-white rounded-2xl p-6 border border-border-color shadow-sm hover:shadow-md transition"
+          >
+            <div className="flex items-center justify-between">
+              <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-lg">
+                {c.icon}
               </div>
-              <h3 className="text-3xl font-bold text-gray-900">{item.value}</h3>
-              <p className="text-neutral">{item.title}</p>
             </div>
-          ))}
-        </div>
-      )}
+            <h3 className="mt-4 text-3xl font-bold text-gray-900">{c.value}</h3>
+            <p className="text-neutral">{c.title}</p>
+          </div>
+        ))}
+      </div>
 
-      {/* Next Lesson */}
-      {mergedUser?.role === "user" && (
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 mb-8">
-          <h2 className="text-xl font-bold mb-4">Next Lesson</h2>
+      {/* Next lesson */}
+     <div className="bg-white rounded-2xl p-6 border border-border-color">
+  <div className="flex items-center justify-between mb-6">
+    <h2 className="text-xl font-bold">Upcoming Lessons</h2>
+    <button
+      onClick={() => router.push("/dashboard/user/my-bookings")}
+      className="text-sm font-semibold text-primary hover:underline"
+    >
+      View all
+    </button>
+  </div>
 
-          {mergedUser?.nextLesson ? (
-            <div className="flex items-center justify-between p-4 rounded-xl bg-gray-50">
-              <div>
-                <p className="font-semibold">{mergedUser.nextLesson.type}</p>
-                <p className="text-sm text-neutral">
-                  {mergedUser.nextLesson.date}
-                </p>
-                <p className="text-sm text-gray-500">
-                  Instructor: {mergedUser.nextLesson.instructor}
-                </p>
-              </div>
-              <span className="px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-medium">
-                {mergedUser.nextLesson.status}
-              </span>
-            </div>
-          ) : (
-            <p className="text-gray-500">No upcoming lessons</p>
-          )}
+  {nextLessons.length > 0 ? (
+    <div className="space-y-4">
+      {nextLessons.map((lesson) => (
+        <div
+          key={lesson.bookingId}
+          className="rounded-xl bg-gray-50 border border-border-color p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 hover:shadow-sm transition"
+        >
+          <div>
+            <p className="font-semibold text-gray-900">{lesson.type}</p>
+            <p className="text-sm text-neutral">{lesson.dateText}</p>
+            <p className="text-sm text-gray-600">
+              Instructor:{" "}
+              <span className="font-medium">{lesson.instructor}</span>
+            </p>
+            {(lesson.suburb || lesson.address) && (
+              <p className="text-sm text-gray-600">
+                Location:{" "}
+                {[lesson.address, lesson.suburb]
+                  .filter(Boolean)
+                  .join(", ")}
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+             Status:  <span className="px-4 py-1 rounded-full bg-blue-100 text-blue-700 text-sm font-semibold">
+            {String(lesson.status).toUpperCase()}
+            </span>
+
+          </div>
         </div>
-      )}
+      ))}
+    </div>
+  ) : (
+    <p className="text-gray-500">No upcoming lessons</p>
+  )}
+</div>
+
     </>
   );
 }

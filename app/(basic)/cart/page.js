@@ -11,7 +11,7 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const router = useRouter();
-
+console.log(cart);
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(storedCart);

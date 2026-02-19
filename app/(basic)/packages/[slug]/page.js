@@ -1,7 +1,6 @@
 "use client";
-import {useParams, useRouter, useSearchParams} from "next/navigation";
+import {useParams, useRouter} from "next/navigation";
 
-import {packagesData} from "../packagesData";
 import {FiChevronRight} from "react-icons/fi";
 import Image from "next/image";
 import {FaCheckCircle} from "react-icons/fa";

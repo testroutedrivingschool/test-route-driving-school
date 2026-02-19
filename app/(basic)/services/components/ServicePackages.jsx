@@ -1,6 +1,9 @@
+"use client"
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
+import { addToCartLS } from "@/app/utils/cart";
+import { useRouter } from "next/navigation";
 import {TbSteeringWheelFilled} from "react-icons/tb";
 
 export default function ServicePackages({
@@ -8,6 +11,12 @@ export default function ServicePackages({
   sectionSubtitle,
   packages,
 }) {
+  const router = useRouter()
+    const handleAddToCart = (pkg) => {
+    console.log(pkg);
+    addToCartLS(pkg);
+    router.push("/cart");
+  };
   return (
     <section className="py-16 bg-base-300">
       <Container>
@@ -20,7 +29,7 @@ export default function ServicePackages({
         <div className="mt-10 flex flex-wrap gap-4 shrink-0">
           {packages.map((pkg) => (
             <div
-              key={pkg.id}
+              key={pkg._id}
               className="w-full md:flex-1 group rounded-xl bg-white px-8 py-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-border-color"
             >
               {/* Icon */}
@@ -60,7 +69,7 @@ export default function ServicePackages({
                 </span>
               </div>
 
-              <PrimaryBtn className={`w-full! mt-4 text-center! block!`}>
+              <PrimaryBtn onClick={()=>handleAddToCart(pkg)} className={`w-full! mt-4 text-center! block!`}>
                 {pkg.buttonText}
               </PrimaryBtn>
             </div>

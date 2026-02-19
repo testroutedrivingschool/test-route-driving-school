@@ -14,11 +14,21 @@ import {IoIosWarning} from "react-icons/io";
 import {FaArrowRotateLeft} from "react-icons/fa6";
 import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
-import {useRouter} from "next/navigation";
+import {usePathname, useRouter} from "next/navigation";
 
 export default function LocationPageClient({locationData}) {
   const router = useRouter();
-  const location = "Kograh nsw";
+const pathname = usePathname();
+
+// Extract slug
+const slug = pathname.replace("/driving-school-in/", "");
+
+// Convert to proper case
+const formattedLocation = slug
+  .split("-")
+  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+  .join(" ") || "";
+
   return (
     <div>
       <PageHeroSection
@@ -134,7 +144,7 @@ export default function LocationPageClient({locationData}) {
       </section>
 
       <MovingCar />
-      <WhatWeOffer services={locationData?.services} />
+      <WhatWeOffer sectionTitle={`What We Offer in ${formattedLocation}`} services={locationData?.services} />
       <section className="py-16 ">
         <Container>
           <div className="space-y-12 text-center">
@@ -237,7 +247,7 @@ export default function LocationPageClient({locationData}) {
           </div>
         </Container>
       </section>
-      <Faq faqs={locationData?.faqs} />
+      <Faq title={`FAQs About Driving Lessons in ${formattedLocation}`} faqs={locationData?.faqs} />
       {/* Map*/}
       <section className="py-16">
         <Container>

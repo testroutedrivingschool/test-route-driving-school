@@ -28,14 +28,14 @@ export default function Packages() {
   const [sort, setSort] = useState("default");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedArea, setSelectedArea] = useState("all");
+const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
+    queryKey:["locations"],
+    queryFn:async()=>{
+      const res = await axios.get("/api/locations");
+      return res.data
+    }
+  })
 
-  const areaOptions = [
-    {value: "all", label: "All Areas"},
-    {value: "sydney", label: "Sydney"},
-    {value: "parramatta", label: "Parramatta"},
-    {value: "campbelltown", label: "Campbelltown"},
-    {value: "blacktown", label: "Blacktown"},
-  ];
 
   const categoryOptions = [
     {value: "all", label: "All Categories"},
@@ -52,6 +52,7 @@ export default function Packages() {
     )
     .filter((pkg) => {
       if (selectedCategory === "all") return true;
+      
       return pkg.category === selectedCategory;
     })
     .sort((a, b) => {
@@ -66,8 +67,7 @@ export default function Packages() {
       `Category: ${
         categoryOptions.find((c) => c.value === selectedCategory)?.label
       }`,
-    selectedArea !== "all" &&
-      `Area: ${areaOptions.find((a) => a.value === selectedArea)?.label}`,
+    selectedArea !== "all" && `Area: ${selectedArea}`,
     sort !== "default" &&
       `Sort: ${
         sort === "low"
@@ -91,7 +91,7 @@ export default function Packages() {
     router.push("/cart");
   };
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading || isAreaOptionLoading) return <LoadingSpinner />;
 
   return (
     <section className="pb-16">
@@ -187,20 +187,20 @@ export default function Packages() {
                   Area:
                 </span>
                 <div className="relative">
-                  <select
-                    value={selectedArea}
-                    onChange={(e) => setSelectedArea(e.target.value)}
-                    className="w-full pl-4 pr-10 py-3 border border-border-color rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition bg-white appearance-none"
-                  >
-                    {areaOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <FaAngleDown className="text-gray-400" />
-                  </div>
+                <select
+  value={selectedArea}
+  onChange={(e) => setSelectedArea(e.target.value)}
+  className="input-class"
+>
+  <option value="all">All Areas</option>
+  {areaOptions.map((option) => (
+    <option key={option._id ?? option.name} value={option.name}>
+      {option.name}
+    </option>
+  ))}
+</select>
+
+                 
                 </div>
               </div>
             </div>

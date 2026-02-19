@@ -26,6 +26,10 @@ export async function packagesCollection() {
   const db = await getDb();
   return db.collection("packages");
 }
+export async function purchasesCollection() {
+  const db = await getDb();
+  return db.collection("purchases");
+}
 export async function bookingsCollection() {
   const db = await getDb();
   return db.collection("bookings");

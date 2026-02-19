@@ -56,7 +56,7 @@ export default function Instructors() {
                 <p className="text-gray-700 mb-2">{inst.experience}</p>
                 <div className="flex justify-between gap-2 mt-4">
                   <PrimaryBtn onClick={()=>router.push(`/bookings`)} className={`flex-1 text-center justify-center text-sm font-medium `}>Book Now</PrimaryBtn>
-                  <OutlineBtn  className={`flex-1 text-center justify-center text-sm font-medium `} onClick={()=>router.push(`/instructors/${inst.id}`)}>View Profile</OutlineBtn>
+                  <OutlineBtn  className={`flex-1 text-center justify-center text-sm font-medium `} onClick={()=>router.push(`/instructors/${inst._id}`)}>View Profile</OutlineBtn>
              
                 </div>
               </div>

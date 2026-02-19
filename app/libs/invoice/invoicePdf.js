@@ -36,7 +36,25 @@ function invoiceHtml(data, logoUrl) {
   const method = String(safe(data.paymentMethod)).toLowerCase(); // "card" or ""
   const brand = data.cardBrand ? String(data.cardBrand).toUpperCase() : "";
   const last4 = data.cardLast4 ? String(data.cardLast4) : "";
+const isPurchase =
+  String(safe(data.serviceName)).toLowerCase().includes("package purchase") ||
+  data?.source === "purchase";
 
+const addressLine = [safe(data.address), safe(data.suburb), safe(data.state), safe(data.postCode)]
+  .map((x) => String(x).trim())
+  .filter(Boolean)
+  .join(", ");
+
+const bookingTime = String(safe(data.bookingTime)).trim();
+
+let detailLine = "";
+if (!isPurchase && bookingDateText) {
+  // booking
+  detailLine = bookingTime ? `${bookingDateText} at ${bookingTime}` : bookingDateText;
+} else {
+  // purchase
+  detailLine = addressLine ? `at ${addressLine}` : "";
+}
   const paidByCardLine =
     isPaid && method === "card"
       ? `Paid by Card (${brand || "CARD"} •••• ${last4 || "----"})`
@@ -123,9 +141,9 @@ function invoiceHtml(data, logoUrl) {
       <tbody>
         <tr>
           <td>
-            <b>${safe(data.serviceName)}</b> - ${safe(data.duration)}<br/>
-            <span class="muted">${bookingDateText} at ${safe(data.bookingTime)}</span>
-          </td>
+  <b>${safe(data.serviceName)}</b> - ${safe(data.duration)}<br/>
+  ${detailLine ? `<span class="muted">${detailLine}</span>` : ""}
+</td>
           <td class="t-center">—</td>
           <td class="t-right">$${total.toFixed(2)}</td>
         </tr>

@@ -45,7 +45,7 @@ export const metadata = {
 
 const automaticDrivingPackages = [
   {
-    id: 1,
+    _id: "6952e6047fe9723b87c6aafe",
     title: "1 Hour Lesson",
     description: "Perfect for beginners starting their journey",
     price: "75",
@@ -53,20 +53,21 @@ const automaticDrivingPackages = [
     features: ["Single session", "Basic fundamentals", "Instructor feedback"],
     buttonText: "Book 1 Lesson",
     popular: false,
+      packageThumbline: "/pkg.png",
   },
   {
-    id: 2,
+    _id: "6952f26c7fe9723b87c6aaff",
     title: "5 Hour Pack",
     description: "Build confidence with multiple sessions",
-    price: "365",
+    price: "360",
     originalPrice: "395",
     duration: "5 x 60 min lessons",
     features: ["Save $30", "Progress tracking", "Flexible scheduling"],
     buttonText: "Buy 5 Hours",
-    popular: false,
+    popular: false,  packageThumbline: "/pkg.png",
   },
   {
-    id: 3,
+    _id: "695bfb6b1f72e6c2fa81e09e",
     title: "10 Hour Pack",
     description: "Comprehensive training for test preparation",
     price: "700",
@@ -74,10 +75,10 @@ const automaticDrivingPackages = [
     duration: "10 x 60 min lessons",
     features: ["Save $50", "Mock tests", "Highway driving"],
     buttonText: "Buy 10 Hours",
-    popular: true,
+    popular: true,  packageThumbline: "/pkg.png",
   },
   {
-    id: 4,
+    _id: "695bfbe11f72e6c2fa81e09f",
     title: "20 Hour Pack",
     description: "Complete mastery package",
     price: "1360",
@@ -85,7 +86,7 @@ const automaticDrivingPackages = [
     duration: "20 x 60 min lessons",
     features: ["Save $140", "Advanced maneuvers", "Exam readiness"],
     buttonText: "Buy 20 Hours",
-    popular: false,
+    popular: false,  packageThumbline: "/pkg.png",
   },
 ];
 const features = [

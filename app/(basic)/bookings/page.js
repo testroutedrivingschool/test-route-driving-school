@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import {useEffect, useRef, useState} from "react";
 import {FaUserCheck, FaChevronLeft, FaChevronRight} from "react-icons/fa";
@@ -18,8 +17,10 @@ import BookingCalendar from "./components/BookingCalendar";
 import axios from "axios";
 import Modal from "@/app/shared/ui/Modal";
 import {IoMdAdd} from "react-icons/io";
-import {useRouter} from "next/navigation";
+import {useRouter, useSearchParams} from "next/navigation";
 import useAuth from "@/app/hooks/useAuth";
+import {toast} from "react-toastify";
+import Swal from "sweetalert2";
 
 const weekdays = [
   "Monday",
@@ -102,8 +103,90 @@ const times = [
   "11:45PM",
 ];
 
+const formatAU = (iso) =>
+  new Date(iso).toLocaleDateString("en-AU", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+async function confirmReschedule({bookingId, newDateISO, newTime}) {
+  const newDateText = new Date(newDateISO).toLocaleDateString("en-AU", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const ok = await Swal.fire({
+    title: "Confirm reschedule?",
+    html: `
+      <div style="text-align:left;line-height:1.7">
+        <div><b>New date:</b> ${newDateText}</div>
+        <div><b>New time:</b> ${newTime}</div>
+        <hr/>
+        <div style="font-size:12px;opacity:.8">
+          Reschedule is allowed only if it’s at least <b>24 hours</b> before your booking time.
+        </div>
+      </div>
+    `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, reschedule",
+    cancelButtonText: "Cancel",
+  });
+
+  if (!ok.isConfirmed) return;
+
+  try {
+    await axios.patch(`/api/bookings/${bookingId}`, {
+      bookingDate: newDateISO,
+      bookingTime: newTime,
+      actorType: "USER",
+    });
+
+    toast.success("Rescheduled ✅");
+    window.location.href = "/dashboard/user/my-bookings";
+  } catch (e) {
+    toast.error(e?.response?.data?.error || "Failed to reschedule");
+  }
+}
+
+function toBookingDateTime(bookingDate, bookingTime) {
+  const d = new Date(bookingDate);
+  if (Number.isNaN(d.getTime())) return null;
+
+  const t = String(bookingTime || "")
+    .trim()
+    .toUpperCase();
+  const m = t.match(/^(\d{1,2})(?::(\d{2}))?\s*(AM|PM)$/);
+  if (!m) return d;
+
+  let hh = Number(m[1]);
+  const mm = Number(m[2] || 0);
+  const ap = m[3];
+
+  if (ap === "PM" && hh !== 12) hh += 12;
+  if (ap === "AM" && hh === 12) hh = 0;
+
+  const combined = new Date(d);
+  combined.setHours(hh, mm, 0, 0);
+  return combined;
+}
+
+function canUserReschedule(bookingDate, bookingTime) {
+  const dt = toBookingDateTime(bookingDate, bookingTime);
+  if (!dt) return false;
+  return dt.getTime() - Date.now() >= 24 * 60 * 60 * 1000;
+}
+
 export default function BookingsPage() {
   const {user} = useAuth();
+  const searchParams = useSearchParams();
+  const isReschedule = searchParams.get("reschedule") === "1";
+  const bookingId = searchParams.get("bookingId");
+
+  const [rescheduleBooking, setRescheduleBooking] = useState(null);
   const {data: instructors = [], isLoading} = useQuery({
     queryKey: ["instructors"],
     queryFn: async () => {
@@ -137,7 +220,7 @@ export default function BookingsPage() {
   const swiperRef = useRef(null);
   const tableRef = useRef(null);
   const [selectedInstructor, setSelectedInstructor] = useState(null);
-
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [locationSearch, setLocationSearch] = useState("");
@@ -324,11 +407,57 @@ export default function BookingsPage() {
       table.removeEventListener("mousemove", onMouseMove);
     };
   }, []);
+  useEffect(() => {
+    if (!isReschedule || !bookingId) return;
+
+    setRescheduleLoading(true);
+    (async () => {
+      try {
+        const res = await axios.get(`/api/bookings/${bookingId}`);
+        const b = res.data;
+
+        if (!canUserReschedule(b.bookingDate, b.bookingTime)) {
+          toast.error(
+            "Reschedule is only allowed at least 24 hours before the booking time.",
+          );
+          router.push("/dashboard/my-bookings");
+          return;
+        }
+
+        setRescheduleBooking(b);
+
+        const loc = b.suburb || b.location || "";
+        if (loc) {
+          setSelectedLocations(loc);
+          localStorage.setItem(LS_SELECTED_LOC, loc);
+        }
+
+        const bd = new Date(b.bookingDate);
+        if (!Number.isNaN(bd.getTime())) setSelectedDate(bd);
+      } catch (e) {
+        toast.error(
+          e?.response?.data?.error || "Failed to load booking for reschedule",
+        );
+        router.push("/dashboard/my-bookings");
+      } finally {
+        setRescheduleLoading(false);
+      }
+    })();
+  }, [isReschedule, bookingId, router]);
+  useEffect(() => {
+    if (!isReschedule || !rescheduleBooking || !instructors?.length) return;
+
+    const match = instructors.find(
+      (i) => String(i._id) === String(rescheduleBooking.instructorId),
+    );
+
+    if (match) setSelectedInstructor(match);
+  }, [isReschedule, rescheduleBooking, instructors]);
 
   useEffect(() => {
-    // when location changes, reset selection
+    if (isReschedule) return;
     setSelectedInstructor(null);
-  }, [selectedLocations]);
+  }, [selectedLocations, isReschedule]);
 
   const {data: bookings = [], isLoading: bookingsLoading} = useQuery({
     queryKey: ["bookings", selectedInstructor?.email, weekStart, weekEnd],
@@ -407,11 +536,13 @@ export default function BookingsPage() {
     const day = String(d.getDate()).padStart(2, "0");
     return `${y}-${m}-${day}`;
   };
+
   useEffect(() => {
     const saved = localStorage.getItem(LS_SELECTED_LOC);
     if (saved) setSelectedLocations(saved);
   }, []);
   useEffect(() => {
+    if (isReschedule) return;
     const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
     if (savedLocation) return; // already selected before
 
@@ -422,7 +553,7 @@ export default function BookingsPage() {
       setShowLocationModal(true);
       localStorage.setItem(LS_KEY, today);
     }
-  }, []);
+  }, [isReschedule]);
 
   // Show loading spinner
   if (isLoading || isLoadingLocations) {
@@ -434,7 +565,8 @@ export default function BookingsPage() {
   const slidesToShow = Math.min(4, Math.max(1, displayedInstructors.length));
   const canLoop = displayedInstructors.length > slidesToShow;
 
-  if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
+  if (slotsLoading || bookingsLoading || rescheduleLoading)
+    return <LoadingSpinner />;
   // Show error if no instructors
   if (!isLoading && instructors.length === 0) {
     return (
@@ -469,15 +601,17 @@ export default function BookingsPage() {
                   Book your driving lessons with certified instructors
                 </p>
               </div>
-              <div className="text-center">
-                <h3 className="font-bold text-lg">{selectedLocations}</h3>
-                <button
-                  onClick={() => setShowLocationModal(true)}
-                  className="text-primary font-medium hover:font-bold transition"
-                >
-                  Change
-                </button>
-              </div>
+              {!isReschedule && (
+                <div className="text-center">
+                  <h3 className="font-bold text-lg">{selectedLocations}</h3>
+                  <button
+                    onClick={() => setShowLocationModal(true)}
+                    className="text-primary font-medium hover:font-bold transition"
+                  >
+                    Change
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Main Content Area */}
@@ -867,18 +1001,68 @@ export default function BookingsPage() {
                                             className={tdClass}
                                           >
                                             <button
-                                              onClick={() =>
+                                              onClick={async () => {
+                                                if (isReschedule) {
+                                                  if (!rescheduleBooking) {
+                                                    toast.error(
+                                                      "Booking info not loaded yet.",
+                                                    );
+                                                    return;
+                                                  }
+
+                                                  const newDateISO =
+                                                    weekDates[
+                                                      dayIndex
+                                                    ].toISOString();
+                                                  const newTime = time;
+
+                                                  // (optional) prevent selecting same slot as current
+                                                  const sameDate =
+                                                    new Date(
+                                                      rescheduleBooking.bookingDate,
+                                                    ).toDateString() ===
+                                                    new Date(
+                                                      newDateISO,
+                                                    ).toDateString();
+                                                  const sameTime =
+                                                    String(
+                                                      rescheduleBooking.bookingTime ||
+                                                        "",
+                                                    ).replace(/\s+/g, "") ===
+                                                    String(
+                                                      newTime || "",
+                                                    ).replace(/\s+/g, "");
+
+                                                  if (sameDate && sameTime) {
+                                                    toast.info(
+                                                      "This is already your current slot.",
+                                                    );
+                                                    return;
+                                                  }
+
+                                                  await confirmReschedule({
+                                                    bookingId,
+                                                    newDateISO,
+                                                    newTime,
+                                                  });
+                                                  return;
+                                                }
+
                                                 handleBookNow(
                                                   time,
                                                   dayIndex,
                                                   slot,
-                                                )
-                                              }
-                                              className="w-full h-full min-h-11 py-2 text-sm font-semibold bg-[#7DA730] hover:bg-[#96C83A] text-white flex items-center justify-center"
+                                                );
+                                              }}
+                                              className={`w-full h-full min-h-11 py-2 text-sm font-semibold bg-[#7DA730] hover:bg-[#96C83A] text-white flex ${isReschedule
+                                                  ? "flex-col"
+                                                  : "flex-row"} items-center justify-center`}
                                             >
                                               <IoMdAdd className="h-4 w-4 mr-2" />
                                               <span className="text-xs">
-                                                Book Now
+                                                {isReschedule
+                                                  ? "Reschedule Here"
+                                                  : "Book Now"}
                                               </span>
                                             </button>
                                           </td>
@@ -896,6 +1080,7 @@ export default function BookingsPage() {
                               })}
                             </tbody>
                           </table>
+
                           <div className="sticky bottom-0 bg-white z-50">
                             <div className="flex  items-center  justify-between">
                               <div className="text-center">
@@ -951,6 +1136,7 @@ export default function BookingsPage() {
           </div>
         </Container>
       </section>
+
       {showLocationModal && (
         <Modal onClose={() => setShowLocationModal(false)}>
           <h2 className="text-lg font-bold mb-4">Select Location</h2>
