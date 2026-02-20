@@ -49,7 +49,6 @@ export async function POST(req) {
 
     return res;
   } catch (err) {
-    console.error(err);
     return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
   }
 }

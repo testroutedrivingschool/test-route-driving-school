@@ -43,7 +43,6 @@ export default function MessagesTabs() {
       return res.data.items;
     },
   });
-  console.log(emails);
   const rows = useMemo(() => emails || [], [emails]);
 
   const downloadAttachment = async (key) => {

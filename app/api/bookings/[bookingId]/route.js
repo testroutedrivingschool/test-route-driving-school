@@ -56,7 +56,6 @@ export async function GET(req, {params}) {
 export async function PATCH(req, {params}) {
   try {
     const {bookingId} = await params;
-    console.log(bookingId);
     if (!ObjectId.isValid(bookingId)) {
       return NextResponse.json({error: "Invalid booking id"}, {status: 400});
     }

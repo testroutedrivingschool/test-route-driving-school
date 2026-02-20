@@ -85,13 +85,7 @@ export default function Register() {
         photo: null,
         photoPreview: null,
       };
-      console.log(formData.phone);
-      console.log("PHONE:", formData.phone);
-      console.log("DOMAIN:", window.location.hostname);
-      console.log(
-        "HAS_CONTAINER:",
-        !!document.getElementById("recaptcha-container"),
-      );
+   
       // ✅ Save form data temporarily
       sessionStorage.setItem("pendingUser", JSON.stringify(pendingUser));
       // ✅ Send OTP only
@@ -99,7 +93,6 @@ export default function Register() {
       toast.success("OTP sent to your phone");
       router.push("/register/verify-otp");
     } catch (error) {
-      console.log(error?.code, error?.message, error);
       toast.error(
         getFirebaseAuthErrorMessage(error) || "Otp Verification Failed",
       );
@@ -166,7 +159,6 @@ export default function Register() {
       router.push("/");
       router.refresh();
     } catch (error) {
-      console.error(error);
       toast.error(getFirebaseAuthErrorMessage(error) || "Google Login Failed");
     }
   };

@@ -112,7 +112,6 @@ export default function AddClients() {
       const msg =
         err?.response?.data?.error || err?.message || "Failed to add client";
       toast.error(msg);
-      console.error(err);
     },
   });
 

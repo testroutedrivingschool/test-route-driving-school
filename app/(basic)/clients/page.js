@@ -45,8 +45,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
         setSelectedClient(res.data);
         setActiveTab("client-details");
       } catch (err) {
-        console.log(err?.response?.data || err);
-        toast.error("Client not found");
+        toast.error(err?.response?.data||"Client not found");
         // optional: clean url
         router.replace("/clients");
       } finally {

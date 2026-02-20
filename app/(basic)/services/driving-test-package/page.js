@@ -20,6 +20,7 @@ import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
 import localDrivingImg from "@/app/assets/local-driving-lesson-test-route-driving-school.png";
+import HomeMap from "@/app/shared/ui/HomeMap";
 export const metadata = {
   title:
     "Driving Test Package in Sydney suburbs| Pass Your Test with Confidence",
@@ -53,32 +54,36 @@ const features = [
 ];
 const automaticDrivingPackages = [
   {
-    id: 1,
-    title: "Test Day Pack",
-    description: "1 x 60 min Warm up Lesson on test day",
-    price: "220",
-    duration: "1 x 60 min lesson",
+     _id: "695bebe91f72e6c2fa81e098",
+    name: "Test Package with 1 hour lesson",
+    packageThumbline: "/pkg.png",
+    regularPrice: "$250",
+    price: 220,
+    duration: "1 hour",
+    description: "1 x 60 min lesson",
     features: [
       "Pick up and drop off",
       "Warm up lesson",
       "Car hire for duration of test",
       "1 hour lesson prior to your test day in our Full Test Package",
     ],
-    buttonText: "Book Now",
+    buttonText: "Get the Package",
   },
   {
-    id: 2,
-    title: "Full Test Pack",
-    description: "2 x 60 min Warm up Lesson on test day",
-    price: "290",
-    duration: "2 x 60 min lessons",
+    _id: "695bfa251f72e6c2fa81e09c",
+    name: "Test Package with 2 hours lesson",
+    packageThumbline: "/pkg.png",
+    regularPrice: "$300",
+    price: 290,
+    duration: "2 hours",
+    description: "2 x 60 min lessons",
     features: [
       "Pick up and drop off",
       "Warm up lesson",
       "Car hire for duration of test",
       "1 hour lesson prior to your test day in our Full Test Package",
     ],
-    buttonText: "Book Now",
+    buttonText: "Get the Package",
   },
 ];
 
@@ -261,7 +266,7 @@ export default function DrivingTestPackage() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -342,8 +347,13 @@ export default function DrivingTestPackage() {
               </p>
 
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <Link href={`/bookings`}>
+                
                 <PrimaryBtn>Book a Lesson</PrimaryBtn>
+                </Link>
+                         <Link href={`/packages`}>
                 <OutlineBtn>Learn More</OutlineBtn>
+                         </Link>
               </div>
             </div>
 
@@ -446,6 +456,7 @@ export default function DrivingTestPackage() {
       />
 
       <Faq faqs={faqs} />
+          <HomeMap/>
     </div>
   );
 }

@@ -55,7 +55,7 @@ export default function Login() {
         });
       })
       .catch((err) => {
-        console.log(err);
+   
         setIsLoading(false);
         toast.error(
           getFirebaseAuthErrorMessage(err) || "Otp Verification Failed",
@@ -98,8 +98,7 @@ export default function Login() {
       router.refresh();
       toast.success("Logged in successfully 🎉");
     } catch (error) {
-      console.error(error);
-      toast.error("Google login failed. Please try again.");
+      toast.error( error?.res?.data || "Google login failed. Please try again." );
     }
   };
   const handleForgetPassword = async (email) => {
@@ -109,7 +108,6 @@ export default function Login() {
       await forgetPassword(email);
       toast.success("Password reset email sent! Check Inbox/Spam.");
     } catch (err) {
-      console.log("RESET ERROR:", err?.code, err?.message, err);
       toast.error(
         getFirebaseAuthErrorMessage(err) || "Failed to send reset email",
       );

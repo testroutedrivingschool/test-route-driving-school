@@ -2,6 +2,7 @@
 
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import BlogSection from "../components/Blogs/BlogSection";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export default function Blogs() {
   return (
@@ -12,6 +13,7 @@ export default function Blogs() {
       />
 
       <BlogSection />
+          <HomeMap/>
     </>
   );
 }

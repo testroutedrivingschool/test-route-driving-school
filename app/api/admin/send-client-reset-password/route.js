@@ -57,7 +57,6 @@ export async function POST(req) {
 
     return NextResponse.json({ message: "Reset link sent" }, { status: 200 });
   } catch (err) {
-    console.error(err);
     return NextResponse.json(
       { error: "Failed to send reset link" },
       { status: 500 }

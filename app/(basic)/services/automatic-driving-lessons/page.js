@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 
 import Image from "next/image";
@@ -22,6 +23,7 @@ import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
 import DrivingTipsSection from "../../components/Home/DrivingTipsSection";
 import localDrivingImg from "@/app/assets/local-driving-lesson-test-route-driving-school.png";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export const metadata = {
   title: "Top-Rated Driving Lessons in Sydney suburbs| Book Your Lesson Today",
@@ -46,46 +48,46 @@ export const metadata = {
 const automaticDrivingPackages = [
   {
     _id: "6952e6047fe9723b87c6aafe",
-    title: "1 Hour Lesson",
+    name: "1 Hour Lesson",
     description: "Perfect for beginners starting their journey",
     price: "75",
     duration: "1 x 60 min lesson",
     features: ["Single session", "Basic fundamentals", "Instructor feedback"],
-    buttonText: "Book 1 Lesson",
+    buttonText: "Buy 1 Hours Pack",
     popular: false,
       packageThumbline: "/pkg.png",
   },
   {
-    _id: "6952f26c7fe9723b87c6aaff",
-    title: "5 Hour Pack",
+    _id: "695bfae01f72e6c2fa81e09d",
+    name: "5 Hour Pack",
     description: "Build confidence with multiple sessions",
     price: "360",
     originalPrice: "395",
     duration: "5 x 60 min lessons",
     features: ["Save $30", "Progress tracking", "Flexible scheduling"],
-    buttonText: "Buy 5 Hours",
+    buttonText: "Buy 5 Hours Pack",
     popular: false,  packageThumbline: "/pkg.png",
   },
   {
     _id: "695bfb6b1f72e6c2fa81e09e",
-    title: "10 Hour Pack",
+    name: "10 Hour Pack",
     description: "Comprehensive training for test preparation",
     price: "700",
     originalPrice: "750",
     duration: "10 x 60 min lessons",
     features: ["Save $50", "Mock tests", "Highway driving"],
-    buttonText: "Buy 10 Hours",
+    buttonText: "Buy 10 Hours Pack",
     popular: true,  packageThumbline: "/pkg.png",
   },
   {
     _id: "695bfbe11f72e6c2fa81e09f",
-    title: "20 Hour Pack",
-    description: "Complete mastery package",
+    name: "20 Hour Pack",
+    description: "Complete Professional Mastery Package",
     price: "1360",
     originalPrice: "1500",
     duration: "20 x 60 min lessons",
     features: ["Save $140", "Advanced maneuvers", "Exam readiness"],
-    buttonText: "Buy 20 Hours",
+    buttonText: "Buy 20 Hours Pack",
     popular: false,  packageThumbline: "/pkg.png",
   },
 ];
@@ -340,7 +342,7 @@ export default function AutomaticDrivingLesson() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -440,8 +442,13 @@ export default function AutomaticDrivingLesson() {
               </p>
 
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <Link href={`/bookings`}>
+                
                 <PrimaryBtn>Book a Lesson</PrimaryBtn>
+                </Link>
+                 <Link href={`/about`}>
                 <OutlineBtn>Learn More</OutlineBtn>
+                 </Link>
               </div>
             </div>
 
@@ -536,6 +543,7 @@ export default function AutomaticDrivingLesson() {
         tips={drivingLessonTips}
       />
       <Faq className={`bg-white`} faqs={faqs} />
+      <HomeMap/>
     </div>
   );
 }

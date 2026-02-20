@@ -160,7 +160,7 @@ const [moving, setMoving] = useState(false);
     "2 hours",
     "2 hours 15 mins",
   ];
-
+const isHourStart = (time) => time?.includes(":00");
 
 const moveBookingHere = async ({ date, time }) => {
   if (!moveBookingId) return;
@@ -386,7 +386,6 @@ const moveBookingHere = async ({ date, time }) => {
     },
   });
 
-  console.log(bookings);
 
   // quick lookup map: key = "YYYY-MM-DD__7:15AM"
   const slotMap = slots.reduce((acc, s) => {
@@ -721,7 +720,7 @@ const moveBookingHere = async ({ date, time }) => {
       closeSlotModal();
       await refetchSlots();
     } catch (err) {
-      console.error(err);
+   
       toast.error(err?.message || "Update failed");
     }
   };
@@ -761,7 +760,7 @@ const moveBookingHere = async ({ date, time }) => {
       closeSlotModal();
       await refetchSlots();
     } catch (err) {
-      console.error(err);
+   
       toast.error("Remove failed");
     }
   };
@@ -802,7 +801,7 @@ const handleBooking = (date, slot, time) => {
   sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
   router.push("/booking-confirm");
 };
-
+          const MOBILE_ROW_H = 40;
 
   if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
 
@@ -892,312 +891,518 @@ const handleBooking = (date, slot, time) => {
     </button>
   </div>
 )}
-                    <div
-                      ref={tableRef}
-                      className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
-                      style={{
-                        WebkitOverflowScrolling: "touch",
-                        cursor: "grab",
-                        touchAction: "pan-x",
-                        maxHeight: "calc(100vh - 88px)",
-                      }}
+                    {/* ✅ Desktop (md+) - your full table stays */}
+<div className="hidden md:block">
+  <div
+    ref={tableRef}
+    className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
+    style={{
+      WebkitOverflowScrolling: "touch",
+      cursor: "grab",
+      touchAction: "pan-x",
+      maxHeight: "calc(100vh - 88px)",
+    }}
+  >
+    <table className="w-full min-w-150 md:min-w-[700px] border-separate border-spacing-0 table-fixed h-full">
+      <thead className="bg-white">
+        <tr>
+          <th className="py-2 px-1 border border-border-color text-xs md:text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
+            Time
+          </th>
+
+          {weekDates.map((date, index) => (
+            <th
+              key={index}
+              className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
+            >
+              <div className="flex flex-col items-center">
+                <div className="font-bold text-gray-900">
+                  {date.toLocaleDateString("en-US", {weekday: "long"})}
+                </div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {date.toLocaleDateString("en-US", {day: "numeric", month: "short"})}
+                </div>
+              </div>
+            </th>
+          ))}
+        </tr>
+      </thead>
+
+      <tbody className="divide-y divide-border-color">
+        {visibleTimes.map((time) => (
+          <tr key={time} className="hover:bg-gray-50/50 align-stretch">
+            <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500">
+              {time}
+            </td>
+
+            {weekDates.map((date, dayIndex) => {
+              const dateKey = formatDate(date);
+              const key = `${dateKey}__${time}`;
+              const slot = slotMap[key];
+
+              const suburbLabel =
+                slot?.suburb === "ALL"
+                  ? ""
+                  : Array.isArray(slot?.suburb)
+                    ? (
+                      <>
+                        S <sup>{slot.suburb.length}</sup>
+                      </>
+                    )
+                    : "";
+
+              const bCov = bookingCoverage?.[dateKey]?.[time];
+              if (bCov?.skip) return null;
+
+              if (bCov?.booking) {
+                const b = bCov.booking;
+                const name = b.clientName || b.userName || "Client";
+                const paid = b.paymentStatus === "paid";
+
+                return (
+                  <td key={dayIndex} rowSpan={bCov.rowSpan} className="p-0 align-stretch">
+                    <button
+                      type="button"
+                      onClick={() => router.push(`/instructor-bookings/${b._id}`)}
+                      className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color
+                      px-2 py-2 flex flex-col items-center justify-center text-center"
                     >
-                      <table className="w-full min-w-150 md:min-w-[700px] border-separate border-spacing-0 table-fixed h-full">
-                        <thead className="bg-white">
-                          <tr>
-                            <th className="py-2 px-1 border border-border-color  text-xs md:text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
-                              Time
-                            </th>
+                      {paid && (
+                        <span
+                          className="absolute top-1 left-1 h-5 w-5 rounded-full bg-primary text-white
+                          text-[11px] font-bold flex items-center justify-center"
+                          title="Paid"
+                        >
+                          P
+                        </span>
+                      )}
 
-                            {weekDates.map((date, index) => (
-                              <th
-                                key={index}
-                                className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
+                      <div className="text-red-600 font-semibold text-sm">{name}</div>
+                      <div className="text-red-600 text-xs font-semibold mt-1">
+                        {b.serviceName || "Driving lesson"} {b.duration || ""}
+                      </div>
+                      <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
+                        {b.address || b.userAddress || ""} {b.suburb || b.location || ""}
+                      </div>
+                    </button>
+                  </td>
+                );
+              }
+
+              const cov = coverage?.[dateKey]?.[time];
+              if (cov?.skip) return null;
+
+              const rowSpan = cov?.rowSpan || 1;
+              const visibility = slot?.visibility || "empty";
+
+              return (
+                <td key={dayIndex} rowSpan={rowSpan} className="p-0 align-stretch">
+                  {visibility === "empty" ? (
+                    <button
+                      onClick={() => {
+                        if (moveMode) return moveBookingHere({date, time});
+                        openSlotModal({date, time});
+                      }}
+                      className="w-full h-full min-h-11 bg-white hover:bg-gray-50 border border-border-color flex items-center justify-center"
+                      title="Add"
+                    >
+                      <span className="text-lg text-primary">+</span>
+                    </button>
+                  ) : visibility === "hidden" ? (
+                    <button
+                      onClick={() => {
+                        if (moveMode) return moveBookingHere({date, time});
+                        return handleBooking(date, slot, time);
+                      }}
+                      className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col md:flex-row md:justify-between items-center justify-center gap-2"
+                    >
+                      <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-xs text-center leading-snug break-all">
+                        {slot?.privateNote}{" "}
+                        {!!suburbLabel && (
+                          <span className="text-[10px] opacity-90">{suburbLabel}</span>
+                        )}
+                      </span>
+                      <IoMdAdd
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (moveMode) return;
+                          openSlotModal({date, time});
+                        }}
+                        className="h-5 w-5 text-primary shrink-0"
+                      />
+                    </button>
+                  ) : visibility === "privateBooked" ? (
+                    <button
+                      onClick={() => {
+                        if (moveMode) return moveBookingHere({date, time});
+                        return handleBooking(date, slot, time);
+                      }}
+                      className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
+                    >
+                      <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
+                      <span className="flex-1 text-center text-white text-xs leading-snug break-all">
+                        {slot?.privateNote}{" "}
+                        {!!suburbLabel && (
+                          <span className="text-[10px] opacity-90">{suburbLabel}</span>
+                        )}
+                      </span>
+                      <IoMdAdd
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (moveMode) return;
+                          openSlotModal({date, time});
+                        }}
+                        className="h-5 w-5 text-white shrink-0"
+                      />
+                    </button>
+                  ) : visibility === "publicNote" ? (
+                    <button
+                      onClick={() => openSlotModal({date, time})}
+                      className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
+                    >
+                      <span className="text-xs text-center leading-snug break-all">
+                        {slot?.publicNote}{" "}
+                        {!!suburbLabel && (
+                          <span className="text-[10px] opacity-90">{suburbLabel}</span>
+                        )}
+                      </span>
+                      <IoMdAdd className="h-5 w-5 text-black shrink-0" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        if (moveMode) return moveBookingHere({date, time});
+                        return handleBooking(date, slot, time);
+                      }}
+                      className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center flex-wrap gap-2 text-xs font-semibold text-white px-1 py-2"
+                    >
+                      <span>Available</span>
+                      <div>
+                        {!!suburbLabel && (
+                          <span className="text-[10px] opacity-90">{suburbLabel}</span>
+                        )}
+                        <IoMdAdd
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (moveMode) return;
+                            openSlotModal({date, time});
+                          }}
+                          className="h-4 w-4"
+                        />
+                      </div>
+                    </button>
+                  )}
+                </td>
+              );
+            })}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+
+    {/* Desktop footer: keep your More/Less bar */}
+    <div className="sticky bottom-0 left-0 right-0 bg-white z-50">
+      <div className="flex items-center justify-between">
+        {!showMoreTimes ? (
+          <button
+            onClick={() => setShowMoreTimes(true)}
+            className="text-primary font-semibold hover:underline ml-4"
+          >
+            More
+          </button>
+        ) : (
+          <button
+            onClick={() => setShowMoreTimes(false)}
+            className="text-primary font-semibold hover:underline ml-4"
+          >
+            Less
+          </button>
+        )}
+
+        {weekDates.map((date, index) => (
+          <div key={index} className="py-2 text-center text-sm font-medium text-gray-500 uppercase tracking-wider">
+            <div className="flex flex-col items-center">
+              <div className="font-bold text-gray-900">{weekdays[index]}</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {date.toLocaleDateString("en-US", {month: "short", day: "numeric"})}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* ✅ Mobile (md:hidden) - 6 day grid like Bookings page, NO horizontal scroll */}
+<div className="md:hidden">
+  {(() => {
+    const visibleDayIdx = [0, 1, 2,3, 4, 5, 6]; 
+
+    return (
+      <div className="max-h-[75vh] overflow-y-auto">
+        <table className="w-full table-fixed border-separate border-spacing-0">
+          <colgroup>
+            <col style={{width: "64px"}} />
+            {visibleDayIdx.map((i) => (
+              <col key={i} style={{width: `calc((100% - 64px) / ${visibleDayIdx.length})`}} />
+            ))}
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th className="py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
+                <div className="leading-tight">
+                  <div>Time</div>
+                  <div className="font-semibold opacity-80">AEDT</div>
+                </div>
+              </th>
+
+              {visibleDayIdx.map((dayIndex) => (
+                <th
+                  key={dayIndex}
+                  className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
+                >
+                  <div className="leading-tight">
+                    <div className="text-gray-900">{weekdays[dayIndex]}</div>
+                    <div className="text-gray-600 font-semibold">
+                      {weekDates[dayIndex].toLocaleDateString("en-US", {day: "numeric", month: "short"})}
+                    </div>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {visibleTimes.map((time) => {
+              const hourLine = isHourStart(time) && time !== visibleTimes[0];
+              const topBorder = hourLine ? "border-t border-t-black" : "border-t border-t-gray-400 border-dashed";
+
+              return (
+                <tr key={time} className="align-stretch h-10">
+                  <td className={`h-10 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}>
+                    {time}
+                  </td>
+
+                  {visibleDayIdx.map((dayIndex) => {
+                    const date = weekDates[dayIndex];
+                    const dateKey = formatDate(date);
+                    const key = `${dateKey}__${time}`;
+                    const slot = slotMap[key];
+
+                    const suburbLabel =
+                      slot?.suburb === "ALL"
+                        ? ""
+                        : Array.isArray(slot?.suburb)
+                          ? (
+                            <>
+                              S <sup>{slot.suburb.length}</sup>
+                            </>
+                          )
+                          : "";
+
+                    // booking rowSpan / skip
+                    const bCov = bookingCoverage?.[dateKey]?.[time];
+          
+                    if (bCov?.skip) return null;
+
+                    if (bCov?.booking) {
+                      const b = bCov.booking;
+                      const name = b.clientName || b.userName || "Client";
+                      const paid = b.paymentStatus === "paid";
+
+                      return (
+                        <td key={dayIndex}   style={{ height: bCov.rowSpan * MOBILE_ROW_H }} rowSpan={bCov.rowSpan} className={`p-0 border border-border-color ${topBorder}  align-stretch`}>
+                          <button
+                            type="button"
+                            onClick={() => router.push(`/instructor-bookings/${b._id}`)}
+                            className="relative w-full h-full min-h-10 bg-[#c9b0cf] hover:brightness-95
+                            px-1 py-1 flex flex-col items-center justify-center text-center"
+                          >
+                            {paid && (
+                              <span
+                                className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-primary text-white
+                                text-[9px] font-bold flex items-center justify-center"
+                                title="Paid"
                               >
-                                <div className="flex flex-col items-center">
-                                  <div className="font-bold text-gray-900">
-                                    {date.toLocaleDateString("en-US", {
-                                      weekday: "long",
-                                    })}
-                                  </div>
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    {date.toLocaleDateString("en-US", {
-                                      day: "numeric",
-                                      month: "short",
-                                    })}
-                                  </div>
-                                </div>
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-border-color">
-                          {visibleTimes.map((time) => (
-                            <tr
-                              key={time}
-                              className="hover:bg-gray-50/50 align-stretch"
-                            >
-                              <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm  font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500">
-                                {time}
-                              </td>
-                              {weekDates.map((date, dayIndex) => {
-                                const dateKey = formatDate(date);
-                                const key = `${dateKey}__${time}`;
-                                const slot = slotMap[key];
-                                const suburbLabel =
-                                  slot?.suburb === "ALL" ? (
-                                    ""
-                                  ) : Array.isArray(slot?.suburb) ? (
-                                    <>
-                                      S <sup>{slot.suburb.length}</sup>{" "}
-                                    </>
-                                  ) : (
-                                    ""
-                                  );
+                                P
+                              </span>
+                            )}
+                            <div className="text-red-600 font-bold text-[10px] leading-tight">{name}</div>
+                            <div className="text-red-600 text-[9px] font-semibold leading-tight mt-0.5">
+                              {(b.serviceName || "Lesson")} {b.duration || ""}
+                            </div>
+                          </button>
+                        </td>
+                      );
+                    }
 
-                                const bCov = bookingCoverage?.[dateKey]?.[time];
+                    // slot coverage rowSpan / skip
+                    const cov = coverage?.[dateKey]?.[time];
+                    if (cov?.skip) return null;
 
-                                if (bCov?.skip) return null;
+                    const rowSpan = cov?.rowSpan || 1;
+                    const visibility = slot?.visibility || "empty";
 
-                                if (bCov?.booking) {
-                                  const b = bCov.booking;
-                                  const name =
-                                    b.clientName || b.userName || "Client";
-                                  const paid = b.paymentStatus === "paid";
+                    const cellClass = `p-0 border border-border-color ${topBorder}`;
 
-                                  return (
-                                    <td
-                                      key={dayIndex}
-                                      rowSpan={bCov.rowSpan}
-                                      className="p-0 align-stretch"
-                                    >
-                                      <button
-                                        type="button"
-                                        onClick={() =>
-                                          router.push(
-                                            `/instructor-bookings/${b._id}`,
-                                          )
-                                        } // optional
-                                        className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color
-                   px-2 py-2 flex flex-col items-center justify-center text-center"
-                                      >
-                                        {/* Paid badge */}
-                                        {paid && (
-                                          <span
-                                            className="absolute top-1 left-1 h-5 w-5 rounded-full bg-primary text-white
-                       text-[11px] font-bold flex items-center justify-center"
-                                            title="Paid"
-                                          >
-                                            P
-                                          </span>
-                                        )}
+                    // ✅ render tiny buttons like bookings page
+                    if (visibility === "empty") {
+                      return (
+                        <td key={dayIndex}  rowSpan={rowSpan}
+  style={{ height: rowSpan * MOBILE_ROW_H }} className={`${cellClass} align-stretch`}>
+                          <button
+                            onClick={() => {
+                              if (moveMode) return moveBookingHere({date, time});
+                              openSlotModal({date, time});
+                            }}
+                            className="w-full h-full min-h-10 bg-white hover:bg-gray-50 flex items-center justify-center text-primary font-bold text-[12px]"
+                            title="Add"
+                          >
+                           <IoMdAdd className="h-4 w-4" />
+                          </button>
+                        </td>
+                      );
+                    }
 
-                                        <div className="text-red-600 font-semibold text-sm">
-                                          {name}
-                                        </div>
-                                        <div className="text-red-600 text-xs font-semibold mt-1">
-                                          {b.serviceName || "Driving lesson"}{" "}
-                                          {b.duration || ""}
-                                        </div>
-                                        <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
-                                          {b.address || b.userAddress || ""}{" "}
-                                          {b.suburb || b.location || ""}
-                                        </div>
-                                      </button>
-                                    </td>
-                                  );
-                                }
+                    if (visibility === "public") {
+                      return (
+                        <td key={dayIndex}  rowSpan={rowSpan}
+  style={{ height: rowSpan * MOBILE_ROW_H }} className={`${cellClass} align-stretch`}>
+                          <button
+  onClick={() => {
+    if (moveMode) return moveBookingHere({ date, time });
+    return handleBooking(date, slot, time);
+  }}
+  className="relative w-full h-full min-h-10 bg-[#7DA730] hover:bg-[#96C83A]
+             text-white text-[10px] font-bold flex flex-col md:flex-row items-center 
+             justify-center px-1"
+>
+  <span>Available</span>
 
-                                const cov = coverage?.[dateKey]?.[time];
-                                if (cov?.skip) return null;
-
-                                const rowSpan = cov?.rowSpan || 1;
-                                const visibility = slot?.visibility || "empty";
-
-                                return (
-                                  <td
-                                    key={dayIndex}
-                                    rowSpan={rowSpan} // ✅ merged height
-                                    className="p-0 align-stretch"
-                                  >
-                                    {/* IMPORTANT: button must fill the cell */}
-                                    {visibility === "empty" ? (
-                                      <button
-                                        onClick={() => {
-      if (moveMode) return moveBookingHere({ date, time });
+  {/* ✅ keep + icon */}
+  <IoMdAdd
+    onClick={(e) => {
+      e.stopPropagation();
+      if (moveMode) return;
       openSlotModal({ date, time });
     }}
-                                        className="w-full h-full min-h-11 bg-white hover:bg-gray-50 border border-border-color flex items-center justify-center"
-                                        title="Add"
-                                      >
-                                        <span className="text-lg  text-primary">
-                                          +
-                                        </span>
-                                      </button>
-                                    ) : visibility === "hidden" ? (
-                                      <button
-                                        onClick={() => {
-                                          if (moveMode)
-                                            return moveBookingHere({
-                                              date,
-                                              time,
-                                            });
-                                          return handleBooking(
-                                            date,
-                                            slot,
-                                            time,
-                                          );
-                                        }}
-                                        className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-5 py-2 flex flex-col md:flex-row md:justify-between items-center justify-center gap-2"
-                                      >
-                                        <FaEyeSlash className="h-4 w-4 text-primary shrink-0" />
-                                        <span className="text-xs text-center leading-snug break-all">
-                                          {slot?.privateNote}{" "}
-                                          {!!suburbLabel && (
-                                            <span className="text-[10px] opacity-90">
-                                              {suburbLabel}
-                                            </span>
-                                          )}
-                                        </span>
-                                        <IoMdAdd
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (moveMode) return;
-                                            openSlotModal({date, time});
-                                          }}
-                                          className="h-5 w-5 text-primary shrink-0"
-                                        />
-                                      </button>
-                                    ) : visibility === "privateBooked" ? (
-                                      <button
-                                        onClick={() => {
-                                          if (moveMode)
-                                            return moveBookingHere({
-                                              date,
-                                              time,
-                                            });
-                                          return handleBooking(
-                                            date,
-                                            slot,
-                                            time,
-                                          );
-                                        }}
-                                        className="w-full h-full min-h-11 text-xs font-semibold bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex items-center justify-between gap-2"
-                                      >
-                                        <FaCalendarPlus className="h-4 w-4 text-white shrink-0" />
-                                        <span className="flex-1 text-center text-white text-xs  leading-snug break-all">
-                                          {slot?.privateNote}{" "}
-                                          {!!suburbLabel && (
-                                            <span className="text-[10px] opacity-90">
-                                              {suburbLabel}
-                                            </span>
-                                          )}
-                                        </span>
-                                        <IoMdAdd
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            if (moveMode) return;
-                                            openSlotModal({date, time});
-                                          }}
-                                          className="h-5 w-5 text-white shrink-0"
-                                        />
-                                      </button>
-                                    ) : visibility === "publicNote" ? (
-                                      <button
-                                        onClick={() =>
-                                          openSlotModal({date, time})
-                                        }
-                                        className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
-                                      >
-                                        <span className="text-xs text-center leading-snug break-all">
-                                          {slot?.publicNote}{" "}
-                                          {!!suburbLabel && (
-                                            <span className="text-[10px] opacity-90">
-                                              {suburbLabel}
-                                            </span>
-                                          )}
-                                        </span>
-                                        <IoMdAdd className="h-5 w-5 text-black shrink-0" />
-                                      </button>
-                                    ) : (
-                                      <button
-                                        onClick={() => {
-                                          if (moveMode)
-                                            return moveBookingHere({
-                                              date,
-                                              time,
-                                            });
-                                          return handleBooking(
-                                            date,
-                                            slot,
-                                            time,
-                                          );
-                                        }}
-                                        className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center flex-wrap gap-2 text-xs font-semibold text-white px-1 py-2"
-                                      >
-                                        <span>Available</span>
-                                        <div>
-                                          {!!suburbLabel && (
-                                            <span className="text-[10px] opacity-90">
-                                              {suburbLabel}
-                                            </span>
-                                          )}
-                                          <IoMdAdd
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              if (moveMode) return;
-                                              openSlotModal({date, time});
-                                            }}
-                                            className="h-4 w-4"
-                                          />
-                                        </div>
-                                      </button>
-                                    )}
-                                  </td>
-                                );
-                              })}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      <div className="sticky bottom-0 left-0 right-0 bg-white z-50">
-                        <div className="flex  items-center  justify-between">
-                          {!showMoreTimes ? (
-                            <button
-                              onClick={() => setShowMoreTimes(true)}
-                              className="text-primary font-semibold hover:underline ml-4  "
-                            >
-                              More
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => setShowMoreTimes(false)}
-                              className="text-primary font-semibold hover:underline ml-4 "
-                            >
-                              Less
-                            </button>
-                          )}
-                          {weekDates.map((date, index) => (
-                            <div
-                              key={index}
-                              className="py-2    text-center text-sm font-medium text-gray-500 uppercase tracking-wider "
-                            >
-                              <div className="flex flex-col items-center">
-                                <div className="font-bold text-gray-900">
-                                  {weekdays[index]}
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                  {date.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+    className=" text-sm"
+  />
+</button>
+                        </td>
+                      );
+                    }
+
+                    if (visibility === "publicNote") {
+                      return (
+                        <td key={dayIndex}  rowSpan={rowSpan}
+  style={{ height: rowSpan * MOBILE_ROW_H }} className={`${cellClass} align-stretch`}>
+                          <button
+  onClick={() => openSlotModal({ date, time })}
+  className="relative w-full h-full min-h-10 bg-[#FF9933] hover:bg-[#FFB83D]
+             text-black text-[9px] font-bold flex flex-col items-center 
+             justify-center px-1"
+>
+  <span>{slot?.publicNote || "Note"}</span>
+
+  <IoMdAdd className="text-sm" />
+</button>
+                        </td>
+                      );
+                    }
+
+                    if (visibility === "privateBooked") {
+                      return (
+                        <td key={dayIndex}  rowSpan={rowSpan}
+  style={{ height: rowSpan * MOBILE_ROW_H }} className={`${cellClass} align-stretch`}>
+                         <button
+  onClick={() => {
+    if (moveMode) return moveBookingHere({ date, time });
+    return handleBooking(date, slot, time);
+  }}
+  className="relative w-full h-full min-h-10 bg-[#8d8d8d] hover:bg-[#B2B2B2]
+             text-white text-[10px] font-bold flex flex-col items-center 
+             justify-center px-1"
+>
+  <span>{slot?.privateNote || "Private"}</span> 
+
+  <IoMdAdd
+    onClick={(e) => {
+      e.stopPropagation();
+      if (moveMode) return;
+      openSlotModal({ date, time });
+    }}
+    className="text-sm"
+  />
+</button>
+                        </td>
+                      );
+                    }
+
+                    // hidden
+                    return (
+                      <td key={dayIndex}  rowSpan={rowSpan}
+  style={{ height: rowSpan * MOBILE_ROW_H }} className={`${cellClass} align-stretch`}>
+                       <button
+  onClick={() => {
+    if (moveMode) return moveBookingHere({ date, time });
+    return handleBooking(date, slot, time);
+  }}
+  className="relative w-full h-full min-h-10 bg-[#d3d3d3] hover:bg-[#E7E7E7]
+             text-gray-800 text-[9px] font-bold flex flex-col items-center 
+             justify-center px-1"
+>
+  <span>{slot?.privateNote || "Hidden"}</span>
+
+  <IoMdAdd
+    onClick={(e) => {
+      e.stopPropagation();
+      if (moveMode) return;
+      openSlotModal({ date, time });
+    }}
+    className="text-sm text-primary"
+  />
+</button>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+
+        
+        </table>
+
+        {/* Mobile More/Less (optional) */}
+        <div className="sticky bottom-0 left-0 right-0 bg-white z-40 border-t border-border-color p-2 flex justify-between">
+          {!showMoreTimes ? (
+            <button onClick={() => setShowMoreTimes(true)} className="text-primary font-semibold text-sm">
+              More
+            </button>
+          ) : (
+            <button onClick={() => setShowMoreTimes(false)} className="text-primary font-semibold text-sm">
+              Less
+            </button>
+          )}
+          {visibleDayIdx.map((dayIndex) => (
+                <td
+                  key={dayIndex}
+                  className="py-2 px-0.5 text-center text-[10px] font-bold"
+                >
+                  {weekDates[dayIndex].toLocaleDateString("en-US", {weekday: "short"})}
+                </td>
+              ))}
+        </div>
+
+       
+      </div>
+    );
+  })()}
+</div>
                   </div>
                 </div>
               </div>

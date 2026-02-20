@@ -132,7 +132,7 @@ export default function Suburbs() {
         return [...prev, {name, active: true, availableDays: [...ALL_DAYS]}];
       });
     } catch (err) {
-      console.error(err);
+  
       toast.error(err?.response?.data?.message || "Failed to add suburb");
     } finally {
       setIsAdding(false);
@@ -155,8 +155,8 @@ export default function Suburbs() {
 
       toast.success("Suburbs availability updated successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to update suburbs availability");
+     
+      toast.error(err?.response?.data?.message || "Failed to update suburbs availability");
     }
   };
 

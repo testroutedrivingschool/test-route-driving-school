@@ -17,6 +17,7 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 import Link from "next/link";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export const metadata = {
   title: "Driving Lesson Resources – Learn Faster with Experts	",
@@ -338,6 +339,7 @@ export default function Resources() {
         subtitle="Find quick answers about lessons, bookings, and learning support.
 "
       />
+          <HomeMap/>
     </div>
   );
 }

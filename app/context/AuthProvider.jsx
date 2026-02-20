@@ -72,7 +72,7 @@ const logoutUser = async () => {
 
       return {success: true, message: "Password updated successfully!"};
     } catch (error) {
-      console.error("Password change error:", error);
+      toast.error("Password change error:", error.message);
       
     }
   };
@@ -83,7 +83,7 @@ const logoutUser = async () => {
 
     const container = document.getElementById("recaptcha-container");
     if (!container) {
-      console.error("Recaptcha container not found in DOM");
+      toast.error("Recaptcha container not found in DOM");
       return null;
     }
 
@@ -179,7 +179,7 @@ const logoutUser = async () => {
 
       setLoading(false);
     } catch (e) {
-      console.error(e);
+      
       setLoading(false);
     }
   });

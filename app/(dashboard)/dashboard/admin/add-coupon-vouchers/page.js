@@ -38,7 +38,6 @@ export default function CouponAndVouchers() {
         queryClient.invalidateQueries(["coupons"]);
       }
     } catch (err) {
-      console.error(err);
       toast.error("Failed to add coupon");
     }
   };
@@ -50,7 +49,6 @@ export default function CouponAndVouchers() {
         queryClient.invalidateQueries(["coupons"]);
       }
     } catch (err) {
-      console.error(err);
       toast.error("Failed to delete coupon");
     }
   };

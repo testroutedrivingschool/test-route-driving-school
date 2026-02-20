@@ -32,7 +32,6 @@ export default function JoinAsInstructor() {
       if (err?.response?.status === 404) {
         setApplied({loading: false, data: null});
       } else {
-        console.log(err);
         toast.error("Failed to check instructor status");
         setApplied({loading: false, data: null});
       }
@@ -149,7 +148,7 @@ export default function JoinAsInstructor() {
       fetchApplication(user.email);
       setFormLoading(false);
     } catch (error) {
-      console.error(error);
+      
 
       if (axios.isAxiosError(error)) {
         const status = error.response?.status;

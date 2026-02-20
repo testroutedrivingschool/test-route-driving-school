@@ -6,10 +6,10 @@ import Container from "./Container";
 export default function PageHeroSection({title,subtitle}) {
   
   return (
-    <section className="relative w-full min-h-38 py-10">
+    <section className="relative w-full min-h-50  py-10">
       {/* Background Image */}
       <div
-        className="absolute inset-0 bg-cover bg-center"
+        className="absolute inset-0 bg-cover bg-center md:bg-position-[center_top_850px]"
         style={{backgroundImage: `url(${heroImg.src})`}}
       ></div>
 
@@ -20,7 +20,7 @@ export default function PageHeroSection({title,subtitle}) {
       {/* Centered Title */}
       <div className="relative z-10  h-full">
   <Container className="flex flex-col justify-center h-full pl-4 md:pl-8">
-  <h1 className="text-white text-3xl font-bold max-w-3xl">
+  <h1 className="text-white text-2xl md:text-3xl font-bold max-w-3xl">
     {title}
   </h1>
 
@@ -30,7 +30,7 @@ export default function PageHeroSection({title,subtitle}) {
       mt-3
       max-w-4xl
       text-base-300
-     pl-6
+     pl-4 md:pl-6
       leading-relaxed
 
       before:content-['']

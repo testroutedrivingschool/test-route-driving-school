@@ -13,6 +13,7 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import {addToCartLS} from "@/app/utils/cart";
 import {useRouter} from "next/navigation";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export default function Packages() {
   const {data: packagesData = [], isLoading} = useQuery({
@@ -94,7 +95,7 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
   if (isLoading || isAreaOptionLoading) return <LoadingSpinner />;
 
   return (
-    <section className="pb-16">
+    <section className="pb-5">
       <PageHeroSection
         title="Learn Faster with Our Professional Driving Package"
         subtitle={
@@ -327,6 +328,7 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
           </div>
         )}
       </Container>
+          <HomeMap/>
     </section>
   );
 }

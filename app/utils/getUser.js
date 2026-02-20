@@ -5,7 +5,6 @@ export const getUserByEmail = async (email) => {
     const res = await axios.get(`/api/users?email=${email}`);
     return res.data;
   } catch (error) {
-    console.error(error);
     return null;
   }
 };

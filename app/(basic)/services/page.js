@@ -4,6 +4,7 @@ import MovingCar from "@/app/shared/MovingCar";
 import Faq from "@/app/shared/FaqSection";
 import ServicesCards from "../components/services/ServicesCards";
 import Link from "next/link";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export const metadata = {
   title: "Top-Rated Driving Lessons Services for Fast Learners",
@@ -91,6 +92,7 @@ export default function Service() {
       <ServicesCards />
       <MovingCar />
       <Faq faqs={faqs}/>
+      <HomeMap/>
     </div>
   );
 }

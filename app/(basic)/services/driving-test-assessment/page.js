@@ -12,6 +12,7 @@ import ServicePackages from "../components/ServicePackages";
 import Faq from "@/app/shared/FaqSection";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import localDrivingImg from "@/app/assets/local-driving-lesson-test-route-driving-school.png";
+import HomeMap from "@/app/shared/ui/HomeMap";
 export const metadata = {
   title: "Driving Test Assessment in Sydney suburbs| Book Online Now",
   description:
@@ -32,48 +33,32 @@ export const metadata = {
 };
 const automaticDrivingPackages = [
   {
-    id: 1,
-    title: "1 Hour Lesson",
-    description: "Perfect for beginners starting their journey",
-    price: "75",
-    duration: "1 x 60 min lesson",
-    features: ["Single session", "Basic fundamentals", "Instructor feedback"],
-    buttonText: "Book 1 Hour",
+     _id: "695be1371f72e6c2fa81e094",
+    name: "1 hour 30 mins Driving Test Assessment",
+    packageThumbline: "/pkg.png",
+    duration: "1 hr 30 min",
+    price: 140,
+    originalPrice: "$170",
+   
+  
+    features: ["Pick Up and Drop Off from Your Location", "One Driving Test Assessment from the RMS Driving Test Center", "Test Assessment Report at the End of the Session","Access to our tutorial videos and training materials","Warm Up Lesson"],
+    buttonText: "Buy 1 hr 30 min Assessment Package",
     popular: false,
   },
   {
-    id: 2,
-    title: "5 Hour Pack",
-    description: "Build confidence with multiple sessions",
-    price: "365",
-    originalPrice: "395",
-    duration: "5 x 60 min lessons",
-    features: ["Save $30", "Progress tracking", "Flexible scheduling"],
-    buttonText: "Book 5 Hours",
+     _id: "695beb281f72e6c2fa81e097",
+    name: "2 Hours Driving Test Assessment",
+    packageThumbline: "/pkg.png",
+    duration: "2 hr",
+    price: 175,
+    originalPrice: "$200",
+   
+  
+    features: ["Pick Up and Drop Off from Your Location", "Two Driving Test Assessments from the RMS Driving Test Center", "Test Assessment Report at the End of the Session","Access to our tutorial videos and training materials","Warm Up Lesson"],
+    buttonText: "Buy 2 hr Assessment Package",
     popular: false,
   },
-  {
-    id: 3,
-    title: "10 Hour Pack",
-    description: "Comprehensive training for test preparation",
-    price: "700",
-    originalPrice: "750",
-    duration: "10 x 60 min lessons",
-    features: ["Save $50", "Mock tests", "Highway driving"],
-    buttonText: "Book 10 Hours",
-    popular: true,
-  },
-  {
-    id: 4,
-    title: "20 Hour Pack",
-    description: "Complete mastery package",
-    price: "1360",
-    originalPrice: "1500",
-    duration: "20 x 60 min lessons",
-    features: ["Save $140", "Advanced maneuvers", "Exam readiness"],
-    buttonText: "Book 20 Hours",
-    popular: false,
-  },
+ 
 ];
 const features = [
   <>
@@ -250,7 +235,7 @@ export default function DrivingTestAssessment() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -307,8 +292,13 @@ export default function DrivingTestAssessment() {
               </p>
 
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
-                <PrimaryBtn>Book a Lesson</PrimaryBtn>
+                <Link href={"/bookings"}>
+                
+                <PrimaryBtn>Book a Test Assessment</PrimaryBtn>
+                </Link>
+                   <Link href={"/packages"}>
                 <OutlineBtn>Learn More</OutlineBtn>
+                   </Link>
               </div>
             </div>
 
@@ -378,6 +368,7 @@ export default function DrivingTestAssessment() {
       />
 
       <Faq faqs={faqs} />
+          <HomeMap/>
     </div>
   );
 }

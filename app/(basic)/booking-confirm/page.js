@@ -26,7 +26,17 @@ export default function BookingConfirmPage() {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setBooking(JSON.parse(data));
   }, [router]);
+const [isMobile, setIsMobile] = useState(false);
 
+useEffect(() => {
+  const checkScreen = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+
+  checkScreen();
+  window.addEventListener("resize", checkScreen);
+  return () => window.removeEventListener("resize", checkScreen);
+}, []);
   const {data: instructor, isLoading} = useQuery({
     queryKey: ["instructor", booking?.instructorEmail],
     queryFn: async () => {
@@ -54,7 +64,7 @@ export default function BookingConfirmPage() {
     if (!selectedBooking) {
       return toast.error("Please select a service");
     }
-    console.log(booking);
+
 
     if (booking.bookingType === "website") {
       const bookingData = {
@@ -79,8 +89,8 @@ export default function BookingConfirmPage() {
         status: "pending",
         bookingType: booking.bookingType,
       };
-      console.log(userData);
-      console.log("Booking:", bookingData);
+  
+   
   
       sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
 
@@ -234,40 +244,24 @@ router.push("/select-client");
               ) : (
                 <>
                   {/* Services Table */}
-                  <div className="px-8 pb-8 overflow-x-auto">
-                    <table className="w-full min-w-[700px] md:min-w-full border border-border-color text-sm">
-                      <thead className="bg-secondary text-white">
-                        <tr>
-                          <th className="text-left px-3 py-2">Service</th>
-                          {durations.map((d) => (
-                            <th key={d.minutes}>{d.label}</th>
-                          ))}
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {services.map((service, index) => (
-                          <ServiceRow
-                            key={service.name}
-                            name={service.name}
-                            prices={service.prices}
-                            activeDurations={service.activeDurations}
-                            onSelect={setSelectedBooking}
-                            selectedBooking={selectedBooking}
-                            index={index}
-                          />
-                        ))}
-                      </tbody>
-                    </table>
-
-                    <div className="mt-6">
-                      <PrimaryBtn onClick={handleConfirmBooking}>
-                        Proceed
-                      </PrimaryBtn>
-                    </div>
-                  </div>
+{isMobile ? (
+  <MobileTable
+    services={services}
+    durations={durations}
+    selectedBooking={selectedBooking}
+    setSelectedBooking={setSelectedBooking}
+  />
+) : (
+  <DesktopTable
+    services={services}
+    durations={durations}
+    selectedBooking={selectedBooking}
+    setSelectedBooking={setSelectedBooking}
+  />
+)}
                 </>
               )}
+              <div className="mt-6 mb-6 md:px-8 px-2"> <PrimaryBtn className="w-full md:w-auto text-center! justify-center!" onClick={handleConfirmBooking}> Proceed </PrimaryBtn> </div>
             </div>
           </div>
         </div>
@@ -306,7 +300,7 @@ function ServiceRow({
             <label className="flex flex-col items-center font-medium gap-1 cursor-pointer">
               <input
                 type="radio"
-                name={`service-${index}`}
+                name={`servicePick`}
                 checked={
                   selectedBooking?.service === name &&
                   selectedBooking?.minutes === d.minutes
@@ -328,5 +322,75 @@ function ServiceRow({
         </td>
       ))}
     </tr>
+  );
+}
+
+function DesktopTable({ services, durations, selectedBooking, setSelectedBooking }) {
+  return (
+    <div className="px-8 overflow-x-auto">
+      <table className="w-full min-w-[700px] border border-border-color text-sm">
+        <thead className="bg-secondary text-white">
+          <tr>
+            <th className="text-left px-3 py-2">Service</th>
+            {durations.map((d) => (
+              <th key={d.minutes} className="px-2 py-2 text-center">
+                {d.label}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {services.map((service, index) => (
+            <ServiceRow
+              key={service.name}
+              name={service.name}
+              prices={service.prices}
+              activeDurations={service.activeDurations}
+              selectedBooking={selectedBooking}
+              onSelect={setSelectedBooking}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function MobileTable({ services, durations, selectedBooking, setSelectedBooking }) {
+  return (
+    <div className="px-2">
+      <table className="w-full table-fixed border border-border-color text-[11px]">
+        <thead className="bg-secondary text-white">
+          <tr>
+            <th className="text-left px-2 py-2 w-[40%]">Service</th>
+            {durations.map((d) => (
+              <th key={d.minutes} className="px-1 py-2 text-center font-bold">
+                {d.minutes === 60 && "1hr"}
+                {d.minutes === 90 && "1hr30"}
+                {d.minutes === 120 && "2hrs"}
+                {d.minutes === 150 && "2hr30"}
+                {d.minutes === 180 && "3hrs"}
+                {d.minutes === 210 && "3hr30"}
+                {d.minutes === 240 && "4hrs"}
+              </th>
+            ))}
+          </tr>
+        </thead>
+
+        <tbody>
+          {services.map((service, index) => (
+            <ServiceRow
+              key={service.name}
+              name={service.name}
+              prices={service.prices}
+              activeDurations={service.activeDurations}
+              selectedBooking={selectedBooking}
+              onSelect={setSelectedBooking}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

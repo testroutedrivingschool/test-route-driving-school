@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import Image from "next/image";
 import parkingPackageImg from "@/app/assets/parking-package-img-test-route-driving-school.jpg";
@@ -7,28 +8,15 @@ import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
-import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
-export const metadata = {
-  title:
-    "Affordable Parking Driving Lesson Package in Sydney suburbs| Book Today",
-  description:
-    " Master every spot with our Parking Driving Lesson Package in Sydney suburbs. Get expert 1-on-1 coaching to ace your test and park with confidence. Book your session now!",
-  keywords: [
-    "Parking Driving Lesson Package in Sydney suburbs",
-    "Driving school in Sydney suburbsNSW",
-    "Learn parking driving Sydney suburbs",
-    "Driving instructor in Sydney suburbs",
-    "Parking lessons for learners in Sydney suburbs",
-    "Driving lesson packages in Sydney suburbs",
-    "Parking driving lessons in Sydney suburbs",
-    "Best driving school near Sydney suburbs",
-    "Parking driving instructor near me",
-    "Driving lessons near Sydney suburbs",
-  ],
-};
+import HomeMap from "@/app/shared/ui/HomeMap";
+import { TbSteeringWheelFilled } from "react-icons/tb";
+import SectionHeader from "@/app/shared/ui/SectionHeader";
+import { useRouter } from "next/navigation";
+import { addToCartLS } from "@/app/utils/cart";
+
 
 const features = [
   <>
@@ -51,32 +39,20 @@ const features = [
 
 const automaticDrivingPackages = [
   {
-    id: 1,
-    title: "Highway Driving Lesson 2 Hours",
+    _id: "695bf45c1f72e6c2fa81e099",
+    name: "Parking Package 3 Hours",
+          packageThumbline: "/pkg.png",
+              price: "250",
     description:
-      "Driving on the highway can be intimidating for new drivers, but it’s an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely.",
-    price: "250",
+      "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation. Our Parking Lesson is designed specifically for learner drivers who want to refine their parking skills and feel more at ease in tight spaces. During this focused, hands-on session, you’ll learn essential parking techniques, including parallel parking, reverse parking, and angle parking. You’ll also gain the skills to park in crowded car parks, navigate tight spots, and handle tricky situations like parking on hills or in spaces with limited visibility. ",
+
     features: [
       "Automatic Driving Lesson - 7 days a week.  ",
       "Pick up and drop off at your desired location.  ",
       "One-to-one in-vehicle coaching.",
       "Teaching materials are provided.",
     ],
-    buttonText: "Book Now",
-  },
-  {
-    id: 2,
-    title: "Highway Driving Lesson 3 Hours",
-    description:
-      "Driving on the highway can be intimidating for new drivers, but it's an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely.",
-    price: "270",
-    features: [
-      "Automatic Driving Lesson - 7 days a week.  ",
-      "Pick up and drop off at your desired location.  ",
-      "One-to-one in-vehicle coaching.",
-      "Teaching materials are provided.",
-    ],
-    buttonText: "Book Now",
+    buttonText: "Buy Parking Package",
   },
 ];
 
@@ -182,6 +158,11 @@ const faqs = [
 ];
 
 export default function ParkingPackage() {
+  const router = useRouter()
+   const handleAddToCart = (pkg) => {
+      addToCartLS(pkg);
+      router.push("/cart");
+    };
   return (
     <div className="">
       <PageHeroSection
@@ -270,7 +251,7 @@ export default function ParkingPackage() {
 
               {/* CTA Buttons */}
               <div className="mt-4 flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -349,16 +330,65 @@ export default function ParkingPackage() {
       </section>
 
       {/* Service Packages */}
-      <ServicePackages
-        sectionTitle="Parking Packages"
-        sectionSubtitle={
-          <>
-            Choose the perfect package for your learning journey with our
-            structured Parking Package designed for success.
-          </>
-        }
-        packages={automaticDrivingPackages}
-      />
+        <section className="py-16 bg-base-300">
+           <Container>
+             <SectionHeader
+               className={`mt-0!`}
+               title={"Parking Packages"}
+               subtitle={"Choose the perfect package for your learning journey with our structured Parking Package designed for success."}
+             />
+     
+             <div className="mt-10 flex flex-wrap gap-4 shrink-0">
+               {automaticDrivingPackages.map((pkg) => (
+                 <div
+                   key={pkg._id}
+                   className="w-full md:flex-1 group rounded-xl bg-white px-8 py-6 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl border border-border-color"
+                 >
+                   {/* Icon */}
+                   <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary transition group-hover:bg-primary group-hover:text-white">
+                     <TbSteeringWheelFilled size={40} />
+                   </div>
+     
+                   {/* Title */}
+                   <h3 className="text-center text-lg md:text-xl font-semibold text-gray-900">
+                     {pkg.name}
+                   </h3>
+     
+                   {/* Description */}
+                   <p className="mt-2 text-center text-sm text-neutral">
+                     {pkg.description}
+                   </p>
+     
+                   {/* Features */}
+                   {pkg.features && pkg.features.length > 0 && (
+                     <ul className="mt-4 space-y-2 text-sm text-gray-700">
+                       {pkg.features.map((feature, idx) => (
+                         <li key={idx} className="flex items-start">
+                           <span className="mr-2 text-primary">•</span>
+                           <span className="text-neutral">{feature}</span>
+                         </li>
+                       ))}
+                     </ul>
+                   )}
+     
+                   {/* Divider */}
+                   <div className="my-6 h-px bg-border-color" />
+     
+                   {/* Price */}
+                   <div className="text-center">
+                     <span className="text-4xl font-extrabold text-gray-900">
+                       ${pkg.price}
+                     </span>
+                   </div>
+                   
+                   <PrimaryBtn onClick={()=>handleAddToCart(pkg)} className={`w-full! mt-4 text-center! block!`}>
+                     {pkg.buttonText}
+                   </PrimaryBtn>
+                 </div>
+               ))}
+             </div>
+           </Container>
+         </section>
       <MovingCar />
       <WhyChooseUs
         points={whyChoosePoints}
@@ -384,6 +414,7 @@ export default function ParkingPackage() {
         title={`Frequently Asked Questions About Driving Lessons Near Sydney Suburbs`}
         faqs={faqs}
       />
+          <HomeMap/>
     </div>
   );
 }

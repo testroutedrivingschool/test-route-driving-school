@@ -11,6 +11,7 @@ import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export const metadata = {
   title:
@@ -31,21 +32,22 @@ export const metadata = {
 };
 const cityCarDrivingPackages = [
   {
-    id: 1,
-    title: "City Driving Package 1",
-    description:
-      "Driving in the city can be one of the most challenging aspects of learning to drive, with constant traffic, unpredictable pedestrians, tight spaces, and frequent stop-and-go conditions. Our City Driving lesson is designed specifically for learner drivers who want to build confidence and competence navigating busy urban environments.",
-    price: "250",
-    buttonText: "Book Now",
+   _id: "695bf85c1f72e6c2fa81e09a",
+    name: "3 Hours City Driving Package",
+    description: "Driving in the city can be one of the most challenging aspects of learning to drive, with constant traffic, unpredictable pedestrians, tight spaces, and frequent stop-and-go conditions. Our City Driving lesson is designed specifically for learner drivers who want to build confidence and competence navigating busy urban environments. This tailored session focuses on essential city driving skills, including lane discipline, reading traffic signals, dealing with roundabouts, managing congestion, and safely sharing the road with cyclists, buses, and pedestrians. You’ll also practice smooth stopping and starting, merging into traffic, and maintaining safe following distances—all critical for safe city driving. Led by a qualified and experienced instructor, the lesson takes place in real city conditions, giving you practical, hands-on experience. You’ll receive personalized feedback and guidance to help you stay calm, focused, and in control behind the wheel. Whether you're preparing for your driving test or simply want to feel more comfortable driving in busy urban areas, this lesson will help you become a more confident and capable city driver.",
+    price: 270,
+    originalPrice: 165,
+    duration: "3 Hour",
+    features: ["Parking Lesson - 7 days a week",
+"Pick up and drop off at your desired location",
+"One-to-one in-vehicle coaching",
+"Teaching materials are provided",
+"Please call 24 hours before the change your appointment."],
+    buttonText: "Buy 3 Hours Pack",
+    popular: false,  packageThumbline: "/pkg.png",
+
   },
-  {
-    id: 2,
-    title: "City Driving Package 2",
-    description:
-      "Driving in the city can be one of the most challenging aspects of learning to drive, with constant traffic, unpredictable pedestrians, tight spaces, and frequent stop-and-go conditions. Our City Driving lesson is designed specifically for learner drivers who want to build confidence and competence navigating busy urban environments.",
-    price: "270",
-    buttonText: "Book Now",
-  },
+
 ];
 const features = [
   <>
@@ -323,6 +325,7 @@ export default function CityCarDrivingPackage() {
       />
 
       <Faq faqs={faqs} />
+          <HomeMap/>
     </div>
   );
 }

@@ -74,7 +74,6 @@ export default function VerifyOtp() {
       router.push("/");
        router.refresh();
     } catch (err) {
-      console.error(err);
       toast.error(
         getFirebaseAuthErrorMessage(err) || "Otp Verification Failed",
       );

@@ -166,8 +166,7 @@ export default function BookingDetailsCard() {
   const creditValue = isCard ? paidAmountNum : 0;
   const cashValue = isCash ? paidAmountNum : 0;
 
-  console.log(booking);
-  console.log(clientId);
+
 
   const saveNote = async (text) => {
     if (!clientId) {

@@ -242,7 +242,6 @@ export async function POST(req) {
 
     return NextResponse.json({_id: result.insertedId, ...doc}, {status: 201});
   } catch (error) {
-    console.error(error);
     return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }

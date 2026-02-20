@@ -58,8 +58,7 @@ export async function POST(req, {params}) {
 
     const type = safeStr(body.type || "general").toLowerCase();
     const text = safeStr(body.text).trim();
-console.log("NOTE BODY:", body);
-console.log("type:", body.type, "text:", body.text, "bookingTitle:", body.bookingTitle);
+
    if (!text) {
   return NextResponse.json(
     { error: "Text is required", got: body.text },

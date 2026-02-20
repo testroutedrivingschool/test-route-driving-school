@@ -25,6 +25,7 @@ import Reviews from "./components/Home/Reviews/Reviews";
 import WhatWeOffer from "./components/Home/WhatWeOffer";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import Link from "next/link";
+import HomeMap from "../shared/ui/HomeMap";
 
 export const metadata = {
   title:
@@ -210,6 +211,7 @@ export default function Home() {
         }
       />
       <Faq faqs={faqs} />
+         <HomeMap/>
     </>
   );
 }

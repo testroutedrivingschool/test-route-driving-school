@@ -11,7 +11,7 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 export default function CartPage() {
   const [cart, setCart] = useState([]);
   const router = useRouter();
-console.log(cart);
+
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(storedCart);
@@ -62,85 +62,106 @@ console.log(cart);
   }
 
   return (
-    <section className="py-16">
-      <Container>
-        <h1 className="text-3xl font-bold mb-10 ">Shopping Cart</h1>
+  <section className="py-16">
+  <Container>
+    <h1 className="text-3xl font-bold mb-10">Shopping Cart</h1>
 
-        {/* Table Header */}
-        <div className="grid grid-cols-12 bg-secondary text-white py-3 px-4 font-semibold">
-          <div className="col-span-6">Product</div>
-          <div className="col-span-2 text-center">Quantity</div>
-          <div className="col-span-2 text-right">Unit Price</div>
-          <div className="col-span-2 text-right">Total</div>
-        </div>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
+        {/* Table Head */}
+        <thead>
+          <tr className="bg-secondary text-white text-left">
+            <th className="py-3 px-4">Product</th>
+            <th className="py-3 px-4 text-center">Quantity</th>
+            <th className="py-3 px-4 text-right hidden md:table-cell">
+              Unit Price
+            </th>
+            <th className="py-3 px-4 text-right">Total</th>
+            <th className="py-3 px-4 text-center"></th>
+          </tr>
+        </thead>
 
-        {/* Cart Items */}
-        {cart.map((item) => {
-          const itemTotal = item.price * item.quantity;
+        {/* Table Body */}
+        <tbody>
+          {cart.map((item) => {
+            const itemTotal = item.price * item.quantity;
 
-          return (
-            <div
-              key={item._id}
-              className="grid grid-cols-12 items-center border-b border-border-color py-4 px-4"
-            >
-              {/* Product */}
-              <div className="col-span-6 flex items-center gap-4">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  width={80}
-                  height={60}
-                  className="rounded"
-                />
-                <span className="font-medium">{item.name}</span>
-              </div>
+            return (
+              <tr
+                key={item._id}
+                className="border-b border-border-color"
+              >
+                {/* Product */}
+                <td className="py-4 px-4 flex items-center gap-4">
+                  <Image
+                    src={item.image}
+                    alt={item.name || "Package"}
+                    width={80}
+                    height={60}
+                    className="rounded hidden md:block"
+                  />
+                  <span className="font-medium text-sm md:text-base">
+                    {item.name}
+                  </span>
+                </td>
 
-              {/* Quantity */}
-              <div className="col-span-2 text-center">
-                <input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={(e) => updateQuantity(item._id, e.target.value)}
-                  className="w-16 border border-border-color rounded px-2 py-1 text-center"
-                />
-              </div>
+                {/* Quantity */}
+                <td className="py-4 px-4 text-center">
+                  <input
+                    type="number"
+                    min="1"
+                    value={item.quantity}
+                    onChange={(e) =>
+                      updateQuantity(item._id, e.target.value)
+                    }
+                    className="w-16 border border-border-color rounded px-2 py-1 text-center"
+                  />
+                </td>
 
-              {/* Unit Price */}
-              <div className="col-span-2 text-right font-medium">
-               ${Number(item.price || 0).toFixed(2)}
-              </div>
+                {/* Unit Price */}
+                <td className="py-4 px-4 text-right hidden md:table-cell">
+                  ${Number(item.price || 0).toFixed(2)}
+                </td>
 
-              {/* Total */}
-              <div className="col-span-2 text-right flex items-center justify-end gap-3">
-                <span className="font-semibold">${itemTotal.toFixed(2)}</span>
-                <button onClick={() => removeItem(item._id)}>
-                  <FaTimes className="text-gray-400 hover:text-red-600" />
-                </button>
-              </div>
-            </div>
-          );
-        })}
+                {/* Total */}
+                <td className="py-4 px-4 text-right font-semibold">
+                  ${itemTotal.toFixed(2)}
+                </td>
 
-        {/* Summary */}
-        <div className="flex justify-end mt-10">
-          <h3 className="text-2xl font-bold">Total: ${total.toFixed(2)}</h3>
-        </div>
+                {/* Remove */}
+                <td className="py-4 px-4 text-center">
+                  <button onClick={() => removeItem(item._id)}>
+                    <FaTimes className="text-gray-400 hover:text-red-600 transition" />
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
 
-        {/* Actions */}
-        <div className="flex justify-between items-center mt-12">
-          <button
-            onClick={() => router.push("/packages")}
-            className="border border-primary text-primary px-6 py-3 rounded hover:bg-primary hover:text-white transition"
-          >
-            Keep Shopping
-          </button>
+    {/* Summary */}
+    <div className="flex justify-end mt-10">
+      <h3 className="text-lg md:text-2xl font-bold">
+        Total: ${total.toFixed(2)}
+      </h3>
+    </div>
 
-          <PrimaryBtn onClick={handleCheckout} className="px-10 py-4 text-lg">
-            Check Out
-          </PrimaryBtn>
-        </div>
-      </Container>
-    </section>
+    {/* Actions */}
+    <div className="flex justify-between items-center mt-12">
+      <button
+        onClick={() => router.push("/packages")}
+        className="border border-primary text-primary px-3 md:px-6 py-2 md:py-3 rounded hover:bg-primary hover:text-white transition"
+      >
+        Keep Shopping
+      </button>
+
+      <PrimaryBtn onClick={handleCheckout} className="md:px-10 md:py-4 text-lg">
+        Check Out
+      </PrimaryBtn>
+    </div>
+  </Container>
+</section>
   );
 }

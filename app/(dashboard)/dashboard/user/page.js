@@ -62,7 +62,7 @@ const nextLessons = dash?.nextLessons || [];
       {/* Welcome */}
       <div className="mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+          <h1 className="text-xl md:text-3xl font-bold text-gray-900">
             Welcome back, {userData?.name || ""}! 👋
           </h1>
           <p className="text-neutral mt-1">
@@ -74,13 +74,13 @@ const nextLessons = dash?.nextLessons || [];
         <div className="flex gap-2">
           <button
             onClick={() => router.push("/bookings")}
-            className="px-4 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition inline-flex items-center gap-2"
+            className="px-4 py-2 rounded-xl bg-primary text-white font-semibold hover:bg-primary/90 transition inline-flex items-center gap-2 "
           >
             Book a Lesson <FiArrowRight />
           </button>
           <button
             onClick={() => router.push("/dashboard/user/my-bookings")}
-            className="px-4 py-2 rounded-xl border border-border-color bg-white font-semibold hover:bg-gray-50 transition"
+            className="hidden md:block px-4 py-2 rounded-xl border border-border-color bg-white font-semibold hover:bg-gray-50 transition"
           >
             My Bookings
           </button>
@@ -92,7 +92,7 @@ const nextLessons = dash?.nextLessons || [];
         {cards.map((c, i) => (
           <div
             key={i}
-            className="bg-white rounded-2xl p-6 border border-border-color shadow-sm hover:shadow-md transition"
+            className="bg-white rounded-xl p-4 border border-border-color shadow-sm hover:shadow-md transition"
           >
             <div className="flex items-center justify-between">
               <div className="w-11 h-11 rounded-xl bg-gray-100 flex items-center justify-center text-lg">
@@ -106,9 +106,9 @@ const nextLessons = dash?.nextLessons || [];
       </div>
 
       {/* Next lesson */}
-     <div className="bg-white rounded-2xl p-6 border border-border-color">
+     <div className="bg-white rounded-2xl p-4 border border-border-color">
   <div className="flex items-center justify-between mb-6">
-    <h2 className="text-xl font-bold">Upcoming Lessons</h2>
+    <h2 className="text-lg font-bold">Upcoming Lessons</h2>
     <button
       onClick={() => router.push("/dashboard/user/my-bookings")}
       className="text-sm font-semibold text-primary hover:underline"
@@ -124,19 +124,19 @@ const nextLessons = dash?.nextLessons || [];
           key={lesson.bookingId}
           className="rounded-xl bg-gray-50 border border-border-color p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 hover:shadow-sm transition"
         >
-          <div>
+          <div className="">
             <p className="font-semibold text-gray-900">{lesson.type}</p>
-            <p className="text-sm text-neutral">{lesson.dateText}</p>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-neutral mt-2">{lesson.dateText}</p>
+            <p className="text-sm text-gray-600 font-semibold">
               Instructor:{" "}
               <span className="font-medium">{lesson.instructor}</span>
             </p>
             {(lesson.suburb || lesson.address) && (
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 font-semibold">
                 Location:{" "}
-                {[lesson.address, lesson.suburb]
+                <span className="font-medium">{[lesson.address, lesson.suburb]
                   .filter(Boolean)
-                  .join(", ")}
+                  .join(", ")}</span>
               </p>
             )}
           </div>

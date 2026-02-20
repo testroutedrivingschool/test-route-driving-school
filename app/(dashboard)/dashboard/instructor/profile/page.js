@@ -14,47 +14,50 @@ import Image from "next/image";
 import {useMemo} from "react";
 import {uploadProfilePhotoToMinio} from "@/app/utils/uploadProfilePhotoToMinio";
 export default function InstructorProfile() {
-  const {user,loading,changePassword} = useAuth();
-  const { data: userData, isLoading, error } = useQuery({
-  queryKey: ["mergeduserDaata", user?.email],
-  queryFn: async () => {
-    const res = await axios.get(
-      `/api/merged-instructor?email=${encodeURIComponent(user?.email || "")}`
-    );
-    return res.data; 
-  },
-  enabled: !loading && !!user?.email,
-});
+  const {user, loading, changePassword} = useAuth();
+  const {
+    data: userData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["mergeduserDaata", user?.email],
+    queryFn: async () => {
+      const res = await axios.get(
+        `/api/merged-instructor?email=${encodeURIComponent(user?.email || "")}`,
+      );
+      return res.data;
+    },
+    enabled: !loading && !!user?.email,
+  });
 
-    const qc = useQueryClient();
+  const qc = useQueryClient();
   const [photoFile, setPhotoFile] = useState(null);
   const [localPreview, setLocalPreview] = useState("");
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
- const [profile, setProfile] = useState({
-  name: "",
-  email: "",
-  phone: "",
-  homePhone: "",
-  workPhone: "",
-  dateOfBirth: "",
-  emergencyContact: "",
-  address: "",
-  suburb: "",
-  state: "",
-  postCode: "",
-  bio: "",
-  qualifications: "",
-  languages: [],
+  const [profile, setProfile] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    homePhone: "",
+    workPhone: "",
+    dateOfBirth: "",
+    emergencyContact: "",
+    address: "",
+    suburb: "",
+    state: "",
+    postCode: "",
+    bio: "",
+    qualifications: "",
+    languages: [],
 
-  abn: "",
-  vehicleModel: "",
-  licencePlate: "",
-  carInsuranceNumber: "",
-  carInsuranceExpiry: "",
-  vouchers: "None",
-});
+    abn: "",
+    vehicleModel: "",
+    licencePlate: "",
+    carInsuranceNumber: "",
+    carInsuranceExpiry: "",
+    vouchers: "None",
+  });
 
-console.log("user data",userData);
   const {data: locations = [], isLoading: isLocationsLoading} = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -71,35 +74,34 @@ console.log("user data",userData);
 
   const [serverProfile, setServerProfile] = useState(null);
 
-useEffect(() => {
-  if (!userData) return;
+  useEffect(() => {
+    if (!userData) return;
 
-  setServerProfile(userData);
+    setServerProfile(userData);
 
-  setProfile((prev) => ({
-    ...prev,
-    name: userData.name || "",
-    email: userData.email || "",
-    phone: userData.phone || "",
-    homePhone: userData.homePhone || "",
-    workPhone: userData.workPhone || "",
-    dateOfBirth: userData.dateOfBirth || "",
-    emergencyContact: userData.emergencyContact || "",
-    address: userData.address || "",
-    suburb: userData.suburb || "",
-    state: userData.state || "",
-    postCode: userData.postCode || "",
-    abn: userData.abn || "",
-    licencePlate: userData.licencePlate || "",
-    vehicleModel: userData.vehicleModel || "",
-    carInsuranceNumber: userData.carInsuranceNumber || "",
-    carInsuranceExpiry: userData.carInsuranceExpiry || "",
-    bio: userData.bio || "",
-    qualifications: userData.qualifications || "",
-    languages: Array.isArray(userData.languages) ? userData.languages : [],
-  }));
-}, [userData]);
-
+    setProfile((prev) => ({
+      ...prev,
+      name: userData.name || "",
+      email: userData.email || "",
+      phone: userData.phone || "",
+      homePhone: userData.homePhone || "",
+      workPhone: userData.workPhone || "",
+      dateOfBirth: userData.dateOfBirth || "",
+      emergencyContact: userData.emergencyContact || "",
+      address: userData.address || "",
+      suburb: userData.suburb || "",
+      state: userData.state || "",
+      postCode: userData.postCode || "",
+      abn: userData.abn || "",
+      licencePlate: userData.licencePlate || "",
+      vehicleModel: userData.vehicleModel || "",
+      carInsuranceNumber: userData.carInsuranceNumber || "",
+      carInsuranceExpiry: userData.carInsuranceExpiry || "",
+      bio: userData.bio || "",
+      qualifications: userData.qualifications || "",
+      languages: Array.isArray(userData.languages) ? userData.languages : [],
+    }));
+  }, [userData]);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -114,7 +116,7 @@ useEffect(() => {
     const {name, value} = e.target;
     setProfile((prev) => ({...prev, [name]: value}));
   };
-  
+
   const handlePhotoChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -159,7 +161,6 @@ useEffect(() => {
       setPhotoFile(null);
       setLocalPreview(`/api/storage/proxy?key=${encodeURIComponent(photoKey)}`);
     } catch (error) {
-      console.error(error);
       toast.error(error?.response?.data?.error || "Failed to update photo");
     } finally {
       setIsUploadingPhoto(false);
@@ -180,39 +181,36 @@ useEffect(() => {
     const {name, value} = e.target;
     setPasswordData((prev) => ({...prev, [name]: value}));
   };
-const buildPatch = (original = {}, current = {}) => {
-  const patch = {};
-  for (const key of Object.keys(current)) {
-    if (current[key] !== original?.[key]) patch[key] = current[key];
-  }
-  return patch;
-};
-const handleProfileSubmit = async (e) => {
-  e.preventDefault();
-  if (!serverProfile) return;
-
-  try {
-    const changes = buildPatch(serverProfile, profile);
-    changes.email = profile.email;
-
-    if (Object.keys(changes).length <= 1) {
-      toast.info("No changes to save");
-      setIsEditing(false);
-      return;
+  const buildPatch = (original = {}, current = {}) => {
+    const patch = {};
+    for (const key of Object.keys(current)) {
+      if (current[key] !== original?.[key]) patch[key] = current[key];
     }
+    return patch;
+  };
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    if (!serverProfile) return;
 
-    await axios.patch("/api/instructors", changes);
+    try {
+      const changes = buildPatch(serverProfile, profile);
+      changes.email = profile.email;
 
-    toast.success("Profile updated successfully!");
-    await qc.invalidateQueries({ queryKey: ["mergeduserDaata", user?.email] });
-    setIsEditing(false);
-  } catch (error) {
-    console.error(error);
-    toast.error(error.response?.data?.error || "Failed to update profile");
-  }
-};
+      if (Object.keys(changes).length <= 1) {
+        toast.info("No changes to save");
+        setIsEditing(false);
+        return;
+      }
 
+      await axios.patch("/api/instructors", changes);
 
+      toast.success("Profile updated successfully!");
+      await qc.invalidateQueries({queryKey: ["mergeduserDaata", user?.email]});
+      setIsEditing(false);
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Failed to update profile");
+    }
+  };
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
@@ -233,7 +231,6 @@ const handleProfileSubmit = async (e) => {
       });
       setIsChangingPassword(false);
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Failed to update password");
     }
   };
@@ -358,7 +355,7 @@ const handleProfileSubmit = async (e) => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           Phone
@@ -470,32 +467,31 @@ const handleProfileSubmit = async (e) => {
                           className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                         />
                       </div>
-                      
                     </div>
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Bio
-                        </label>
-                        <textarea
-                          type="bio"
-                          name="bio"
-                          value={profile.bio}
-                          onChange={handleProfileChange}
-                          className={`w-full px-3 py-2 min-h-32 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500`}
-                        />
-                      </div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Bio
+                      </label>
+                      <textarea
+                        type="bio"
+                        name="bio"
+                        value={profile.bio}
+                        onChange={handleProfileChange}
+                        className={`w-full px-3 py-2 min-h-32 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:text-gray-500`}
+                      />
+                    </div>
                     <div>
-  <label className="block text-sm font-medium text-gray-700 mb-1">
-    Qualifications
-  </label>
-  <textarea
-    name="qualifications"
-    value={profile.qualifications}
-    onChange={handleProfileChange}
-    disabled={!isEditing}
-    className="w-full px-3 py-2 border min-h-20 border-gray-300 rounded-md"
-  />
-</div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Qualifications
+                      </label>
+                      <textarea
+                        name="qualifications"
+                        value={profile.qualifications}
+                        onChange={handleProfileChange}
+                        disabled={!isEditing}
+                        className="w-full px-3 py-2 border min-h-20 border-gray-300 rounded-md"
+                      />
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">

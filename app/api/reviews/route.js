@@ -1,5 +1,5 @@
-import { reviewsCollection, instructorsCollection } from "@/app/libs/mongodb/db";
-import { NextResponse } from "next/server";
+import {reviewsCollection, instructorsCollection} from "@/app/libs/mongodb/db";
+import {NextResponse} from "next/server";
 
 export async function GET(req) {
   try {
@@ -12,12 +12,14 @@ export async function GET(req) {
     if (targetEmail) query.targetEmail = targetEmail;
 
     const collection = await reviewsCollection();
-    const reviews = await collection.find(query).sort({ createdAt: -1 }).toArray();
+    const reviews = await collection
+      .find(query)
+      .sort({createdAt: -1})
+      .toArray();
 
     return NextResponse.json(reviews);
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to fetch reviews" }, { status: 500 });
+    return NextResponse.json({error: "Failed to fetch reviews"}, {status: 500});
   }
 }
 
@@ -42,25 +44,33 @@ export async function POST(req) {
 
     // ---------- validation ----------
     if (!email || !authorName) {
-      return NextResponse.json({ error: "Missing author info" }, { status: 400 });
+      return NextResponse.json({error: "Missing author info"}, {status: 400});
     }
 
     const numRating = Number(rating);
     if (!Number.isFinite(numRating) || numRating < 1 || numRating > 5) {
-      return NextResponse.json({ error: "Rating must be between 1 and 5" }, { status: 400 });
+      return NextResponse.json(
+        {error: "Rating must be between 1 and 5"},
+        {status: 400},
+      );
     }
 
     if (!message || !message.trim()) {
-      return NextResponse.json({ error: "Message is required" }, { status: 400 });
+      return NextResponse.json({error: "Message is required"}, {status: 400});
     }
 
     if (targetType === "instructor" && !targetEmail) {
-      return NextResponse.json({ error: "Instructor email is required" }, { status: 400 });
+      return NextResponse.json(
+        {error: "Instructor email is required"},
+        {status: 400},
+      );
     }
 
     // ---------- normalize author image ----------
     // Rule: prefer key (MinIO) over url
-    const normalizedAuthorImageKey = authorImageKey ? String(authorImageKey).trim() : "";
+    const normalizedAuthorImageKey = authorImageKey
+      ? String(authorImageKey).trim()
+      : "";
     const normalizedAuthorImage = normalizedAuthorImageKey
       ? "" // ✅ if key exists, clear url
       : authorImage
@@ -80,7 +90,10 @@ export async function POST(req) {
 
       targetType,
       targetName,
-      targetEmail: targetType === "instructor" ? String(targetEmail).trim().toLowerCase() : "",
+      targetEmail:
+        targetType === "instructor"
+          ? String(targetEmail).trim().toLowerCase()
+          : "",
 
       createdAt: new Date(),
     };
@@ -93,7 +106,7 @@ export async function POST(req) {
     if (targetType === "instructor") {
       const insCol = await instructorsCollection();
       await insCol.updateOne(
-        { email: reviewDoc.targetEmail },
+        {email: reviewDoc.targetEmail},
         {
           $push: {
             reviews: {
@@ -109,16 +122,15 @@ export async function POST(req) {
               authorImageKey: reviewDoc.authorImageKey,
             },
           },
-        }
+        },
       );
     }
 
     return NextResponse.json(
-      { message: "Review added", insertedId: result.insertedId },
-      { status: 201 }
+      {message: "Review added", insertedId: result.insertedId},
+      {status: 201},
     );
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Failed to add review" }, { status: 500 });
+    return NextResponse.json({error: "Failed to add review"}, {status: 500});
   }
 }

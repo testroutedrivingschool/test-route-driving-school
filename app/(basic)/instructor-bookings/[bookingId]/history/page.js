@@ -7,11 +7,11 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import { FaPrint} from "react-icons/fa";
 import {useRouter} from "next/navigation";
 import { useBooking } from "../BookingContext";
+import { toast } from "react-toastify";
 
 export default function HistoryTab() {
   const [q, setQ] = useState("");
   const booking = useBooking();
-  console.log(booking);
   const clientId = booking?.clientId || booking?.userId
   const [pdfLoading, setPdfLoading] = useState(false);
   const router = useRouter();
@@ -55,9 +55,9 @@ export default function HistoryTab() {
 
       window.URL.revokeObjectURL(url);
     } catch (e) {
-      console.error(e);
+   
       // optional toast
-      // toast.error("PDF download failed");
+      toast.error("PDF download failed");
     } finally {
       setPdfLoading(false);
     }

@@ -106,8 +106,8 @@ const authorImageData = useMemo(() => {
         setFeedbackFor("website");
       }
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to send feedback. Please try again");
+      
+      toast.error(err?.response?.data?.message ||"Failed to send feedback. Please try again");
     } finally {
       setLoading(false);
     }

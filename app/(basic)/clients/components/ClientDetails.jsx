@@ -24,7 +24,7 @@ export default function ClientDetails({client, onBack}) {
       return res.data;
     },
   });
-  console.log(client);
+ 
   const initial = useMemo(
     () => ({
       firstName: safeStr(client.firstName),
@@ -152,7 +152,7 @@ export default function ClientDetails({client, onBack}) {
         toast.error(msg); // duplicate email/mobile
       else toast.error(msg);
 
-      console.log("PATCH ERROR:", err?.response?.data || err);
+      
     } finally {
       setSaving(false);
     }

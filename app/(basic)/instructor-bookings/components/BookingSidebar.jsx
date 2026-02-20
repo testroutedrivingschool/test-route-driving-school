@@ -206,7 +206,7 @@ const menuItems = useMemo(() => {
       setSaving(false);
     }
   };
-  console.log(booking);
+
 const handleMenuClick = async (key) => {
     if (key === "invoiceNote") {
     setInvoiceNoteText("");
@@ -238,7 +238,7 @@ const handleMenuClick = async (key) => {
       toast.success("Invoice emailed successfully");
       return;
     } catch (err) {
-       console.log("EMAIL INVOICE ERROR:", err?.response?.status, err?.response?.data, err);
+    
   toast.error(err?.response?.data?.error || "Failed to email invoice");
       return;
     } finally {
@@ -352,7 +352,7 @@ await axios.post("/api/email-invoice", {
     toast.success("Invoice note emailed");
     setInvoiceNoteOpen(false);
   } catch (err) {
-    console.log("INVOICE NOTE EMAIL ERROR:", err?.response?.status, err?.response?.data, err);
+  
     toast.error(err?.response?.data?.error || "Failed to send invoice note");
   } finally {
     setSaving(false);

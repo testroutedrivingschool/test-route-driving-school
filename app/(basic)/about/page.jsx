@@ -21,6 +21,7 @@ import Faq from "@/app/shared/FaqSection";
 import aboutImg from "@/app/assets/whychooseus-test-route-driving-school.jpg";
 import aboutImg2 from "@/app/assets/about-img2.png";
 import Link from "next/link";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 export const metadata = {
   title:
@@ -200,7 +201,7 @@ export default function About() {
         title={
           "About Us | Test Route Driving School – Learn to Drive with Confidence"
         }
-        subtitle={`Master real test routes with Test Route Driving School – experienced Sydney instructors. Start your journey today and drive with confidence.`}
+       subtitle={`At Test Route Driving School, we are committed to helping learners become safe, confident, and independent drivers. Our experienced Sydney instructors provide structured lessons, real test route practice, and personalised guidance tailored to your skill level. Whether you are a beginner, a nervous learner, or preparing for your NSW driving test, we focus on building lifelong driving skills through safety, patience, and professionalism. Start your journey with us and experience supportive training designed to help you succeed on the road and beyond.`}
       />
       <section className="pt-16 ">
         <Container>
@@ -396,6 +397,7 @@ export default function About() {
 
         <MovingCar className="mt-20 md:mt-25" />
         <Faq faqs={faqs} />
+        <HomeMap/>
       </section>
     </>
   );

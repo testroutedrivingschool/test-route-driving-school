@@ -55,7 +55,7 @@ export default function FinancialPage() {
         toast.success("Submitted Successfully");
       }
     } catch (err) {
-      console.error(err);
+
       alert(err.response?.data?.error || "Failed to save financial info");
     } finally {
       setLoading(false);

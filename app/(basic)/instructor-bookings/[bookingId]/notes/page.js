@@ -67,7 +67,7 @@ export default function NotesTab() {
   const booking = useBooking();
   const clientId = booking?.clientId || booking?.userId || "";
   const bookingId = oid(booking?._id);
-console.log(booking);
+
   const [q, setQ] = useState("");
 
   // ✅ Session note modal
@@ -203,7 +203,7 @@ console.log(booking);
                         width={200}
                         height={200}
                         src={avatarSrc}
-                        alt=""
+                        alt="Client Image"
                         className="h-18 w-18 rounded-md object-cover"
                       />
                     </div>

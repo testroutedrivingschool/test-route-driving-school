@@ -16,7 +16,7 @@ export default function InstructorDetails() {
   const router = useRouter();
   const {id} = useParams();
   const [search, setSearch] = useState("");
-  console.log(id);
+
   const {
     data: instructor,
     isLoading,
@@ -29,7 +29,7 @@ export default function InstructorDetails() {
       return res.data;
     },
   });
-  console.log(instructor);
+
   const avatarSrc = useMemo(() => {
     if (!instructor) return "/profile-avatar.png";
     if (instructor.photo) return instructor.photo;

@@ -24,7 +24,6 @@ export async function GET(req, context) {
 
     return NextResponse.json(packageItem);
   } catch (error) {
-    console.error(error);
     return NextResponse.json({error: "Failed to fetch package"}, {status: 500});
   }
 }

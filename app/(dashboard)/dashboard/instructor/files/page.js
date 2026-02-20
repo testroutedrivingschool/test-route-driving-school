@@ -90,7 +90,7 @@ export default function InstructorFiles() {
       toast.success("Uploaded!");
       await refetch();
     } catch (err) {
-      console.error(err);
+   
       toast.error(
         err?.response?.data?.error ||
           err?.response?.data?.message ||
@@ -120,7 +120,7 @@ export default function InstructorFiles() {
       if (data?.url) window.open(data.url, "_blank", "noopener,noreferrer");
       else toast.error("Failed to get download URL");
     } catch (err) {
-      console.error(err);
+    
       toast.error("Failed to open file");
     }
   };

@@ -1,3 +1,4 @@
+"use client"
 import Link from "next/link";
 import Image from "next/image";
 import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.jpg";
@@ -11,53 +12,25 @@ import ServicePackages from "../components/ServicePackages";
 import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
-export const metadata = {
-  title: "Highway Driving Lessons in Sydney suburbs| Safe & Confident Driving",
-  description:
-    "Learn highway driving safely – Join Highway Driving Lessons in Sydney suburbs. Flexible lessons for beginners & P-platers. Book your lesson today!",
-  keywords: [
-    "Highway Driving Lessons in Sydney suburbs",
-    "Highway driving instructor near me",
-    "Best driving instructor in Sydney suburbs",
-    "Professional driving lessons Sydney suburbs",
-    "Driving instructor Sydney suburbs",
-    "Highway Driving Lessons in Sydney suburbs",
-    "Driving training Sydney suburbs",
-    "Driving lessons near Sydney suburbs",
-    "Advanced driving lessons Sydney suburbs",
-    "Highway driving instructor near me",
-    "Highway driving lessons near me",
-  ],
-};
+import HomeMap from "@/app/shared/ui/HomeMap";
+
 
 const automaticDrivingPackages = [
   {
-    id: 1,
-    title: "Highway Package 1",
+  _id: "695bf9551f72e6c2fa81e09b",
+    name: "Highway Package 3 Hours",
+          packageThumbline: "/pkg.png",
+              price: "270",
     description:
-      "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation.",
-    price: "220",
+      "Driving on the highway can be intimidating for new drivers, but it’s an essential skill for gaining full independence behind the wheel. Our Highway Driving lesson is designed to give learner drivers the confidence and experience needed to navigate fast-paced highways and motorways safely. This specialized session focuses on key aspects of highway driving, including merging onto the highway, maintaining appropriate speeds, lane changes, and safe distances between vehicles. You will also learn how to handle high-speed driving, exit and entry ramps, and how to stay calm in heavy traffic. ",
+
     features: [
       "Automatic Driving Lesson - 7 days a week.  ",
       "Pick up and drop off at your desired location.  ",
       "One-to-one in-vehicle coaching.",
       "Teaching materials are provided.",
     ],
-    buttonText: "Book Now",
-  },
-  {
-    id: 2,
-    title: "Highway Package 2",
-    description:
-      "Parking can be one of the most challenging skills for new drivers to master, but with the right guidance and practice, you can build the confidence needed to park safely and efficiently in any situation.",
-    price: "255",
-    features: [
-      "Automatic Driving Lesson - 7 days a week.  ",
-      "Pick up and drop off at your desired location.  ",
-      "One-to-one in-vehicle coaching.",
-      "Teaching materials are provided.",
-    ],
-    buttonText: "Book Now",
+    buttonText: "Buy Highway Package",
   },
 ];
 const features = [
@@ -259,7 +232,7 @@ export default function HighwayPackage() {
 
               {/* CTA Buttons */}
               <div className="mt-4 flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Highway Package
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -356,6 +329,7 @@ export default function HighwayPackage() {
       />
 
       <Faq faqs={faqs} />
+          <HomeMap/>
     </div>
   );
 }

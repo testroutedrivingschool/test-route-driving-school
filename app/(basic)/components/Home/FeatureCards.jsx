@@ -82,7 +82,7 @@ export default function FeatureCards() {
       <Container>
         <SectionHeader
           className={`mt-0!`}
-          title="Trusted by Thousands of Drivers"
+          title="Trusted by Thousands of Driving Learners"
           subtitle="Years of excellence in driver education with proven results and satisfied students"
         />
 

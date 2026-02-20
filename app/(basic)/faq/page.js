@@ -1,6 +1,7 @@
 "use client";
 
 import Container from "@/app/shared/ui/Container";
+import HomeMap from "@/app/shared/ui/HomeMap";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import Link from "next/link";
@@ -348,6 +349,7 @@ export default function FAQPAGE() {
           </div>
         </Container>
       </section>
+          <HomeMap/>
     </div>
   );
 }

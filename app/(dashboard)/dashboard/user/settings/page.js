@@ -45,8 +45,7 @@ export default function UserSettings() {
         }`
       );
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to update schedule");
+      toast.error(err?.response?.data?.message ||"Failed to update schedule");
     }
   };
 

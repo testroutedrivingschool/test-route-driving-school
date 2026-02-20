@@ -41,7 +41,6 @@ export default function AddAnnouncements() {
         setShowForm(false);
       }
     } catch (err) {
-      console.error(err);
       toast.error("Failed to add announcement");
     }
   };
@@ -55,7 +54,6 @@ export default function AddAnnouncements() {
         queryClient.invalidateQueries(["announcements"]);
       }
     } catch (err) {
-      console.error(err);
       toast.error("Failed to delete announcement");
     }
   };

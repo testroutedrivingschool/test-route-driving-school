@@ -9,7 +9,7 @@ import {FiCalendar} from "react-icons/fi";
 
 export default function InstructorMyBookings() {
   const {data: user, isLoading: isUserLoading} = useUserData();
-  console.log(user);
+
   const {data: bookings = [], isLoading} = useQuery({
     queryKey: ["bookings", user?.email],
     queryFn: async () => {
@@ -18,7 +18,6 @@ export default function InstructorMyBookings() {
     },
     enabled: !!user?.email,
   });
-  console.log(bookings);
   if (isUserLoading || isLoading) return <LoadingSpinner />;
 
   if (!bookings.length) {

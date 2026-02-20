@@ -2,13 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import nightDrivingLessonImg from "@/app/assets/night-driving-test-route-driving-school.jpg";
 import {
-  FaAward,
-  FaBrain,
-  FaCalendarAlt,
-  FaCar,
-  FaChartLine,
   FaCheckCircle,
-  FaShieldAlt,
 } from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
@@ -20,6 +14,7 @@ import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
 import nightDrivingImg from "@/app/assets/local-driving-lesson-test-route-driving-school.png";
+import HomeMap from "@/app/shared/ui/HomeMap";
 export const metadata = {
   title:
     "Night Driving Lessons in Sydney suburbsfor Beginners & Nervous Drivers",
@@ -38,37 +33,35 @@ export const metadata = {
 };
 
 const automaticDrivingPackages = [
-  {
-    id: 1,
-    title: "1 Hour Lesson",
-    description: "1 x 60 min Driving  Lesson ",
-    price: "75",
+    {
+    _id: "695be0001f72e6c2fa81e093",
+    name: "1 hour Night Driving Lesson",
+    description: "1 X 60 min Lesson",
+    price: 85,
     duration: "1 x 60 min lesson",
-    buttonText: "Book 1 Hour Lesson",
+    features: ["Automatic Driving Lessons at night (after Sunset and before Sunrise next day) and 7 days a week",
+"Pick up and drop off at your desired location",
+"One-to-one in-vehicle coaching",
+"Teaching materials are provided",
+"Please call 24 hours prior to the change your appointment to avoid the full fees penalty."],
+    buttonText: "Buy 1 Hours Pack",
+    popular: false,
+      packageThumbline: "/pkg.png",
   },
   {
-    id: 2,
-    title: "5 Hour Lesson Pack",
-    description: "5 x 60 min Driving Lesson",
-    price: "365",
+    _id: "695be4871f72e6c2fa81e096",
+    name: "2 Hours Night Driving Lesson",
+    description: "2 X 60 min Lesson",
+    price: "165",
+    originalPrice: 165,
     duration: "5 x 60 min lessons",
-    buttonText: "Buy 5 Hours Pack",
-  },
-  {
-    id: 3,
-    title: "10 Hour Pack",
-    description: "10 x 60min Driving Lesson",
-    price: "700",
-    duration: "10 x 60 min lessons",
-    buttonText: "Buy 10 Hours Pack",
-  },
-  {
-    id: 4,
-    title: "20 Hour Pack",
-    description: "20 x 60min Driving Lesson",
-    price: "1360",
-    duration: "20 x 60 min lessons",
-    buttonText: "Buy 20 Hours",
+    features: ["Automatic Driving Lessons at night (after Sunset and before Sunrise next day) and 7 days a week",
+"Pick up and drop off at your desired location",
+"One-to-one in-vehicle coaching",
+"Teaching materials are provided",
+"Please call 24 hours prior to the change your appointment to avoid the full fees penalty."],
+    buttonText: "Buy 2 Hours Pack",
+    popular: false,  packageThumbline: "/pkg.png",
   },
 ];
 const features = [
@@ -243,7 +236,7 @@ export default function NightDrivingLesson() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your Night Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -305,8 +298,13 @@ export default function NightDrivingLesson() {
               </p>
 
               <div className="mt-6 flex flex-col sm:flex-row gap-4">
+                <Link href={`/bookings`}>
+                
                 <PrimaryBtn>Book a Lesson</PrimaryBtn>
+                </Link>
+                         <Link href={`/packages`}>
                 <OutlineBtn>Learn More</OutlineBtn>
+                         </Link>
               </div>
             </div>
 
@@ -419,6 +417,7 @@ export default function NightDrivingLesson() {
           "Frequently Asked Questions About Night Time Driving Lessons Near Me"
         }
       />
+          <HomeMap/>
     </div>
   );
 }

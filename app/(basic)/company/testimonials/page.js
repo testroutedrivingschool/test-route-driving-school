@@ -11,6 +11,7 @@ import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {FaStar, FaRegStar, FaStarHalfAlt} from "react-icons/fa";
 import Image from "next/image";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 function formatAUDate(date) {
   try {
@@ -235,6 +236,7 @@ export default function Testimonials() {
         subtitle={`Find quick answers about lessons, bookings, and learning support.
 `}
       />
+          <HomeMap/>
     </>
   );
 }

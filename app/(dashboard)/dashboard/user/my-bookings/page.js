@@ -71,13 +71,13 @@ export default function UserBookings() {
           <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
             <FiCalendar /> My Bookings
           </h2>
-          <p className="text-sm opacity-70 mt-1">
+          <p className="text-sm opacity-70 mt-2">
             <b>Reschedule rule:</b> You must reschedule at least <b>24 hours</b> before the booking time.
           </p>
         </div>
       </div>
 
-      <div className="p-6 space-y-4">
+      <div className="p-4 space-y-4">
         {bookings.map((b) => {
           const allow = canUserReschedule(b.bookingDate, b.bookingTime);
           const when = `${formatDateAU(b.bookingDate)} • ${b.bookingTime || "—"}`;
@@ -87,20 +87,20 @@ export default function UserBookings() {
             <div key={b._id} className="rounded-xl border border-border-color bg-base-100 p-5 shadow-sm">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">{b.serviceName}</h3>
+                  <h3 className="text-lg font-bold">{b.serviceName}</h3>
 
                   <div className="text-sm opacity-85">
                     <b>Instructor:</b> {b.instructorName || "—"}{" "}
                     {b.instructorEmail ? <span className="opacity-70">({b.instructorEmail})</span> : null}
                   </div>
 
-                  <div className="flex flex-col gap-1 text-sm">
+                  <div className="flex flex-col gap-3  text-sm">
                     <div className="flex items-center gap-2 opacity-85">
-                      <FiClock />
+                      <FiClock className="text-lg hidden sm:block" />
                       <span><b>Date & Time:</b> {when}</span>
                     </div>
                     <div className="flex items-center gap-2 opacity-85">
-                      <FiMapPin />
+                      <FiMapPin className="text-xl md:text-lg hidden sm:block" />
                       <span><b>Location:</b> {where || "—"}</span>
                     </div>
                     <div className="opacity-85">
@@ -110,8 +110,8 @@ export default function UserBookings() {
                 </div>
 
                 <div className="flex md:flex-col items-end justify-between gap-3 md:min-w-60">
-                  <div className="text-right">
-                    <div className="text-xs opacity-70">Price</div>
+                  <div className="text-left">
+                    <div className="text-sm opacity-70">Price:</div>
                     <div className="text-xl font-bold">${Number(b.price || 0).toFixed(2)}</div>
                   </div>
 
@@ -132,14 +132,18 @@ export default function UserBookings() {
                     <FiEdit3 />
                     Reschedule
                   </button>
-
-                  {!allow && (
-                    <p className="text-xs opacity-60 text-right max-w-[220px]">
+ {!allow && (
+                    <p className="hidden md:block text-xs opacity-60 text-right">
                       Locked: within 24 hours of the booking time.
                     </p>
                   )}
                 </div>
               </div>
+                  {!allow && (
+                    <p className="md:hidden text-xs opacity-60 text-right mt-2">
+                      Locked: within 24 hours of the booking time.
+                    </p>
+                  )}
             </div>
           );
         })}

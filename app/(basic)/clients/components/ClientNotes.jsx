@@ -242,7 +242,6 @@ export default function ClientNotes({clientId}) {
             <div className="p-6 text-sm text-gray-500">No notes found.</div>
           ) : (
             filtered.map((n) => {
-              console.log(n);
               const avatarSrc = n?.createdBy?.photo
                 ? n.createdBy.photo
                 : n?.createdBy?.photoKey
@@ -258,7 +257,7 @@ export default function ClientNotes({clientId}) {
                     <div className="col-span-3 flex flex-col items-start gap-2 px-4">
                       <img
                         src={avatarSrc}
-                        alt=""
+                        alt="Client Image"
                         className="h-18 w-18 rounded-md object-cover"
                       />
                     </div>

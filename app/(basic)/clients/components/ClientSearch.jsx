@@ -69,7 +69,6 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
       return res.data;
     },
   });
-  console.log(clients);
   const onSearch = (e) => {
     e.preventDefault();
     setFilters(form); // ✅ triggers query

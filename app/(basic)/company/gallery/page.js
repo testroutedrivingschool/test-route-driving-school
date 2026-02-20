@@ -15,6 +15,7 @@ import MovingCar from "@/app/shared/MovingCar";
 import WhyChooseUs from "../../components/Home/WhyChooseUs";
 import Faq from "@/app/shared/FaqSection";
 import Link from "next/link";
+import HomeMap from "@/app/shared/ui/HomeMap";
 const galleryImages = [
   {
     id: 1,
@@ -203,6 +204,7 @@ export default function Gallery() {
 
 </>} points={whyChoosePoints}/>
       <Faq />
+          <HomeMap/>
     </>
   );
 }

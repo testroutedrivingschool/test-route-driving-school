@@ -102,7 +102,6 @@ export async function POST(req) {
       {status: 201},
     );
   } catch (error) {
-    console.error(error);
     return NextResponse.json({error: "Failed to add package"}, {status: 500});
   }
 }
@@ -136,7 +135,6 @@ export async function PUT(req) {
 
     return NextResponse.json({message: "Package updated successfully"});
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       {error: "Failed to update package"},
       {status: 500},
@@ -168,7 +166,6 @@ export async function DELETE(req) {
 
     return NextResponse.json({message: "Package deleted successfully"});
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       {error: "Failed to delete package"},
       {status: 500},

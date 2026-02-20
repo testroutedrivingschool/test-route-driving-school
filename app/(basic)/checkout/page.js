@@ -197,7 +197,7 @@ setTotal(Number(data.amount || 0));
     sessionStorage.removeItem("checkoutCart");
     router.push("/dashboard/user/purchases");
   } catch (err) {
-    console.error(err);
+   
     toast.error(err?.response?.data?.error || err.message || "Payment failed");
   } finally {
     setLoading(false);

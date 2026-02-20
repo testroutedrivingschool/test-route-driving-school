@@ -69,7 +69,6 @@ export default function ManageSuburbs() {
 
       await refetchLocations();
     } catch (err) {
-      console.error(err);
       toast.error(err?.response?.data?.message || "Failed to add suburb");
     } finally {
       setIsAdding(false);
@@ -90,7 +89,6 @@ export default function ManageSuburbs() {
 
       await refetchLocations();
     } catch (err) {
-      console.error(err);
       toast.error(err?.response?.data?.message || "Failed to delete suburb");
     } finally {
       setIsDeleting(false);

@@ -117,7 +117,7 @@ export default function AdminProfile() {
       setPhotoFile(null);
       setLocalPreview(`/api/storage/proxy?key=${encodeURIComponent(photoKey)}`);
     } catch (error) {
-      console.error(error);
+     
       toast.error(error?.response?.data?.error || "Failed to update photo");
     } finally {
       setIsUploadingPhoto(false);
@@ -140,7 +140,7 @@ export default function AdminProfile() {
       toast.success("Profile updated successfully!");
       setIsEditing(false);
     } catch (error) {
-      console.error(error);
+     
       toast.error(error.response?.data?.error || "Failed to update profile");
     }
   };
@@ -165,7 +165,7 @@ export default function AdminProfile() {
       });
       setIsChangingPassword(false);
     } catch (error) {
-      console.error(error);
+    
       toast.error(error.message || "Failed to update password");
     }
   };

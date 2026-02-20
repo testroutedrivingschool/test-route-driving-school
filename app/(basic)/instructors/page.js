@@ -23,7 +23,7 @@ export default function Instructors() {
       return res.data;
     }
   })
-  console.log(instructors);
+
   
   if(isLoading) return <LoadingSpinner/>
   return (
@@ -41,7 +41,7 @@ export default function Instructors() {
       : "/profile-avatar.png";
             return (
             <div
-              key={inst.id}
+              key={inst._id}
               className="bg-white shadow-lg rounded-lg overflow-hidden"
             >
               <Image

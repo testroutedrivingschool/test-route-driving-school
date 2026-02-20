@@ -88,7 +88,7 @@ export async function PATCH(req, { params }) {
     if (!ObjectId.isValid(clientId)) {
       return NextResponse.json({ error: "Invalid client id" }, { status: 400 });
     }
-    console.log(clientId);
+
 
     const body = await req.json();
     const updates = normalize(pickAllowed(body));

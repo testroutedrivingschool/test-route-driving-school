@@ -39,14 +39,12 @@ export async function GET(req) {
 
     return NextResponse.json(bookings);
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       {error: "Failed to fetch bookings"},
       {status: 500},
     );
   }
 }
-
 
 async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
   // 1) Generate PDF
@@ -152,7 +150,11 @@ Test Route Driving School
   // 4) Send emails + log results
   const mailLog = {
     user: {to: bookingDoc.userEmail, ok: false, error: null},
-    instructor: {to: bookingDoc.instructorEmail || null, ok: false, error: null},
+    instructor: {
+      to: bookingDoc.instructorEmail || null,
+      ok: false,
+      error: null,
+    },
     sentAt: new Date(),
   };
 
@@ -180,7 +182,9 @@ Test Route Driving School
     mailLog.user.ok = status === "SENT";
     mailLog.user.error = errorMsg;
 
-    await (await emailsCollection()).insertOne({
+    await (
+      await emailsCollection()
+    ).insertOne({
       bookingId,
       invoiceNo,
       actorType: "USER",
@@ -223,7 +227,9 @@ Test Route Driving School
     mailLog.instructor.ok = status === "SENT";
     mailLog.instructor.error = errorMsg;
 
-    await (await emailsCollection()).insertOne({
+    await (
+      await emailsCollection()
+    ).insertOne({
       bookingId,
       invoiceNo,
       actorType: "INSTRUCTOR",
@@ -246,7 +252,9 @@ Test Route Driving School
   await Promise.all([sendUser(), sendInstructor()]);
 
   // 5) Save invoice doc
-  await (await invoicesCollection()).insertOne({
+  await (
+    await invoicesCollection()
+  ).insertOne({
     invoiceNo,
     bookingId,
     createdAt: new Date(),
@@ -263,9 +271,17 @@ Test Route Driving School
   });
 
   // (optional) update booking with invoiceKey so UI has it
-  await (await bookingsCollection()).updateOne(
+  await (
+    await bookingsCollection()
+  ).updateOne(
     {_id: bookingId},
-    {$set: {invoiceKey, invoiceFilename: filename, invoiceCreatedAt: new Date()}},
+    {
+      $set: {
+        invoiceKey,
+        invoiceFilename: filename,
+        invoiceCreatedAt: new Date(),
+      },
+    },
   );
 }
 
@@ -311,9 +327,8 @@ export async function POST(req) {
         cardBrand = card?.brand || null;
         cardLast4 = card?.last4 || null;
       } catch (err) {
-        console.error("Stripe retrieve failed:", err);
         return NextResponse.json(
-          {error: "Unable to verify Stripe payment"},
+          {error: err.message|| "Unable to verify Stripe payment" },
           {status: 400},
         );
       }
@@ -330,7 +345,9 @@ export async function POST(req) {
       createdAt: new Date(),
     };
 
-    const bookingResult = await (await bookingsCollection()).insertOne(bookingDoc);
+    const bookingResult = await (
+      await bookingsCollection()
+    ).insertOne(bookingDoc);
     const bookingId = bookingResult.insertedId;
 
     // ✅ Respond FAST
@@ -356,7 +373,6 @@ export async function POST(req) {
 
     return res;
   } catch (error) {
-    console.error(error);
     return NextResponse.json({error: "Failed to add booking"}, {status: 500});
   }
 }
@@ -384,7 +400,6 @@ export async function DELETE(req) {
 
     return NextResponse.json({message: "Booking deleted successfully"});
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       {error: "Failed to delete booking"},
       {status: 500},

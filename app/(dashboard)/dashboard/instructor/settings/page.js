@@ -38,8 +38,7 @@ export default function InstructorSettings() {
         }`
       );
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to update schedule");
+      toast.error(err.res.message|| "Failed to update schedule");
     }
   };
 

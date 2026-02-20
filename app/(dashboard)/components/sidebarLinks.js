@@ -13,7 +13,7 @@ import {
   FiGift,
 } from "react-icons/fi";
 import {GoMegaphone, GoPackage} from "react-icons/go";
-import {FaGear} from "react-icons/fa6";
+import {FaBarsProgress, FaGear} from "react-icons/fa6";
 /* ================= USER ================= */
 export const userSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard/user"},
@@ -38,18 +38,24 @@ export const userSidebarLinks = [
   },
   {
     id: 6,
+    label: "My Progress",
+    icon: <FaBarsProgress />,
+    path: "/dashboard/user/my-progress",
+  },
+  {
+    id: 7,
     label: "Announcements",
     icon: <GoMegaphone />,
     path: "/dashboard/user/announcements",
   },
   {
-    id: 7,
+    id: 8,
     label: "Leave Feedback ",
     icon: <FiMessageSquare />,
     path: "/dashboard/user/feedback",
   },
   {
-    id: 10,
+    id: 9,
     label: "Settings",
     icon: <FaGear />,
     path: "/dashboard/user/settings",

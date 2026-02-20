@@ -24,6 +24,7 @@ import {
   FaChartLine,
   FaShieldAlt,
 } from "react-icons/fa";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 const whyChoosePoints = [
   {
@@ -195,8 +196,6 @@ const fleets = [
       "BLIND SPOT SENSORS",
       "LANE DEPARTURE WARNING",
       "CRUISE CONTROL",
-      "REVERSE CAMERA",
-      "KEYLESS ENTRY/STAR",
     ],
     img: fleet2Img,
   },
@@ -212,7 +211,6 @@ const fleets = [
       "Key-less Entry & Push Button Start",
       "Blind Spot Monitors with Rear Cross Traffic Alert",
       "Active Cruise Control",
-      "Lane Keep Assistance",
     ],
     img: fleet3Img,
   },
@@ -296,7 +294,7 @@ export default function CarHireForInstructorClient() {
               <p className="text-neutral leading-relaxed mb-6">
                 Please{" "}
                 <Link
-                  className="text-primary font-semibold"
+                  className="text-primary font-semibold underline"
                   href={`/company/contact`}
                 >
                   Contact Us
@@ -307,7 +305,7 @@ export default function CarHireForInstructorClient() {
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/packages" className="group">
+                <Link href="/bookings" className="group">
                   <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
@@ -363,7 +361,7 @@ export default function CarHireForInstructorClient() {
                     </div>
 
                     {/* Features */}
-                    <ul className="flex flex-col gap-2 text-neutral text-sm">
+                    <ul className="flex flex-col gap-2 text-neutral text-sm mb-4">
                       {fleet.features.map((feature, index) => (
                         <li key={index} className="flex items-center gap-2">
                           <span className="text-primary">•</span> {feature}
@@ -464,6 +462,7 @@ export default function CarHireForInstructorClient() {
         tips={drivingLessonTips}
       />
       <Faq className={`bg-white`} faqs={faqs} />
+        <HomeMap/>  
     </div>
   );
 }

@@ -31,7 +31,6 @@ export async function GET(req) {
       return NextResponse.json(users);
     }
   } catch (error) {
-    console.error(error);
     return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }
@@ -80,10 +79,10 @@ export async function PATCH(req) {
     if (role !== undefined) updateData.role = role;
 
     // ✅ profile photo updates
-    if (photoKey !== undefined) updateData.photoKey = photoKey; 
-    if (photo !== undefined) updateData.photo = photo; 
+    if (photoKey !== undefined) updateData.photoKey = photoKey;
+    if (photo !== undefined) updateData.photo = photo;
     if (emailScheduleTime !== undefined) {
-      const v = String(emailScheduleTime).trim(); 
+      const v = String(emailScheduleTime).trim();
       const ok = /^([01]\d|2[0-3]):([0-5]\d)$/.test(v);
       if (!ok) {
         return NextResponse.json(
@@ -103,7 +102,6 @@ export async function PATCH(req) {
 
     return NextResponse.json({message: "User updated successfully"});
   } catch (error) {
-    console.error(error);
     return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }

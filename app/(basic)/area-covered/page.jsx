@@ -29,6 +29,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import { useRouter } from "next/navigation";
+import HomeMap from "@/app/shared/ui/HomeMap";
 
 const faqs = [
   {
@@ -405,17 +406,24 @@ export default function AreaCovered() {
            Book your first lesson today and enjoy professional <Link className="font-semibold underline px-1" href={`/services/automatic-driving-lessons`}>driving lessons</Link>  in your local area. Our instructors help you feel confident, prepared, and comfortable on the road. Start <a className="location-link" href={"https://www.gov.uk/driving-lessons-learning-to-drive/taking-driving-lessons"} >learning</a> today with Test Route Driving School.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href={`/bookings`}>
+              
               <SecondaryBtn>Check Availability</SecondaryBtn>
+              </Link>
+                  <Link href={`/company/contact`}>
+                  
               <OutlineBtn
                 className={`border-white! text-white hover:bg-secondary hover:border-secondary!`}
               >
                 Contact With Our Team
               </OutlineBtn>
+                  </Link>
             </div>
           </div>
         </Container>
       </section>
       <Faq faqs={faqs}/>
+          <HomeMap/>
     </div>
   );
 }

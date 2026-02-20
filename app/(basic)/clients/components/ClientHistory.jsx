@@ -6,6 +6,7 @@ import {useQuery} from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {FaFilePdf, FaPrint} from "react-icons/fa";
 import {useRouter} from "next/navigation";
+import { toast } from "react-toastify";
 
 export default function ClientHistory({clientId}) {
   const [q, setQ] = useState("");
@@ -51,9 +52,8 @@ export default function ClientHistory({clientId}) {
 
       window.URL.revokeObjectURL(url);
     } catch (e) {
-      console.error(e);
       // optional toast
-      // toast.error("PDF download failed");
+      toast.error("PDF download failed");
     } finally {
       setPdfLoading(false);
     }

@@ -8,6 +8,7 @@ import {
   FaFacebookF,
   FaGoogle,
 } from "react-icons/fa";
+import ContactForm from "./ContactForm";
 
 export const metadata = {
   title: "Contact Us Today – Book Your Driving Lessons",
@@ -23,6 +24,8 @@ export const metadata = {
 };
 
 export default function Contact() {
+
+  
   return (
     <>
       <PageHeroSection
@@ -145,91 +148,7 @@ export default function Contact() {
             </div>
 
             {/* RIGHT FORM */}
-            <form className="flex-1 space-y-4">
-              {/* Name */}
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="First Name *"
-                  className="p-4 rounded outline-none border-2 border-border-color focus:border-primary"
-                />
-                <input
-                  type="text"
-                  placeholder="Last Name *"
-                  className="p-4 rounded outline-none border-2 border-border-color focus:border-primary"
-                />
-              </div>
-
-              {/* Postcode & Contact */}
-              <div className="grid grid-cols-2 gap-4">
-                <input
-                  type="text"
-                  placeholder="Postcode *"
-                  className="p-4 rounded outline-none border-2 border-border-color focus:border-primary"
-                />
-                <input
-                  type="text"
-                  placeholder="Contact Number *"
-                  className="p-4 rounded outline-none border-2 border-border-color focus:border-primary"
-                />
-              </div>
-
-              {/* Email */}
-              <input
-                type="email"
-                placeholder="Email *"
-                className="p-4 rounded outline-none border-2 border-border-color focus:border-primary w-full"
-              />
-
-              {/* Radio */}
-              <div>
-                <p className="font-semibold mb-2">
-                  Manual/Automatic Driving Lesson or Become a Driving Instructor
-                  *
-                </p>
-                <div className="space-y-1 text-neutral">
-                  <label className="flex items-center gap-2">
-                    <input type="radio" name="lesson" /> Manual
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="radio" name="lesson" /> Automatic
-                  </label>
-                  <label className="flex items-center gap-2">
-                    <input type="radio" name="lesson" /> Become a Driving
-                    Instructor
-                  </label>
-                </div>
-              </div>
-
-              {/* Message */}
-              <textarea
-                placeholder="Your Message *"
-                rows="4"
-                className="p-4 rounded outline-none border-2 border-border-color focus:border-primary w-full"
-              ></textarea>
-              <p className="font-semibold mb-2">How Did You Find Us?</p>
-              {/* Dropdown */}
-              <select className="p-4 rounded outline-none border-2 border-border-color focus:border-primary w-full">
-                <option>Please Choose...</option>
-                <option>Google</option>
-                <option>Facebook</option>
-                <option>Friend</option>
-              </select>
-
-              {/* Checkbox */}
-              <label className="flex items-start gap-2 text-sm text-neutral">
-                <input type="checkbox" />I agree to receiving other offers from
-                time to time.
-              </label>
-
-              {/* Button */}
-              <button
-                type="submit"
-                className="bg-primary text-white px-6 py-2 rounded hover:bg-red-700 transition"
-              >
-                SEND MESSAGE
-              </button>
-            </form>
+            <ContactForm/>
           </div>
         </Container>
       </section>

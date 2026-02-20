@@ -203,7 +203,7 @@ export default function BookingsPage() {
           ...instructor,
         }));
       } catch (error) {
-        console.error("Error fetching instructors:", error);
+        toast.error("Error fetching instructors:", error?.res?.data || "");
         return [];
       }
     },
@@ -226,7 +226,10 @@ export default function BookingsPage() {
   const [locationSearch, setLocationSearch] = useState("");
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
-
+  const [mobileDayIndex, setMobileDayIndex] = useState(() => {
+    const jsDay = new Date().getDay();
+    return (jsDay + 6) % 7;
+  });
   const formatYMD = (date) => {
     // Safe local YYYY-MM-DD (avoids timezone issues)
     const y = date.getFullYear();
@@ -526,6 +529,7 @@ export default function BookingsPage() {
   const displayedInstructors = selectedInstructor
     ? filteredInstructors.filter((inst) => inst._id !== selectedInstructor._id)
     : filteredInstructors;
+
   const LS_KEY = "bookingLocationModalLastShown";
   const LS_SELECTED_LOC = "bookingSelectedLocation";
 
@@ -537,22 +541,32 @@ export default function BookingsPage() {
     return `${y}-${m}-${day}`;
   };
 
+  const markModalSeenToday = () => {
+    localStorage.setItem(LS_KEY, getTodayYMD());
+  };
+
   useEffect(() => {
     const saved = localStorage.getItem(LS_SELECTED_LOC);
     if (saved) setSelectedLocations(saved);
   }, []);
+
   useEffect(() => {
+    if (typeof window === "undefined") return;
     if (isReschedule) return;
+
+    // if location already selected -> never show
     const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
-    if (savedLocation) return; // already selected before
+    if (savedLocation) return;
 
     const today = getTodayYMD();
     const lastShown = localStorage.getItem(LS_KEY);
 
+    // show only once per day
     if (lastShown !== today) {
       setShowLocationModal(true);
-      localStorage.setItem(LS_KEY, today);
+      markModalSeenToday();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isReschedule]);
 
   // Show loading spinner
@@ -645,7 +659,7 @@ export default function BookingsPage() {
                   {/* Right Column - Schedule Table */}
                   <div className="md:col-span-7 ">
                     {/* Instructor Selection - Horizontal Scrollbar */}
-                    <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-6">
+                    <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div>
                           <h2 className="text-xl font-bold text-gray-900">
@@ -691,7 +705,7 @@ export default function BookingsPage() {
                                     }}
                                   />
                                 </div>
-                                <h3 className="font-bold text-gray-900 text-sm mb-1 truncate max-w-[120px]">
+                                <h3 className="font-bold text-gray-900 text-xs md:text-sm mb-1 truncate max-w-[120px]">
                                   {selectedInstructor.name}
                                 </h3>
                                 <span className="text-xs text-gray-500 mt-1">
@@ -744,8 +758,8 @@ export default function BookingsPage() {
                                           className="w-full h-full object-cover"
                                         />
                                       </div>
-                                      <h3 className="font-bold text-gray-900 text-sm mb-1 truncate max-w-[120px]">
-                                        {instructor.name}
+                                      <h3 className="font-bold text-gray-900 text-xs md:text-sm wrap-break-word mb-1 truncate max-w-[120px]">
+                                        {instructor.name} 
                                       </h3>
                                     </div>
                                   </SwiperSlide>
@@ -782,332 +796,455 @@ export default function BookingsPage() {
                       </div>
                     ) : (
                       <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
-                        {/* ✅ Schedule Header sticky inside card */}
-                        <div className="sticky top-0 z-40 px-6 py-4 border-b border-border-color bg-white">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <h2 className="text-2xl font-bold text-gray-900">
-                                {selectedInstructor.name}&apos;s Schedule
-                              </h2>
-                              <div className="flex justify-between">
-                                <p className="text-neutral mt-1">
+                        {/* ✅ Scroll container (vertical + horizontal) */}
+                        {/* ✅ Schedule Table */}
+                        <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
+                          {/* Header */}
+                          <div className="sticky top-0 z-40 px-4 md:px-6 py-4 border-b border-border-color bg-white">
+                            <div className="flex items-center justify-between gap-3">
+                              <div>
+                                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                                  {selectedInstructor.name}&apos;s Schedule
+                                </h2>
+
+                                <p className="text-neutral mt-1 text-sm">
                                   Week of{" "}
                                   {weekDates[0].toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
-                                  })}{" "}
-                                  -{" "}
+                                  })}
+                                  {" - "}
                                   {weekDates[6].toLocaleDateString("en-US", {
                                     month: "short",
                                     day: "numeric",
                                   })}
                                 </p>
-                                <div className="flex items-center gap-2">
-                                  <button
-                                    onClick={goPrevWeek}
-                                    disabled={isPrevDisabled}
-                                    className={`h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white
-      ${isPrevDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"}`}
-                                    title="Previous 7 days"
-                                  >
-                                    <FaChevronLeft />
-                                  </button>
-
-                                  <button
-                                    onClick={goNextWeek}
-                                    className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
-                                    title="Next 7 days"
-                                  >
-                                    <FaChevronRight />
-                                  </button>
-                                </div>
                               </div>
-                            </div>
 
-                            <div className="flex items-center space-x-4">
-                              <div className="flex items-center space-x-2">
-                                <div className="flex items-center">
-                                  <div className="w-3 h-3 bg-[#A2B5D8] rounded mr-2"></div>
-                                  <span className="text-sm text-neutral">
-                                    Booked
-                                  </span>
-                                </div>
-                                <div className="flex items-center">
-                                  <div className="w-3 h-3 bg-[#7DA730] rounded mr-2"></div>
-                                  <span className="text-sm text-neutral">
-                                    Available
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* ✅ Scroll container (vertical + horizontal) */}
-                        <div
-                          ref={tableRef}
-                          className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
-                          style={{
-                            WebkitOverflowScrolling: "touch",
-                            cursor: "grab",
-                            touchAction: "pan-x",
-                            maxHeight: "90vh", // ✅ adjust if you want bigger
-                          }}
-                        >
-                          <table className="w-full min-w-150 md:min-w-[700px] border-separate border-spacing-0 table-fixed h-full">
-                            <thead className="bg-white">
-                              <tr>
-                                {/* ✅ Time header sticky top + left */}
-                                <th className="py-2 px-2 border border-border-color text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-60 text-center">
-                                  Time
-                                </th>
-
-                                {/* ✅ Day headers sticky top */}
-                                {weekDates.map((date, index) => (
-                                  <th
-                                    key={index}
-                                    className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
-                                  >
-                                    <div className="flex flex-col items-center">
-                                      <div className="font-bold text-gray-900">
-                                        {weekdays[index]}
-                                      </div>
-                                      <div className="text-xs text-gray-500 mt-1">
-                                        {date.toLocaleDateString("en-US", {
-                                          month: "short",
-                                          day: "numeric",
-                                        })}
-                                      </div>
-                                    </div>
-                                  </th>
-                                ))}
-                              </tr>
-                            </thead>
-
-                            <tbody className="divide-y divide-border-color">
-                              {times.map((time) => {
-                                const hourLine =
-                                  isHourStart(time) && time !== times[0];
-
-                                const topBorder = hourLine
-                                  ? "border-t border-t-black border-r-gray-500! "
-                                  : "border-t border-t-gray-500 border-dashed";
-                                const rightBorder = "border-r border-r-black ";
-                                const cellBorder = `${topBorder} ${rightBorder}`;
-
-                                return (
-                                  <tr
-                                    key={time}
-                                    className={`hover:bg-gray-50/50 align-stretch`}
-                                  >
-                                    {/* Time column */}
-                                    <td
-                                      className={`py-2 px-1 text-center whitespace-nowrap text-sm font-medium text-gray-900 sticky left-0
-          bg-[#DCDCDC] z-30  ${cellBorder}`}
-                                    >
-                                      {time}
-                                    </td>
-
-                                    {weekDates.map((date, dayIndex) => {
-                                      // ✅ define tdClass first (needed by booking cell)
-                                      const tdClass = `p-0 ${cellBorder}`;
-
-                                      const dateKey = formatYMD(date);
-                                      const timeKey = normalizeTime(time);
-
-                                      const isBooked =
-                                        bookedSlotsMap[
-                                          `${dateKey}__${timeKey}`
-                                        ];
-
-                                      if (isBooked) {
-                                        return (
-                                          <td
-                                            key={dayIndex}
-                                            className={tdClass}
-                                          >
-                                            <div className="w-full h-full min-h-11 py-2 text-sm font-semibold bg-[#A2B5D8] text-black/40  flex items-center justify-center">
-                                              <span className="text-xs">
-                                                Booked
-                                              </span>
-                                            </div>
-                                          </td>
-                                        );
-                                      }
-
-                                      // ✅ Slot logic
-                                      const key = `${dateKey}__${normalizeTime(time)}`;
-                                      const slot = slotsMap[key];
-
-                                      if (!slot || !slotMatchesLocation(slot)) {
-                                        return (
-                                          <td
-                                            key={dayIndex}
-                                            className={tdClass}
-                                          >
-                                            <div className="w-full h-full min-h-11 bg-[#eee]" />
-                                          </td>
-                                        );
-                                      }
-
-                                      const vis = getVisibility(slot);
-
-                                      if (vis === "" || vis === "hidden") {
-                                        return (
-                                          <td
-                                            key={dayIndex}
-                                            className={tdClass}
-                                          >
-                                            <div className="w-full h-full min-h-11 bg-[#eee]" />
-                                          </td>
-                                        );
-                                      }
-
-                                      if (vis === "publicNote") {
-                                        return (
-                                          <td
-                                            key={dayIndex}
-                                            className={`${tdClass} align-stretch`}
-                                          >
-                                            <div className="w-full h-full min-h-11 px-2 py-2 bg-[#FF9933] font-bold text-black text-xs flex items-center justify-center text-center wrap-break-word leading-snug break-all">
-                                              {slot.publicNote || ""}
-                                            </div>
-                                          </td>
-                                        );
-                                      }
-
-                                      if (vis === "privateBooked") {
-                                        return (
-                                          <td
-                                            key={dayIndex}
-                                            className={tdClass}
-                                          >
-                                            <button
-                                              disabled
-                                              className="w-full h-full min-h-11 py-2 text-sm font-semibold bg-[#A2B5D8] text-black/40 cursor-not-allowed flex items-center justify-center"
-                                            >
-                                              <span className="text-xs">
-                                                Booked
-                                              </span>
-                                            </button>
-                                          </td>
-                                        );
-                                      }
-
-                                      if (vis === "public") {
-                                        return (
-                                          <td
-                                            key={dayIndex}
-                                            className={tdClass}
-                                          >
-                                            <button
-                                              onClick={async () => {
-                                                if (isReschedule) {
-                                                  if (!rescheduleBooking) {
-                                                    toast.error(
-                                                      "Booking info not loaded yet.",
-                                                    );
-                                                    return;
-                                                  }
-
-                                                  const newDateISO =
-                                                    weekDates[
-                                                      dayIndex
-                                                    ].toISOString();
-                                                  const newTime = time;
-
-                                                  // (optional) prevent selecting same slot as current
-                                                  const sameDate =
-                                                    new Date(
-                                                      rescheduleBooking.bookingDate,
-                                                    ).toDateString() ===
-                                                    new Date(
-                                                      newDateISO,
-                                                    ).toDateString();
-                                                  const sameTime =
-                                                    String(
-                                                      rescheduleBooking.bookingTime ||
-                                                        "",
-                                                    ).replace(/\s+/g, "") ===
-                                                    String(
-                                                      newTime || "",
-                                                    ).replace(/\s+/g, "");
-
-                                                  if (sameDate && sameTime) {
-                                                    toast.info(
-                                                      "This is already your current slot.",
-                                                    );
-                                                    return;
-                                                  }
-
-                                                  await confirmReschedule({
-                                                    bookingId,
-                                                    newDateISO,
-                                                    newTime,
-                                                  });
-                                                  return;
-                                                }
-
-                                                handleBookNow(
-                                                  time,
-                                                  dayIndex,
-                                                  slot,
-                                                );
-                                              }}
-                                              className={`w-full h-full min-h-11 py-2 text-sm font-semibold bg-[#7DA730] hover:bg-[#96C83A] text-white flex ${isReschedule
-                                                  ? "flex-col"
-                                                  : "flex-row"} items-center justify-center`}
-                                            >
-                                              <IoMdAdd className="h-4 w-4 mr-2" />
-                                              <span className="text-xs">
-                                                {isReschedule
-                                                  ? "Reschedule Here"
-                                                  : "Book Now"}
-                                              </span>
-                                            </button>
-                                          </td>
-                                        );
-                                      }
-
-                                      return (
-                                        <td key={dayIndex} className={tdClass}>
-                                          <div className="w-full min-h-11 bg-[#eee]" />
-                                        </td>
-                                      );
-                                    })}
-                                  </tr>
-                                );
-                              })}
-                            </tbody>
-                          </table>
-
-                          <div className="sticky bottom-0 bg-white z-50">
-                            <div className="flex  items-center  justify-between">
-                              <div className="text-center">
-                                <span className="font-bold ml-2">Date</span>
-                              </div>
-                              {weekDates.map((date, index) => (
-                                <div
-                                  key={index}
-                                  className="py-2 text-center text-sm font-medium text-gray-500 uppercase tracking-wider"
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={goPrevWeek}
+                                  disabled={isPrevDisabled}
+                                  className={`h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white
+          ${isPrevDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"}`}
+                                  title="Previous week"
                                 >
-                                  <div className="flex flex-col items-center">
-                                    <div className="font-bold text-gray-900">
-                                      {date.toLocaleDateString("en-US", {
-                                        weekday: "long",
-                                      })}
-                                    </div>
-                                    <div className="text-xs text-gray-500 mt-1">
-                                      {date.toLocaleDateString("en-US", {
-                                        month: "short",
-                                        day: "numeric",
-                                      })}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
+                                  <FaChevronLeft />
+                                </button>
+
+                                <button
+                                  onClick={goNextWeek}
+                                  className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
+                                  title="Next week"
+                                >
+                                  <FaChevronRight />
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* legend */}
+                            <div className="mt-3 flex items-center gap-4 text-xs text-neutral">
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-[#A2B5D8] rounded" />
+                                <span>Booked</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-[#7DA730] rounded" />
+                                <span>Available</span>
+                              </div>
+                            </div>
+
+                         
+                          </div>
+
+                          {/* ✅ Desktop weekly grid (md+) */}
+                          <div className="hidden md:block">
+                            <div
+                              ref={tableRef}
+                              className="overflow-y-auto"
+                              style={{
+                                maxHeight: "90vh",
+                                WebkitOverflowScrolling: "touch",
+                              }}
+                            >
+                              <table className="w-full border-separate border-spacing-0 table-fixed">
+                                <thead>
+                                  <tr>
+                                    <th className="py-2 px-2 border border-border-color text-sm font-semibold sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
+                                      Time
+                                    </th>
+
+                                    {weekDates.map((date, index) => (
+                                      <th
+                                        key={index}
+                                        className="py-2 px-1 border border-border-color text-center text-sm font-semibold sticky top-0 bg-white z-40"
+                                      >
+                                        <div className="flex flex-col items-center">
+                                          <div className="font-bold text-gray-900">
+                                            {weekdays[index]}
+                                          </div>
+                                          <div className="text-xs text-gray-500 mt-1">
+                                            {date.toLocaleDateString("en-US", {
+                                              month: "short",
+                                              day: "numeric",
+                                            })}
+                                          </div>
+                                        </div>
+                                      </th>
+                                    ))}
+                                  </tr>
+                                </thead>
+
+                                <tbody>
+                                  {times.map((time) => {
+                                    const hourLine =
+                                      isHourStart(time) && time !== times[0];
+                                    const topBorder = hourLine
+                                      ? "border-t border-t-black"
+                                      : "border-t border-t-gray-400 border-dashed";
+                                    const cellBorder = `${topBorder} border-r border-r-black`;
+
+                                    return (
+                                      <tr key={time} className="align-stretch">
+                                        <td
+                                          className={`py-2 px-1 text-center whitespace-nowrap text-sm font-semibold sticky left-0 bg-[#DCDCDC] z-30 ${cellBorder}`}
+                                        >
+                                          {time}
+                                        </td>
+
+                                        {weekDates.map((date, dayIndex) => {
+                                          const dateKey = formatYMD(date);
+                                          const timeKey = normalizeTime(time);
+                                          const tdClass = `p-0 ${cellBorder}`;
+
+                                          const isBooked =
+                                            bookedSlotsMap[
+                                              `${dateKey}__${timeKey}`
+                                            ];
+                                          if (isBooked) {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
+                                                  Booked
+                                                </div>
+                                              </td>
+                                            );
+                                          }
+
+                                          const key = `${dateKey}__${normalizeTime(time)}`;
+                                          const slot = slotsMap[key];
+
+                                          if (
+                                            !slot ||
+                                            !slotMatchesLocation(slot)
+                                          ) {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                              </td>
+                                            );
+                                          }
+
+                                          const vis = getVisibility(slot);
+                                          if (vis === "" || vis === "hidden") {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                              </td>
+                                            );
+                                          }
+
+                                          if (vis === "publicNote") {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 px-2 py-2 bg-[#FF9933] font-bold text-black text-xs flex items-center justify-center text-center wrap-break-word">
+                                                  {slot.publicNote || ""}
+                                                </div>
+                                              </td>
+                                            );
+                                          }
+
+                                          if (vis === "privateBooked") {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
+                                                  Booked
+                                                </div>
+                                              </td>
+                                            );
+                                          }
+
+                                          if (vis === "public") {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <button
+                                                  onClick={async () => {
+                                                    if (isReschedule) {
+                                                      if (!rescheduleBooking) {
+                                                        toast.error(
+                                                          "Booking info not loaded yet.",
+                                                        );
+                                                        return;
+                                                      }
+                                                      const newDateISO =
+                                                        weekDates[
+                                                          dayIndex
+                                                        ].toISOString();
+                                                      const newTime = time;
+                                                      await confirmReschedule({
+                                                        bookingId,
+                                                        newDateISO,
+                                                        newTime,
+                                                      });
+                                                      return;
+                                                    }
+                                                    handleBookNow(
+                                                      time,
+                                                      dayIndex,
+                                                      slot,
+                                                    );
+                                                  }}
+                                                  className={`w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#7DA730] hover:bg-[#96C83A] text-white flex items-center justify-center`}
+                                                >
+                                                  {isReschedule?"Reschedule":"Book Now"}
+                                                </button>
+                                              </td>
+                                            );
+                                          }
+
+                                          return (
+                                            <td
+                                              key={dayIndex}
+                                              className={tdClass}
+                                            >
+                                              <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                            </td>
+                                          );
+                                        })}
+                                      </tr>
+                                    );
+                                  })}
+                                </tbody>
+
+                                {/* ✅ Proper footer (aligned with table columns) */}
+                                <tfoot className="bg-white sticky bottom-0 z-40">
+                                  <tr>
+                                    <td className="py-2 px-2 border border-border-color text-center font-semibold bg-[#DCDCDC] sticky left-0 z-50">
+                                      Date
+                                    </td>
+                                    {weekDates.map((date, index) => (
+                                      <td
+                                        key={index}
+                                        className="py-2 px-2 border border-border-color text-center text-xs font-semibold"
+                                      >
+                                        {date.toLocaleDateString("en-US", {
+                                          weekday: "short",
+                                        })}
+                                        ,{" "}
+                                        {date.toLocaleDateString("en-US", {
+                                          day: "numeric",
+                                          month: "short",
+                                        })}
+                                      </td>
+                                    ))}
+                                  </tr>
+                                </tfoot>
+                              </table>
                             </div>
                           </div>
+
+                          {/* ✅ Mobile (one day view, no horizontal scroll) */}
+                         
+<div className="md:hidden">
+ 
+  {(() => {
+    const visibleDayIdx = [0, 1, 2,3, 4, 5, 6]; 
+
+    return (
+      <div className="max-h-[75vh] overflow-y-auto">
+        <table className="w-full table-fixed border-separate border-spacing-0">
+          {/* ✅ force widths so it fits mobile without x-scroll */}
+          <colgroup>
+            <col style={{width: "64px"}} />
+            {visibleDayIdx.map((i) => (
+              <col key={i} style={{width: `calc((100% - 64px) / ${visibleDayIdx.length})`}} />
+            ))}
+          </colgroup>
+
+          <thead>
+            <tr>
+              <th className="py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
+                <div className="leading-tight">
+                  <div>Time</div>
+                  <div className="font-semibold opacity-80">AEDT</div>
+                </div>
+              </th>
+
+              {visibleDayIdx.map((dayIndex) => (
+                <th
+                  key={dayIndex}
+                  className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
+                >
+                  <div className="leading-tight">
+                    <div className="text-gray-900">{weekdays[dayIndex]}</div>
+                    <div className="text-gray-600 font-semibold">
+                      {weekDates[dayIndex].toLocaleDateString("en-US", {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                    </div>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+
+          <tbody>
+            {times.map((time) => {
+              const hourLine = isHourStart(time) && time !== times[0];
+              const topBorder = hourLine
+                ? "border-t border-t-black"
+                : "border-t border-t-gray-400 border-dashed";
+
+              return (
+                <tr key={time} className="align-stretch">
+                  <td
+                    className={`py-2 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}
+                  >
+                    {time}
+                  </td>
+
+                  {visibleDayIdx.map((dayIndex) => {
+                    const date = weekDates[dayIndex];
+                    const dateKey = formatYMD(date);
+                    const timeKey = normalizeTime(time);
+
+                    const isBooked = bookedSlotsMap[`${dateKey}__${timeKey}`];
+
+                    const key = `${dateKey}__${normalizeTime(time)}`;
+                    const slot = slotsMap[key];
+                    const vis = slot ? getVisibility(slot) : "";
+
+                    // cell container (tight like screenshot)
+                    const cellClass = `p-0 border border-border-color ${topBorder}`;
+
+                    if (isBooked) {
+                      return (
+                        <td key={dayIndex} className={cellClass}>
+                          <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[8px] font-bold">
+                            Booked
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    if (!slot || !slotMatchesLocation(slot) || vis === "" || vis === "hidden") {
+                      return (
+                        <td key={dayIndex} className={cellClass}>
+                          <div className="w-full min-h-10 bg-[#eee]" />
+                        </td>
+                      );
+                    }
+
+                    if (vis === "publicNote") {
+                      return (
+                        <td key={dayIndex} className={cellClass}>
+                          <div className="w-full min-h-10 px-1 py-1 bg-[#FF9933] text-[8px] font-bold text-black flex items-center justify-center text-center wrap-break-word leading-tight">
+                            {slot.publicNote || ""}
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    if (vis === "privateBooked") {
+                      return (
+                        <td key={dayIndex} className={cellClass}>
+                          <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[10px] font-bold">
+                            Booked
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    if (vis === "public") {
+                      return (
+                        <td key={dayIndex} className={cellClass}>
+                          <button
+                            onClick={async () => {
+                              if (isReschedule) {
+                                if (!rescheduleBooking) {
+                                  toast.error("Booking info not loaded yet.");
+                                  return;
+                                }
+                                const newDateISO = date.toISOString();
+                                const newTime = time;
+                                await confirmReschedule({bookingId, newDateISO, newTime});
+                                return;
+                              }
+
+                              handleBookNow(time, dayIndex, slot);
+                            }}
+                            className="w-full min-h-10 bg-[#7DA730] hover:bg-[#96C83A] text-white text-[8px] font-bold flex items-center justify-center wrap-break-word"
+                          >
+                       {isReschedule?"Confirm":"Book Now"}
+                          </button>
+                        </td>
+                      );
+                    }
+
+                    return (
+                      <td key={dayIndex} className={cellClass}>
+                        <div className="w-full min-h-10 bg-[#eee]" />
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+
+          {/* ✅ Footer aligned with same columns */}
+          <tfoot className="sticky bottom-0 z-30 bg-white">
+            <tr>
+              <td className="py-2 px-1 border border-border-color text-center text-[10px] font-bold bg-[#DCDCDC] sticky left-0 z-40">
+                Date
+              </td>
+
+              {visibleDayIdx.map((dayIndex) => (
+                <td
+                  key={dayIndex}
+                  className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold"
+                >
+                  {weekDates[dayIndex].toLocaleDateString("en-US", {
+                    weekday: "short",
+                  })}
+                </td>
+              ))}
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    );
+  })()}
+</div>
                         </div>
                       </div>
                     )}
@@ -1138,7 +1275,12 @@ export default function BookingsPage() {
       </section>
 
       {showLocationModal && (
-        <Modal onClose={() => setShowLocationModal(false)}>
+        <Modal
+          onClose={() => {
+            markModalSeenToday();
+            setShowLocationModal(false);
+          }}
+        >
           <h2 className="text-lg font-bold mb-4">Select Location</h2>
 
           {/* Search Input */}
@@ -1160,6 +1302,7 @@ export default function BookingsPage() {
                   <button
                     onClick={() => {
                       localStorage.setItem(LS_SELECTED_LOC, location.name);
+                      markModalSeenToday();
                       setSelectedLocations(location.name);
                       setShowLocationModal(false);
                       setLocationSearch("");

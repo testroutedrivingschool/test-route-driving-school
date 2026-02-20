@@ -106,7 +106,6 @@ export default function UserProfile() {
       setPhotoFile(null);
       setLocalPreview(`/api/storage/proxy?key=${encodeURIComponent(photoKey)}`);
     } catch (error) {
-      console.error(error);
       toast.error(error?.response?.data?.error || "Failed to update photo");
     } finally {
       setIsUploadingPhoto(false);
@@ -135,11 +134,9 @@ export default function UserProfile() {
         vouchers: profile.vouchers,
       });
 
-      console.log("Profile updated:", response.data);
       toast.success("Profile updated successfully!");
       setIsEditing(false);
     } catch (error) {
-      console.error(error);
       toast.error(error.response?.data?.error || "Failed to update profile");
     }
   };
@@ -163,7 +160,6 @@ export default function UserProfile() {
       });
       setIsChangingPassword(false);
     } catch (error) {
-      console.error(error);
       toast.error(error.message || "Failed to update password");
     }
   };

@@ -95,7 +95,7 @@ export default function DrivingTestAssessment() {
   const router = useRouter();
   const handleAddToCart = (pkg, e) => {
     e.preventDefault();
-    console.log(pkg);
+  
 
     addToCartLS(pkg);
     router.push("/cart");

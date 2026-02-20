@@ -4,7 +4,7 @@ export default function OutlineBtn({children, type, onClick,className}) {
     <button
       type={type ? type : "button"}
       onClick={onClick}
-      className={`bg-transparent text-primary transition font-bold text-lg  border border-primary hover:bg-primary hover:border-base-300 hover:text-white rounded-md px-4 py-2 ${className}`}
+      className={`bg-transparent text-primary transition font-bold text-lg  border border-primary hover:bg-primary hover:border-base-300 hover:text-white rounded-md px-4 py-1.5 ${className}`}
     >
       {children}
     </button>

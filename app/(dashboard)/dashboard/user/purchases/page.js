@@ -7,6 +7,7 @@ import axios from "axios";
 import React, {useMemo, useState} from "react";
 import {GoPackage} from "react-icons/go";
 import {FiDownload} from "react-icons/fi";
+import { toast } from "react-toastify";
 
 function StatusPill({status}) {
   const s = String(status || "").toLowerCase();
@@ -59,8 +60,8 @@ export default function UserPurchase() {
 
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (e) {
-      console.error(e);
-      alert(
+    
+      toast.error(
         e?.response?.data?.error || e?.message || "Failed to download invoice",
       );
     } finally {

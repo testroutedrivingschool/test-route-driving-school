@@ -61,8 +61,7 @@ function PaymentForm() {
           : "",
     );
   }, [router]);
-  console.log("suburs", suburb);
-  console.log(booking);
+
   /* Load suburbs */
   useEffect(() => {
     axios.get("/api/locations").then((res) => {
@@ -152,16 +151,13 @@ function PaymentForm() {
         router.push("/dashboard/user/my-bookings");
       }
     } catch (err) {
-      console.log("STATUS:", err?.response?.status);
-      console.log("DATA:", err?.response?.data);
-      console.log("URL:", err?.config?.url);
+    
       toast.error("Failed to Booking");
     } finally {
       setLoading(false);
     }
   };
 
-  console.log(booking);
   return (
     <section className="py-20 bg-gray-50">
       <Container>

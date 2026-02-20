@@ -59,10 +59,9 @@ export default function SalesSearch() {
     window.open(data.url, "_blank", "noopener,noreferrer");
   };
   const openInvoicePdf = (row) => {
-    console.log("invoiceKey:", row?.invoiceKey);
    downloadAttachment(row.invoiceKey)
   };
-console.log(data);
+
   return (
     <Container className="py-6">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">

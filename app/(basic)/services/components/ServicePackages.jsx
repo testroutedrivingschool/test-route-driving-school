@@ -13,7 +13,6 @@ export default function ServicePackages({
 }) {
   const router = useRouter()
     const handleAddToCart = (pkg) => {
-    console.log(pkg);
     addToCartLS(pkg);
     router.push("/cart");
   };
@@ -39,7 +38,7 @@ export default function ServicePackages({
 
               {/* Title */}
               <h3 className="text-center text-lg md:text-xl font-semibold text-gray-900">
-                {pkg.title}
+                {pkg.name}
               </h3>
 
               {/* Description */}
