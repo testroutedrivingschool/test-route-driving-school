@@ -107,29 +107,25 @@ function buildFallback(slug) {
       <>Local City Driving Package Bexley.</>,
       <>Specialized Night Driving Lesson Carlton.</>,
     ],
-    section3Title1: "Master Local Intersections",
+    section3Title1: `Local Road and Intersection Driving Training in ${loc}`,
     section3Description1: (
       <>
-        You will practice at the busy junctions near the {loc} station. Our{" "}
-        <strong>driving lesson in {loc}, NSW</strong>, helps you manage
-        pedestrian flow. You will learn to time your turns perfectly in traffic.
-        We teach you to stay calm when other drivers are in a rush.
+         <Link href={`/`} className="font-semibold underline px-1">
+         Learning to drive in {loc}
+        </Link> means handling real traffic situations, not empty back streets—and that’s exactly how our lessons are structured. You’ll practise on active local roads, including intersections near {loc} Station, school zones with strict speed enforcement, narrow residential streets, and busy shopping strips. Your instructor teaches you how to read traffic patterns, anticipate pedestrian movement, and make confident decisions at roundabouts and signal-controlled intersections. <br/>
+You’ll spend time mastering lane positioning, gap selection, and safe merging on roads like Princes Highway and surrounding feeder streets. We focus heavily on speed control, observation routines, and hazard perception during peak-hour conditions, so nothing feels unfamiliar later. Mistakes are corrected calmly in real time, helping you build confidence without pressure. <br/>
+Each lesson adapts to your skill level, whether you’re a first-time learner or returning after a long break. The goal is simple: help you feel relaxed, alert, and fully in control behind the wheel. By the time you finish your training, you won’t just “know how to drive”—you’ll understand how to drive safely and independently throughout {loc} and neighbouring suburbs.
       </>
     ),
-    section3Title2: "Reliable Test Preparation",
+    section3Title2: "NSW Driving Test Preparation with Mock Assessments",
     section3Description2: (
       <>
-        You should expect a thorough{" "}
-        <strong>driver education course in {loc}, NSW.</strong> We simulate
-        the actual RMS testing conditions to build your strength. You will
-        identify your common mistakes before the examiner sees them. Our{" "}
-        <Link
-          href={`/services/driving-test-assessment`}
-          className="font-semibold underline px-1"
-        >
-          Driving Test Assessment
-        </Link>{" "}
-        ensures you are 100% ready.
+      Our NSW <Link href={`/services/driving-test-assessment`} className="font-semibold underline px-1">
+     driving test preparation
+        </Link> in {loc} is designed to mirror the real testing experience as closely as possible. You’ll train on commonly used local test routes, practising the exact manoeuvres examiners assess during the official RMS driving test. This includes controlled stops, safe turns, correct lane usage, parking techniques, and consistent observation checks at every decision point.
+Mock driving tests are conducted under real exam-style conditions, with clear instructions and no coaching during assessment runs. After each session, your instructor breaks down your performance in plain language, explaining what examiners look for and how marks are awarded. Weak areas are addressed immediately through targeted practice, not guesswork.
+We also spend time on test-day behaviour—how to respond to instructions, manage nerves, and recover calmly from minor errors. You’ll learn how to stay focused even when traffic conditions change unexpectedly. This structured, local, and experience-based preparation gives you clarity and confidence, significantly improving your chances of passing your driving test in {loc} on the first attempt.
+
       </>
     ),
     services: [
