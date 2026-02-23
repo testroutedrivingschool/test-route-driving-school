@@ -27,25 +27,25 @@ export default function AuthProvider({children}) {
   const GoogleProvider = new GoogleAuthProvider();
 
 const loginWithGoogle = async () => {
-  setLoading(true);
+
   const result = await signInWithPopup(auth, GoogleProvider);
   router.refresh(); 
   return result;
 };
 
 const logoutUser = async () => {
-  setLoading(true);
+
   await signOut(auth);
   router.refresh();
 };
 
   const signUpUserWithCredential = (email, password) => {
-    setLoading(true);
+ 
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
   const loginUserWithCredential = (email, password) => {
-    setLoading(true);
+
     return signInWithEmailAndPassword(auth, email, password);
   };
 

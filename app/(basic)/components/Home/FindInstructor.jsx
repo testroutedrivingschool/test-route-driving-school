@@ -83,7 +83,7 @@ export default function FindInstructor() {
                 onChange={(e) => setSearchLocationText(e.target.value)}
                 className="flex-1 border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <PrimaryBtn type="submit">Search</PrimaryBtn>
+              <PrimaryBtn className={`px-2! md:px-4! text-sm! md:text-base! `} type="submit">Search</PrimaryBtn>
             </form>
 
             <div className="max-h-64 overflow-y-auto space-y-2">

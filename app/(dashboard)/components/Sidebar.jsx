@@ -13,6 +13,7 @@ import {
   instructorSidebarLinks,
   userSidebarLinks,
 } from "./sidebarLinks";
+import Skeleton from "@/app/shared/ui/Skelton";
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -91,36 +92,36 @@ const isActiveLink = (currentPath, linkPath) => {
   return (
     <>
       {isLoading ? (
-        <LoadingSpinner />
+        <Skeleton />
       ) : (
         <>
           {/* Mobile Overlay */}
           {isMobile && sidebarOpen && (
             <div
-              className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+              className="fixed inset-0 bg-black/50 z-2500 lg:hidden transition-opacity duration-300"
               onClick={() => setSidebarOpen(false)}
             />
           )}
 
           {/* Mobile Toggle Button */}
-          {isMobile && (
-            <div className="lg:hidden sticky  left-0 z-50  p-3 bg-secondary text-white border border-border-color shadow w-full flex justify-between items-center">
-              <h2 className="text-lg font-bold">Dashboard</h2>
-              <button
-                onClick={toggleSidebar}
-                className="rounded-xl  shadow-lg  border-white hover:bg-gray-50 hover:text-primary transition-all duration-300 p-3"
-              >
-                {sidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-              </button>
-            </div>
-          )}
+       {isMobile && (
+  <div className="lg:hidden sticky -top-1 z-2 left-0 p-3 bg-secondary text-white border border-border-color shadow w-full flex justify-between items-center">
+    <h2 className="text-lg font-bold">Dashboard</h2>
+    <button
+      onClick={toggleSidebar}
+      className="rounded-xl shadow-lg border-white hover:bg-gray-50 hover:text-primary transition-all duration-300 p-3"
+    >
+      {sidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+    </button>
+  </div>
+)}
 
           {/* Sidebar */}
           <aside
             className={`
           fixed lg:sticky top-0 left-0 h-screen bg-white border-r border-border-color 
           transition-all duration-300 ease-in-out
-          flex flex-col z-999
+          flex flex-col z-3000 md:z-1
           ${
             isMobile
               ? sidebarOpen

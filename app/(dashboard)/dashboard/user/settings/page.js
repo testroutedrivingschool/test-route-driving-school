@@ -58,7 +58,7 @@ export default function UserSettings() {
       <div className="mb-4 flex flex-wrap items-center gap-4">
         <label className="font-medium mb-2">Email Daily Schedule:</label>
         <select
-          className="border border-gray-300 rounded p-2"
+          className="border border-gray-300 rounded p-2 w-full"
           value={emailScheduleTime}
           onChange={(e) => setEmailScheduleTime(e.target.value)}
         >

@@ -1,8 +1,8 @@
+"use client"
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
-import {FaRightLong} from "react-icons/fa6";
 
 const whatWeOfferLinks = [
   {
@@ -44,6 +44,7 @@ export default function WhatWeOffer({
   className,
   extra
 }) {
+  const router = useRouter();
   return (
     <section className={`relative py-20 bg-white overflow-hidden ${className}`}>
       <Container>
@@ -61,24 +62,26 @@ export default function WhatWeOffer({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <div
-              key={index}
+              key={`service-${index}`}
+              onClick={()=>router.push(whatWeOfferLinks[index]?.pathname || "/services")}
+              
               className="group relative 
   bg-base-300 
   rounded-xl p-8 lg:p-10 
   shadow 
   transition-all duration-500
-   hover:-translate-y-2 border-b-8 border-primary"
+   hover:-translate-y-2 border-b-8 border-primary cursor-pointer"
             >
+      
               <div
                 className="w-14 h-14 mb-5 flex items-center justify-center rounded-2xl
 bg-primary shadow-lg"
               >
                 {service.icon}
               </div>
-              <Link href={whatWeOfferLinks[index]?.pathname || "/services"}>
                 <h3 className="text-xl font-semibold mb-2 hover:underline">{service.title}</h3>
-              </Link>
               <p className="text-neutral">{service.description}</p>
+             
             </div>
           ))}
         </div>

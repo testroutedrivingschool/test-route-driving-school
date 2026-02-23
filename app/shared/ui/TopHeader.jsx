@@ -33,21 +33,21 @@ export default function TopHeader() {
   return (
     <div className="bg-primary text-white py-2 w-full">
       <Container className="flex items-center justify-between">
-        <a className="hover:text-underline font-semibold" href="tel:61412018593">
+        <a className="hover:text-underline font-semibold text-sm md:text-base" href="tel:61412018593">
           <span className="font-bold">Phone:</span> 0412 018 593
         </a>
         <div className="space-x-5">
           {hasCartItem && (
-            <Link href="/cart" className="hover:underline font-semibold">
+            <Link href="/cart" className="hover:underline font-semibold text-xs md:text-base">
               View Cart
             </Link>
           )}
           {userData && userData.role === "instructor" ? (
-            <Link href={`/company/contact`} className="hover:underline font-semibold">
+            <Link href={`/company/contact`} className="hover:underline font-semibold text-xs md:text-base">
               Help
             </Link>
           ) : (
-            <Link href="/bookings" className="hover:underline font-semibold">
+            <Link href="/bookings" className="hover:underline font-semibold text-xs md:text-base">
               Book Now
             </Link>
           )}

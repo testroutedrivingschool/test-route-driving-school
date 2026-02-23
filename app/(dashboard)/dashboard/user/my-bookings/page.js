@@ -66,7 +66,7 @@ export default function UserBookings() {
 
   return (
     <div className="rounded-2xl border border-border-color bg-white shadow-sm">
-      <div className="p-6 border-b border-border-color flex items-start justify-between gap-4">
+      <div className="p-4 border-b border-border-color flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
             <FiCalendar /> My Bookings
@@ -77,14 +77,14 @@ export default function UserBookings() {
         </div>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-2 md:p-4 space-y-4">
         {bookings.map((b) => {
           const allow = canUserReschedule(b.bookingDate, b.bookingTime);
           const when = `${formatDateAU(b.bookingDate)} • ${b.bookingTime || "—"}`;
           const where = [b.address, b.suburb].filter(Boolean).join(", ");
 
           return (
-            <div key={b._id} className="rounded-xl border border-border-color bg-base-100 p-5 shadow-sm">
+            <div key={b._id} className="rounded-xl border border-border-color bg-base-100 p-4 shadow-sm">
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
                 <div className="space-y-2">
                   <h3 className="text-lg font-bold">{b.serviceName}</h3>

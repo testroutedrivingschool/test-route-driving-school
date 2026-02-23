@@ -72,13 +72,13 @@ export default function DrivingTestPackage() {
             </div>
 
             {/* Content */}
-            <div className="p-8">
+            <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-2xl text-gray-800">
+                <h2 className="font-bold text-lg md:text-2xl text-gray-800">
                   Car Hire with 1 Hour Lesson
                 </h2>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">$220</p>
+                  <p className="text-lg md:text-2xl font-bold text-primary">$220</p>
                 </div>
               </div>
 
@@ -110,7 +110,7 @@ export default function DrivingTestPackage() {
                   Get this package <FaArrowRight className="ml-2" />
                 </PrimaryBtn>
 
-                <span className="text-sm text-gray-500 flex items-center gap-1">
+                <span className="hidden  text-sm text-gray-500 md:flex items-center gap-1">
                   <FaStar className="text-yellow-400" />
                   Trusted by learners
                 </span>
@@ -130,13 +130,13 @@ export default function DrivingTestPackage() {
             </div>
 
             {/* Content */}
-            <div className="p-8">
+            <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-2xl text-gray-800">
+                <h2 className="font-bold text-lg md:text-2xl text-gray-800">
                   Car Hire with 2 Hour lesson
                 </h2>
                 <div className="text-right">
-                  <p className="text-2xl font-bold text-primary">$220</p>
+                  <p className="text-lg md:text-2xl font-bold text-primary">$220</p>
                 </div>
               </div>
 
@@ -168,7 +168,7 @@ export default function DrivingTestPackage() {
                   Get this package <FaArrowRight className="ml-2" />
                 </PrimaryBtn>
 
-                <span className="text-sm text-gray-500 flex items-center gap-1">
+                <span className="hidden  text-sm text-gray-500 md:flex items-center gap-1">
                   <FaStar className="text-yellow-400" />
                   Trusted by learners
                 </span>

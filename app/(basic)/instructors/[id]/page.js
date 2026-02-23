@@ -91,7 +91,10 @@ export default function InstructorDetails() {
     <>
       <PageHeroSection
         title="Meet With Our Instructor"
-        subtitle={instructor?.name || ""}
+        subtitle={<>
+        {instructor?.name || ""} <br/>
+        {instructor.bio.slice(0,310)+"..." || ""}
+        </>}
       />
 
       <section className="py-10">
@@ -106,19 +109,23 @@ export default function InstructorDetails() {
           {/* Top layout like screenshot: left profile + right car card */}
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6">
             {/* LEFT: Profile */}
-            <div className="lg:col-span-8  rounded-md p-5 bg-white">
+            <div className="lg:col-span-8  rounded-md  bg-white">
               <div className="flex flex-col md:flex-row gap-5">
-                <div className="w-full md:w-[220px]">
+                <div className="w-full md:w-[220px] ">
+                  <div className="border rounded border-border-color w-50 mx-auto md:w-full">
+
                   <Image
                     width={1000}
                     height={1000}
                     src={avatarSrc}
                     alt={instructor?.name || "Instructor"}
-                    className="w-full object-cover rounded"
+                    className="w-full object-cover rounded "
                   />
+                  </div>
+                  
                   <PrimaryBtn
                     onClick={() => router.push("/bookings")}
-                    className={`mt-4 w-full! text-center! justify-center!  text-xl!`}
+                    className={`mt-4 mx-auto md:w-full! text-center! justify-center!  text-xl!`}
                   >
                     Book Now
                   </PrimaryBtn>
@@ -129,33 +136,8 @@ export default function InstructorDetails() {
                     {instructor?.name}
                   </h1>
 
-                  <p className="mt-3 text-neutral leading-relaxed">
-                    With over 15 years of hands-on experience in driver
-                    education, Firoj is a dedicated and highly skilled driving
-                    instructor committed to promoting road safety and
-                    responsible driving habits. Known for a patient, calm, and
-                    encouraging teaching style, he has successfully trained
-                    hundreds of new drivers-from nervous beginners to confident,
-                    competent motorists. <br /> <br />
-                    Firoj&apos;s passion lies in not just helping learners pass
-                    their driving test, but in equipping them with the
-                    knowledge, skills, and mindset to drive safely for life. He
-                    takes pride in creating a supportive learning environment
-                    where students feel comfortable, confident, and empowered
-                    behind the wheel.
-                    <br /> <br />
-                    Whether teaching basic driving techniques, highway skills,
-                    or defensive driving strategies, Firoj tailors each lesson
-                    to suit the individual needs of the learner. With a deep
-                    understanding of road rules, traffic laws, and safety
-                    protocols, he ensures every student leaves with a strong
-                    foundation for a lifetime of safe driving.
-                    <br />
-                    <br />
-                    My goal is to help every learner become a safe, confident,
-                    and responsible driver. I believe that safe driving is not
-                    just a skill, but a lifelong responsibility—and I’m proud to
-                    play a role in shaping safer roads for everyone.
+                  <p className="mt-3 text-neutral leading-relaxed whitespace-pre-line">
+                    {instructor.bio}
                   </p>
 
                   {/* Spoken languages */}

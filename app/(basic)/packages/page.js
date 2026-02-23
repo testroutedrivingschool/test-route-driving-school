@@ -274,7 +274,7 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-12 md:p-0">
             {filteredPackages.map((pkg) => (
               <Link
                 href={`/packages/${pkg.slug}`}
@@ -282,7 +282,7 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
                 className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
               >
                 {/* Image */}
-                <div className="w-full h-60">
+                <div className="w-full md:h-65">
                   <Image
                     src={pkg.packageThumbline}
                     alt={pkg.name}

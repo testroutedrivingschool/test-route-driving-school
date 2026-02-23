@@ -16,7 +16,8 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {toast} from "react-toastify";
 import StripeCardInput from "@/app/shared/ui/StripeCardInput";
 import Link from "next/link";
-
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/style.css";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_Stripe_Publishable_key,
 );
@@ -161,7 +162,7 @@ function PaymentForm() {
   return (
     <section className="py-20 bg-gray-50">
       <Container>
-        <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-6">
+        <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-md p-6 space-y-6">
           <h2 className="text-2xl font-bold text-center">Confirm Payment</h2>
 
           {/* Booking Summary */}
@@ -183,13 +184,20 @@ function PaymentForm() {
           {/* Phone */}
           <div className="space-y-2">
             <label className="font-medium">Phone</label>
-            <input
-              type="text"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="input-class"
-              placeholder="123 Main Street"
-            />
+            <PhoneInput
+                    country={"au"}
+                    required
+                 value={phone}
+                      onChange={(value) => setPhone(value)}
+                    inputStyle={{
+                      width: "100%",
+                      height: "48px",
+                      borderRadius: "12px",
+                      border:"1px solid #e7e7e9e6",
+                    }}
+                    
+                  />
+           
           </div>
           {/* Address */}
           <div className="space-y-2">

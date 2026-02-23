@@ -123,7 +123,7 @@ export default function DrivingTestAssessment() {
                     <div className="w-16 h-16 rounded-full bg-white border-2 border-primary flex items-center justify-center">
                       <div className="text-2xl">{pkg.icon}</div>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">
+                    <h3 className="text-lg md:text-2xl font-bold text-gray-900">
                       {pkg.duration} Package
                     </h3>
                   </div>
@@ -139,7 +139,7 @@ export default function DrivingTestAssessment() {
                 </div>
 
                 {/* Features List */}
-                <div className="p-6 flex-1">
+                <div className="p-4 flex-1">
                   <div className="space-y-3">
                     {pkg.features.map((feature, idx) => (
                       <div
@@ -162,7 +162,7 @@ export default function DrivingTestAssessment() {
                           </div>
                         </div>
                         <span
-                          className={`text-md ${
+                          className={`text-sm  md:text-base ${
                             feature.included ? "text-gray-700" : "text-gray-500"
                           }`}
                         >
@@ -179,10 +179,10 @@ export default function DrivingTestAssessment() {
                 </div>
 
                 {/* CTA Section */}
-                <div className="p-6">
+                <div className="p-4">
                   <PrimaryBtn
                     onClick={(e) => handleAddToCart(pkg, e)}
-                    className={`w-full py-4 rounded-xl font-bold text-lg group ${
+                    className={`w-full py-4 rounded-xl font-bold text-base! md:text-lg group ${
                       pkg.highlight
                         ? "bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                         : ""

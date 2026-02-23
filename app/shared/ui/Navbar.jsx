@@ -17,6 +17,7 @@ import {toast} from "react-toastify";
 import {usePathname} from "next/navigation";
 import {useUserData} from "@/app/hooks/useUserData";
 import {useRouter} from "next/navigation";
+import AvatarDropdown from "./AvatarDropdown";
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
   {id: 2, label: "About", pathname: "/about"},
@@ -97,6 +98,8 @@ const instructorNavLinks = [
 export default function Navbar({className}) {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const avatarRef = useRef(null);
+  const menuRef = useRef(null);
+  const avatarBtnRef = useRef(null);
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -124,6 +127,17 @@ export default function Navbar({className}) {
         toast.error("Failed to log out");
       });
   };
+
+
+useEffect(() => {
+  const handler = (e) => {
+    if (menuRef.current && !menuRef.current.contains(e.target)) {
+      setOpen(false);
+    }
+  };
+  if (open) document.addEventListener("mousedown", handler);
+  return () => document.removeEventListener("mousedown", handler);
+}, [open]);
 const dashHref =
   userData?.role === "admin"
     ? "/dashboard/admin"
@@ -133,7 +147,7 @@ const dashHref =
 
   return (
     <nav
-      className={`${className} z-50 transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
+      className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
     >
       <Container>
         <div className="flex items-center justify-between ">
@@ -248,15 +262,15 @@ const dashHref =
               </li>
             ))}
           </ul>
-          <div className="flex gap-4 md:gap-6 ">
+          <div className="flex gap-4 md:gap-6 z-99">
             {userData ? (
               <div ref={avatarRef} className="relative">
-                {/* Avatar Button */}
-                <button
-                  onClick={() => setAvatarOpen(!avatarOpen)}
-                  className="flex items-center gap-2 focus:outline-none"
-                >
-                  <div className="w-10 h-10 md:w-11 md:h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
+  <button
+    ref={avatarBtnRef}
+    onClick={() => setAvatarOpen(v => !v)}
+    className="flex items-center gap-2 focus:outline-none"
+  >
+     <div className="w-10 h-10 md:w-11 md:h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
                     <Image
                       src={avatarSrc}
                       alt={userData?.name || "User"}
@@ -265,57 +279,18 @@ const dashHref =
                       className="object-cover object-top w-full h-full"
                     />
                   </div>
-                </button>
+  </button>
+            
 
                 {/* Dropdown */}
-                <div
-                  className={`absolute right-0 mt-3 w-56 rounded-2xl bg-white shadow-xl border border-border-color z-999999999999
-      transition-all duration-200 origin-top-right
-      ${
-        avatarOpen
-          ? "opacity-100 scale-100 translate-y-0"
-          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
-      }`}
-                >
-                  {/* User Info */}
-                  <div className="px-4 py-3 border-b border-border-color">
-                    <p className="font-semibold text-gray-900 truncate">
-                      {userData.name || "User"}
-                    </p>
-                    <p className="text-sm text-gray-500 truncate">
-                      {userData.email}
-                    </p>
-                  </div>
-
-                  {/* Links */}
-                  <ul className="py-2">
-                    <li>
-                      <Link
-                        href={dashHref}
-                        className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
-                        onClick={() => setAvatarOpen(false)}
-                      >
-                        <MdDashboard className="text-primary" />
-                        Dashboard
-                      </Link>
-                    </li>
-                  </ul>
-
-                  {/* Logout */}
-                  <div className="border-t border-border-color">
-                    <button
-                      onClick={() => {
-                   
-                        handleLogout();
-                        setAvatarOpen(false);
-                      }}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition"
-                    >
-                      <FaSignOutAlt />
-                      Logout
-                    </button>
-                  </div>
-                </div>
+                <AvatarDropdown
+    open={avatarOpen}
+    onClose={() => setAvatarOpen(false)}
+    anchorRef={avatarBtnRef}
+    dashHref={dashHref}
+    user={userData}
+    onLogout={handleLogout}
+  />
               </div>
             ) : (
               <Link href="/login" className="inline-block">
@@ -344,7 +319,8 @@ const dashHref =
       </Container>
       {/* Mobile Dropdown */}
       <div
-        className={`lg:hidden mt-2 bg-white border-t border-border-color transform transition-all duration-500 ease-in-out ${
+      ref={menuRef}
+        className={`lg:hidden mt-2  border-t border-border-color transform transition-all duration-500 ease-in-out ${
           open
             ? "min-h-[50vh] opacity-100 translate-y-0"
             : "max-h-0 opacity-0 -translate-y-4"

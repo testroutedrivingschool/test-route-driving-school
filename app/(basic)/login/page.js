@@ -17,7 +17,7 @@ export default function Login() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
-  const redirect = searchParams.get("redirect") || "/dashboard";
+  const redirect = searchParams.get("redirect") || "/";
   const {loginWithGoogle, loginUserWithCredential, forgetPassword} = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +98,7 @@ export default function Login() {
       router.refresh();
       toast.success("Logged in successfully 🎉");
     } catch (error) {
-      toast.error( error?.res?.data || "Google login failed. Please try again." );
+      toast.error( error?.response?.data?.message || "Google login failed. Please try again." );
     }
   };
   const handleForgetPassword = async (email) => {

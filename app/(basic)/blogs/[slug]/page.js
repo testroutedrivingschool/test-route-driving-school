@@ -104,12 +104,12 @@ export default function BlogDetails() {
         <Container>
           <div className="bg-white shadow-lg rounded-lg overflow-hidden">
             {/* Blog Image */}
-            <div className="relative w-full h-80 md:h-[400px]">
+            <div className="relative w-full h-80 md:h-[500px]">
               <Image
                 src={blogData.image.src}
                 alt={blogData.title}
                 fill
-                className="object-cover w-full h-full"
+                className="object-cover w-full h-full object-center"
               />
             </div>
 

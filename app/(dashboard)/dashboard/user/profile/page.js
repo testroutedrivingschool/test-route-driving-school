@@ -176,33 +176,33 @@ export default function UserProfile() {
   if (isLoading) return <LoadingSpinner />;
   return (
     <div className="min-h-screen ">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white shadow rounded-lg">
+      <div className="">
+        <div className="">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className=" py-4 ">
             <h1 className="text-2xl font-bold text-gray-800">User Profile</h1>
             <p className="text-neutral">
               View and manage your profile information
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
             {/* Left Column - Profile Information */}
             <div className="lg:col-span-2 space-y-6">
               <div className=" border border-gray-200 rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
+                <div className="px-4 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold">Profile Photo</h2>
                 </div>
 
-                <div className="p-6 space-y-4">
+                <div className="p-4 space-y-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full overflow-hidden border bg-gray-50">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border bg-gray-50">
                       <Image
                         src={avatarSrc}
                         alt="Profile"
                         width={80}
                         height={80}
-                        className="w-20 h-20 object-cover"
+                        className="w-16 h-16 md:w-20 md:h-20 object-cover"
                       />
                     </div>
 
@@ -244,19 +244,24 @@ export default function UserProfile() {
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
                 {/* Photo Card */}
 
-                <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <div className="px-4 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-gray-800">
                     Personal Information
                   </h2>
-                  {!isEditing && (
-                    <PrimaryBtn onClick={() => setIsEditing(true)}>
+                  {isEditing?    <button
+                          type="submit"
+                          className="px-2 py-2 md:px-4 font-medium text-xs md:text-base bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
+                        >
+                          Save Changes
+                        </button> :(
+                    <PrimaryBtn className={`px-1! md:px-4! font-medium! text-xs!  md:text-base!`} onClick={() => setIsEditing(true)}>
                       Edit Profile
                     </PrimaryBtn>
                   )}
                 </div>
 
                 <form onSubmit={handleProfileSubmit}>
-                  <div className="p-6 space-y-6">
+                  <div className="p-4 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">

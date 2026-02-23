@@ -51,10 +51,10 @@ export default function LocalDrivingLessons() {
 
             <div className="mt-6 flex  gap-4">
               <Link href={"/bookings"}>
-                <PrimaryBtn>Book a Lesson</PrimaryBtn>
+                <PrimaryBtn className={`px-2! md:px-4`}>Book a Lesson</PrimaryBtn>
               </Link>
               <Link  aria-label="Learn More: Automatic driving lesson" href={`/services/automatic-driving-lessons`}>
-                <OutlineBtn className={"py-1.5!"}>Learn More</OutlineBtn>
+                <OutlineBtn className={"py-1.5! px-2! md:px-4"}>Learn More</OutlineBtn>
               </Link>
             </div>
           </div>

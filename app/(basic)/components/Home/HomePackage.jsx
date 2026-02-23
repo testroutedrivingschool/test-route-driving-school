@@ -94,10 +94,10 @@ export default function HomePackage() {
                 {/* Package Header */}
                 <div className="mb-6">
                   <div className="flex justify-between gap-1 items-start mb-2">
-                    <h3 className="text-2xl font-bold text-gray-900">
+                    <h3 className="text-lg md:text-2xl font-bold text-gray-900">
                       {pkg.name}
                     </h3>
-                    <span className="w-22 text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                    <span className="w-22 text-xs md:text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                       {pkg.duration}
                     </span>
                   </div>

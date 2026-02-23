@@ -54,7 +54,7 @@ export default function FaqSection({className, faqs, title,subtitle}) {
           {faqs
             ? faqs.map((faq, index) => (
                 <div
-                  key={index}
+                  key={`faq-${index}`}
                   className="border border-border-color rounded-lg p-4 shadow-sm"
                 >
                   <button

@@ -21,7 +21,7 @@ export default function UserAnnouncements() {
 
 
   return (
-    <div className=" rounded-xl shadow border border-border-color p-6">
+    <div className=" rounded-xl shadow border border-border-color p-4">
       <h2 className="text-2xl font-bold mb-6">📢 Announcements</h2>
 
       {announcements.length === 0 ? (

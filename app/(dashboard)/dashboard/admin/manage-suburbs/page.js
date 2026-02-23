@@ -101,7 +101,7 @@ export default function ManageSuburbs() {
     <div className="min-h-screen">
       {/* Header */}
       <div className="sticky top-0 left-0 z-50 bg-white py-3 flex justify-between items-center">
-        <h1 className="text-2xl md:text-3xl font-bold">Manage Locations</h1>
+        <h1 className="text-lg sm:text-2xl md:text-3xl font-bold">Manage Locations</h1>
 
         <PrimaryBtn
           onClick={() => setIsAddOpen(true)}

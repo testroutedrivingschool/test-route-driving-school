@@ -42,19 +42,19 @@ export default function Instructors() {
             return (
             <div
               key={inst._id}
-              className="bg-white shadow-lg rounded-lg overflow-hidden"
+              className="bg-white   shadow-lg rounded-lg overflow-hidden"
             >
               <Image
                 width={800}
                 height={800}
-                className="w-full h-56 object-cover"
+                className="md:w-full md:h-70 h-80 object-cover object-top md:object-center"
                 src={avatarSrc}
                 alt={inst.name}
               />
               <div className="p-4">
                 <h2 className="text-2xl font-bold mb-2">{inst.name}</h2>
                 <p className="text-gray-700 mb-2">{inst.experience}</p>
-                <div className="flex justify-between gap-2 mt-4">
+                <div className="flex flex-col md:flex-row justify-between gap-2 mt-4">
                   <PrimaryBtn onClick={()=>router.push(`/bookings`)} className={`flex-1 text-center justify-center text-sm font-medium `}>Book Now</PrimaryBtn>
                   <OutlineBtn  className={`flex-1 text-center justify-center text-sm font-medium `} onClick={()=>router.push(`/instructors/${inst._id}`)}>View Profile</OutlineBtn>
              

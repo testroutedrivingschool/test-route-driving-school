@@ -119,16 +119,16 @@ const authorImageData = useMemo(() => {
     <div className="min-h-screen">
       <div className="w-full rounded-xl shadow-lg border border-border-color bg-white">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-border-color">
+        <div className="px-4 py-5 border-b border-border-color">
           <h1 className="text-2xl font-bold">Share Your Feedback</h1>
           <p className="text-neutral mt-1">
             Your feedback helps us improve our service
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 space-y-6">
           {/* Feedback for */}
-          <div>
+          <div className="overflow-x-hidden">
             <label className="block text-sm font-medium text-neutral mb-2">
               Feedback for
             </label>

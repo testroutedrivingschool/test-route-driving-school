@@ -171,20 +171,20 @@ export default function Suburbs() {
 
   return (
     <div className="min-h-screen">
-        <div className="sticky top-0 z-50 bg-white border-b border-gray-200 py-3 flex justify-between items-center px-2">
-          <h1 className="text-xl md:text-3xl font-bold">Manage Suburbs Availability</h1>
+        <div className="sticky top-18.5 md:top-0 z-30 bg-white border-b border-gray-200 py-3 flex justify-between items-center px-2">
+          <h1 className="text-lg md:text-3xl font-bold">Manage Suburbs Availability</h1>
 
           <div className="flex gap-2">
             <PrimaryBtn
               onClick={() => setIsAddOpen(true)}
-              className="justify-center text-sm! md:text-base"
+              className="justify-center text-xs! md:text-base px-2! md:px-4! "
             >
-              <FaPlus /> Add Suburb
+              <FaPlus className="hidden md:block"/> Add Suburb
             </PrimaryBtn>
 
             <PrimaryBtn
               onClick={handleSave}
-              className="justify-center text-sm! md:text-base"
+              className="justify-center text-xs! md:text-base px-2! md:px-4! "
             >
               Update All
             </PrimaryBtn>

@@ -1177,6 +1177,7 @@ export const locationData = {
   },
 
     "wali-creek": {
+      mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6620.733252862213!2d151.1487085433527!3d-33.93169734281028!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b0973160015f%3A0x5017d6816334380!2sWolli%20Creek%20NSW%202205%2C%20Australia!5e0!3m2!1sen!2sbd!4v1771690663253!5m2!1sen!2sbd",
     pageTitle: "Driving Lessons in Wali Creek – Personalized Training for Every Learner",
     metaDescription:
       "Get licensed faster with Driving Lessons in Wali Creek. Affordable rates, professional guidance. Call +61 412 018 593 now!",
@@ -1581,6 +1582,7 @@ export const locationData = {
   },
 
     "kogarah-bay": {
+      mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13233.338437365323!2d151.11391230606455!3d-33.983938120920634!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b9cc3e9e7d7d%3A0x5017d681632bd10!2sKogarah%20Bay%20NSW%202217%2C%20Australia!5e0!3m2!1sen!2sbd!4v1771690753349!5m2!1sen!2sbd",
     pageTitle: "Expert Driving Lessons in Kogarah Bay – Learn to Drive with Confidence",
     metaDescription:
       "Safe & effective Driving Lessons in Kogarah Bay. Affordable packages & expert trainers. Call +61 412 018 593 to book your first lesson today.",
@@ -1991,6 +1993,7 @@ export const locationData = {
   },
 
       "monterey": {
+        mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13235.153522981567!2d151.13765015605617!3d-33.97227832099132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b7500df397ff%3A0x5017d681632c1a0!2sMonterey%20NSW%202217%2C%20Australia!5e0!3m2!1sen!2sbd!4v1771690807455!5m2!1sen!2sbd",
     pageTitle: "Professional Driving Lessons in Monterey – Book Today",
     metaDescription:
       "Improve your driving skills with Driving Lessons in Monterey – Safe, affordable, and convenient. Ring +61 412 018 593 to start.",
@@ -2385,6 +2388,7 @@ export const locationData = {
   },
 
        "ramsgate": {
+        mapUrl:"https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6616.80752836563!2d151.13446449336215!3d-33.982161392733666!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b9d8721ad143%3A0x5017d681632c7e0!2sRamsgate%20NSW%202217%2C%20Australia!5e0!3m2!1sen!2sbd!4v1771690841413!5m2!1sen!2sbd",
     pageTitle: "Expert Driving Lessons in Ramsgate for Beginners & Learners",
     metaDescription:
       "Learn safe driving with Driving Lessons in Ramsgate. Expert instructors, flexible timings. Call +61 412 018 593 and start your journey today!",

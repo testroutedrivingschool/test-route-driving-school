@@ -158,6 +158,7 @@ router.push("/select-client");
     : instructor?.photoKey
       ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
       : "/profile-avatar.png";
+      console.log(booking);
   if (isLoading || isUserLoading || !instructor || !booking)
     return <LoadingSpinner />;
   const services =
@@ -166,15 +167,16 @@ router.push("/select-client");
       prices: durations.map((_, i) => s.prices?.[i] ?? null),
       activeDurations: durations.map((_, i) => s.activeDurations?.[i] ?? false),
     })) ?? [];
+    
   return (
-    <section className="py-16">
+    <section className="py-5">
       <Container>
         <div className="border border-border-color rounded shadow">
           {/* Header */}
           <div className="bg-green-600 text-white text-center py-3 font-semibold text-lg">
             {booking.bookingType === "manual"
               ? "Booking User"
-              : `Booking ${userData?.name || "User"}`}
+              : `Booking For ${userData?.name || "User"}`}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -186,7 +188,7 @@ router.push("/select-client");
                   alt={instructor.name}
                   width={180}
                   height={180}
-                  className="border object-cover rounded-full w-40 h-40"
+                  className="border object-cover rounded-full w-30 md:w-40 h-30 md:h-40"
                   onError={(e) => {
                     e.target.style.display = "none";
                     e.target.parentElement.innerHTML = `<img src="/profile-avatar.png" width="100" height="100" className="h-10 w-10 object-cover border ring-2 text-gray-500" />`;
@@ -197,7 +199,7 @@ router.push("/select-client");
 
             <div className="col-span-1 md:col-span-2">
               {/* Booking Info */}
-              <div className="p-8 grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div className="md:col-span-3 space-y-2">
                   <div className="space-y-2">
                     <div className="flex items-center gap-6">
@@ -297,7 +299,7 @@ function ServiceRow({
       {durations.map((d, i) => (
         <td key={i} className="text-center py-2">
           {prices[i] && activeDurations[i] ? (
-            <label className="flex flex-col items-center font-medium gap-1 cursor-pointer">
+            <label className="flex flex-col items-center font-medium gap-1 cursor-pointer text-xs md:text-sm">
               <input
                 type="radio"
                 name={`servicePick`}
@@ -327,7 +329,7 @@ function ServiceRow({
 
 function DesktopTable({ services, durations, selectedBooking, setSelectedBooking }) {
   return (
-    <div className="px-8 overflow-x-auto">
+    <div className="px-4 overflow-x-auto">
       <table className="w-full min-w-[700px] border border-border-color text-sm">
         <thead className="bg-secondary text-white">
           <tr>

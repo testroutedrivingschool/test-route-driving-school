@@ -55,7 +55,7 @@ const formattedLocation = slug
               </p>
               <ul className="list-disc list-inside text-gray-700 space-y-2">
                 {locationData?.section1Features?.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
+                  <li key={`s1Feature-${idx}`}>{feature}</li>
                 ))}
               </ul>
             </div>
@@ -101,7 +101,7 @@ const formattedLocation = slug
 
               <ul className="list-disc list-inside text-gray-700 space-y-2">
                 {locationData?.section2Features?.map((feature, idx) => (
-                  <li key={idx}>{feature}</li>
+                  <li key={`s2Feature-${idx}`}>{feature}</li>
                 ))}
               </ul>
             </div>
@@ -211,18 +211,18 @@ const formattedLocation = slug
         <Container>
           {/* CTA Section */}
           <div className=" bg-primary rounded-xl p-8 text-white text-center">
-            <h3 className="text-2xl font-bold mb-4">Call to Action</h3>
+            <h3 className="text-2xl font-bold mb-4">Start Your Driving Journey Today</h3>
             <p className="text-blue-100 mb-6 md:max-w-2xl mx-auto">
               {locationData.ctaDescription
                 ? locationData.ctaDescription
                 : "Start your driving journey today with Test Route Driving School in Carlton. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
             </p>
-            <div className="flex  gap-2 justify-center">
-              <SecondaryBtn className={`text-xs! md:text-lg!`} onClick={() => router.push("/bookings")}>
+            <div className="flex gap-2 justify-center">
+              <SecondaryBtn className={`text-xs! md:text-lg! px-2! md:px-4!`} onClick={() => router.push("/bookings")}>
                 Book Now
               </SecondaryBtn>
               <OutlineBtn
-                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! py-1 md:py-2`}
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! py-1 md:py-1.5 px-2! md:px-4!`}
               >
                 <a
                   href="tel:61412018593"
@@ -233,7 +233,7 @@ const formattedLocation = slug
                 </a>
               </OutlineBtn>
               <OutlineBtn
-                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg!`}
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! px-2! md:px-4!`}
               >
                 <a
                   href="mailto:testroutedrivingschool@gmail.com"

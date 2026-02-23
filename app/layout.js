@@ -2,6 +2,7 @@ import {Montserrat, Open_Sans} from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
 import QueryProvider from "./utils/QueryProvider";
+import ScrollToTop from "./utils/ScrollToTop";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -202,6 +203,7 @@ export default function RootLayout({children}) {
         {" "}
         <QueryProvider>
           <AuthProvider>
+            <ScrollToTop/>
             {children}
             <div id="recaptcha-container"></div>
           </AuthProvider>

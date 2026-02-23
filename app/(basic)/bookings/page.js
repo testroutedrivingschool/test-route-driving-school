@@ -103,13 +103,7 @@ const times = [
   "11:45PM",
 ];
 
-const formatAU = (iso) =>
-  new Date(iso).toLocaleDateString("en-AU", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+
 async function confirmReschedule({bookingId, newDateISO, newTime}) {
   const newDateText = new Date(newDateISO).toLocaleDateString("en-AU", {
     weekday: "short",
@@ -1077,24 +1071,33 @@ export default function BookingsPage() {
  
   {(() => {
     const visibleDayIdx = [0, 1, 2,3, 4, 5, 6]; 
+const formatMobileTime = (t) => {
+  const match = t.match(/^(\d+):(\d+)(AM|PM)$/);
+  if (!match) return t;
 
+  const [, hour, minute, period] = match;
+  return { hour: `${hour}.${minute}`, period };
+};
     return (
       <div className="max-h-[75vh] overflow-y-auto">
         <table className="w-full table-fixed border-separate border-spacing-0">
           {/* ✅ force widths so it fits mobile without x-scroll */}
           <colgroup>
-            <col style={{width: "64px"}} />
-            {visibleDayIdx.map((i) => (
-              <col key={i} style={{width: `calc((100% - 64px) / ${visibleDayIdx.length})`}} />
-            ))}
-          </colgroup>
+  <col style={{ width: "35px" }} />
+  {visibleDayIdx.map((i) => (
+    <col
+      key={i}
+      style={{ width: `calc((100% - 35px) / ${visibleDayIdx.length})` }}
+    />
+  ))}
+</colgroup>
 
           <thead>
             <tr>
-              <th className="py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
+              <th className="w-5 py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
                 <div className="leading-tight">
                   <div>Time</div>
-                  <div className="font-semibold opacity-80">AEDT</div>
+                  <span className="font-semibold opacity-80">AEDT</span>
                 </div>
               </th>
 
@@ -1104,14 +1107,14 @@ export default function BookingsPage() {
                   className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
                 >
                   <div className="leading-tight">
-                    <div className="text-gray-900">{weekdays[dayIndex]}</div>
-                    <div className="text-gray-600 font-semibold">
-                      {weekDates[dayIndex].toLocaleDateString("en-US", {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                    </div>
-                  </div>
+  <div className="text-gray-900">{weekdays[dayIndex].slice(0, 3)}</div>
+  <div className="text-gray-600 font-semibold">
+    {weekDates[dayIndex].toLocaleDateString("en-US", {
+      day: "numeric",
+      month: "short",
+    })}
+  </div>
+</div>
                 </th>
               ))}
             </tr>
@@ -1127,9 +1130,19 @@ export default function BookingsPage() {
               return (
                 <tr key={time} className="align-stretch">
                   <td
-                    className={`py-2 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}
+                    className={`w-5 py-2 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}
                   >
-                    {time}
+                  {(() => {
+  const ft = formatMobileTime(time);
+  if (!ft) return time;
+
+  return (
+    <div className="flex flex-col leading-tight">
+      <span>{ft.hour}</span>
+      <span className="text-[8px]">{ft.period}</span>
+    </div>
+  );
+})()}
                   </td>
 
                   {visibleDayIdx.map((dayIndex) => {
