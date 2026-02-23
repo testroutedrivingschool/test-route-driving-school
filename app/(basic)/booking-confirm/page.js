@@ -368,13 +368,13 @@ function MobileTable({ services, durations, selectedBooking, setSelectedBooking 
             <th className="text-left px-2 py-2 w-[40%]">Service</th>
             {durations.map((d) => (
               <th key={d.minutes} className="px-1 py-2 text-center font-bold">
-                {d.minutes === 60 && "1hr"}
-                {d.minutes === 90 && "1hr30"}
-                {d.minutes === 120 && "2hrs"}
-                {d.minutes === 150 && "2hr30"}
-                {d.minutes === 180 && "3hrs"}
-                {d.minutes === 210 && "3hr30"}
-                {d.minutes === 240 && "4hrs"}
+                {d.minutes === 60 && "1 hr"}
+                {d.minutes === 90 && "1 hr 30m"}
+                {d.minutes === 120 && "2 hrs"}
+                {d.minutes === 150 && "2 hr 30m"}
+                {d.minutes === 180 && "3 hrs"}
+                {d.minutes === 210 && "3 hr 30m"}
+                {d.minutes === 240 && "4 hrs"}
               </th>
             ))}
           </tr>

@@ -98,7 +98,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                     </p>
 
                     <Link
-                      href={`/blogs/${blog.slug}`}
+                      href={`/${blog.slug}`}
                       aria-label={` Read the full article: ${blog.title}`}
                       className="text-primary font-semibold hover:underline mt-auto"
                     >

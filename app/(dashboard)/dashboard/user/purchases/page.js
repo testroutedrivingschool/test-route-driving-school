@@ -194,11 +194,7 @@ export default function UserPurchase() {
                       : "Download Invoice"}
                   </button>
 
-                  {!p.invoiceKey && (
-                    <p className="text-xs opacity-60 mt-1">
-                      Invoice is processing. Try again in a moment.
-                    </p>
-                  )}
+                
                 </div>
               </div>
             </div>

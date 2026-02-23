@@ -34,9 +34,5 @@ export default function DashboardHome() {
   }, [isLoading, userData, router]);
 
 
-  return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <LoadingSpinner />
-    </div>
-  );
+  return <LoadingSpinner />;
 }

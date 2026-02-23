@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }) {
     }
   }, [user, loading, pathname, router]);
 
-  if (loading) return <LoadingSpinner />;
+  if (loading) return;
   if (!user) return null;
 
   return children;

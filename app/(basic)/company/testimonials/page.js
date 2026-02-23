@@ -74,7 +74,7 @@ export default function Testimonials() {
       return res.data;
     },
   });
-  
+  console.log(reviewsData);
   if (isLoading) return <LoadingSpinner />;
   if (!reviewsData.length) {
     return (
@@ -169,7 +169,13 @@ export default function Testimonials() {
     </div>
 
     <div className="divide-y divide-border-color">
-      {reviewsData.map((r) => (
+      {reviewsData.map((r) => {
+          const avatarSrc = r?.authorImage
+    ? r.authorImage
+    : r?.authorImageKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(r.authorImageKey)}`
+      : "/profile-avatar.png";
+        return(
         <div key={r._id} className="px-7 py-7">
           <div className="flex gap-5 items-start">
             {/* Avatar */}
@@ -177,9 +183,13 @@ export default function Testimonials() {
               <Image
                 width={80}
                 height={80}
-                src={r.authorImage || "/profile-avatar.png"}
+                src={avatarSrc || "/profile-avatar.png"}
                 alt={r.authorName || "Reviewer"}
                 className="w-16 h-16 rounded-full object-cover border border-border-color"
+                onError={(e) => {
+                    e.target.style.display = "none";
+                    e.target.parentElement.innerHTML = `<img src="/profile-avatar.png" width="100" height="100" className="h-16 w-16 object-cover border ring-2 text-gray-500" />`;
+                  }}
               />
             </div>
 
@@ -204,7 +214,7 @@ export default function Testimonials() {
             </div>
           </div>
         </div>
-      ))}
+      )})}
     </div>
   </div>
 
