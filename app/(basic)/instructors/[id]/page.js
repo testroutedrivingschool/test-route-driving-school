@@ -124,7 +124,7 @@ export default function InstructorDetails() {
                   </div>
                   
                   <PrimaryBtn
-                    onClick={() => router.push("/bookings")}
+                     onClick={() => router.push(`/bookings?instructorId=${instructor._id}`)} 
                     className={`mt-4 mx-auto md:w-full! text-center! justify-center!  text-xl!`}
                   >
                     Book Now

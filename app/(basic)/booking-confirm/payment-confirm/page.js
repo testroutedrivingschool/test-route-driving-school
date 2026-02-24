@@ -178,7 +178,7 @@ function PaymentForm() {
             <p>
               <strong>Duration:</strong> {booking.duration}
             </p>
-            <p className="text-lg font-semibold">Total: ${booking.price}</p>
+            <p className="text-lg font-bold ">Total: <span className="text-primary">${booking.price.toFixed(2)}</span> </p>
           </div>
 
           {/* Phone */}

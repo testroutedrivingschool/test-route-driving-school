@@ -25,7 +25,7 @@ async function generatePurchaseInvoicePdfBuffer(purchaseDoc, reqUrl) {
 
   const mapped = {
     invoiceNo: purchaseDoc.invoiceNo,
-    bookingId: purchaseDoc._id?.toString() || "", // ✅ use purchase _id
+    bookingId: purchaseDoc._id?.toString() || "", 
     userName: purchaseDoc.userName,
     userEmail: purchaseDoc.userEmail,
     userPhone: purchaseDoc.billing?.mobile || "",
@@ -37,6 +37,7 @@ async function generatePurchaseInvoicePdfBuffer(purchaseDoc, reqUrl) {
     serviceName: "Package Purchase",
     duration: first?.packageName ? `(${first.packageName})` : "",
     price: purchaseDoc.amount || 0,
+    discountAmount: purchaseDoc.discountAmount || 0, 
 source: "purchase",
     packages: purchaseDoc.packages || [],
     paymentStatus: purchaseDoc.paymentStatus || "paid",
@@ -76,7 +77,7 @@ async function runPurchaseInvoiceAndEmails({ purchaseDoc, purchaseId, invoiceNo,
 Your package purchase is confirmed.
 
 Instructor: ${purchaseDoc.instructorName || ""}
-Total: $${purchaseDoc.amount || 0}
+Total: $${purchaseDoc.amount || 0} - Discount: $${purchaseDoc.discountAmount || 0}
 
 Packages:
 ${packagesText}
@@ -94,6 +95,7 @@ Test Route Driving School
       <p>Your package purchase is confirmed. Invoice attached (PDF).</p>
       <p><b>Instructor:</b> ${purchaseDoc.instructorName || ""}</p>
       <p><b>Total:</b> $${purchaseDoc.amount || 0}</p>
+      <p><b>Discount:</b>  $${purchaseDoc.discountAmount || 0} </p>
       <p><b>Packages:</b></p>
       <ul>${packagesHtml}</ul>
       <p>Thanks,<br/>Test Route Driving School</p>
@@ -351,6 +353,8 @@ export async function POST(req) {
       currency = "aud",
       paymentIntentId,
       billing,
+      discountAmount,
+      amount
     } = body || {};
 
     if (!userEmail) return NextResponse.json({ error: "userEmail required" }, { status: 400 });
@@ -401,7 +405,7 @@ export async function POST(req) {
       };
     });
 
-    const amount = packages.reduce((sum, p) => sum + Number(p.lineTotal || 0), 0);
+    // const amount = packages.reduce((sum, p) => sum + Number(p.lineTotal || 0), 0);
 
     // stripe card details
     let cardBrand = null;
@@ -433,6 +437,7 @@ export async function POST(req) {
 
       packages,
       amount,
+      discountAmount,
       currency,
       paymentIntentId,
 

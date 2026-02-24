@@ -1140,13 +1140,20 @@ const handleBooking = (date, slot, time) => {
   {(() => {
     const visibleDayIdx = [0, 1, 2,3, 4, 5, 6]; 
 
+const formatMobileTime = (t) => {
+  const match = t.match(/^(\d+):(\d+)(AM|PM)$/);
+  if (!match) return t;
+
+  const [, hour, minute, period] = match;
+  return { hour: `${hour}.${minute}`, period };
+};
     return (
       <div className="max-h-[75vh] overflow-y-auto">
         <table className="w-full table-fixed border-separate border-spacing-0">
           <colgroup>
-            <col style={{width: "64px"}} />
+            <col style={{width: "30px"}} />
             {visibleDayIdx.map((i) => (
-              <col key={i} style={{width: `calc((100% - 64px) / ${visibleDayIdx.length})`}} />
+              <col key={i} style={{width: `calc((100% - 30px) / ${visibleDayIdx.length})`}} />
             ))}
           </colgroup>
 
@@ -1165,7 +1172,7 @@ const handleBooking = (date, slot, time) => {
                   className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
                 >
                   <div className="leading-tight">
-                    <div className="text-gray-900">{weekdays[dayIndex]}</div>
+                    <div className="text-gray-900">{weekdays[dayIndex].slice(0, 3)}</div>
                     <div className="text-gray-600 font-semibold">
                       {weekDates[dayIndex].toLocaleDateString("en-US", {day: "numeric", month: "short"})}
                     </div>
@@ -1183,7 +1190,18 @@ const handleBooking = (date, slot, time) => {
               return (
                 <tr key={time} className="align-stretch h-10">
                   <td className={`h-10 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}>
-                    {time}
+                  
+                     {(() => {
+  const ft = formatMobileTime(time);
+  if (!ft) return time;
+
+  return (
+    <div className="flex flex-col leading-tight">
+      <span>{ft.hour}</span>
+      <span className="text-[8px]">{ft.period}</span>
+    </div>
+  );
+})()}
                   </td>
 
                   {visibleDayIdx.map((dayIndex) => {
@@ -1223,8 +1241,8 @@ const handleBooking = (date, slot, time) => {
                           >
                             {paid && (
                               <span
-                                className="absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-primary text-white
-                                text-[9px] font-bold flex items-center justify-center"
+                                className="absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-primary text-white
+                                text-[8px] font-bold flex items-center justify-center"
                                 title="Paid"
                               >
                                 P
@@ -1277,12 +1295,11 @@ const handleBooking = (date, slot, time) => {
     return handleBooking(date, slot, time);
   }}
   className="relative w-full h-full min-h-10 bg-[#7DA730] hover:bg-[#96C83A]
-             text-white text-[10px] font-bold flex flex-col md:flex-row items-center 
+             text-white text-[8px] font-bold flex flex-col md:flex-row items-center 
              justify-center px-1"
 >
   <span>Available</span>
 
-  {/* ✅ keep + icon */}
   <IoMdAdd
     onClick={(e) => {
       e.stopPropagation();

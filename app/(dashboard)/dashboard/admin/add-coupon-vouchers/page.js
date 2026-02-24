@@ -21,7 +21,7 @@ export default function CouponAndVouchers() {
   const [showForm, setShowForm] = useState(false);
   const [newCoupon, setNewCoupon] = useState({
     code: "",
-    discount: "",
+    discount: 0,
     expires: "",
   });
 
@@ -31,7 +31,7 @@ export default function CouponAndVouchers() {
     }
 
     try {
-      const res = await axios.post("/api/coupons", newCoupon);
+      const res = await axios.post("/api/coupons", {...newCoupon,discount:Number(newCoupon.discount)});
       if (res.status === 201) {
         toast.success("Coupon added successfully!");
         setNewCoupon({code: "", discount: "", expires: ""});

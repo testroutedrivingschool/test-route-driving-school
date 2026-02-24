@@ -69,6 +69,9 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="flex-1 space-y-4">
+   <h2 className="md:hidden text-lg sm:text-2xl md:text-3xl font-bold mb-4">
+  Contact Us to Book Your Driving Lesson
+</h2>
       {/* Name */}
       <div className="grid grid-cols-2 gap-4">
         <input

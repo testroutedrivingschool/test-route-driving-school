@@ -2,39 +2,32 @@ import Stripe from "stripe";
 import { ObjectId } from "mongodb";
 import {
   bookingsCollection,
-  packagesCollection,   
+  packagesCollection,
+  couponsCollection
 } from "@/app/libs/mongodb/db";
-
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
 
 export async function POST(req) {
   try {
     const body = await req.json();
-
     const {
       type = "booking-new",
       currency = "aud",
-
-      // booking-existing only
       bookingId,
       amount,
-
-      // common (optional but recommended)
       userEmail,
       userName,
       instructorId,
-
-      // purchase items (client should send ONLY ids + qty)
       items = [],
-
       metadata = {},
+      couponCode,
+      discount = 0, // Receive the discount value
+      totalAmount, // Add couponCode to receive from frontend
     } = body || {};
-
+let discountAmount = 0;
     // --------------------------
-    // 1) EXISTING BOOKING PAYMENT (same as yours)
+    // 1) EXISTING BOOKING PAYMENT
     // --------------------------
     if (type === "booking-existing") {
       const cardAmount = Number(amount || 0);
@@ -50,8 +43,7 @@ export async function POST(req) {
       if (!booking) return new Response(JSON.stringify({ error: "Booking not found" }), { status: 404 });
 
       const outstanding = Number(
-        booking.outstanding ??
-          Math.max(0, Number(booking.price || 0) - Number(booking.paidAmount || 0))
+        booking.outstanding ?? Math.max(0, Number(booking.price || 0) - Number(booking.paidAmount || 0))
       );
 
       if (cardAmount > outstanding) {
@@ -77,12 +69,30 @@ export async function POST(req) {
     }
 
     // --------------------------
-    // 2) NEW BOOKING PAYMENT (optional: you can also compute from DB later)
+    // 2) NEW BOOKING PAYMENT
     // --------------------------
     if (type === "booking-new") {
-      const cardAmount = Number(amount || 0);
+      let cardAmount = Number(amount || 0);
       if (cardAmount <= 0) {
         return new Response(JSON.stringify({ error: "Amount must be > 0" }), { status: 400 });
+      }
+
+     
+      if (couponCode) {
+        const coupon = await couponsCollection().findOne({ code: couponCode });
+        if (coupon) {
+          const currentDate = new Date();
+          const expiryDate = new Date(coupon.expires);
+
+          if (expiryDate >= currentDate) {
+            discountAmount = (cardAmount * coupon.discount) / 100; // Calculate discount
+            cardAmount -= discountAmount; // Apply the discount to the total amount
+          } else {
+            return new Response(JSON.stringify({ error: "Coupon has expired" }), { status: 400 });
+          }
+        } else {
+          return new Response(JSON.stringify({ error: "Invalid coupon code" }), { status: 400 });
+        }
       }
 
       const paymentIntent = await stripe.paymentIntents.create({
@@ -91,18 +101,19 @@ export async function POST(req) {
         payment_method_types: ["card"],
         metadata: {
           type: "booking-new",
-          userEmail: userEmail || "",
+          userEmail,
           userName: userName || "",
-          instructorId: instructorId || "",
+          instructorId,
+          discountAmount, // Add discount amount to metadata
           ...metadata,
         },
       });
 
-      return new Response(JSON.stringify({ clientSecret: paymentIntent.client_secret }), { status: 200 });
+      return new Response(JSON.stringify({ clientSecret: paymentIntent.client_secret, discountAmount }), { status: 200 });
     }
 
     // --------------------------
-    // 3) PACKAGE PURCHASE PAYMENT (✅ compute amount from DB)
+    // 3) PACKAGE PURCHASE PAYMENT
     // --------------------------
     if (type === "purchase") {
       if (!userEmail) {
@@ -161,40 +172,54 @@ export async function POST(req) {
         };
       });
 
-      const totalAmount = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
+      let totalAmount = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
 
-      if (totalAmount <= 0) {
-        return new Response(JSON.stringify({ error: "Total amount invalid" }), { status: 400 });
+      // Apply coupon discount if couponCode is provided
+      if (couponCode) {
+        const couponCol = await couponsCollection()
+        const coupon = await couponCol.findOne({ code: couponCode });
+        if (coupon) {
+          const currentDate = new Date();
+          const expiryDate = new Date(coupon.expires);
+
+          if (expiryDate >= currentDate) {
+            discountAmount = (totalAmount * Number(coupon.discount)) / 100; 
+            totalAmount -= discountAmount; // Apply the discount to the total amount
+          } else {
+            return new Response(JSON.stringify({ error: "Coupon has expired" }), { status: 400 });
+          }
+        } else {
+          return new Response(JSON.stringify({ error: "Invalid coupon code" }), { status: 400 });
+        }
       }
+      console.log("total Amount",totalAmount);
+      console.log("discount Amount",discountAmount);
 
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(totalAmount * 100),
+        amount: Math.round(totalAmount * 100), // Use the discounted total amount (multiplied by 100 for Stripe)
         currency,
         payment_method_types: ["card"],
         metadata: {
           type: "purchase",
           userEmail,
-          userName: userName || "",
+          userName,
           instructorId,
-          itemsCount: String(lineItems.length),
-          // store IDs as CSV (Stripe metadata is small)
-          packageIds: lineItems.map((x) => x.packageId).join(","),
+          discountAmount, // Store the discount amount for reference
           ...metadata,
         },
       });
 
-      // (optional) return computed breakdown for UI/debug
       return new Response(
         JSON.stringify({
           clientSecret: paymentIntent.client_secret,
           amount: totalAmount,
+          discountAmount,
           currency,
-          lineItems,
+          lineItems: items,
         }),
         { status: 200 }
       );
     }
-
     return new Response(JSON.stringify({ error: "Invalid type" }), { status: 400 });
   } catch (err) {
     console.error("Stripe PaymentIntent Error:", err);

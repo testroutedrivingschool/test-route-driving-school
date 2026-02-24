@@ -57,7 +57,7 @@ export default function Contact() {
             <div className="flex-1 md:pl-6 space-y-8">
               {/* Heading */}
               <div>
-                <h2 className="text-3xl md:text-4xl font-extrabold leading-tight">
+                <h2 className="text-xl sm:text-3xl md:text-4xl font-extrabold leading-tight">
                   Get in Touch with
                   <span className="text-primary px-1">
                     Test Route Driving School
@@ -79,17 +79,17 @@ export default function Contact() {
               <div className="space-y-4">
                 <a
                   href="tel:61412018593"
-                  className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-lg md:text-xl transition hover:underline"
+                  className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-sm sm:text-base md:text-xl transition hover:underline"
                 >
-                  <FaPhoneAlt className="text-xl" />
+                  <FaPhoneAlt className="text-lg md:text-xl" />
                   <span>0412 018 593</span>
                 </a>
 
                 <a
                   href="mailto:testroutedrivingschool@gmail.com"
-                  className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-lg md:text-xl transition hover:underline"
+                  className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-sm sm:text-base md:text-xl transition hover:underline"
                 >
-                  <FaEnvelope className="text-xl" />
+                  <FaEnvelope className="text-lg md:text-xl" />
                   <span>testroutedrivingschool@gmail.com</span>
                 </a>
               </div>

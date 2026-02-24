@@ -177,6 +177,7 @@ function canUserReschedule(bookingDate, bookingTime) {
 export default function BookingsPage() {
   const {user} = useAuth();
   const searchParams = useSearchParams();
+const instructorId = searchParams.get("instructorId");
   const isReschedule = searchParams.get("reschedule") === "1";
   const bookingId = searchParams.get("bookingId");
 
@@ -220,10 +221,7 @@ export default function BookingsPage() {
   const [locationSearch, setLocationSearch] = useState("");
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [mobileDayIndex, setMobileDayIndex] = useState(() => {
-    const jsDay = new Date().getDay();
-    return (jsDay + 6) % 7;
-  });
+
   const formatYMD = (date) => {
     // Safe local YYYY-MM-DD (avoids timezone issues)
     const y = date.getFullYear();
@@ -508,12 +506,20 @@ export default function BookingsPage() {
     for (let k = 0; k < span; k++) {
       const t = normalizeTime(times[startIdx + k]);
       if (!t) break;
-      acc[`${dateKey}__${t}`] = true; // ✅ mark each cell booked
+      acc[`${dateKey}__${t}`] = true; 
     }
 
     return acc;
   }, {});
-
+useEffect(() => {
+  if (instructorId) {
+    
+    const selectedInstructor = instructors.find(
+      (inst) => inst._id === instructorId
+    );
+    setSelectedInstructor(selectedInstructor);
+  }
+}, [instructorId, instructors]);
   const filteredInstructors = selectedLocations
     ? instructors.filter((inst) =>
         inst.suburbs?.some((sub) => sub.name === selectedLocations),
@@ -543,25 +549,24 @@ export default function BookingsPage() {
     const saved = localStorage.getItem(LS_SELECTED_LOC);
     if (saved) setSelectedLocations(saved);
   }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
+useEffect(() => {
+   if (typeof window === "undefined") return;
     if (isReschedule) return;
+  const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
+  const todayDate = getTodayYMD(); 
+  const lastShownDate = localStorage.getItem(LS_KEY);
 
-    // if location already selected -> never show
-    const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
-    if (savedLocation) return;
 
-    const today = getTodayYMD();
-    const lastShown = localStorage.getItem(LS_KEY);
+  if (savedLocation) return;
 
-    // show only once per day
-    if (lastShown !== today) {
-      setShowLocationModal(true);
-      markModalSeenToday();
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isReschedule]);
+  
+  if (lastShownDate !== todayDate) {
+    setShowLocationModal(true);
+    localStorage.setItem(LS_KEY, todayDate); // Mark that the modal was shown today
+  }
+}, [isReschedule]);
+
+
 
   // Show loading spinner
   if (isLoading || isLoadingLocations) {

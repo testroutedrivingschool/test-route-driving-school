@@ -4,7 +4,7 @@ import React from "react";
 
 export default function Modal({children, onClose}) {
   return (
-    <div className="fixed inset-0 z-999 flex items-center sm:items-center justify-center bg-black/50 px-3 sm:px-0  sm:pt-0">
+    <div className="fixed inset-0 z-999999 flex items-center sm:items-center justify-center bg-black/50 px-3 sm:px-0  sm:pt-0">
       <div
         className="
           bg-white rounded-xl shadow-lg
