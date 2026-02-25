@@ -10,8 +10,8 @@ import {ObjectId} from "mongodb";
 import {NextResponse} from "next/server";
 import {getNextInvoiceNo} from "@/app/libs/invoice/getNextInvoiceNo";
 import Stripe from "stripe";
-import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
-import {generateInvoicePdfBuffer} from "@/app/libs/invoice/invoicePdf";
+import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
+import { uploadPdfToS3 } from "@/app/libs/storage/uploadPdfToS3";
 
 //get all
 export async function GET(req) {
@@ -49,8 +49,9 @@ export async function GET(req) {
 async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
   // 1) Generate PDF
   const pdfBuffer = await generateInvoicePdfBuffer(
-    {...bookingDoc, bookingId: String(bookingId)},
+    {...bookingDoc, bookingId: String(bookingId),  type: "BOOKINGS_CONFIRM",},
     reqUrl,
+       
   );
 
   // 2) Upload to S3/MinIO
@@ -58,7 +59,8 @@ async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
   const invoiceKey = `invoices/${filename}`;
 
   await uploadPdfToS3({key: invoiceKey, buffer: pdfBuffer});
-
+console.log(filename);
+console.log(invoiceKey);
   // 3) Prepare email contents
   const bookingDateText = bookingDoc.bookingDate
     ? new Date(bookingDoc.bookingDate).toLocaleDateString("en-AU", {

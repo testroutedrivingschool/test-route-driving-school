@@ -223,12 +223,12 @@ const dashHref =
 
                 {item.dropdowns && item.label !== "Company" && (
                   <div
-                    className="absolute top-full left-1/2 -translate-x-1/2 z-50
+                    className="absolute top-full left-1/2 -translate-x-1/2 z-99 
     w-screen max-w-[95vw] md:max-w-3xl
     opacity-0 invisible group-hover:opacity-100 group-hover:visible
-    transition-all duration-300"
+    transition-all duration-300 bg-white"
                   >
-                    <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+                    <div className=" rounded-2xl shadow-xl p-8 border border-gray-100">
                       {/* Grid */}
                       <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {item.dropdowns.map((drop) => (

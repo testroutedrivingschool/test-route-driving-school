@@ -12,7 +12,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const {
-      type = "booking-new",
+      type = "booking-new", // Default to booking-new if not provided
       currency = "aud",
       bookingId,
       amount,
@@ -21,9 +21,9 @@ export async function POST(req) {
       instructorId,
       items = [],
       metadata = {},
-      couponCode,
-      discount = 0,
-      totalAmount,
+      couponCode, // This is optional
+      discount = 0, 
+      totalAmount, 
     } = body || {};
 
     let discountAmount = 0;
@@ -87,7 +87,7 @@ export async function POST(req) {
     }
 
     // --------------------------
-    // 2) NEW BOOKING PAYMENT
+    // 2) NEW BOOKING PAYMENT (No Coupon)
     // --------------------------
     if (type === "booking-new") {
       let cardAmount = Number(amount || 0);
@@ -98,30 +98,7 @@ export async function POST(req) {
         );
       }
 
-      if (couponCode) {
-        const couponCol = await couponsCollection();
-        const coupon = await couponCol.findOne({ code: couponCode });
-        if (coupon) {
-          const currentDate = new Date();
-          const expiryDate = new Date(coupon.expires);
-
-          if (expiryDate >= currentDate) {
-            discountAmount = (cardAmount * coupon.discount) / 100;
-            cardAmount -= discountAmount; // Apply the discount to the total amount
-          } else {
-            return new Response(
-              JSON.stringify({ error: "Coupon has expired" }),
-              { status: 400 }
-            );
-          }
-        } else {
-          return new Response(
-            JSON.stringify({ error: "Invalid coupon code" }),
-            { status: 400 }
-          );
-        }
-      }
-
+      // No coupon logic here for "booking-new"
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(cardAmount * 100),
         currency,
@@ -131,26 +108,21 @@ export async function POST(req) {
           userEmail,
           userName: userName || "",
           instructorId,
-          discountAmount, // Add discount amount to metadata
           ...metadata,
         },
       });
 
-  
-     
-      
-
       return new Response(
         JSON.stringify({
           clientSecret: paymentIntent.client_secret,
-          discountAmount,
+          discountAmount, // Always 0 for "booking-new"
         }),
         { status: 200 }
       );
     }
 
     // --------------------------
-    // 3) PACKAGE PURCHASE PAYMENT
+    // 3) PACKAGE PURCHASE PAYMENT (Coupon logic applies here)
     // --------------------------
     if (type === "purchase") {
       if (!userEmail) {
@@ -222,6 +194,7 @@ export async function POST(req) {
 
       let totalAmount = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
 
+      // Apply coupon if provided
       if (couponCode) {
         const couponCol = await couponsCollection();
         const coupon = await couponCol.findOne({ code: couponCode });
@@ -231,7 +204,7 @@ export async function POST(req) {
 
           if (expiryDate >= currentDate) {
             discountAmount = (totalAmount * Number(coupon.discount)) / 100;
-            totalAmount -= discountAmount;
+            totalAmount -= discountAmount; // Apply the discount to the total amount
           } else {
             return new Response(
               JSON.stringify({ error: "Coupon has expired" }),
@@ -259,8 +232,6 @@ export async function POST(req) {
           ...metadata,
         },
       });
-
-    
 
       return new Response(
         JSON.stringify({

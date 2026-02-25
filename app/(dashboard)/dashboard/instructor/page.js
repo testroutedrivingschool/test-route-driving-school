@@ -13,92 +13,16 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
+import { useUserData } from "@/app/hooks/useUserData";
 
-const days = [
-  "20 Dec",
-  "21 Dec",
-  "22 Dec",
-  "23 Dec",
-  "24 Dec",
-  "25 Dec",
-  "26 Dec",
-  "27 Dec",
-  "28 Dec",
-  "29 Dec",
-  "30 Dec",
-  "31 Dec",
-  "01 Jan",
-  "02 Jan",
-  "03 Jan",
-  "04 Jan",
-  "05 Jan",
-  "06 Jan",
-  "07 Jan",
-  "08 Jan",
-  "09 Jan",
-  "10 Jan",
-  "11 Jan",
-  "12 Jan",
-  "13 Jan",
-  "14 Jan",
-  "15 Jan",
-  "16 Jan",
-  "17 Jan",
-  "18 Jan",
-  "19 Jan",
-  "20 Jan",
-];
-
-const revenueData = [
-  { d: "20 Dec", webSales: 0, webBookings: 0 },
-  { d: "21 Dec", webSales: 220, webBookings: 0 },
-  { d: "22 Dec", webSales: 0, webBookings: 0 },
-  { d: "23 Dec", webSales: 160, webBookings: 0 },
-  { d: "24 Dec", webSales: 0, webBookings: 0 },
-  { d: "25 Dec", webSales: 0, webBookings: 0 },
-  { d: "26 Dec", webSales: 0, webBookings: 0 },
-  { d: "27 Dec", webSales: 0, webBookings: 0 },
-  { d: "28 Dec", webSales: 0, webBookings: 0 },
-  { d: "29 Dec", webSales: 0, webBookings: 0 },
-  { d: "30 Dec", webSales: 0, webBookings: 0 },
-  { d: "31 Dec", webSales: 0, webBookings: 0 },
-  { d: "01 Jan", webSales: 180, webBookings: 0 },
-  { d: "02 Jan", webSales: 260, webBookings: 0 },
-  { d: "03 Jan", webSales: 240, webBookings: 0 },
-  { d: "04 Jan", webSales: 0, webBookings: 0 },
-  { d: "05 Jan", webSales: 300, webBookings: 0 },
-  { d: "06 Jan", webSales: 280, webBookings: 0 },
-  { d: "07 Jan", webSales: 0, webBookings: 0 },
-  { d: "08 Jan", webSales: 0, webBookings: 0 },
-  { d: "09 Jan", webSales: 0, webBookings: 0 },
-  { d: "10 Jan", webSales: 320, webBookings: 0 },
-  { d: "11 Jan", webSales: 340, webBookings: 0 },
-  { d: "12 Jan", webSales: 360, webBookings: 0 },
-  { d: "13 Jan", webSales: 380, webBookings: 0 },
-  { d: "14 Jan", webSales: 220, webBookings: 0 },
-  { d: "15 Jan", webSales: 240, webBookings: 0 },
-  { d: "16 Jan", webSales: 260, webBookings: 0 },
-  { d: "17 Jan", webSales: 280, webBookings: 0 },
-  { d: "18 Jan", webSales: 210, webBookings: 0 },
-  { d: "19 Jan", webSales: 230, webBookings: 0 },
-  { d: "20 Jan", webSales: 250, webBookings: 0 },
-];
-
-const activityData = [
-  { d: "10 Jan", totalBookings: 28, webBookings: 12, cancelled: 2 },
-  { d: "11 Jan", totalBookings: 22, webBookings: 10, cancelled: 1 },
-  { d: "12 Jan", totalBookings: 18, webBookings: 9, cancelled: 0 },
-  { d: "13 Jan", totalBookings: 20, webBookings: 10, cancelled: 1 },
-  { d: "14 Jan", totalBookings: 24, webBookings: 11, cancelled: 1 },
-  { d: "15 Jan", totalBookings: 19, webBookings: 9, cancelled: 0 },
-  { d: "16 Jan", totalBookings: 15, webBookings: 7, cancelled: 0 },
-  { d: "17 Jan", totalBookings: 33, webBookings: 14, cancelled: 2 },
-  { d: "18 Jan", totalBookings: 26, webBookings: 12, cancelled: 1 },
-  { d: "19 Jan", totalBookings: 21, webBookings: 10, cancelled: 1 },
-  { d: "20 Jan", totalBookings: 18, webBookings: 9, cancelled: 0 },
-];
+// Function to fetch instructor stats from API
+const fetchInstructorStats = async (instructorEmail) => {
+  const res = await fetch(`/api/stats/instructor-stats?instructorEmail=${instructorEmail}`);
+  const data = await res.json();
+  return data;
+};
 
 function Card({ title, right, children }) {
   return (
@@ -132,13 +56,39 @@ function RangeSelect({ value, onChange }) {
 }
 
 export default function InstructorDashboard() {
+  const {data:userData,isLoading:isUserLoading} = useUserData();
   const [range, setRange] = useState("Last 7 Days");
+  const [statsData, setStatsData] = useState(null);
+
+  useEffect(() => {
+    if (isUserLoading) return;
+    
+    const getStats = async () => {
+      const data = await fetchInstructorStats(userData?.email);
+      setStatsData(data);
+    };
+
+    if (userData?.email) {
+      getStats();
+    }
+  }, [userData?.email, isUserLoading]);
+
 
   const revenueTotals = useMemo(() => {
-    const webSales = revenueData.reduce((s, x) => s + (x.webSales || 0), 0);
-    const webBookings = revenueData.reduce((s, x) => s + (x.webBookings || 0), 0);
-    return { webSales, webBookings };
-  }, []);
+    if (!statsData) return { totalSales: 0, webBookings: 0 };
+ const webSales = statsData.revenueData.reduce((s, x) => s + (x.webSales || 0), 0);
+   
+    const totalSales = statsData.revenueData.reduce(
+      (s, x) => s + (x.webSales || 0) + (x.manualSales || 0),
+      0
+    );
+    const webBookings = statsData.revenueData.reduce((s, x) => s + (x.webBookings || 0), 0);
+
+    return { totalSales, webBookings,webSales };
+  }, [statsData]);
+  if (!statsData) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <section className="py-8">
@@ -152,19 +102,19 @@ export default function InstructorDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
               <div>
                 <div className="text-xs text-gray-500">Sales</div>
-                <div className="text-2xl font-extrabold text-gray-900">$0</div>
+                <div className="text-2xl font-extrabold text-gray-900">${revenueTotals?.totalSales?.toLocaleString()}</div>
                 <div className="mt-2 flex items-center gap-2 text-sm">
                   <span className="inline-flex h-2 w-2 rounded-full bg-blue-600" />
                   <span className="text-gray-700">Web Sales</span>
                   <span className="font-semibold text-gray-900">
-                    ${revenueTotals.webSales.toLocaleString()}
+                    ${revenueTotals?.webSales?.toLocaleString()}
                   </span>
                 </div>
               </div>
 
               <div>
                 <div className="text-xs text-gray-500">Bookings</div>
-                <div className="text-2xl font-extrabold text-gray-900">$561</div>
+                <div className="text-2xl font-extrabold text-gray-900">  {revenueTotals.webBookings}</div>
                 <div className="mt-2 flex items-center gap-2 text-sm">
                   <span className="inline-flex h-2 w-2 rounded-full bg-indigo-700" />
                   <span className="text-gray-700">Web Bookings</span>
@@ -175,9 +125,9 @@ export default function InstructorDashboard() {
               </div>
             </div>
 
-          <div className="min-w-0 h-60 sm:h-[280px]">
-           <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
-                <BarChart data={revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+            <div className="min-w-0 h-60 sm:h-[280px]">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
+                <BarChart data={statsData.revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="d" tick={{ fontSize: 11 }} interval={3} />
                   <YAxis tick={{ fontSize: 11 }} />
@@ -197,15 +147,36 @@ export default function InstructorDashboard() {
           >
             <div className="h-60 sm:h-[280px] ">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={activityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <LineChart data={statsData.activityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="d" tick={{ fontSize: 11 }} />
                   <YAxis tick={{ fontSize: 11 }} />
                   <Tooltip />
                   <Legend />
-                  <Line type="monotone" dataKey="totalBookings" name="Total Bookings" stroke="#16a34a" strokeWidth={3} dot={false} />
-                  <Line type="monotone" dataKey="webBookings" name="Web Bookings" stroke="#2563eb" strokeWidth={3} dot={false} />
-                  <Line type="monotone" dataKey="cancelled" name="Cancelled" stroke="#a855f7" strokeWidth={3} dot={false} />
+                  <Line
+                    type="monotone"
+                    dataKey="totalBookings"
+                    name="Total Bookings"
+                    stroke="#16a34a"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="webBookings"
+                    name="Web Bookings"
+                    stroke="#2563eb"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="cancelled"
+                    name="Cancelled"
+                    stroke="#a855f7"
+                    strokeWidth={3}
+                    dot={false}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </div>

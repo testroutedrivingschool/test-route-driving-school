@@ -6,7 +6,6 @@ import Stripe from "stripe";
 import { ObjectId } from "mongodb";
 
 import { sendMailWithPdf } from "@/app/libs/mail/mailer";
-import { uploadPdfToS3 } from "@/app/libs/storage/uploadPdfToS3";
 import { getNextInvoiceNo } from "@/app/libs/invoice/getNextInvoiceNo";
 import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
 
@@ -18,6 +17,7 @@ import {
   emailsCollection,
   packagesCollection,
 } from "@/app/libs/mongodb/db";
+import { uploadPdfToS3 } from "@/app/libs/storage/uploadPdfToS3";
 
 // ---- PDF mapper (purchase -> invoice generator shape)
 async function generatePurchaseInvoicePdfBuffer(purchaseDoc, reqUrl) {
@@ -48,103 +48,38 @@ source: "purchase",
   return generateInvoicePdfBuffer(mapped, reqUrl);
 }
 
-async function runPurchaseInvoiceAndEmails({ purchaseDoc, purchaseId, invoiceNo, reqUrl }) {
-  // 1) PDF
-  const pdfBuffer = await generatePurchaseInvoicePdfBuffer(
-    { ...purchaseDoc, _id: purchaseId, invoiceNo },
+async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl }) {
+  // 1) Generate PDF
+  const pdfBuffer = await generateInvoicePdfBuffer(
+    { ...bookingDoc, bookingId: String(bookingId) },
     reqUrl
   );
 
-  // 2) Upload
   const filename = `invoice-${invoiceNo}.pdf`;
   const invoiceKey = `invoices/${filename}`;
+
+  // 2) Upload PDF to S3
   await uploadPdfToS3({ key: invoiceKey, buffer: pdfBuffer });
 
-  // 3) Email body
-  const userSubject = `Payment Confirmed - Invoice #${invoiceNo}`;
-  const instructorSubject = `New Package Purchase - Invoice #${invoiceNo}`;
+  // Prepare email contents
+  const userSubject = `Booking Confirmed - Invoice #${invoiceNo}`;
+  const instructorSubject = `New Booking - Invoice #${invoiceNo}`;
 
-  const packagesText = (purchaseDoc.packages || [])
-    .map((p) => `• ${p.packageName} x${p.quantity} ($${p.unitPrice})`)
-    .join("\n");
+  const userText = `Hi ${bookingDoc.userName || "there"}, Your booking is confirmed. Invoice attached.`;
+  const instructorText = `Hi ${bookingDoc.instructorName || "Instructor"}, You have a new booking. Invoice attached.`;
 
-  const packagesHtml = (purchaseDoc.packages || [])
-    .map((p) => `<li><b>${p.packageName}</b> x${p.quantity} ($${p.unitPrice})</li>`)
-    .join("");
-
-  const userText = `Hi ${purchaseDoc.userName || "there"},
-
-Your package purchase is confirmed.
-
-Instructor: ${purchaseDoc.instructorName || ""}
-Total: $${purchaseDoc.amount || 0} - Discount: $${purchaseDoc.discountAmount || 0}
-
-Packages:
-${packagesText}
-
-Invoice attached.
-
-Thanks,
-Test Route Driving School
-`;
-
-  const userHtml = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-      <h2>Payment Confirmed 🎉</h2>
-      <p>Hi ${purchaseDoc.userName || "there"},</p>
-      <p>Your package purchase is confirmed. Invoice attached (PDF).</p>
-      <p><b>Instructor:</b> ${purchaseDoc.instructorName || ""}</p>
-      <p><b>Total:</b> $${purchaseDoc.amount || 0}</p>
-      <p><b>Discount:</b>  $${purchaseDoc.discountAmount || 0} </p>
-      <p><b>Packages:</b></p>
-      <ul>${packagesHtml}</ul>
-      <p>Thanks,<br/>Test Route Driving School</p>
-    </div>
-  `;
-
-  const instructorText = `Hi ${purchaseDoc.instructorName || "Instructor"},
-
-You have a new package purchase:
-
-User: ${purchaseDoc.userName} (${purchaseDoc.userEmail})
-Total: $${purchaseDoc.amount || 0}
-
-Packages:
-${packagesText}
-
-Invoice attached.
-`;
-
-  const instructorHtml = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-      <p>Hi ${purchaseDoc.instructorName || "Instructor"},</p>
-      <p><b>You have a new package purchase:</b></p>
-      <p><b>User:</b> ${purchaseDoc.userName} (${purchaseDoc.userEmail})</p>
-      <p><b>Total:</b> $${purchaseDoc.amount || 0}</p>
-      <p><b>Packages:</b></p>
-      <ul>${packagesHtml}</ul>
-      <p>Invoice attached.</p>
-    </div>
-  `;
-
-  // 4) Send emails + log
-  const mailLog = {
-    user: { to: purchaseDoc.userEmail, ok: false, error: null },
-    instructor: { to: purchaseDoc.instructorEmail || null, ok: false, error: null },
-    sentAt: new Date(),
-  };
-
+  // 3) Send emails
   const sendUser = async () => {
-    if (!purchaseDoc.userEmail) return;
+    if (!bookingDoc.userEmail) return;
 
     let status = "SENT";
     let errorMsg = null;
 
     try {
       await sendMailWithPdf({
-        to: purchaseDoc.userEmail,
+        to: bookingDoc.userEmail,
         subject: userSubject,
-        html: userHtml,
+        html: userText,
         text: userText,
         pdfBuffer,
         filename,
@@ -154,40 +89,33 @@ Invoice attached.
       errorMsg = String(e?.message || e);
     }
 
-    mailLog.user.ok = status === "SENT";
-    mailLog.user.error = errorMsg;
-
-    await (await emailsCollection()).insertOne({
-      purchaseId,
+    await emailsCollection().insertOne({
+      bookingId,
       invoiceNo,
       actorType: "USER",
-      type: "PURCHASE_CONFIRM",
-      to: purchaseDoc.userEmail,
+      type: "BOOKINGS_CONFIRM",
+      to: bookingDoc.userEmail,
       subject: userSubject,
       text: userText,
-      html: userHtml,
-      preview: userText.slice(0, 200),
       status,
       error: errorMsg,
       hasAttachment: true,
       attachmentName: filename,
       attachmentKey: invoiceKey,
-      sentAt: new Date(),
-      createdAt: new Date(),
     });
   };
 
   const sendInstructor = async () => {
-    if (!purchaseDoc.instructorEmail) return;
+    if (!bookingDoc.instructorEmail) return;
 
     let status = "SENT";
     let errorMsg = null;
 
     try {
       await sendMailWithPdf({
-        to: purchaseDoc.instructorEmail,
+        to: bookingDoc.instructorEmail,
         subject: instructorSubject,
-        html: instructorHtml,
+        html: instructorText,
         text: instructorText,
         pdfBuffer,
         filename,
@@ -197,59 +125,41 @@ Invoice attached.
       errorMsg = String(e?.message || e);
     }
 
-    mailLog.instructor.ok = status === "SENT";
-    mailLog.instructor.error = errorMsg;
-
-    await (await emailsCollection()).insertOne({
-      purchaseId,
+    await emailsCollection().insertOne({
+      bookingId,
       invoiceNo,
       actorType: "INSTRUCTOR",
-      type: "PURCHASE_CONFIRM",
-      to: purchaseDoc.instructorEmail,
+      type: "BOOKINGS_CONFIRM",
+      to: bookingDoc.instructorEmail,
       subject: instructorSubject,
       text: instructorText,
-      html: instructorHtml,
-      preview: instructorText.slice(0, 200),
       status,
       error: errorMsg,
       hasAttachment: true,
       attachmentName: filename,
       attachmentKey: invoiceKey,
-      sentAt: new Date(),
-      createdAt: new Date(),
     });
   };
 
   await Promise.all([sendUser(), sendInstructor()]);
 
-  // 5) Save invoice doc
-  await (await invoicesCollection()).insertOne({
+  // Save invoice document
+  await invoicesCollection().insertOne({
     invoiceNo,
-    purchaseId,
-    createdAt: new Date(),
-    paymentStatus: purchaseDoc.paymentStatus || "paid",
-    paymentMethod: purchaseDoc.paymentMethod || "card",
-    cardBrand: purchaseDoc.cardBrand || null,
-    cardLast4: purchaseDoc.cardLast4 || null,
+    bookingId,
     invoiceKey,
     filename,
-    userEmail: purchaseDoc.userEmail,
-    instructorEmail: purchaseDoc.instructorEmail || null,
-    mailLog,
-    total: purchaseDoc.amount || 0,
-    source: "purchase",
+    createdAt: new Date(),
   });
 
-  // 6) update purchase with invoice
-  await (await purchasesCollection()).updateOne(
-    { _id: purchaseId },
+  // Update booking with invoiceKey
+  await bookingsCollection().updateOne(
+    { _id: bookingId },
     {
       $set: {
-        invoiceNo,
         invoiceKey,
         invoiceFilename: filename,
         invoiceCreatedAt: new Date(),
-        updatedAt: new Date(),
       },
     }
   );

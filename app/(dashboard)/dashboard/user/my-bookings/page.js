@@ -65,7 +65,7 @@ export default function UserBookings() {
   }
 
   return (
-    <div className="rounded-2xl border border-border-color bg-white shadow-sm">
+    <div className="rounded-2xl border border-border-color bg-white shadow-sm z-1">
       <div className="p-4 border-b border-border-color flex items-start justify-between gap-4">
         <div>
           <h2 className="text-xl md:text-2xl font-bold flex items-center gap-2">
