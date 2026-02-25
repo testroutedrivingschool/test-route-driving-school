@@ -95,7 +95,7 @@ export default function Contact() {
               </div>
 
               {/* Location */}
-              <div className="bg-white rounded-xl shadow p-6">
+              <div className="bg-white rounded-xl shadow p-4">
                 <h4 className="font-bold text-xl mb-3">Head Office</h4>
 
                 <div className="flex items-start gap-3 text-gray-700 mb-4">
@@ -114,7 +114,7 @@ export default function Contact() {
                 {/* Map */}
                 <div className="overflow-hidden rounded-lg ">
                   <iframe
-                    className="w-full h-64 "
+                    className="w-full md:h-64 "
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3309.1921998148187!2d151.1289021!3d-33.9618991!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b99c02de074f%3A0x95b44233fd6b6d18!2sTest%20Route%20Driving%20School!5e0!3m2!1sen!2sbd!4v1766326342009!5m2!1sen!2sbd"
                     allowFullScreen
                     loading="lazy"

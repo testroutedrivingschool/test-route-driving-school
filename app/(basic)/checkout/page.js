@@ -201,9 +201,9 @@ const handleProceed = async () => {
       instructorId: selectedInstructorId,
       userEmail: billing.email,
       userName: billing.name,
-      couponCode:appliedCoupon,
+      couponCode: appliedCoupon,
       items,
-      discount: discount, 
+      discount: discount,
       totalAmount: finalAmount,
     });
 
@@ -214,7 +214,8 @@ const handleProceed = async () => {
 
     // Optional: use backend amount for UI consistency
     const serverAmount = Number(data?.amount || 0);
-const serverDiscountAmount =Number(data?.discountAmount || 0)
+    const serverDiscountAmount = Number(data?.discountAmount || 0);
+
     // 4) Confirm payment
     const cardElement = elements.getElement(CardNumberElement);
     const result = await stripe.confirmCardPayment(clientSecret, {
@@ -236,16 +237,22 @@ const serverDiscountAmount =Number(data?.discountAmount || 0)
     const paymentIntentId = result?.paymentIntent?.id;
     if (!paymentIntentId) throw new Error("Missing paymentIntentId");
 
-    // 5) Save purchase (send minimal + trustworthy data)
+    // 5) Retrieve payment method details from the result
+    const cardBrand = result.paymentIntent?.charges?.data[0].payment_method_details.card.brand;
+    const cardLast4 = result.paymentIntent?.charges?.data[0].payment_method_details.card.last4;
+
+    // 6) Save purchase (send minimal + trustworthy data)
     await axios.post("/api/purchases", {
       userId: user?._id || "",
       userEmail: user?.email || billing.email,
       instructorId: selectedInstructorId,
       items,
-      discountAmount:serverDiscountAmount,
+      discountAmount: serverDiscountAmount,
       amount: serverAmount,  // Use the discounted amount here
       currency: "aud",
       paymentIntentId,
+      cardBrand, 
+      cardLast4, 
       billing: {
         name: billing.name,
         email: billing.email,

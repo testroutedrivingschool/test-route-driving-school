@@ -354,7 +354,9 @@ export async function POST(req) {
       paymentIntentId,
       billing,
       discountAmount,
-      amount
+      amount,
+      cardBrand =null,
+      cardLast4 =null,
     } = body || {};
 
     if (!userEmail) return NextResponse.json({ error: "userEmail required" }, { status: 400 });
@@ -404,24 +406,6 @@ export async function POST(req) {
         category: pkg?.category || "",
       };
     });
-
-    // const amount = packages.reduce((sum, p) => sum + Number(p.lineTotal || 0), 0);
-
-    // stripe card details
-    let cardBrand = null;
-    let cardLast4 = null;
-    try {
-      const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
-      const intent = await stripe.paymentIntents.retrieve(paymentIntentId, {
-        expand: ["charges.data.payment_method_details"],
-      });
-      const charge = intent?.charges?.data?.[0];
-      const card = charge?.payment_method_details?.card;
-      cardBrand = card?.brand || null;
-      cardLast4 = card?.last4 || null;
-    } catch (err) {
-      console.error("Stripe retrieve failed:", err);
-    }
 
     // invoiceNo now
     const invoiceNo = await getNextInvoiceNo();
