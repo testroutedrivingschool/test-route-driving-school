@@ -9,9 +9,6 @@ import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import {useQuery} from "@tanstack/react-query";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import axios from "axios";
 import getAvatarSrc from "@/app/utils/getAvatarSrc";
 
 const reviewsData = [

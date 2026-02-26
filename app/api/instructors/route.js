@@ -239,6 +239,17 @@ setUser("languages", languages);
       const role = status === "approved" ? "instructor" : "user";
       await userCol.updateOne({email}, {$set: {role}});
     }
+   if (status === "approved") {
+      const instructorDoc = await instructorCol.findOne({email});
+      if (instructorDoc?._id) {
+        const instructorId = instructorDoc._id.toString();
+        await userCol.updateOne(
+          {email},
+          {$set: {instructorId}} // Add instructorId to the user's document
+        );
+      }
+    }
+
     // ===== 4) Clients sync: roleType = staff when approved =====
     if (status !== undefined) {
       const clientsCol = await clientsCollection();

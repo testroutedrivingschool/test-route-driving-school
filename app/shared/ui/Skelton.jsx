@@ -1,9 +1,10 @@
 import React from "react";
 
-const Skeleton = ({ className = "" }) => {
+// Skeleton Spinner Component
+const Skeleton = ({ className = "", size = "h-8 w-8" }) => {
   return (
     <div
-      className={`animate-pulse rounded bg-gray-200 ${className}`}
+      className={`animate-spin rounded-full bg-gray-200 ${size} ${className}`}
     />
   );
 };

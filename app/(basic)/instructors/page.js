@@ -1,8 +1,8 @@
 "use client"
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
+import SkeletonCard from "@/app/shared/Skeleton/SkeletonCard";
 import Container from "@/app/shared/ui/Container";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import { useQuery } from "@tanstack/react-query";
@@ -25,7 +25,22 @@ export default function Instructors() {
   })
 
   
-  if(isLoading) return <LoadingSpinner/>
+ if (isLoading) {
+    return (
+      <section>
+        <PageHeroSection title="Our Instructors" subtitle="..." />
+        <Container className="pb-16">
+          <SectionHeader title="Our Instructors" />
+          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Show Skeletons while loading */}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonCard key={i} isInstructor={true} />
+            ))}
+          </div>
+        </Container>
+      </section>
+    );
+  }
   return (
   
      <section>

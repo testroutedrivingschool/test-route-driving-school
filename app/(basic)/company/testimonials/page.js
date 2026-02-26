@@ -2,16 +2,15 @@
 import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
-import ReviewsCarousel from "../../components/Home/Reviews/ReviewsCarousel";
 import MovingCar from "@/app/shared/MovingCar";
 import Faq from "@/app/shared/FaqSection";
 import Link from "next/link";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import {FaStar, FaRegStar, FaStarHalfAlt} from "react-icons/fa";
 import Image from "next/image";
 import HomeMap from "@/app/shared/ui/HomeMap";
+import Skeleton from "@/app/shared/ui/Skelton";
 
 function formatAUDate(date) {
   try {
@@ -74,8 +73,7 @@ export default function Testimonials() {
       return res.data;
     },
   });
-  console.log(reviewsData);
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton />;
   if (!reviewsData.length) {
     return (
       <p className="text-center text-gray-500 py-10">

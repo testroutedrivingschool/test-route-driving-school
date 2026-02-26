@@ -11,6 +11,7 @@ import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Link from "next/link";
+import Skeleton from "@/app/shared/ui/Skelton";
 
 export default function InstructorDetails() {
   const router = useRouter();
@@ -61,7 +62,7 @@ export default function InstructorDetails() {
       .filter(Boolean);
   }, [instructor]);
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <Skeleton />;
 
   if (isError || !instructor) {
     return (

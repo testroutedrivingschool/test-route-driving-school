@@ -1,6 +1,6 @@
 "use client";
 import {useState} from "react";
-import {FaSearch, FaFilter, FaTimes, FaAngleDown} from "react-icons/fa";
+import {FaSearch, FaFilter, FaTimes} from "react-icons/fa";
 import {FiChevronRight} from "react-icons/fi";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,11 +9,12 @@ import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import {useQuery} from "@tanstack/react-query";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import {addToCartLS} from "@/app/utils/cart";
 import {useRouter} from "next/navigation";
 import HomeMap from "@/app/shared/ui/HomeMap";
+import Skeleton from "@/app/shared/ui/Skelton";
+import SkeletonCard from "@/app/shared/Skeleton/SkeletonCard";
 
 export default function Packages() {
   const {data: packagesData = [], isLoading} = useQuery({
@@ -92,7 +93,25 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
     router.push("/cart");
   };
 
-  if (isLoading || isAreaOptionLoading) return <LoadingSpinner />;
+  if (isLoading || isAreaOptionLoading) {
+    return (
+      <section className="pb-5">
+        <PageHeroSection title="Learn Faster..." subtitle="..." />
+        <Container className="mb-10!">
+          <div className="text-center mb-12">
+            <SectionHeader title="Find Your Perfect Driving Package" subtitle="..." />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {/* Show Skeletons while loading */}
+            {Array.from({ length: 8 }).map((_, i) => (
+              <SkeletonCard key={i} isPackage={true} />
+            ))}
+          </div>
+        </Container>
+      </section>
+    );
+  };
 
   return (
     <section className="pb-5">

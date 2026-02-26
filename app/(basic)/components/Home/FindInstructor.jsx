@@ -87,7 +87,6 @@ export default function FindInstructor() {
             </form>
 
             <div className="max-h-64 overflow-y-auto space-y-2">
-              {isLoading && <p className="text-gray-500">Loading...</p>}
               {isError && (
                 <p className="text-red-500">Failed to load locations.</p>
               )}

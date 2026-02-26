@@ -104,7 +104,7 @@ export default function Navbar({className}) {
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const {logoutUser} = useAuth();
-  const {data: userData, isLoading} = useUserData();
+  const {data: userData} = useUserData();
   const router = useRouter();
   const isInstructor = userData?.role === "instructor";
   const avatarSrc = userData?.photo

@@ -10,8 +10,8 @@ import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import { addToCartLS } from "@/app/utils/cart";
+import Skeleton from "@/app/shared/ui/Skelton";
 
 export default function PackageDetails() {
   
@@ -33,7 +33,7 @@ export default function PackageDetails() {
     router.push("/cart");
   };
   if (isLoading) {
-    return <LoadingSpinner />;
+    return <Skeleton />;
   }
 
   if (!singlePackage) {
@@ -74,11 +74,15 @@ export default function PackageDetails() {
           {/* Left - Image */}
           <div className="flex-1 h-[420px] lg:h-[520px]">
             <Image
-              src={singlePackage.packageThumbline}
+              src={singlePackage.packageThumbline || "/pkg.png"}
               width={1000}
               height={1000}
               alt={singlePackage.name}
               className="rounded-xl shadow w-full h-full object-cover"
+               onError={(e) => {
+                    e.target.style.display = "none";
+                    e.target.parentElement.innerHTML = `<img src="/pkg.png" width="100" height="100" className="h-10 w-10 object-cover border ring-2 text-gray-500" />`;
+                  }}
             />
           </div>
 
