@@ -21,7 +21,7 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
     licence: "", // (your API doesn't filter by this yet, fine)
     clientId: "", // (your API doesn't filter by this yet, fine)
     activeOnly: true,
-    showClientNote: false,
+    showClientNote: true,
   });
 
   // 🔥 this controls when query runs
@@ -75,7 +75,7 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
   };
 
   return (
-    <div className="bg-white border border-border-color rounded-md p-6 flex gap-5">
+    <div className="bg-white border border-border-color rounded-md p-4 flex gap-5">
       <div className="flex-1">
         <h1 className="text-4xl font-bold text-gray-900 mb-6">Client Search</h1>
 
@@ -188,61 +188,84 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
             <p className="mt-4 text-sm text-neutral">No clients found.</p>
           )}
 
-          {!!clients?.length && (
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full min-w-[700px] border border-border-color text-sm">
-                <thead className="bg-secondary text-white">
-                  <tr>
-                    <th className="text-left px-3 py-2">Name</th>
-                    <th className="text-left px-3 py-2">Mobile</th>
-                    <th className="text-left px-3 py-2">Address</th>
-                    <th className="text-left px-3 py-2">#</th>
-                    <th className="text-left px-3 py-2">Bookings</th>
-                    {form.showClientNote && (
-                      <th className="text-left px-3 py-2">Note</th>
-                    )}
-                  </tr>
-                </thead>
+         {!!clients?.length && (
+  <div className="mt-4 w-full">
+    <table className="w-full table-fixed border border-border-color text-xs sm:text-sm">
+      <thead className="bg-secondary text-white">
+        <tr>
+          <th className="text-left px-2 sm:px-3 py-2 w-[45%] sm:w-auto">Name</th>
+          <th className="text-left px-2 sm:px-3 py-2 w-[35%] sm:w-auto">Mobile</th>
 
-                <tbody>
-                  {clients.map((c, idx) => {
-                    const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#dcdcdc]";
-                    const mobile = c.mobile || c.phone || "—";
-                    const address = c.address || "—";
-                    return (
-                      <tr
-                        key={c._id || idx}
-                        onClick={() => {
-                          setSelectedClient(c); // ✅ store clicked client
-                          setActiveTab("client-details"); // ✅ go to details tab
-                        }}
-                        className={`cursor-pointer w-full text-left ${rowBg} hover:brightness-95 transition`}
-                      >
-                        <td className="px-3 py-2 font-semibold">
-                          {c.firstName} {c.lastName}
-                        </td>
-                        <td className="px-3 py-2">{mobile}</td>
+          {/* hide on mobile */}
+          <th className="hidden sm:table-cell text-left px-3 py-2">Address</th>
 
-                        <td className="px-3 py-2">{address}</td>
-                        <td className="px-3 py-2">{c.bookingCount || "-"}</td>
-                        <td className="px-3 py-2 text-primary font-semibold">
-                          {c.bookingCount > 0
-                            ? `Last: ${c.lastBookingLabel}`
-                            : "—"}
-                        </td>
-                        {/* ✅ Client Note (only when enabled) */}
-                        {form.showClientNote && (
-                          <td className="px-3 py-2 text-gray-700">
-                            {c.clientNote || "—"}
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+          <th className="text-left px-2 sm:px-3 py-2 w-[20%] sm:w-auto">#</th>
+
+          {/* hide on mobile */}
+          <th className="hidden sm:table-cell text-left px-3 py-2">Bookings</th>
+
+          {form.showClientNote && (
+            <th className="hidden md:table-cell text-left px-3 py-2">Note</th>
           )}
+        </tr>
+      </thead>
+
+      <tbody>
+        {clients.map((c, idx) => {
+          const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
+          const mobile = c.mobile || c.phone || "—";
+          const address = c.address || "—";
+
+          return (
+            <tr
+              key={c._id || idx}
+              onClick={() => {
+                setSelectedClient(c);
+                setActiveTab("client-details");
+              }}
+              className={`cursor-pointer ${rowBg} hover:brightness-95 transition`}
+            >
+              {/* Name (and show last booking UNDER it on mobile) */}
+              <td className="px-2 sm:px-3 py-2 font-semibold wrap-break-word">
+                <div className="leading-snug">
+                  {c.firstName} {c.lastName}
+                </div>
+
+                {/* mobile-only: show last booking */}
+                <div className="sm:hidden text-[11px] font-medium text-primary mt-1">
+                  {c.bookingCount > 0 ? `Last: ${c.lastBookingLabel}` : "—"}
+                </div>
+              </td>
+
+              {/* Mobile */}
+              <td className="px-2 sm:px-3 py-2 wrap-break-word">{mobile}</td>
+
+              {/* Address hidden on mobile */}
+              <td className="hidden sm:table-cell px-3 py-2 wrap-break-word">
+                {address}
+              </td>
+
+              {/* Count */}
+              <td className="px-2 sm:px-3 py-2">{c.bookingCount || "-"}</td>
+
+              {/* Bookings hidden on mobile */}
+              <td className="hidden sm:table-cell px-3 py-2 text-primary font-semibold wrap-break-word">
+                {c.bookingCount > 0 ? `Last: ${c.lastBookingLabel}` : "—"}
+              </td>
+
+              {/* Note hidden on small screens */}
+              {form.showClientNote && (
+                <td className="hidden md:table-cell px-3 py-2 text-gray-700 wrap-break-word">
+                  {c.clientNote || "—"}
+                </td>
+              )}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+)}
         </div>
       </div>
 

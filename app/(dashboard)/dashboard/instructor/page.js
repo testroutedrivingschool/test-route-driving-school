@@ -91,7 +91,7 @@ export default function InstructorDashboard() {
   }
 
   return (
-    <section className="py-8">
+   <section className="">
       <Container>
         <div className="space-y-6">
           {/* Top Revenue Card */}
@@ -125,7 +125,7 @@ export default function InstructorDashboard() {
               </div>
             </div>
 
-            <div className="min-w-0 h-60 sm:h-[280px]">
+            <div className="min-w-0 w-full h-60 sm:h-[280px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={200}>
                 <BarChart data={statsData.revenueData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -145,7 +145,7 @@ export default function InstructorDashboard() {
             title="New Booking Activity"
             right={<RangeSelect value={range} onChange={setRange} />}
           >
-            <div className="h-60 sm:h-[280px] ">
+            <div className="min-w-0 h-60 w-full sm:h-[280px] ">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={statsData.activityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />

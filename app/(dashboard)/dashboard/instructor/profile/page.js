@@ -249,24 +249,24 @@ export default function InstructorProfile() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 ">
             {/* Left Column - Profile Information */}
             <div className="lg:col-span-2 space-y-6">
               {/* Photo Card */}
               <div className=" border border-gray-200 rounded-lg shadow">
-                <div className="px-6 py-4 border-b border-gray-200">
+                <div className="px-4 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold">Profile Photo</h2>
                 </div>
 
-                <div className="p-6 space-y-4">
+                <div className="p-4 space-y-4">
                   <div className="flex items-center gap-4">
-                    <div className="w-20 h-20 rounded-full overflow-hidden border bg-gray-50">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border bg-gray-50">
                       <Image
                         src={avatarSrc}
                         alt="Profile"
                         width={80}
                         height={80}
-                        className="w-20 h-20 object-cover"
+                        className="w-16 h-16 md:w-20 md:h-20 object-cover"
                       />
                     </div>
 
@@ -307,19 +307,19 @@ export default function InstructorProfile() {
                 </div>
               </div>
               <div className="bg-white border border-border-color rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <div className="px-4 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h2 className="text-lg font-semibold text-gray-800">
                     Personal Information
                   </h2>
                   {!isEditing ? (
-                    <PrimaryBtn onClick={() => setIsEditing(true)}>
+                    <PrimaryBtn className={`px-1! md:px-4! font-medium! text-xs!  md:text-base!`} onClick={() => setIsEditing(true)}>
                       Edit Profile
                     </PrimaryBtn>
                   ) : (
                     <button
                       type="button"
                       onClick={handleProfileSubmit}
-                      className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
+                      className="px-2 py-2 md:px-4 font-medium text-xs md:text-base bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
                     >
                       Save Changes
                     </button>
@@ -327,7 +327,7 @@ export default function InstructorProfile() {
                 </div>
 
                 <form onSubmit={handleProfileSubmit}>
-                  <div className="p-6 space-y-6">
+                  <div className="p-4 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -590,7 +590,7 @@ export default function InstructorProfile() {
                         />
                       </div>
 
-                      {/* Add similar fields for instructorLicenceNumber, instructorLicenceExpiry, licenceNumber, licenceExpiry, piPlInsuranceNumber, piPlInsuranceExpiry, workingWithChildrenNumber, workingWithChildrenExpiry */}
+                     
                     </div>
 
                     {isEditing && (
@@ -619,13 +619,13 @@ export default function InstructorProfile() {
             <div className="space-y-6">
               {userData.provider === "Credential" && (
                 <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="px-4 py-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-800">
                       Change Password
                     </h2>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-4">
                     {!isChangingPassword ? (
                       <div className="text-center">
                         <p className="text-neutral mb-4">
@@ -728,7 +728,7 @@ export default function InstructorProfile() {
               )}
 
               {userData.provider === "Google" && (
-                <div className="bg-white border border-gray-200 rounded-lg shadow p-6">
+                <div className="bg-white border border-gray-200 rounded-lg shadow p-4">
                   <h2 className="text-lg font-semibold text-gray-800 mb-4">
                     Quick Links
                   </h2>

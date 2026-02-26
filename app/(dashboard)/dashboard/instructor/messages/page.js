@@ -1,14 +1,14 @@
 "use client";
 
-import React, {useMemo, useState} from "react";
-import {useQuery} from "@tanstack/react-query";
+import React, { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import {FiMail} from "react-icons/fi";
-import {HiChevronDown} from "react-icons/hi";
-import {useRouter} from "next/navigation";
-import {useUserData} from "@/app/hooks/useUserData";
+import { FiMail } from "react-icons/fi";
+import { HiChevronDown } from "react-icons/hi";
+import { useRouter } from "next/navigation";
+import { useUserData } from "@/app/hooks/useUserData";
 import Modal from "@/app/shared/ui/Modal";
 
 function formatAU(d) {
@@ -28,14 +28,15 @@ function formatAU(d) {
 export default function InstructorMessages() {
   const router = useRouter();
   const [selected, setSelected] = useState(null);
-  const {data: userData, isUserLoading} = useUserData();
+  const { data: userData, isUserLoading } = useUserData();
+
   const {
     data: emails = [],
     isLoading,
     isFetching,
     isError,
   } = useQuery({
-    queryKey: ["emails", userData?.email],
+    queryKey: ["instructor-emails", userData?.email],
     enabled: !!userData?.email,
     queryFn: async () => {
       const res = await axios.get("/api/emails", {
@@ -44,7 +45,7 @@ export default function InstructorMessages() {
           actorType: "INSTRUCTOR",
         },
       });
-      return res.data.items;
+      return res.data.items || [];
     },
   });
 
@@ -53,16 +54,16 @@ export default function InstructorMessages() {
   const goToBooking = (email) => {
     const bookingId = email?.bookingId;
     if (!bookingId) return;
-
+   
     router.push(`/instructor-bookings/${bookingId}`);
   };
+
   const downloadAttachment = async (key) => {
-    const {data} = await axios.post("/api/storage/download-url", {key});
+    const { data } = await axios.post("/api/storage/download-url", { key });
     window.open(data.url, "_blank", "noopener,noreferrer");
   };
-  if (isLoading || isUserLoading) {
-    return <LoadingSpinner />;
-  }
+
+  if (isLoading || isUserLoading) return <LoadingSpinner />;
 
   if (isError) {
     return (
@@ -82,87 +83,158 @@ export default function InstructorMessages() {
 
   return (
     <div className="bg-white border border-border-color rounded-md overflow-hidden">
-      {/* header */}
-      <div className="bg-secondary text-white px-4 py-2 flex items-center">
-        <div className="w-[90px] font-semibold">Type</div>
-        <div className="w-[320px] font-semibold">Sent</div>
-        <div className="flex-1 font-semibold">Message</div>
-        <div className="w-12" />
+      {/* ================= MOBILE (cards) ================= */}
+      <div className="md:hidden">
+        {isFetching && (
+          <div className="px-4 py-2 text-xs text-gray-500 border-b">
+            Updating...
+          </div>
+        )}
+
+        <div className="divide-y divide-border-color">
+          {rows.map((m) => (
+            <button
+              key={m._id}
+              type="button"
+              onClick={() => setSelected(m)}
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition"
+            >
+              <div className="flex items-start gap-3">
+                <div className="shrink-0 pt-1">
+                  <FiMail className="text-2xl text-gray-400" />
+                </div>
+
+                <div className="min-w-0 flex-1">
+                  {/* Subject */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="font-semibold text-gray-900 leading-snug wrap-break-word">
+                      {m.subject || "(No subject)"}
+                      {m.hasAttachment ? (
+                        <span className="ml-2 text-xs font-semibold text-neutral">
+                          📎 {m.attachmentName || "Attachment"}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <div className="shrink-0">
+                      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
+                        <HiChevronDown className="text-gray-700" />
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Date */}
+                  <div className="mt-1 text-xs text-gray-600">
+                    {formatAU(m.sentAt || m.createdAt)}
+                  </div>
+
+                  {/* To / From */}
+                  <div className="mt-2 text-xs text-gray-700 space-y-1">
+                    <div className="truncate">
+                      <span className="font-semibold">To:</span>{" "}
+                      <span className="opacity-80">{m.to || "—"}</span>
+                    </div>
+                    <div className="truncate">
+                      <span className="font-semibold">From:</span>{" "}
+                      <span className="opacity-80">
+                        {m.from || "testroutedrivingschool@gmail.com"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {isFetching && (
-        <div className="px-4 py-2 text-xs text-gray-500 border-b">
-          Updating...
+      {/* ================= DESKTOP (table) ================= */}
+      <div className="hidden md:block">
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm text-left border-collapse">
+            <thead className="bg-secondary text-white">
+              <tr>
+                <th className="px-4 py-3 w-[90px] font-semibold">Type</th>
+                <th className="px-4 py-3 w-[320px] font-semibold">Sent</th>
+                <th className="px-4 py-3 font-semibold">Message</th>
+                <th className="px-4 py-3 w-[60px]"></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {isFetching && (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-4 py-2 text-xs text-gray-500 border-b"
+                  >
+                    Updating...
+                  </td>
+                </tr>
+              )}
+
+              {rows.map((m, idx) => {
+                const bg = idx % 2 === 0 ? "bg-white" : "bg-[#f9f9f9]";
+                return (
+                  <tr
+                    key={m._id}
+                    className={`${bg} border-b border-border-color`}
+                  >
+                    <td className="px-4 py-4 align-top">
+                      <FiMail className="text-2xl text-gray-400" />
+                    </td>
+
+                    <td className="px-4 py-4 align-top text-gray-800">
+                      <div className="font-medium">
+                        {formatAU(m.sentAt || m.createdAt)}
+                      </div>
+                      <div className="text-xs mt-1">
+                        <span className="font-semibold">To:</span> {m.to || "—"}
+                      </div>
+                      <div className="text-xs">
+                        <span className="font-semibold">From:</span>{" "}
+                        {m.from || "testroutedrivingschool@gmail.com"}
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-4 align-top">
+                      <div className="font-semibold text-gray-900">
+                        {m.subject || "(No subject)"}
+                      </div>
+                      {m.hasAttachment && (
+                        <div className="text-xs text-neutral mt-1">
+                          📎 {m.attachmentName || "Attachment"}
+                        </div>
+                      )}
+                    </td>
+
+                    <td className="px-4 py-4 align-top text-right">
+                      <button
+                        type="button"
+                        onClick={() => setSelected(m)}
+                        className="h-8 w-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center transition"
+                        aria-label="Open message"
+                      >
+                        <HiChevronDown className="text-gray-700" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-      )}
+      </div>
 
-      {/* rows */}
-      {rows.map((m, idx) => {
-        const bg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
-        return (
-          <div key={m._id} className={`border-b border-border-color ${bg}`}>
-            <div className="flex items-start px-4 py-3 gap-3">
-              {/* Type */}
-              <div className="w-[90px] pt-1 flex items-center">
-                <FiMail className="text-3xl text-gray-400" />
-              </div>
-
-              {/* Sent */}
-              <div className="w-[320px] text-sm text-gray-800">
-                <div className="font-medium">
-                  {formatAU(m.sentAt || m.createdAt)}
-                </div>
-                <div className="text-xs mt-1">
-                  <span className="font-semibold">To:</span>{" "}
-                  <span className="text-gray-700">{m.to || "—"}</span>
-                </div>
-                <div className="text-xs">
-                  <span className="font-semibold">From:</span>{" "}
-                  <span className="text-gray-700">
-                    {m.from || "testroutedrivingschool@gmail.com"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Message */}
-              <div className="flex-1 text-sm">
-                <div className="font-semibold text-gray-900 flex items-center gap-2">
-                  {m.subject || "(No subject)"}
-                  {m.hasAttachment ? (
-                    <span className="text-xs font-semibold text-neutral">
-                      (📎 {m.attachmentName || "Attachment"})
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-
-              {/* Chevron -> open modal */}
-              <div className="w-12 flex justify-end">
-                <button
-                  type="button"
-                  onClick={() => setSelected(m)}
-                  className="h-8 w-8 rounded-full bg-gray-300 flex items-center justify-center transition"
-                  aria-label="Open message"
-                >
-                  <HiChevronDown className="text-gray-700" />
-                </button>
-              </div>
-            </div>
-          </div>
-        );
-      })}
-
-      {/* Modal */}
+      {/* ================= MODAL ================= */}
       {selected && (
         <Modal onClose={() => setSelected(null)}>
-          {/* Title */}
           <div className="flex items-start justify-between gap-4">
             <h2 className="text-lg sm:text-xl font-bold text-gray-900">
               {selected.subject || "(No subject)"}
             </h2>
           </div>
 
-          {/* Meta */}
           <div className="mt-3 text-sm text-neutral space-y-1">
             <div>
               <span className="font-semibold">Sent:</span>{" "}
@@ -177,12 +249,11 @@ export default function InstructorMessages() {
             </div>
           </div>
 
-          {/* Body */}
           <div className="my-4 border border-border-color rounded-md p-4 bg-white">
             {selected.html ? (
               <div
                 className="prose max-w-none text-sm"
-                dangerouslySetInnerHTML={{__html: selected.html}}
+                dangerouslySetInnerHTML={{ __html: selected.html }}
               />
             ) : (
               <pre className="whitespace-pre-wrap text-sm text-gray-800">
@@ -191,7 +262,6 @@ export default function InstructorMessages() {
             )}
           </div>
 
-          {/* Attachments */}
           {selected?.attachmentKey && (
             <button
               type="button"
@@ -202,13 +272,9 @@ export default function InstructorMessages() {
             </button>
           )}
 
-          {/* Actions */}
           <div className="mt-6 flex items-center justify-end gap-3">
             {selected.bookingId ? (
-              <PrimaryBtn
-                onClick={() => goToBooking(selected)}
-                className="px-6!"
-              >
+              <PrimaryBtn onClick={() => goToBooking(selected)} className="px-6!">
                 View Booking
               </PrimaryBtn>
             ) : null}

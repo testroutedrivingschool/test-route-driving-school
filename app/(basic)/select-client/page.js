@@ -284,27 +284,12 @@ function Field({label, name, value, onChange, required, error, onBlur}) {
   );
 }
 
-function ClientsResultTable({clients = [], onSelect}) {
-  return (
-    <div className="flex-2 w-full mt-6 border border-gray-300">
-      <div className="grid grid-cols-[2fr_1.2fr_2.5fr_.5fr_2.2fr] bg-secondary text-white font-semibold text-sm">
-        <div className="px-4 py-2">Name</div>
-        <div className="px-4 py-2">Mobile</div>
-        <div className="px-4 py-2">Address</div>
-        <div className="px-4 py-2 text-center">#</div>
-        <div className="px-4 py-2">Bookings</div>
-      </div>
-
-      {clients.length === 0 ? (
-        <div className="px-4 py-3 text-sm text-gray-500">No clients found.</div>
-      ) : (
-        clients.map((c, idx) => {
-          const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#dcdcdc]";
-          const name = `${c.firstName || ""} ${c.lastName || ""}`.trim() || "—";
-          const mobile = c.mobile || c.phone || "—";
-          const address = c.address || "—";
-const label = c.lastBooking
-  ? new Date(c.lastBooking).toLocaleString("en-AU", {
+function ClientsResultTable({ clients = [], onSelect }) {
+  const formatLast = (c) => {
+    if (!c?.lastBooking) return "—";
+    const d = new Date(c.lastBooking);
+    if (Number.isNaN(d.getTime())) return "—";
+    return d.toLocaleString("en-AU", {
       weekday: "short",
       day: "2-digit",
       month: "2-digit",
@@ -313,28 +298,100 @@ const label = c.lastBooking
       minute: "2-digit",
       hour12: true,
       timeZone: "Australia/Sydney",
-    })
-  : "-";
-          return (
-            <button
-              key={c._id}
-              type="button"
-              onClick={() => onSelect?.(c)}
-              className={`w-full grid grid-cols-[2fr_1.2fr_2.5fr_.5fr_2.2fr] text-left ${rowBg}
-                hover:brightness-95 transition`}
-            >
-              <div className="px-4 py-3 text-primary font-medium">{name}</div>
-              <div className="px-4 py-3 text-primary">{mobile}</div>
-              <div className="px-4 py-3 text-primary">{address}</div>
-              
-                     
-              <div className="px-4 py-3 text-primary text-center">{c.bookingCount || "-"}</div>
-              <div className="px-4 py-3 text-primary">
-                <span className="font-semibold">{c.bookingCount > 0 ? label : "—"}</span>  
-              </div>
-            </button>
-          );
-        })
+    });
+  };
+
+  return (
+    <div className="mt-6 w-full rounded-md border border-border-color bg-white overflow-hidden">
+      {/* header */}
+      <div className="px-4 py-3 border-b border-border-color flex items-center justify-between">
+        <h3 className="font-bold text-gray-900">Results</h3>
+        <div className="text-xs text-gray-500">
+          {clients.length ? `${clients.length} client(s)` : ""}
+        </div>
+      </div>
+
+      {clients.length === 0 ? (
+        <div className="px-4 py-6 text-sm text-gray-500">No clients found.</div>
+      ) : (
+        <div className="w-full">
+          <table className="w-full table-fixed border-collapse text-xs sm:text-sm">
+            <thead className="bg-secondary text-white">
+              <tr>
+                <th className="text-left px-2 sm:px-3 py-2 w-[45%] sm:w-auto">
+                  Name
+                </th>
+                <th className="text-left px-2 sm:px-3 py-2 w-[35%] sm:w-auto">
+                  Mobile
+                </th>
+
+                {/* hide on mobile */}
+                <th className="hidden sm:table-cell text-left px-3 py-2">
+                  Address
+                </th>
+
+                <th className="text-center px-2 sm:px-3 py-2 w-[20%] sm:w-auto">
+                  #
+                </th>
+
+                {/* hide on mobile */}
+                <th className="hidden sm:table-cell text-left px-3 py-2">
+                  Bookings
+                </th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {clients.map((c, idx) => {
+                const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
+                const name =
+                  `${c.firstName || ""} ${c.lastName || ""}`.trim() || "—";
+                const mobile = c.mobile || c.phone || "—";
+                const address = c.address || "—";
+                const lastLabel =
+                  c.bookingCount > 0 ? formatLast(c) : "—";
+
+                return (
+                  <tr
+                    key={c._id || idx}
+                    onClick={() => onSelect?.(c)}
+                    className={`cursor-pointer ${rowBg} hover:brightness-95 transition`}
+                  >
+                    {/* Name + (mobile-only last booking under name) */}
+                    <td className="px-2 sm:px-3 py-2 font-semibold wrap-break-word">
+                      <div className="leading-snug text-primary">{name}</div>
+
+                      <div className="sm:hidden mt-1 text-[11px] font-medium text-gray-700">
+                        <span className="opacity-70">Last:</span>{" "}
+                        <span className="text-primary">{lastLabel}</span>
+                      </div>
+                    </td>
+
+                    {/* Mobile */}
+                    <td className="px-2 sm:px-3 py-2 wrap-break-word text-primary">
+                      {mobile}
+                    </td>
+
+                    {/* Address hidden on mobile */}
+                    <td className="hidden sm:table-cell px-3 py-2 wrap-break-word text-primary">
+                      {address}
+                    </td>
+
+                    {/* Count */}
+                    <td className="px-2 sm:px-3 py-2 text-center text-primary">
+                      {c.bookingCount || "-"}
+                    </td>
+
+                    {/* Bookings hidden on mobile */}
+                    <td className="hidden sm:table-cell px-3 py-2 text-primary font-semibold wrap-break-word">
+                      {lastLabel}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );

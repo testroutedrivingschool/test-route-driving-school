@@ -16,12 +16,10 @@ import {Autoplay} from "swiper/modules";
 import BookingCalendar from "./components/BookingCalendar";
 import axios from "axios";
 import Modal from "@/app/shared/ui/Modal";
-import {IoMdAdd} from "react-icons/io";
 import {useRouter, useSearchParams} from "next/navigation";
 import useAuth from "@/app/hooks/useAuth";
 import {toast} from "react-toastify";
 import Swal from "sweetalert2";
-import SuspenseWrapper from "@/app/shared/ui/SuspenseWrapper";
 
 const weekdays = [
   "Monday",
@@ -597,7 +595,6 @@ export default function BookingsPage() {
   return (
     <>
       <section className="py-10">
-        <SuspenseWrapper>
           <Container>
             <div>
               {/* Header */}
@@ -1374,7 +1371,6 @@ export default function BookingsPage() {
               </div>
             </div>
           </Container>
-        </SuspenseWrapper>
       </section>
 
       {showLocationModal && (

@@ -12,7 +12,6 @@ export default function SalesSearch() {
 
   const router = useRouter()
   const [data, setData] = useState({ mode: null, rows: [] });
-
   const [loading, setLoading] = useState(false);
   const [errMsg, setErrMsg] = useState("");
 
@@ -101,75 +100,122 @@ export default function SalesSearch() {
           <h2 className="text-xl font-bold text-gray-900">No data found</h2>
         </div>
       ) : (
-        <div className="overflow-x-auto border border-border-color rounded-md">
-          <table className="min-w-[1000px] w-full text-sm">
-            <thead className="bg-secondary text-white">
-              <tr>
-                <th className="p-3 text-left">Date</th>
-                <th className="p-3 text-left">Type</th>
-                <th className="p-3 text-left">Instructor</th>
-                <th className="p-3 text-left">Client</th>
-                <th className="p-3 text-left">Services</th>
-                <th className="p-3 text-left">Trans #</th>
-                <th className="p-3 text-left">Invoice</th>
-                <th className="p-3 text-right">Cost</th>
-                <th className="p-3 text-left">Status</th>
-              </tr>
-            </thead>
+        <div className="w-full border border-border-color rounded-md overflow-hidden">
+  <table className="w-full table-fixed text-xs sm:text-sm">
+    <thead className="bg-secondary text-white">
+      <tr>
+        <th className="p-3 text-left w-[34%] sm:w-auto">Date</th>
+        <th className="p-3 text-left w-[22%] sm:w-auto">Type</th>
 
-            <tbody>
-              {data.rows.map((row, idx) => (
-                <tr onClick={()=>router.push("/clients")} key={idx} className={idx % 2 === 0 ? "bg-white cursor-pointer" : "bg-gray-50 cursor-pointer"}>
-                  <td className="p-3">
-                    {row.bookingDate ? new Date(row.bookingDate).toLocaleString("en-AU") : "—"}
-                  </td>
+        {/* hide on mobile */}
+        <th className="hidden sm:table-cell p-3 text-left">Instructor</th>
 
-                  <td className="p-3">
-                    {row.bookingType === "manual" ? "Sale" : row.bookingType === "website" ? "Web Sale" : "—"}
-                  </td>
+        <th className="p-3 text-left w-[28%] sm:w-auto">Client</th>
 
-                  <td className="p-3">{row.instructorName || row.instructorEmail || "—"}</td>
-                  <td className="p-3">{row.userName || row.userEmail || "—"}</td>
+        {/* hide on mobile */}
+        <th className="hidden md:table-cell p-3 text-left">Services</th>
+        <th className="hidden lg:table-cell p-3 text-left">Trans #</th>
 
-                  <td className="p-3">
-                    {row.serviceName ? (
-                      <>
-                        {row.serviceName} {row.duration ? `(${row.duration})` : ""}
-                      </>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
+        <th className="p-3 text-left w-[16%] sm:w-auto">Invoice</th>
 
-                  <td className="p-3">{row.paymentIntentId || "unpaid"}</td>
+        {/* hide on mobile */}
+        <th className="hidden sm:table-cell p-3 text-right">Cost</th>
 
-                  <td className="p-3">
-                    {row.invoiceNo ? (
-                      <button
-                        type="button"
-                        onClick={() => openInvoicePdf(row)}
-                        className="text-primary font-semibold hover:underline"
-                        title={row.invoiceKey || ""}
-                      >
-                        #{row.invoiceNo}
-                      </button>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
+        <th className="hidden sm:table-cell p-3 text-left">Status</th>
+      </tr>
+    </thead>
 
-                  <td className="p-3 text-right">
-                    ${Number(row.total ?? row.price ?? 0).toFixed(2)}
-                  </td>
+    <tbody>
+      {data.rows.map((row, idx) => {
+        const dateStr =
+          row.bookingDate
+            ? new Date(row.bookingDate).toLocaleString("en-AU")
+            : row.createdAt
+              ? new Date(row.createdAt).toLocaleString("en-AU")
+              : "—";
 
-                  <td className="p-3 font-semibold text-primary">
-                    {row.status || "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+       const typeLabel =
+  row.source === "purchase"
+    ? "Package Purchase"
+    : row.bookingType === "manual"
+    ? "Sale"
+    : row.bookingType === "website"
+    ? "Web Sale"
+    : "-";
+
+        return (
+          <tr
+            key={idx}
+            onClick={() => router.push("/clients")}
+            className={idx % 2 === 0 ? "bg-white cursor-pointer" : "bg-gray-50 cursor-pointer"}
+          >
+            {/* Date (mobile shows smaller) */}
+            <td className="p-3 wrap-break-word">
+              <div className="leading-tight">{dateStr}</div>
+
+              {/* mobile-only: show Cost + Status under date */}
+              <div className="sm:hidden mt-1 text-[11px] text-gray-600">
+                ${Number(row.total ?? row.price ?? 0).toFixed(2)} • {row.status || "—"}
+              </div>
+            </td>
+
+            <td className="p-3">{typeLabel}</td>
+
+            {/* Instructor (hidden on mobile) */}
+            <td className="hidden sm:table-cell p-3 wrap-break-word">
+              {row.instructorName || row.instructorEmail || "—"}
+            </td>
+
+            {/* Client */}
+            <td className="p-3 wrap-break-word">
+              {row.userName || row.userEmail || "—"}
+            </td>
+
+            {/* Services (hidden md down) */}
+            <td className="hidden md:table-cell p-3 wrap-break-word">
+              {row.serviceName
+                ? `${row.serviceName}${row.duration ? ` (${row.duration})` : ""}`
+                : "—"}
+            </td>
+
+            {/* Trans (hidden lg down) */}
+            <td className="hidden lg:table-cell p-3 wrap-break-word">
+              {row.paymentIntentId || "unpaid"}
+            </td>
+
+            {/* Invoice */}
+            <td className="p-3">
+              {row.invoiceNo ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openInvoicePdf(row);
+                  }}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  #{row.invoiceNo}
+                </button>
+              ) : (
+                "—"
+              )}
+            </td>
+
+            {/* Cost (hidden on mobile) */}
+            <td className="hidden sm:table-cell p-3 text-right">
+              ${Number(row.total ?? row.price ?? 0).toFixed(2)}
+            </td>
+
+            {/* Status (hidden on mobile) */}
+            <td className="hidden sm:table-cell p-3 font-semibold text-primary">
+              {row.status || "—"}
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
+  </table>
+</div>
       )}
     </Container>
   );
