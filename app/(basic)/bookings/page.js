@@ -21,6 +21,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 import useAuth from "@/app/hooks/useAuth";
 import {toast} from "react-toastify";
 import Swal from "sweetalert2";
+import SuspenseWrapper from "@/app/shared/ui/SuspenseWrapper";
 
 const weekdays = [
   "Monday",
@@ -103,7 +104,6 @@ const times = [
   "11:45PM",
 ];
 
-
 async function confirmReschedule({bookingId, newDateISO, newTime}) {
   const newDateText = new Date(newDateISO).toLocaleDateString("en-AU", {
     weekday: "short",
@@ -177,7 +177,7 @@ function canUserReschedule(bookingDate, bookingTime) {
 export default function BookingsPage() {
   const {user} = useAuth();
   const searchParams = useSearchParams();
-const instructorId = searchParams.get("instructorId");
+  const instructorId = searchParams.get("instructorId");
   const isReschedule = searchParams.get("reschedule") === "1";
   const bookingId = searchParams.get("bookingId");
 
@@ -506,20 +506,19 @@ const instructorId = searchParams.get("instructorId");
     for (let k = 0; k < span; k++) {
       const t = normalizeTime(times[startIdx + k]);
       if (!t) break;
-      acc[`${dateKey}__${t}`] = true; 
+      acc[`${dateKey}__${t}`] = true;
     }
 
     return acc;
   }, {});
-useEffect(() => {
-  if (instructorId) {
-    
-    const selectedInstructor = instructors.find(
-      (inst) => inst._id === instructorId
-    );
-    setSelectedInstructor(selectedInstructor);
-  }
-}, [instructorId, instructors]);
+  useEffect(() => {
+    if (instructorId) {
+      const selectedInstructor = instructors.find(
+        (inst) => inst._id === instructorId,
+      );
+      setSelectedInstructor(selectedInstructor);
+    }
+  }, [instructorId, instructors]);
   const filteredInstructors = selectedLocations
     ? instructors.filter((inst) =>
         inst.suburbs?.some((sub) => sub.name === selectedLocations),
@@ -549,24 +548,20 @@ useEffect(() => {
     const saved = localStorage.getItem(LS_SELECTED_LOC);
     if (saved) setSelectedLocations(saved);
   }, []);
-useEffect(() => {
-   if (typeof window === "undefined") return;
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     if (isReschedule) return;
-  const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
-  const todayDate = getTodayYMD(); 
-  const lastShownDate = localStorage.getItem(LS_KEY);
+    const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
+    const todayDate = getTodayYMD();
+    const lastShownDate = localStorage.getItem(LS_KEY);
 
+    if (savedLocation) return;
 
-  if (savedLocation) return;
-
-  
-  if (lastShownDate !== todayDate) {
-    setShowLocationModal(true);
-    localStorage.setItem(LS_KEY, todayDate); // Mark that the modal was shown today
-  }
-}, [isReschedule]);
-
-
+    if (lastShownDate !== todayDate) {
+      setShowLocationModal(true);
+      localStorage.setItem(LS_KEY, todayDate); // Mark that the modal was shown today
+    }
+  }, [isReschedule]);
 
   // Show loading spinner
   if (isLoading || isLoadingLocations) {
@@ -602,694 +597,784 @@ useEffect(() => {
   return (
     <>
       <section className="py-10">
-        <Container>
-          <div>
-            {/* Header */}
-            <div className="mb-8 flex justify-between items-center">
-              <div>
-                <h1 className="text-3xl font-bold ">
-                  Test Route Driving School
-                </h1>
-                <p className="text-neutral mt-2">
-                  Book your driving lessons with certified instructors
-                </p>
+        <SuspenseWrapper>
+          <Container>
+            <div>
+              {/* Header */}
+              <div className="mb-8 flex justify-between items-center">
+                <div>
+                  <h1 className="text-3xl font-bold ">
+                    Test Route Driving School
+                  </h1>
+                  <p className="text-neutral mt-2">
+                    Book your driving lessons with certified instructors
+                  </p>
+                </div>
+                {!isReschedule && (
+                  <div className="text-center">
+                    <h3 className="font-bold text-lg">{selectedLocations}</h3>
+                    <button
+                      onClick={() => setShowLocationModal(true)}
+                      className="text-primary font-medium hover:font-bold transition"
+                    >
+                      Change
+                    </button>
+                  </div>
+                )}
               </div>
-              {!isReschedule && (
-                <div className="text-center">
-                  <h3 className="font-bold text-lg">{selectedLocations}</h3>
+
+              {/* Main Content Area */}
+              {selectedLocations && filteredInstructors.length === 0 ? (
+                <div className="min-h-[300px] flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-border-color p-6">
+                  <FaUserCheck className="h-16 w-16 text-gray-400 mb-4" />
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    No Instructors Available
+                  </h2>
+                  <p className="text-neutral mb-4">
+                    There are no instructors available in this location.
+                  </p>
                   <button
                     onClick={() => setShowLocationModal(true)}
-                    className="text-primary font-medium hover:font-bold transition"
+                    className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
                   >
-                    Change
+                    Change Location
                   </button>
                 </div>
-              )}
-            </div>
-
-            {/* Main Content Area */}
-            {selectedLocations && filteredInstructors.length === 0 ? (
-              <div className="min-h-[300px] flex flex-col items-center justify-center bg-white rounded-xl shadow-sm border border-border-color p-6">
-                <FaUserCheck className="h-16 w-16 text-gray-400 mb-4" />
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                  No Instructors Available
-                </h2>
-                <p className="text-neutral mb-4">
-                  There are no instructors available in this location.
-                </p>
-                <button
-                  onClick={() => setShowLocationModal(true)}
-                  className="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition"
-                >
-                  Change Location
-                </button>
-              </div>
-            ) : (
-              filteredInstructors.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-9 gap-6">
-                  {/* Left Column - Calendar */}
-                  <div className="md:col-span-2">
-                    <BookingCalendar
-                      selectedDate={selectedDate}
-                      setSelectedDate={setSelectedDate}
-                    />
-                  </div>
-
-                  {/* Right Column - Schedule Table */}
-                  <div className="md:col-span-7 ">
-                    {/* Instructor Selection - Horizontal Scrollbar */}
-                    <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                        <div>
-                          <h2 className="text-xl font-bold text-gray-900">
-                            Select Your Instructor
-                          </h2>
-                          <p className="text-neutral text-sm mt-1">
-                            Click on an instructor to view their schedule
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Horizontal Scrollbar for Instructors */}
-                      <div className="relative ">
-                        {/* Scroll buttons */}
-
-                        {/* Instructors Container */}
-                        <div
-                          className={
-                            selectedInstructor && "flex items-start gap-6"
-                          }
-                        >
-                          {/* Selected Instructor Card */}
-                          <div className="w-[260px] shrink-0">
-                            {selectedInstructor && (
-                              <div className="flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md">
-                                <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3">
-                                  <Image
-                                    src={
-                                      selectedInstructor?.photo
-                                        ? selectedInstructor.photo
-                                        : selectedInstructor?.photoKey
-                                          ? `/api/storage/proxy?key=${encodeURIComponent(selectedInstructor.photoKey)}`
-                                          : "/profile-avatar.png"
-                                    }
-                                    alt={selectedInstructor.name}
-                                    width={80}
-                                    height={80}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      e.target.style.display = "none";
-                                      e.target.parentElement.innerHTML =
-                                        '<img src="/profile-avatar.png" className="h-10 w-10 text-gray-500" />';
-                                    }}
-                                  />
-                                </div>
-                                <h3 className="font-bold text-gray-900 text-xs md:text-sm mb-1 truncate max-w-[120px]">
-                                  {selectedInstructor.name}
-                                </h3>
-                                <span className="text-xs text-gray-500 mt-1">
-                                  Selected
-                                </span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* Other Instructors - Horizontal Scroll */}
-                          <div className="flex-1 min-w-0 relative">
-                            <Swiper
-                              className="w-full"
-                              onSwiper={(swiper) =>
-                                (swiperRef.current = swiper)
-                              }
-                              slidesPerView={slidesToShow}
-                              spaceBetween={24}
-                              loop={canLoop}
-                              autoplay={
-                                canLoop
-                                  ? {delay: 2000, disableOnInteraction: false}
-                                  : false
-                              }
-                              modules={[Autoplay]}
-                            >
-                              {displayedInstructors.map((instructor) => {
-                                const avatarSrc = instructor?.photo
-                                  ? instructor.photo
-                                  : instructor?.photoKey
-                                    ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
-                                    : "/profile-avatar.png";
-                                return (
-                                  <SwiperSlide
-                                    key={instructor._id}
-                                    className="h-auto!"
-                                  >
-                                    <div
-                                      onClick={() =>
-                                        setSelectedInstructor(instructor)
-                                      }
-                                      className="w-full flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color"
-                                    >
-                                      <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
-                                        <Image
-                                          src={avatarSrc}
-                                          alt={instructor.name || ""}
-                                          width={64}
-                                          height={64}
-                                          className="w-full h-full object-cover"
-                                        />
-                                      </div>
-                                      <h3 className="font-bold text-gray-900 text-xs md:text-sm wrap-break-word mb-1 truncate max-w-[120px]">
-                                        {instructor.name} 
-                                      </h3>
-                                    </div>
-                                  </SwiperSlide>
-                                );
-                              })}
-                            </Swiper>
-
-                            {/* show arrows only if sliding is needed */}
-                            {canLoop && (
-                              <>
-                                <button
-                                  onClick={() => swiperRef.current?.slidePrev()}
-                                  className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white p-2 rounded-full shadow-md"
-                                >
-                                  <FaChevronLeft className="text-primary w-4 h-4 md:w-5 md:h-5" />
-                                </button>
-
-                                <button
-                                  onClick={() => swiperRef.current?.slideNext()}
-                                  className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white p-2 rounded-full shadow-md"
-                                >
-                                  <FaChevronRight className="text-primary w-4 h-4 md:w-5 md:h-5" />
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </div>
+              ) : (
+                filteredInstructors.length > 0 && (
+                  <div className="grid grid-cols-1 md:grid-cols-9 gap-6">
+                    {/* Left Column - Calendar */}
+                    <div className="md:col-span-2">
+                      <BookingCalendar
+                        selectedDate={selectedDate}
+                        setSelectedDate={setSelectedDate}
+                      />
                     </div>
 
-                    {!selectedInstructor ? (
-                      <div className="rounded-xl border border-border-color bg-white p-8 text-center text-neutral">
-                        Please select an instructor to view the schedule.
-                      </div>
-                    ) : (
-                      <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
-                        {/* ✅ Scroll container (vertical + horizontal) */}
-                        {/* ✅ Schedule Table */}
-                        <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
-                          {/* Header */}
-                          <div className="sticky top-0 z-40 px-4 md:px-6 py-4 border-b border-border-color bg-white">
-                            <div className="flex items-center justify-between gap-3">
-                              <div>
-                                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                                  {selectedInstructor.name}&apos;s Schedule
-                                </h2>
-
-                                <p className="text-neutral mt-1 text-sm">
-                                  Week of{" "}
-                                  {weekDates[0].toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
-                                  {" - "}
-                                  {weekDates[6].toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
-                                </p>
-                              </div>
-
-                              <div className="flex items-center gap-2">
-                                <button
-                                  onClick={goPrevWeek}
-                                  disabled={isPrevDisabled}
-                                  className={`h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white
-          ${isPrevDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"}`}
-                                  title="Previous week"
-                                >
-                                  <FaChevronLeft />
-                                </button>
-
-                                <button
-                                  onClick={goNextWeek}
-                                  className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
-                                  title="Next week"
-                                >
-                                  <FaChevronRight />
-                                </button>
-                              </div>
-                            </div>
-
-                            {/* legend */}
-                            <div className="mt-3 flex items-center gap-4 text-xs text-neutral">
-                              <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-[#A2B5D8] rounded" />
-                                <span>Booked</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-[#7DA730] rounded" />
-                                <span>Available</span>
-                              </div>
-                            </div>
-
-                         
+                    {/* Right Column - Schedule Table */}
+                    <div className="md:col-span-7 ">
+                      {/* Instructor Selection - Horizontal Scrollbar */}
+                      <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                          <div>
+                            <h2 className="text-xl font-bold text-gray-900">
+                              Select Your Instructor
+                            </h2>
+                            <p className="text-neutral text-sm mt-1">
+                              Click on an instructor to view their schedule
+                            </p>
                           </div>
+                        </div>
 
-                          {/* ✅ Desktop weekly grid (md+) */}
-                          <div className="hidden md:block">
-                            <div
-                              ref={tableRef}
-                              className="overflow-y-auto"
-                              style={{
-                                maxHeight: "90vh",
-                                WebkitOverflowScrolling: "touch",
-                              }}
-                            >
-                              <table className="w-full border-separate border-spacing-0 table-fixed">
-                                <thead>
-                                  <tr>
-                                    <th className="py-2 px-2 border border-border-color text-sm font-semibold sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
-                                      Time
-                                    </th>
+                        {/* Horizontal Scrollbar for Instructors */}
+                        <div className="relative ">
+                          {/* Scroll buttons */}
 
-                                    {weekDates.map((date, index) => (
-                                      <th
-                                        key={index}
-                                        className="py-2 px-1 border border-border-color text-center text-sm font-semibold sticky top-0 bg-white z-40"
+                          {/* Instructors Container */}
+                          <div
+                            className={
+                              selectedInstructor && "flex items-start gap-6"
+                            }
+                          >
+                            {/* Selected Instructor Card */}
+                            <div className="w-[260px] shrink-0">
+                              {selectedInstructor && (
+                                <div className="flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md">
+                                  <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3">
+                                    <Image
+                                      src={
+                                        selectedInstructor?.photo
+                                          ? selectedInstructor.photo
+                                          : selectedInstructor?.photoKey
+                                            ? `/api/storage/proxy?key=${encodeURIComponent(selectedInstructor.photoKey)}`
+                                            : "/profile-avatar.png"
+                                      }
+                                      alt={selectedInstructor.name}
+                                      width={80}
+                                      height={80}
+                                      className="w-full h-full object-cover"
+                                      onError={(e) => {
+                                        e.target.style.display = "none";
+                                        e.target.parentElement.innerHTML =
+                                          '<img src="/profile-avatar.png" className="h-10 w-10 text-gray-500" />';
+                                      }}
+                                    />
+                                  </div>
+                                  <h3 className="font-bold text-gray-900 text-xs md:text-sm mb-1 truncate max-w-[120px]">
+                                    {selectedInstructor.name}
+                                  </h3>
+                                  <span className="text-xs text-gray-500 mt-1">
+                                    Selected
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Other Instructors - Horizontal Scroll */}
+                            <div className="flex-1 min-w-0 relative">
+                              <Swiper
+                                className="w-full"
+                                onSwiper={(swiper) =>
+                                  (swiperRef.current = swiper)
+                                }
+                                slidesPerView={slidesToShow}
+                                spaceBetween={24}
+                                loop={canLoop}
+                                autoplay={
+                                  canLoop
+                                    ? {delay: 2000, disableOnInteraction: false}
+                                    : false
+                                }
+                                modules={[Autoplay]}
+                              >
+                                {displayedInstructors.map((instructor) => {
+                                  const avatarSrc = instructor?.photo
+                                    ? instructor.photo
+                                    : instructor?.photoKey
+                                      ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
+                                      : "/profile-avatar.png";
+                                  return (
+                                    <SwiperSlide
+                                      key={instructor._id}
+                                      className="h-auto!"
+                                    >
+                                      <div
+                                        onClick={() =>
+                                          setSelectedInstructor(instructor)
+                                        }
+                                        className="w-full flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color"
                                       >
-                                        <div className="flex flex-col items-center">
-                                          <div className="font-bold text-gray-900">
-                                            {weekdays[index]}
-                                          </div>
-                                          <div className="text-xs text-gray-500 mt-1">
-                                            {date.toLocaleDateString("en-US", {
-                                              month: "short",
-                                              day: "numeric",
-                                            })}
-                                          </div>
+                                        <div className="w-16 h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
+                                          <Image
+                                            src={avatarSrc}
+                                            alt={instructor.name || ""}
+                                            width={64}
+                                            height={64}
+                                            className="w-full h-full object-cover"
+                                          />
                                         </div>
+                                        <h3 className="font-bold text-gray-900 text-xs md:text-sm wrap-break-word mb-1 truncate max-w-[120px]">
+                                          {instructor.name}
+                                        </h3>
+                                      </div>
+                                    </SwiperSlide>
+                                  );
+                                })}
+                              </Swiper>
+
+                              {/* show arrows only if sliding is needed */}
+                              {canLoop && (
+                                <>
+                                  <button
+                                    onClick={() =>
+                                      swiperRef.current?.slidePrev()
+                                    }
+                                    className="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white p-2 rounded-full shadow-md"
+                                  >
+                                    <FaChevronLeft className="text-primary w-4 h-4 md:w-5 md:h-5" />
+                                  </button>
+
+                                  <button
+                                    onClick={() =>
+                                      swiperRef.current?.slideNext()
+                                    }
+                                    className="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white p-2 rounded-full shadow-md"
+                                  >
+                                    <FaChevronRight className="text-primary w-4 h-4 md:w-5 md:h-5" />
+                                  </button>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {!selectedInstructor ? (
+                        <div className="rounded-xl border border-border-color bg-white p-8 text-center text-neutral">
+                          Please select an instructor to view the schedule.
+                        </div>
+                      ) : (
+                        <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
+                          {/* ✅ Scroll container (vertical + horizontal) */}
+                          {/* ✅ Schedule Table */}
+                          <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
+                            {/* Header */}
+                            <div className="sticky top-0 z-40 px-4 md:px-6 py-4 border-b border-border-color bg-white">
+                              <div className="flex items-center justify-between gap-3">
+                                <div>
+                                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                                    {selectedInstructor.name}&apos;s Schedule
+                                  </h2>
+
+                                  <p className="text-neutral mt-1 text-sm">
+                                    Week of{" "}
+                                    {weekDates[0].toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                    {" - "}
+                                    {weekDates[6].toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={goPrevWeek}
+                                    disabled={isPrevDisabled}
+                                    className={`h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white
+          ${isPrevDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-gray-100"}`}
+                                    title="Previous week"
+                                  >
+                                    <FaChevronLeft />
+                                  </button>
+
+                                  <button
+                                    onClick={goNextWeek}
+                                    className="h-9 w-9 flex items-center justify-center rounded-md border border-border-color bg-white hover:bg-gray-100"
+                                    title="Next week"
+                                  >
+                                    <FaChevronRight />
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* legend */}
+                              <div className="mt-3 flex items-center gap-4 text-xs text-neutral">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-[#A2B5D8] rounded" />
+                                  <span>Booked</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 bg-[#7DA730] rounded" />
+                                  <span>Available</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* ✅ Desktop weekly grid (md+) */}
+                            <div className="hidden md:block">
+                              <div
+                                ref={tableRef}
+                                className="overflow-y-auto"
+                                style={{
+                                  maxHeight: "90vh",
+                                  WebkitOverflowScrolling: "touch",
+                                }}
+                              >
+                                <table className="w-full border-separate border-spacing-0 table-fixed">
+                                  <thead>
+                                    <tr>
+                                      <th className="py-2 px-2 border border-border-color text-sm font-semibold sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
+                                        Time
                                       </th>
-                                    ))}
-                                  </tr>
-                                </thead>
 
-                                <tbody>
-                                  {times.map((time) => {
-                                    const hourLine =
-                                      isHourStart(time) && time !== times[0];
-                                    const topBorder = hourLine
-                                      ? "border-t border-t-black"
-                                      : "border-t border-t-gray-400 border-dashed";
-                                    const cellBorder = `${topBorder} border-r border-r-black`;
-
-                                    return (
-                                      <tr key={time} className="align-stretch">
-                                        <td
-                                          className={`py-2 px-1 text-center whitespace-nowrap text-sm font-semibold sticky left-0 bg-[#DCDCDC] z-30 ${cellBorder}`}
+                                      {weekDates.map((date, index) => (
+                                        <th
+                                          key={index}
+                                          className="py-2 px-1 border border-border-color text-center text-sm font-semibold sticky top-0 bg-white z-40"
                                         >
-                                          {time}
-                                        </td>
+                                          <div className="flex flex-col items-center">
+                                            <div className="font-bold text-gray-900">
+                                              {weekdays[index]}
+                                            </div>
+                                            <div className="text-xs text-gray-500 mt-1">
+                                              {date.toLocaleDateString(
+                                                "en-US",
+                                                {
+                                                  month: "short",
+                                                  day: "numeric",
+                                                },
+                                              )}
+                                            </div>
+                                          </div>
+                                        </th>
+                                      ))}
+                                    </tr>
+                                  </thead>
 
-                                        {weekDates.map((date, dayIndex) => {
-                                          const dateKey = formatYMD(date);
-                                          const timeKey = normalizeTime(time);
-                                          const tdClass = `p-0 ${cellBorder}`;
+                                  <tbody>
+                                    {times.map((time) => {
+                                      const hourLine =
+                                        isHourStart(time) && time !== times[0];
+                                      const topBorder = hourLine
+                                        ? "border-t border-t-black"
+                                        : "border-t border-t-gray-400 border-dashed";
+                                      const cellBorder = `${topBorder} border-r border-r-black`;
 
-                                          const isBooked =
-                                            bookedSlotsMap[
-                                              `${dateKey}__${timeKey}`
-                                            ];
-                                          if (isBooked) {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
-                                                  Booked
-                                                </div>
-                                              </td>
-                                            );
-                                          }
+                                      return (
+                                        <tr
+                                          key={time}
+                                          className="align-stretch"
+                                        >
+                                          <td
+                                            className={`py-2 px-1 text-center whitespace-nowrap text-sm font-semibold sticky left-0 bg-[#DCDCDC] z-30 ${cellBorder}`}
+                                          >
+                                            {time}
+                                          </td>
 
-                                          const key = `${dateKey}__${normalizeTime(time)}`;
-                                          const slot = slotsMap[key];
+                                          {weekDates.map((date, dayIndex) => {
+                                            const dateKey = formatYMD(date);
+                                            const timeKey = normalizeTime(time);
+                                            const tdClass = `p-0 ${cellBorder}`;
 
-                                          if (
-                                            !slot ||
-                                            !slotMatchesLocation(slot)
-                                          ) {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
-                                              </td>
-                                            );
-                                          }
+                                            const isBooked =
+                                              bookedSlotsMap[
+                                                `${dateKey}__${timeKey}`
+                                              ];
+                                            if (isBooked) {
+                                              return (
+                                                <td
+                                                  key={dayIndex}
+                                                  className={tdClass}
+                                                >
+                                                  <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
+                                                    Booked
+                                                  </div>
+                                                </td>
+                                              );
+                                            }
 
-                                          const vis = getVisibility(slot);
-                                          if (vis === "" || vis === "hidden") {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
-                                              </td>
-                                            );
-                                          }
+                                            const key = `${dateKey}__${normalizeTime(time)}`;
+                                            const slot = slotsMap[key];
 
-                                          if (vis === "publicNote") {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 px-2 py-2 bg-[#FF9933] font-bold text-black text-xs flex items-center justify-center text-center wrap-break-word">
-                                                  {slot.publicNote || ""}
-                                                </div>
-                                              </td>
-                                            );
-                                          }
+                                            if (
+                                              !slot ||
+                                              !slotMatchesLocation(slot)
+                                            ) {
+                                              return (
+                                                <td
+                                                  key={dayIndex}
+                                                  className={tdClass}
+                                                >
+                                                  <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                                </td>
+                                              );
+                                            }
 
-                                          if (vis === "privateBooked") {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
-                                                  Booked
-                                                </div>
-                                              </td>
-                                            );
-                                          }
+                                            const vis = getVisibility(slot);
+                                            if (
+                                              vis === "" ||
+                                              vis === "hidden"
+                                            ) {
+                                              return (
+                                                <td
+                                                  key={dayIndex}
+                                                  className={tdClass}
+                                                >
+                                                  <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                                </td>
+                                              );
+                                            }
 
-                                          if (vis === "public") {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <button
-                                                  onClick={async () => {
-                                                    if (isReschedule) {
-                                                      if (!rescheduleBooking) {
-                                                        toast.error(
-                                                          "Booking info not loaded yet.",
+                                            if (vis === "publicNote") {
+                                              return (
+                                                <td
+                                                  key={dayIndex}
+                                                  className={tdClass}
+                                                >
+                                                  <div className="w-full h-full min-h-11 px-2 py-2 bg-[#FF9933] font-bold text-black text-xs flex items-center justify-center text-center wrap-break-word">
+                                                    {slot.publicNote || ""}
+                                                  </div>
+                                                </td>
+                                              );
+                                            }
+
+                                            if (vis === "privateBooked") {
+                                              return (
+                                                <td
+                                                  key={dayIndex}
+                                                  className={tdClass}
+                                                >
+                                                  <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
+                                                    Booked
+                                                  </div>
+                                                </td>
+                                              );
+                                            }
+
+                                            if (vis === "public") {
+                                              return (
+                                                <td
+                                                  key={dayIndex}
+                                                  className={tdClass}
+                                                >
+                                                  <button
+                                                    onClick={async () => {
+                                                      if (isReschedule) {
+                                                        if (
+                                                          !rescheduleBooking
+                                                        ) {
+                                                          toast.error(
+                                                            "Booking info not loaded yet.",
+                                                          );
+                                                          return;
+                                                        }
+                                                        const newDateISO =
+                                                          weekDates[
+                                                            dayIndex
+                                                          ].toISOString();
+                                                        const newTime = time;
+                                                        await confirmReschedule(
+                                                          {
+                                                            bookingId,
+                                                            newDateISO,
+                                                            newTime,
+                                                          },
                                                         );
                                                         return;
                                                       }
-                                                      const newDateISO =
-                                                        weekDates[
-                                                          dayIndex
-                                                        ].toISOString();
-                                                      const newTime = time;
-                                                      await confirmReschedule({
-                                                        bookingId,
-                                                        newDateISO,
-                                                        newTime,
-                                                      });
-                                                      return;
-                                                    }
-                                                    handleBookNow(
-                                                      time,
-                                                      dayIndex,
-                                                      slot,
-                                                    );
-                                                  }}
-                                                  className={`w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#7DA730] hover:bg-[#96C83A] text-white flex items-center justify-center`}
-                                                >
-                                                  {isReschedule?"Reschedule":"Book Now"}
-                                                </button>
+                                                      handleBookNow(
+                                                        time,
+                                                        dayIndex,
+                                                        slot,
+                                                      );
+                                                    }}
+                                                    className={`w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#7DA730] hover:bg-[#96C83A] text-white flex items-center justify-center`}
+                                                  >
+                                                    {isReschedule
+                                                      ? "Reschedule"
+                                                      : "Book Now"}
+                                                  </button>
+                                                </td>
+                                              );
+                                            }
+
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
                                               </td>
                                             );
-                                          }
+                                          })}
+                                        </tr>
+                                      );
+                                    })}
+                                  </tbody>
+
+                                  {/* ✅ Proper footer (aligned with table columns) */}
+                                  <tfoot className="bg-white sticky bottom-0 z-40">
+                                    <tr>
+                                      <td className="py-2 px-2 border border-border-color text-center font-semibold bg-[#DCDCDC] sticky left-0 z-50">
+                                        Date
+                                      </td>
+                                      {weekDates.map((date, index) => (
+                                        <td
+                                          key={index}
+                                          className="py-2 px-2 border border-border-color text-center text-xs font-semibold"
+                                        >
+                                          {date.toLocaleDateString("en-US", {
+                                            weekday: "short",
+                                          })}
+                                          ,{" "}
+                                          {date.toLocaleDateString("en-US", {
+                                            day: "numeric",
+                                            month: "short",
+                                          })}
+                                        </td>
+                                      ))}
+                                    </tr>
+                                  </tfoot>
+                                </table>
+                              </div>
+                            </div>
+
+                            {/* ✅ Mobile (one day view, no horizontal scroll) */}
+
+                            <div className="md:hidden">
+                              {(() => {
+                                const visibleDayIdx = [0, 1, 2, 3, 4, 5, 6];
+                                const formatMobileTime = (t) => {
+                                  const match = t.match(/^(\d+):(\d+)(AM|PM)$/);
+                                  if (!match) return t;
+
+                                  const [, hour, minute, period] = match;
+                                  return {hour: `${hour}.${minute}`, period};
+                                };
+                                return (
+                                  <div className="max-h-[75vh] overflow-y-auto">
+                                    <table className="w-full table-fixed border-separate border-spacing-0">
+                                      {/* ✅ force widths so it fits mobile without x-scroll */}
+                                      <colgroup>
+                                        <col style={{width: "35px"}} />
+                                        {visibleDayIdx.map((i) => (
+                                          <col
+                                            key={i}
+                                            style={{
+                                              width: `calc((100% - 35px) / ${visibleDayIdx.length})`,
+                                            }}
+                                          />
+                                        ))}
+                                      </colgroup>
+
+                                      <thead>
+                                        <tr>
+                                          <th className="w-5 py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
+                                            <div className="leading-tight">
+                                              <div>Time</div>
+                                              <span className="font-semibold opacity-80">
+                                                AEDT
+                                              </span>
+                                            </div>
+                                          </th>
+
+                                          {visibleDayIdx.map((dayIndex) => (
+                                            <th
+                                              key={dayIndex}
+                                              className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
+                                            >
+                                              <div className="leading-tight">
+                                                <div className="text-gray-900">
+                                                  {weekdays[dayIndex].slice(
+                                                    0,
+                                                    3,
+                                                  )}
+                                                </div>
+                                                <div className="text-gray-600 font-semibold">
+                                                  {weekDates[
+                                                    dayIndex
+                                                  ].toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                      day: "numeric",
+                                                      month: "short",
+                                                    },
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </th>
+                                          ))}
+                                        </tr>
+                                      </thead>
+
+                                      <tbody>
+                                        {times.map((time) => {
+                                          const hourLine =
+                                            isHourStart(time) &&
+                                            time !== times[0];
+                                          const topBorder = hourLine
+                                            ? "border-t border-t-black"
+                                            : "border-t border-t-gray-400 border-dashed";
 
                                           return (
-                                            <td
-                                              key={dayIndex}
-                                              className={tdClass}
+                                            <tr
+                                              key={time}
+                                              className="align-stretch"
                                             >
-                                              <div className="w-full h-full min-h-11 bg-[#eee]" />
-                                            </td>
+                                              <td
+                                                className={`w-5 py-2 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}
+                                              >
+                                                {(() => {
+                                                  const ft =
+                                                    formatMobileTime(time);
+                                                  if (!ft) return time;
+
+                                                  return (
+                                                    <div className="flex flex-col leading-tight">
+                                                      <span>{ft.hour}</span>
+                                                      <span className="text-[8px]">
+                                                        {ft.period}
+                                                      </span>
+                                                    </div>
+                                                  );
+                                                })()}
+                                              </td>
+
+                                              {visibleDayIdx.map((dayIndex) => {
+                                                const date =
+                                                  weekDates[dayIndex];
+                                                const dateKey = formatYMD(date);
+                                                const timeKey =
+                                                  normalizeTime(time);
+
+                                                const isBooked =
+                                                  bookedSlotsMap[
+                                                    `${dateKey}__${timeKey}`
+                                                  ];
+
+                                                const key = `${dateKey}__${normalizeTime(time)}`;
+                                                const slot = slotsMap[key];
+                                                const vis = slot
+                                                  ? getVisibility(slot)
+                                                  : "";
+
+                                                // cell container (tight like screenshot)
+                                                const cellClass = `p-0 border border-border-color ${topBorder}`;
+
+                                                if (isBooked) {
+                                                  return (
+                                                    <td
+                                                      key={dayIndex}
+                                                      className={cellClass}
+                                                    >
+                                                      <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[8px] font-bold">
+                                                        Booked
+                                                      </div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                if (
+                                                  !slot ||
+                                                  !slotMatchesLocation(slot) ||
+                                                  vis === "" ||
+                                                  vis === "hidden"
+                                                ) {
+                                                  return (
+                                                    <td
+                                                      key={dayIndex}
+                                                      className={cellClass}
+                                                    >
+                                                      <div className="w-full min-h-10 bg-[#eee]" />
+                                                    </td>
+                                                  );
+                                                }
+
+                                                if (vis === "publicNote") {
+                                                  return (
+                                                    <td
+                                                      key={dayIndex}
+                                                      className={cellClass}
+                                                    >
+                                                      <div className="w-full min-h-10 px-1 py-1 bg-[#FF9933] text-[8px] font-bold text-black flex items-center justify-center text-center wrap-break-word leading-tight">
+                                                        {slot.publicNote || ""}
+                                                      </div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                if (vis === "privateBooked") {
+                                                  return (
+                                                    <td
+                                                      key={dayIndex}
+                                                      className={cellClass}
+                                                    >
+                                                      <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[10px] font-bold">
+                                                        Booked
+                                                      </div>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                if (vis === "public") {
+                                                  return (
+                                                    <td
+                                                      key={dayIndex}
+                                                      className={cellClass}
+                                                    >
+                                                      <button
+                                                        onClick={async () => {
+                                                          if (isReschedule) {
+                                                            if (
+                                                              !rescheduleBooking
+                                                            ) {
+                                                              toast.error(
+                                                                "Booking info not loaded yet.",
+                                                              );
+                                                              return;
+                                                            }
+                                                            const newDateISO =
+                                                              date.toISOString();
+                                                            const newTime =
+                                                              time;
+                                                            await confirmReschedule(
+                                                              {
+                                                                bookingId,
+                                                                newDateISO,
+                                                                newTime,
+                                                              },
+                                                            );
+                                                            return;
+                                                          }
+
+                                                          handleBookNow(
+                                                            time,
+                                                            dayIndex,
+                                                            slot,
+                                                          );
+                                                        }}
+                                                        className="w-full min-h-10 bg-[#7DA730] hover:bg-[#96C83A] text-white text-[8px] font-bold flex items-center justify-center wrap-break-word"
+                                                      >
+                                                        {isReschedule
+                                                          ? "Confirm"
+                                                          : "Book Now"}
+                                                      </button>
+                                                    </td>
+                                                  );
+                                                }
+
+                                                return (
+                                                  <td
+                                                    key={dayIndex}
+                                                    className={cellClass}
+                                                  >
+                                                    <div className="w-full min-h-10 bg-[#eee]" />
+                                                  </td>
+                                                );
+                                              })}
+                                            </tr>
                                           );
                                         })}
-                                      </tr>
-                                    );
-                                  })}
-                                </tbody>
+                                      </tbody>
 
-                                {/* ✅ Proper footer (aligned with table columns) */}
-                                <tfoot className="bg-white sticky bottom-0 z-40">
-                                  <tr>
-                                    <td className="py-2 px-2 border border-border-color text-center font-semibold bg-[#DCDCDC] sticky left-0 z-50">
-                                      Date
-                                    </td>
-                                    {weekDates.map((date, index) => (
-                                      <td
-                                        key={index}
-                                        className="py-2 px-2 border border-border-color text-center text-xs font-semibold"
-                                      >
-                                        {date.toLocaleDateString("en-US", {
-                                          weekday: "short",
-                                        })}
-                                        ,{" "}
-                                        {date.toLocaleDateString("en-US", {
-                                          day: "numeric",
-                                          month: "short",
-                                        })}
-                                      </td>
-                                    ))}
-                                  </tr>
-                                </tfoot>
-                              </table>
+                                      {/* ✅ Footer aligned with same columns */}
+                                      <tfoot className="sticky bottom-0 z-30 bg-white">
+                                        <tr>
+                                          <td className="py-2 px-1 border border-border-color text-center text-[10px] font-bold bg-[#DCDCDC] sticky left-0 z-40">
+                                            Date
+                                          </td>
+
+                                          {visibleDayIdx.map((dayIndex) => (
+                                            <td
+                                              key={dayIndex}
+                                              className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold"
+                                            >
+                                              {weekDates[
+                                                dayIndex
+                                              ].toLocaleDateString("en-US", {
+                                                weekday: "short",
+                                              })}
+                                            </td>
+                                          ))}
+                                        </tr>
+                                      </tfoot>
+                                    </table>
+                                  </div>
+                                );
+                              })()}
                             </div>
                           </div>
-
-                          {/* ✅ Mobile (one day view, no horizontal scroll) */}
-                         
-<div className="md:hidden">
- 
-  {(() => {
-    const visibleDayIdx = [0, 1, 2,3, 4, 5, 6]; 
-const formatMobileTime = (t) => {
-  const match = t.match(/^(\d+):(\d+)(AM|PM)$/);
-  if (!match) return t;
-
-  const [, hour, minute, period] = match;
-  return { hour: `${hour}.${minute}`, period };
-};
-    return (
-      <div className="max-h-[75vh] overflow-y-auto">
-        <table className="w-full table-fixed border-separate border-spacing-0">
-          {/* ✅ force widths so it fits mobile without x-scroll */}
-          <colgroup>
-  <col style={{ width: "35px" }} />
-  {visibleDayIdx.map((i) => (
-    <col
-      key={i}
-      style={{ width: `calc((100% - 35px) / ${visibleDayIdx.length})` }}
-    />
-  ))}
-</colgroup>
-
-          <thead>
-            <tr>
-              <th className="w-5 py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
-                <div className="leading-tight">
-                  <div>Time</div>
-                  <span className="font-semibold opacity-80">AEDT</span>
-                </div>
-              </th>
-
-              {visibleDayIdx.map((dayIndex) => (
-                <th
-                  key={dayIndex}
-                  className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
-                >
-                  <div className="leading-tight">
-  <div className="text-gray-900">{weekdays[dayIndex].slice(0, 3)}</div>
-  <div className="text-gray-600 font-semibold">
-    {weekDates[dayIndex].toLocaleDateString("en-US", {
-      day: "numeric",
-      month: "short",
-    })}
-  </div>
-</div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {times.map((time) => {
-              const hourLine = isHourStart(time) && time !== times[0];
-              const topBorder = hourLine
-                ? "border-t border-t-black"
-                : "border-t border-t-gray-400 border-dashed";
-
-              return (
-                <tr key={time} className="align-stretch">
-                  <td
-                    className={`w-5 py-2 px-0.5 text-center whitespace-nowrap text-[10px] font-bold text-gray-900 sticky left-0 bg-[#DCDCDC] z-20 border border-border-color ${topBorder}`}
-                  >
-                  {(() => {
-  const ft = formatMobileTime(time);
-  if (!ft) return time;
-
-  return (
-    <div className="flex flex-col leading-tight">
-      <span>{ft.hour}</span>
-      <span className="text-[8px]">{ft.period}</span>
-    </div>
-  );
-})()}
-                  </td>
-
-                  {visibleDayIdx.map((dayIndex) => {
-                    const date = weekDates[dayIndex];
-                    const dateKey = formatYMD(date);
-                    const timeKey = normalizeTime(time);
-
-                    const isBooked = bookedSlotsMap[`${dateKey}__${timeKey}`];
-
-                    const key = `${dateKey}__${normalizeTime(time)}`;
-                    const slot = slotsMap[key];
-                    const vis = slot ? getVisibility(slot) : "";
-
-                    // cell container (tight like screenshot)
-                    const cellClass = `p-0 border border-border-color ${topBorder}`;
-
-                    if (isBooked) {
-                      return (
-                        <td key={dayIndex} className={cellClass}>
-                          <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[8px] font-bold">
-                            Booked
-                          </div>
-                        </td>
-                      );
-                    }
-
-                    if (!slot || !slotMatchesLocation(slot) || vis === "" || vis === "hidden") {
-                      return (
-                        <td key={dayIndex} className={cellClass}>
-                          <div className="w-full min-h-10 bg-[#eee]" />
-                        </td>
-                      );
-                    }
-
-                    if (vis === "publicNote") {
-                      return (
-                        <td key={dayIndex} className={cellClass}>
-                          <div className="w-full min-h-10 px-1 py-1 bg-[#FF9933] text-[8px] font-bold text-black flex items-center justify-center text-center wrap-break-word leading-tight">
-                            {slot.publicNote || ""}
-                          </div>
-                        </td>
-                      );
-                    }
-
-                    if (vis === "privateBooked") {
-                      return (
-                        <td key={dayIndex} className={cellClass}>
-                          <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[10px] font-bold">
-                            Booked
-                          </div>
-                        </td>
-                      );
-                    }
-
-                    if (vis === "public") {
-                      return (
-                        <td key={dayIndex} className={cellClass}>
-                          <button
-                            onClick={async () => {
-                              if (isReschedule) {
-                                if (!rescheduleBooking) {
-                                  toast.error("Booking info not loaded yet.");
-                                  return;
-                                }
-                                const newDateISO = date.toISOString();
-                                const newTime = time;
-                                await confirmReschedule({bookingId, newDateISO, newTime});
-                                return;
-                              }
-
-                              handleBookNow(time, dayIndex, slot);
-                            }}
-                            className="w-full min-h-10 bg-[#7DA730] hover:bg-[#96C83A] text-white text-[8px] font-bold flex items-center justify-center wrap-break-word"
-                          >
-                       {isReschedule?"Confirm":"Book Now"}
-                          </button>
-                        </td>
-                      );
-                    }
-
-                    return (
-                      <td key={dayIndex} className={cellClass}>
-                        <div className="w-full min-h-10 bg-[#eee]" />
-                      </td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-
-          {/* ✅ Footer aligned with same columns */}
-          <tfoot className="sticky bottom-0 z-30 bg-white">
-            <tr>
-              <td className="py-2 px-1 border border-border-color text-center text-[10px] font-bold bg-[#DCDCDC] sticky left-0 z-40">
-                Date
-              </td>
-
-              {visibleDayIdx.map((dayIndex) => (
-                <td
-                  key={dayIndex}
-                  className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold"
-                >
-                  {weekDates[dayIndex].toLocaleDateString("en-US", {
-                    weekday: "short",
-                  })}
-                </td>
-              ))}
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    );
-  })()}
-</div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
-              )
-            )}
+                )
+              )}
 
-            {/* Footer Info */}
-            <div className="mt-8 text-center text-sm text-gray-500">
-              <p>
-                Note: All bookings are subject to instructor availability.
-                You&apos;ll receive a confirmation email within 24 hours.
-              </p>
-              <p className="mt-2">
-                Need help? Contact us at testroutedrivingschool@gmail.com or
-                call
-                <a
-                  href="tel:61412018593"
-                  className="px-1 rounded-lg  font-bold "
-                >
-                  <span>0412 018 593</span>
-                </a>
-              </p>
+              {/* Footer Info */}
+              <div className="mt-8 text-center text-sm text-gray-500">
+                <p>
+                  Note: All bookings are subject to instructor availability.
+                  You&apos;ll receive a confirmation email within 24 hours.
+                </p>
+                <p className="mt-2">
+                  Need help? Contact us at testroutedrivingschool@gmail.com or
+                  call
+                  <a
+                    href="tel:61412018593"
+                    className="px-1 rounded-lg  font-bold "
+                  >
+                    <span>0412 018 593</span>
+                  </a>
+                </p>
+              </div>
             </div>
-          </div>
-        </Container>
+          </Container>
+        </SuspenseWrapper>
       </section>
 
       {showLocationModal && (
