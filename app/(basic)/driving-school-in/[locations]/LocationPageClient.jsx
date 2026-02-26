@@ -215,7 +215,7 @@ const formattedLocation = slug
             <p className="text-blue-100 mb-6 md:max-w-2xl mx-auto">
               {locationData.ctaDescription
                 ? locationData.ctaDescription
-                : "Start your driving journey today with Test Route Driving School in Carlton. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
+                : "Start your driving journey today with Test Route Driving School. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
             </p>
             <div className="flex gap-2 justify-center">
               <SecondaryBtn className={`text-xs! md:text-lg! px-2! md:px-4!`} onClick={() => router.push("/bookings")}>
