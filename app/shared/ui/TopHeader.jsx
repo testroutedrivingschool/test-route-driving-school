@@ -27,9 +27,7 @@ export default function TopHeader() {
     };
   }, []);
 
-  if (isLoading) {
-    return <LoadingSpinner />;
-  }
+ 
   return (
     <div className="bg-primary text-white py-2 w-full">
       <Container className="flex items-center justify-between">

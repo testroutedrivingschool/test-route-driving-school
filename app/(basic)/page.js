@@ -8,7 +8,6 @@ import {
 } from "react-icons/fa";
 import Faq from "../shared/FaqSection";
 import MovingCar from "../shared/MovingCar";
-import BlogSection from "./components/Blogs/BlogSection";
 import DrivingTestAssessment from "./components/Home/DrivingTestAssessment";
 import DrivingTestPackage from "./components/Home/DrivingTestPackage";
 import DrivingTipsSection from "./components/Home/DrivingTipsSection";
@@ -26,6 +25,7 @@ import WhatWeOffer from "./components/Home/WhatWeOffer";
 import WhyChooseUs from "./components/Home/WhyChooseUs";
 import Link from "next/link";
 import HomeMap from "../shared/ui/HomeMap";
+import BlogSection from "./blogs/components/BlogSection";
 
 export const metadata = {
   title:
@@ -211,7 +211,7 @@ export default function Home() {
         }
       />
       <Faq faqs={faqs} />
-         <HomeMap/>
+      <HomeMap />
     </>
   );
 }

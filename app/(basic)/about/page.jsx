@@ -205,16 +205,13 @@ export default function About() {
       />
       <section className="pt-16 ">
         <Container>
-          {/* Header */}
           <SectionHeader
             title="About Test Route Driving School"
             subtitle="Your trusted partner in driver education since 2012"
             className="mt-0! mb-4"
           />
 
-          {/* Main Section: Image + Intro Content */}
-          <section className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12 mb-12">
-            {/* Image Section */}
+          <section className="flex flex-col lg:flex-row items-center gap-10 lg:gap-12 mb-12 ">
             <div className="lg:w-1/2 w-full relative">
               <div className="relative rounded-2xl overflow-hidden shadow-xl">
                 <Image
@@ -226,8 +223,8 @@ export default function About() {
                 />
               </div>
 
-              {/* Floating Element */}
-              <div className="absolute -bottom-4 -right-4 bg-white p-4 rounded-xl shadow-lg border border-border-color">
+          
+              <div className="absolute -bottom-4 right-0 md:-right-2 bg-white p-4 rounded-xl shadow-lg border border-border-color">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-green-100 text-green-600 rounded-lg">
                     <FaUsers className="text-xl" />
@@ -242,7 +239,7 @@ export default function About() {
               </div>
             </div>
 
-            {/* Content Section */}
+     
             <div className="lg:w-1/2 w-full space-y-6">
               <div>
                 <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -291,7 +288,7 @@ export default function About() {
             </div>
           </section>
 
-          {/* Features Section */}
+        
           <section className="grid grid-cols-2 gap-4 mt-6 mb-12">
             {features.map((feature, index) => (
               <div
@@ -315,7 +312,7 @@ export default function About() {
         <section className="py-16 bg-base-300">
           <Container>
             <div className="flex flex-col md:flex-row gap-5 md:gap-10 items-center ">
-              {/* Text Content */}
+           
               <div className="flex-1 space-y-6 ">
                 <h2 className="text-2xl lg:text-4xl font-bold ">
                   Professional Driving School You{" "}
@@ -357,7 +354,7 @@ export default function About() {
                 </p>
               </div>
 
-              {/* Image Content */}
+            
               <div className="flex-1">
                 <div className="rounded-xl overflow-hidden shadow-xl">
                   <Image

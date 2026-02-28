@@ -1,55 +1,17 @@
 "use client";
-import blogImg1 from "@/app/assets/blog/blog1.png";
-import blogImg16 from "@/app/assets/car-hire.jpg";
-import blogImg17 from "@/app/assets/blog/blog17.jpg";
-import blogImg18 from "@/app/assets/blog/blog18.jpg";
+
 import Link from "next/link";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import Image from "next/image";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import {usePathname, useRouter} from "next/navigation";
-const blogsData = [
-  {
-    id: 1,
-    title: "How to Pass the Driving Test in NSW",
-    slug: "blog/how-to-pass-the-driving-test-in-nsw",
-    excerpt:
-      "Learn how to pass the driving test in NSW on your first try with expert tips from certified instructors. Avoid common failures and book your lesson today for guaranteed confidence.",
-    image: blogImg1,
-    link: "#",
-  },
-  {
-    id: 16,
-    title: "5 Essential Driving Tips for Beginners",
-    slug: "blogs/5-essential-driving-tips-for-beginners",
-    excerpt:
-      "Learn the most important driving habits that will keep you safe and confident on the road.",
-    image: blogImg16,
-    link: "#",
-  },
-  {
-    id: 17,
-    title: "How to Master Parallel Parking",
-    slug: "blogs/how-to-master-parallel-parking",
-    excerpt:
-      "Step-by-step guide to improve your parking skills and avoid common mistakes.",
-    image: blogImg17,
-    link: "#",
-  },
-  {
-    id: 18,
-    title: "Manual vs Automatic Cars: Which to Choose?",
-    slug: "blogs/manual-vs-automatic-cars-which-to-choose",
-    excerpt:
-      "Pros and cons of manual and automatic cars to help you make the right decision.",
-    image: blogImg18,
-    link: "#",
-  },
-];
+import { blogsData } from "../blogsData";
+
 export default function BlogSection({sectionTitle, sectionSubTitle}) {
   const router = useRouter();
   const pathname = usePathname();
+  const blogs = blogsData??[];
   return (
     <section className="py-16">
       <Container>
@@ -86,7 +48,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
         {/* Blog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {pathname !== "/blogs"
-            ? blogsData.slice(0, 3).map((blog) => (
+            ? blogs.slice(0, 3).map((blog) => (
                 <div
                   key={blog.id}
                   className="border border-border-color rounded-xl overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full"
@@ -117,7 +79,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                   </div>
                 </div>
               ))
-            : blogsData.map((blog) => (
+            : blogs.map((blog) => (
                 <div
                   key={blog.id}
                   className="border border-border-color rounded-xl overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full"
@@ -127,7 +89,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                     alt={blog.title}
                     width={800}
                     height={800}
-                    className="w-full h-55 md:h-50 object-cover object-center"
+                    className="w-full h-55 md:h-55 object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
                     <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>

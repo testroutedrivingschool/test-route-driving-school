@@ -11,7 +11,7 @@ import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import { addToCartLS } from "@/app/utils/cart";
-import Skeleton from "@/app/shared/ui/Skelton";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
 export default function PackageDetails() {
   
@@ -33,7 +33,7 @@ export default function PackageDetails() {
     router.push("/cart");
   };
   if (isLoading) {
-    return <Skeleton />;
+    return <LoadingSpinner />;
   }
 
   if (!singlePackage) {

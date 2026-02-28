@@ -74,7 +74,7 @@ const formattedLocation = slug
         </Container>
       </section>
 
-      <section className="py-16">
+      <section className="pb-10 md:py-16">
         <Container>
           <div className="flex flex-col-reverse lg:flex-row items-center gap-10 ">
             <div className="w-full lg:w-auto flex-1 ">
@@ -211,18 +211,18 @@ const formattedLocation = slug
         <Container>
           {/* CTA Section */}
           <div className=" bg-primary rounded-xl p-8 text-white text-center">
-            <h3 className="text-2xl font-bold mb-4">Start Your Driving Journey Today</h3>
-            <p className="text-blue-100 mb-6 md:max-w-2xl mx-auto">
+            <h3 className="text-xl md:text-2xl font-bold mb-4">Start Your Driving Journey Today</h3>
+            <p className="text-blue-100 mb-4 md:max-w-2xl mx-auto text-sm md:text-base">
               {locationData.ctaDescription
                 ? locationData.ctaDescription
                 : "Start your driving journey today with Test Route Driving School. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
             </p>
             <div className="flex gap-2 justify-center">
-              <SecondaryBtn className={`text-xs! md:text-lg! px-2! md:px-4!`} onClick={() => router.push("/bookings")}>
+              <SecondaryBtn className={`text-sm! md:text-lg! px-2! md:px-4!`} onClick={() => router.push("/bookings")}>
                 Book Now
               </SecondaryBtn>
               <OutlineBtn
-                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! py-1 md:py-1.5 px-2! md:px-4!`}
+                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-sm! md:text-lg! py-1! md:py-1.5 px-2! md:px-4!`}
               >
                 <a
                   href="tel:61412018593"
@@ -233,7 +233,7 @@ const formattedLocation = slug
                 </a>
               </OutlineBtn>
               <OutlineBtn
-                className={`border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! px-2! md:px-4!`}
+                className={`hidden md:block border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! px-2! md:px-4!`}
               >
                 <a
                   href="mailto:testroutedrivingschool@gmail.com"

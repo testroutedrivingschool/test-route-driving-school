@@ -121,7 +121,6 @@ const mapUrls = {
     heroTitle: `Driving Lessons in ${loc}  –  Book Today`,
     heroDescription: (
       <>
-      
         Local knowledge makes all the difference here. Our
         <Link
           href={`/services/automatic-driving-lessons`}
@@ -154,9 +153,7 @@ const mapUrls = {
       </>
     ),
     section1Features: [
-      <>
-        Expert <strong>driving school in {loc}, NSW.</strong>
-      </>,
+      "Expert driving school",
       `High first-time test pass rates.`,
       `Flexible booking for busy students.`,
       `Safe, modern dual-controlled training vehicles.`,
@@ -178,10 +175,10 @@ const mapUrls = {
       </>
     ),
     section2Features: [
-      <>Professional Automatic Driving Lessons Rockdale.</>,
-      <>Comprehensive Highway Package Hurstville.</>,
-      <>Local City Driving Package Bexley.</>,
-      <>Specialized Night Driving Lesson Carlton.</>,
+      "Professional Automatic Driving Lessons Rockdale.",
+      "Comprehensive Highway Package Hurstville.",
+      "Local City Driving Package Bexley.",
+      "Specialized Night Driving Lesson Carlton.",
     ],
     section3Title1: `Local Road and Intersection Driving Training in ${loc}`,
     section3Description1: (

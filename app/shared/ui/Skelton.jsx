@@ -1,12 +1,21 @@
 import React from "react";
 
-// Skeleton Spinner Component
-const Skeleton = ({ className = "", size = "h-8 w-8" }) => {
+const SkeletonBlock = ({ className = "" }) => {
   return (
     <div
-      className={`animate-spin rounded-full bg-gray-200 ${size} ${className}`}
+      className={`
+        relative overflow-hidden bg-gray-200 rounded-md
+        before:absolute before:inset-0
+        before:-translate-x-full
+        before:animate-[shimmer_1.4s_infinite]
+        before:bg-linear-to-r
+        before:from-transparent
+        before:via-white/60
+        before:to-transparent
+        ${className}
+      `}
     />
   );
 };
 
-export default Skeleton;
+export default SkeletonBlock;

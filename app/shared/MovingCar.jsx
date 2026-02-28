@@ -26,7 +26,6 @@ export default function MovingCar({ className }) {
           alt="Car"
           width={120}
           height={60}
-          priority
         />
       </div>
     </div>

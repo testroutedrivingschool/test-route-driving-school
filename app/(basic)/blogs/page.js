@@ -1,7 +1,7 @@
 "use client";
 
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
-import BlogSection from "../components/Blogs/BlogSection";
+import BlogSection from "./components/BlogSection";
 import HomeMap from "@/app/shared/ui/HomeMap";
 
 export default function Blogs() {
@@ -13,7 +13,7 @@ export default function Blogs() {
       />
 
       <BlogSection />
-          <HomeMap/>
+      <HomeMap />
     </>
   );
 }

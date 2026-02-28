@@ -1,12 +1,16 @@
+// GlobalLoading.jsx
 import React from "react";
 
-// Skeleton Spinner Component
-const Skeleton = ({ className = "", size = "h-8 w-8" }) => {
+const GlobalLoading = ({ className = "" }) => {
   return (
-    <div
-      className={`animate-spin rounded-full bg-gray-200 ${size} ${className}`}
-    />
+    <div className={`w-full flex items-center justify-center py-20 min-h-screen ${className}`}>
+      <div className="flex space-x-2">
+        <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
+        <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
+        <div className="h-4 w-4 bg-primary rounded-full animate-bounce" />
+      </div>
+    </div>
   );
 };
 
-export default Skeleton;
+export default GlobalLoading;
