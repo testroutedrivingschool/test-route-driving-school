@@ -1,9 +1,9 @@
 "use client";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import React from "react";
-import blogImg1 from "@/app/assets/car-hire.jpg";
-import blogImg2 from "@/app/assets/blog2.jpg";
-import blogImg3 from "@/app/assets/blog3.jpg";
+import blogImg16 from "@/app/assets/car-hire.jpg";
+import blogImg17 from "@/app/assets/blog/blog17.jpg";
+import blogImg18 from "@/app/assets/blog/blog18.jpg";
 import {useParams, useRouter} from "next/navigation";
 import Image from "next/image";
 import Container from "@/app/shared/ui/Container";
@@ -30,7 +30,7 @@ const blogs = [
       },
       `By practicing these tips consistently, you’ll develop the skills and confidence needed to become a safe and responsible driver. Remember, driving is a lifelong learning process, and continuous practice is key to improvement.`,
     ],
-    image: blogImg1,
+    image: blogImg16,
   },
   {
     id: 2,
@@ -52,7 +52,7 @@ const blogs = [
       },
       `Regular practice in different parking situations will make this process easier. Remember, patience and slow movements are the key to perfect parallel parking.`,
     ],
-    image: blogImg2,
+    image: blogImg17,
   },
   {
     id: 3,
@@ -76,7 +76,7 @@ const blogs = [
       `When deciding, consider your driving environment, budget, and long-term goals. If you plan to drive in congested city areas, an automatic may be more comfortable. If you enjoy more control and want to save on initial costs, a manual car could be ideal.`,
       `Ultimately, understanding the pros and cons of each type helps you make an informed decision and ensures a smooth and enjoyable driving experience.`,
     ],
-    image: blogImg3,
+    image: blogImg18,
   },
 ];
 

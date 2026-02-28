@@ -25,8 +25,14 @@ function invoiceHtml(data, logoUrl) {
   const paidLabel = isPaid ? "PAID IN FULL" : "UNPAID";
 
   const total = Number(String(data.price ?? 0).replace(/[^\d.-]/g, "")) || 0;
-  const isBooking = data?.type === "BOOKINGS_CONFIRM";
-  const isPurchase = data?.type === "PURCHASE_CONFIRM";  // Added check for PURCHASE_CONFIRM
+  // const isBooking = data?.type === "BOOKINGS_CONFIRM";
+  // const isPurchase = data?.type === "PURCHASE_CONFIRM";  
+
+  const hasPackages = Array.isArray(data?.packages) && data.packages.length > 0;
+const isPurchase = String(data?.type || "").toUpperCase() === "PURCHASE_CONFIRM" || hasPackages;
+const isBooking = !isPurchase;
+
+
 
   const bookingTime = String(safe(data.bookingTime)).trim();
 

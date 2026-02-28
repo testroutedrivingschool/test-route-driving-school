@@ -42,6 +42,10 @@ export async function clientsCollection() {
   const db = await getDb();
   return db.collection("clients");
 }
+export async function organisationsCollection() {
+  const db = await getDb();
+  return db.collection("organizations");
+}
 export async function clientsChecklistsCollection() {
   const db = await getDb();
   return db.collection("client_checklists");

@@ -217,11 +217,11 @@ const handleMenuClick = async (key) => {
     try {
       setSaving(true);
 
-      const toEmail =
-        booking?.clientEmail ||
-        booking?.email ||
-        booking?.client?.email;
-
+    const toEmail =
+  booking?.userEmail ||          
+  booking?.clientEmail ||
+  booking?.email ||
+  booking?.client?.email;
       if (!toEmail) {
         toast.error("Client email not found");
         return;
@@ -324,7 +324,12 @@ const sendInvoiceNoteEmail = async () => {
   try {
     setSaving(true);
 
-    const toEmail = booking?.clientEmail || booking?.email || booking?.client?.email;
+  const toEmail =
+  booking?.userEmail ||          
+  booking?.clientEmail ||
+  booking?.email ||
+  booking?.client?.email;
+  console.log("EMAIL INVOICE TO:", toEmail, "invoiceNo:", booking?.invoiceNo, "invoiceKey:", booking?.invoiceKey);
     if (!toEmail) {
       toast.error("Client email not found");
       return;

@@ -133,7 +133,6 @@ export default function SalesSearch() {
             : row.createdAt
               ? new Date(row.createdAt).toLocaleString("en-AU")
               : "—";
-
        const typeLabel =
   row.source === "purchase"
     ? "Package Purchase"

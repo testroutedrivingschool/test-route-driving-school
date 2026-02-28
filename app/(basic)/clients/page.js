@@ -11,12 +11,13 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { FaBars } from "react-icons/fa";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-
+import AddOrganisation from "./components/AddOrganisation";
 export default function Clients() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState("client-search");
+ const tabFromUrl = searchParams.get("tab");
+ const [activeTab, setActiveTab] = useState(tabFromUrl || "client-search");
   const [selectedClient, setSelectedClient] = useState(null);
   const [loadingClient, setLoadingClient] = useState(false);
 
@@ -58,7 +59,20 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     };
     
   }, [clientIdFromUrl,router,selectedClient?._id]);
+useEffect(() => {
+  if (!tabFromUrl) return;
+  setActiveTab(tabFromUrl);
+}, [tabFromUrl]);
 
+const goTab = (tab) => {
+  setActiveTab(tab);
+
+  // keep clientId if it exists
+  const params = new URLSearchParams(searchParams.toString());
+  params.set("tab", tab);
+
+  router.push(`/clients?${params.toString()}`);
+};
   const openClientDetails = (client) => {
     setSelectedClient(client);
     setActiveTab("client-details");
@@ -109,7 +123,6 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
         >
           Organisations
         </button>
-
         <button
           type="button"
           onClick={() => {
@@ -120,6 +133,18 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
         >
           Add Client
         </button>
+{activeTab === "organisations" && (
+  <button
+    type="button"
+    onClick={() => {
+      goTab("add-organisation");
+      setMobileMenuOpen(false);
+    }}
+    className="block w-full text-left py-2"
+  >
+    Add Organisation
+  </button>
+)}
 
         {/* ✅ only show these when selectedClient exists */}
         {selectedClient && (
@@ -191,6 +216,13 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                   onClick={() => setActiveTab("add-client")}
                 />
 
+               {activeTab === "organisations" && (
+  <TabButton
+    label="Add Organisation"
+    active={activeTab === "add-organisation"}
+    onClick={() => goTab("add-organisation")}
+  />
+)}
                 {/* ✅ only show when selected */}
                 {selectedClient && (
                   <>
@@ -215,9 +247,7 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
                     <TabButton
                       label="Book Now"
                       onClick={() =>
-                        router.push(
-                          `/instructor-bookings`
-                        )
+                        router.push(`/instructor-bookings?rebookClientId=${selectedClient._id}`)
                       }
                     />
                   </>
@@ -237,12 +267,18 @@ const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
             {activeTab === "add-client" && <AddClients />}
 
-            {activeTab === "organisations" && <Organisations />}
+          
 
             {activeTab === "client-details" && selectedClient && (
               <ClientDetails client={selectedClient} onBack={backToSearch} />
             )}
+{activeTab === "organisations" && (
+<Organisations onAddOrganisation={() => goTab("add-organisation")} />
+)}
 
+{activeTab === "add-organisation" && (
+  <AddOrganisation onBack={() => goTab("organisations")} />
+)}
             {loadingClient && !selectedClient ? <LoadingSpinner/>: null}
           </main>
         </div>

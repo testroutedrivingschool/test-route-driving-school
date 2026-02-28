@@ -1,6 +1,10 @@
 "use client";
 
+import { useUserData } from "@/app/hooks/useUserData";
 import Container from "@/app/shared/ui/Container";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import {
   LineChart,
   Line,
@@ -14,39 +18,7 @@ import {
 
 
 
-const websiteData = [
-  { name: "Dec", webSales: 25, webBookings: 0 },
-  { name: "Jan", webSales: 45, webBookings: 0 },
-  { name: "Feb", webSales: 31, webBookings: 0 },
-  { name: "Mar", webSales: 33, webBookings: 0 },
-  { name: "Apr", webSales: 24, webBookings: 0 },
-  { name: "May", webSales: 23, webBookings: 0 },
-  { name: "Jun", webSales: 19, webBookings: 0 },
-  { name: "Jul", webSales: 27, webBookings: 1 },
-  { name: "Aug", webSales: 25, webBookings: 18 },
-  { name: "Sep", webSales: 35, webBookings: 40 },
-  { name: "Oct", webSales: 27, webBookings: 20 },
-  { name: "Nov", webSales: 39, webBookings: 28 },
-  { name: "Dec", webSales: 30, webBookings: 32 },
-  { name: "Jan", webSales: 22, webBookings: 35 },
-];
 
-const bookingData = [
-  { name: "Dec", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Jan", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Feb", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Mar", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Apr", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "May", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Jun", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Jul", bookings: 0, attended: 0, cancelled: 0, unattended: 0 },
-  { name: "Aug", bookings: 40, attended: 38, cancelled: 2, unattended: 0 },
-  { name: "Sep", bookings: 90, attended: 82, cancelled: 8, unattended: 0 },
-  { name: "Oct", bookings: 50, attended: 42, cancelled: 7, unattended: 1 },
-  { name: "Nov", bookings: 85, attended: 72, cancelled: 11, unattended: 2 },
-  { name: "Dec", bookings: 70, attended: 58, cancelled: 12, unattended: 0 },
-  { name: "Jan", bookings: 100, attended: 90, cancelled: 8, unattended: 2 },
-];
 
 function Card({ title, children }) {
   return (
@@ -69,60 +41,98 @@ function StatRow({ label, value, labelClass = "", valueClass = "" }) {
 }
 
 export default function InstructorReportPage() {
+  const { data: user } = useUserData();
+    const instructorEmail = user?.email; // or user?.instructorEmail
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["instructorStats", instructorEmail],
+    enabled: !!instructorEmail,
+    queryFn: async () => {
+      const res = await axios.get(
+        `/api/stats/instructor-stats?instructorEmail=${encodeURIComponent(instructorEmail)}`
+      );
+      return res.data;
+    },
+  });
+  // put this near top (inside component)
+
+  const websiteData = data?.websiteActivity || [];
+  const bookingData = data?.bookingActivity || [];
+  const monthStats = data?.monthStats;
+  const generalStats = data?.generalStats;
+  const monthTitle = (() => {
+  const ym = monthStats?.month; 
+  if (!ym) return "Monthly Statistics";
+  const [y, m] = ym.split("-").map(Number);
+  const d = new Date(y, m - 1, 1);
+  return d.toLocaleString("en-AU", { month: "long" }); 
+})();
+  console.log(websiteData);
+  console.log(bookingData);
+  if (isLoading) return <LoadingSpinner/>;
   return (
     <section className="py-8">
       <Container>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
           {/* Website Activity */}
-          <Card title="Website Activity">
-            <div className="h-80 ">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={websiteData}  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                                    <Legend
-  verticalAlign="bottom"
-  align="center"
-  wrapperStyle={{
-    paddingTop: 20,
-    fontSize: 15,
-    lineHeight: "16px",
+        <Card title="Sales & Website Activity">
+  <div className="h-80  min-w-0 w-full">
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={websiteData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" />
+      <XAxis
+  dataKey="key"
+  tickFormatter={(v) => websiteData.find(x => x.key === v)?.name || v}
+/>
+        <YAxis />
+        <Tooltip
+  labelFormatter={(key) => {
+    const row = websiteData.find(x => x.key === key);
+    return row ? `${row.name} (${row.key})` : key;
+  }}
+  formatter={(value, name) => {
+    // Only add $ for sales fields
+    if (name.includes("Sales")) {
+      return [`$${Number(value).toLocaleString()}`, name];
+    }
+
+    return [value, name];
   }}
 />
+        <Legend verticalAlign="bottom" align="center" wrapperStyle={{ paddingTop: 20, fontSize: 15, lineHeight: "16px" }} />
 
-                <Line
-  type="monotone"
-  dataKey="webBookings"
-  stroke="#16a34a"    
-  strokeWidth={3}
-  dot={false}
-  name="Web Bookings"
-/>
-<Line
-  type="monotone"
-  dataKey="webSales"
-  stroke="#2563eb"  
-  strokeWidth={3}
-  dot={false}
-  name="Web Sales"
-/>
+        {/* bookings */}
+        <Line type="monotone" dataKey="webBookings" stroke="#16a34a" strokeWidth={3} dot={false} name="Web Bookings" />
+        <Line type="monotone" dataKey="manualBookings" stroke="#ea580c" strokeWidth={3} dot={false} name="Manual Bookings" />
 
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
+        {/* sales */}
+        <Line type="monotone" dataKey="webSales" stroke="#2563eb" strokeWidth={3} dot={false} name="Web Sales" />
+        <Line type="monotone" dataKey="manualSales" stroke="#7c3aed" strokeWidth={3} dot={false} name="Manual Sales" />
+
+        {/* optional total */}
+        <Line type="monotone" dataKey="totalSales" stroke="#111827" strokeWidth={3} dot={false} name="Total Sales" />
+      </LineChart>
+    </ResponsiveContainer>
+  </div>
+</Card>
 
           {/* Booking Activity */}
           <Card title="Booking Activity">
-            <div className="h-80">
+            <div className="h-80  min-w-0 w-full">
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={bookingData}  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
+                 <XAxis
+  dataKey="key"
+  tickFormatter={(v) => bookingData.find(x => x.key === v)?.name || v}
+/>
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+  labelFormatter={(key) => {
+    const row = bookingData.find(x => x.key === key);
+    return row ? `${row.name} (${row.key})` : key;
+  }}
+/>
                   <Legend
   verticalAlign="bottom"
   align="center"
@@ -179,17 +189,17 @@ export default function InstructorReportPage() {
   <div className="bg-white border border-border-color rounded-xl p-6 shadow-sm">
     <div className="flex items-center justify-center gap-2 mb-4">
       <span className="text-xl">📊</span>
-      <h3 className="text-lg font-bold text-gray-900">January Statistics</h3>
+      <h3 className="text-lg font-bold text-gray-900">  {monthTitle} Statistics</h3>
     </div>
 
     <div className="border-t border-border-color my-4" />
 
     <div className="space-y-6 text-base">
-      <StatRow label="Active Bookings:" value="896" />
-      <StatRow label="Booked Clients:" value="384" />
-      <StatRow label="Paid Bookings:" value="762" />
-      <StatRow label="Cancelled Bookings:" value="116" />
-      <StatRow label="Unattended Bookings:" value="0" />
+<StatRow label="Active Bookings:" value={monthStats?.activeBookings ?? 0} />
+<StatRow label="Booked Clients:" value={monthStats?.bookedClients ?? 0} />
+<StatRow label="Paid Bookings:" value={monthStats?.paidBookings ?? 0} />
+<StatRow label="Cancelled Bookings:" value={monthStats?.cancelledBookings ?? 0} />
+<StatRow label="Unattended Bookings:" value={monthStats?.unattendedBookings ?? 0} />
     </div>
   </div>
 
@@ -205,45 +215,19 @@ export default function InstructorReportPage() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6 text-base">
       {/* Left column */}
       <div className="space-y-6">
-        <StatRow label="Booked Clients:" value="8,973" />
-        <StatRow label="Total Bookings:" value="1,012" />
-        <StatRow
-          label="Web Bookings:"
-          value="9,628"
-          valueClass="text-primary"
-          labelClass="text-primary"
-        />
-        <StatRow
-          label="New Web Clients:"
-          value="3,205"
-          valueClass="text-primary"
-          labelClass="text-primary"
-        />
-        <StatRow
-          label="Clients with Web Accounts:"
-          value="4,093"
-          valueClass="text-primary"
-          labelClass="text-primary"
-        />
+        <StatRow label="Booked Clients:" value={generalStats?.bookedClients ?? 0} />
+<StatRow label="Total Bookings:" value={generalStats?.totalBookings ?? 0} />
+<StatRow label="Web Bookings:" value={generalStats?.webBookings ?? 0} />
+<StatRow label="Paid Bookings:" value={generalStats?.paidBookings ?? 0} />
+<StatRow label="Clients with Email:" value={generalStats?.clientsWithEmail ?? 0} />
       </div>
 
       {/* Right column */}
       <div className="space-y-6">
-        <StatRow label="Newsletter Subscribers:" value="7,087" />
-        <StatRow label="Clients with Email:" value="8,973" />
-        <StatRow
-          label="Rejected Email Addresses:"
-          value="192"
-          valueClass="text-primary"
-          labelClass="text-primary"
-        />
-        <StatRow label="Clients with Mobile Phones:" value="8,945" />
-        <StatRow
-          label="Rejected SMS Mobiles:"
-          value="0"
-          valueClass="text-primary"
-          labelClass="text-primary"
-        />
+        <StatRow label="Newsletter Subscribers:" value={generalStats?.newsletterSubscribers ?? 0} />
+<StatRow label="Clients with Email:" value={generalStats?.clientsWithEmail ?? 0} />
+<StatRow label="Clients with Mobile Phones:" value={generalStats?.clientsWithMobile ?? 0} />
+        
       </div>
     </div>
   </div>

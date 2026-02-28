@@ -16,12 +16,16 @@ import {
 import { useMemo, useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import { useUserData } from "@/app/hooks/useUserData";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
 // Function to fetch instructor stats from API
-const fetchInstructorStats = async (instructorEmail) => {
-  const res = await fetch(`/api/stats/instructor-stats?instructorEmail=${instructorEmail}`);
-  const data = await res.json();
-  return data;
+const fetchInstructorStats = async (instructorEmail, days) => {
+  const res = await fetch(
+    `/api/stats/instructor-stats?instructorEmail=${encodeURIComponent(
+      instructorEmail
+    )}&days=${days}`
+  );
+  return res.json();
 };
 
 function Card({ title, right, children }) {
@@ -41,17 +45,47 @@ function Card({ title, right, children }) {
 }
 
 function RangeSelect({ value, onChange }) {
+  const [open, setOpen] = useState(false);
+
+  const options = [
+    { label: "Today", days: 1 },
+    { label: "Last 7 Days", days: 7 },
+    { label: "Last 14 Days", days: 14 },
+    { label: "Last 30 Days", days: 30 },
+  ];
+
+  const current = options.find((o) => o.days === value) || options[1];
+
   return (
-    <button
-      type="button"
-      className="text-xs sm:text-sm text-gray-700 flex items-center gap-2 hover:text-gray-900"
-      onClick={() => {
-        // simple toggle demo
-        onChange(value === "Last 7 Days" ? "Last 30 Days" : "Last 7 Days");
-      }}
-    >
-      {value} <FaChevronDown className="text-[10px]" />
-    </button>
+    <div className="relative">
+      <button
+        type="button"
+        className="text-xs sm:text-sm text-gray-700 flex items-center gap-2 hover:text-gray-900"
+        onClick={() => setOpen((v) => !v)}
+      >
+        {current.label} <FaChevronDown className="text-[10px]" />
+      </button>
+
+      {open && (
+        <div className="absolute right-0 mt-2 w-40 bg-white border border-border-color rounded-md shadow-lg z-50 overflow-hidden">
+          {options.map((o) => (
+            <button
+              key={o.days}
+              type="button"
+              className={`w-full text-left px-3 py-2 text-sm hover:bg-gray-50 ${
+                o.days === value ? "bg-gray-50 font-semibold" : ""
+              }`}
+              onClick={() => {
+                onChange(o.days);
+                setOpen(false);
+              }}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -61,17 +95,15 @@ export default function InstructorDashboard() {
   const [statsData, setStatsData] = useState(null);
 
   useEffect(() => {
-    if (isUserLoading) return;
-    
-    const getStats = async () => {
-      const data = await fetchInstructorStats(userData?.email);
-      setStatsData(data);
-    };
+  if (isUserLoading) return;
 
-    if (userData?.email) {
-      getStats();
-    }
-  }, [userData?.email, isUserLoading]);
+  const getStats = async () => {
+    const data = await fetchInstructorStats(userData?.email, range);
+    setStatsData(data);
+  };
+
+  if (userData?.email) getStats();
+}, [userData?.email, isUserLoading, range]);
 
 
   const revenueTotals = useMemo(() => {
@@ -86,14 +118,41 @@ export default function InstructorDashboard() {
 
     return { totalSales, webBookings,webSales };
   }, [statsData]);
+  const monthLabel = useMemo(() => {
+  const key = statsData?.monthStats?.month; // "2026-02"
+  if (!key) return "This Month";
+  const [y, m] = key.split("-").map(Number);
+  const d = new Date(y, (m || 1) - 1, 1);
+  return d.toLocaleDateString("en-AU", { month: "long" }); // "February"
+}, [statsData?.monthStats?.month]);
   if (!statsData) {
-    return <div>Loading...</div>;
+    return <LoadingSpinner/>;
   }
 
   return (
    <section className="">
       <Container>
-        <div className="space-y-6">
+        {/* Header Stats */}
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+   <StatCard
+    title="Total Bookings (All Time)"
+    value={statsData?.generalStats?.totalBookings ?? 0}
+  />
+  <StatCard
+    title={`${monthLabel} Active Bookings`}
+    value={statsData?.monthStats?.activeBookings ?? 0}
+  />
+  <StatCard
+    title={`${monthLabel} Paid Bookings`}
+    value={statsData?.monthStats?.paidBookings ?? 0}
+  />
+ 
+  <StatCard
+    title={`${monthLabel} Cancelled Bookings`}
+    value={statsData?.monthStats?.cancelledBookings ?? 0}
+  />
+</div>
+        <div className="mt-6 space-y-6">
           {/* Top Revenue Card */}
           <Card
             title="Total Revenue"
@@ -116,10 +175,10 @@ export default function InstructorDashboard() {
                 <div className="text-xs text-gray-500">Bookings</div>
                 <div className="text-2xl font-extrabold text-gray-900">  {revenueTotals.webBookings}</div>
                 <div className="mt-2 flex items-center gap-2 text-sm">
-                  <span className="inline-flex h-2 w-2 rounded-full bg-indigo-700" />
+                <span className="inline-flex h-2 w-2 rounded-full bg-emerald-600" />
                   <span className="text-gray-700">Web Bookings</span>
                   <span className="font-semibold text-gray-900">
-                    ${revenueTotals.webBookings.toLocaleString()}
+                    {revenueTotals.webBookings.toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -131,10 +190,22 @@ export default function InstructorDashboard() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="d" tick={{ fontSize: 11 }} interval={3} />
                   <YAxis tick={{ fontSize: 11 }} />
-                  <Tooltip />
+                <Tooltip
+  formatter={(value, name) => {
+    if (name === "Web Sales") {
+      return [`$${Number(value).toLocaleString()}`, name];
+    }
+    return [Number(value).toLocaleString(), name];
+  }}
+/>
                   <Legend />
                   <Bar dataKey="webSales" name="Web Sales" fill="#2563eb" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="webBookings" name="Web Bookings" fill="#1e40af" radius={[4, 4, 0, 0]} />
+                <Bar
+  dataKey="webBookings"
+  name="Web Bookings"
+  fill="#10b981"
+  radius={[4, 4, 0, 0]}
+/>
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -150,7 +221,7 @@ export default function InstructorDashboard() {
                 <LineChart data={statsData.activityData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="d" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }}  tickFormatter={(value) => `$${value}`}/>
                   <Tooltip />
                   <Legend />
                   <Line
@@ -184,5 +255,17 @@ export default function InstructorDashboard() {
         </div>
       </Container>
     </section>
+  );
+}
+
+function StatCard({ title, value, sub }) {
+  return (
+    <div className="bg-white border border-border-color rounded-lg shadow-sm p-4 min-w-0">
+      <div className="text-xs text-gray-500">{title}</div>
+      <div className="mt-1 text-xl sm:text-2xl font-extrabold text-gray-900">
+        {value}
+      </div>
+      {sub ? <div className="mt-1 text-xs text-gray-500">{sub}</div> : null}
+    </div>
   );
 }

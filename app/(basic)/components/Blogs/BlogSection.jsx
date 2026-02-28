@@ -1,7 +1,8 @@
 "use client";
-import blogImg1 from "@/app/assets/car-hire.jpg";
-import blogImg2 from "@/app/assets/blog2.jpg";
-import blogImg3 from "@/app/assets/blog3.jpg";
+import blogImg1 from "@/app/assets/blog/blog1.png";
+import blogImg16 from "@/app/assets/car-hire.jpg";
+import blogImg17 from "@/app/assets/blog/blog17.jpg";
+import blogImg18 from "@/app/assets/blog/blog18.jpg";
 import Link from "next/link";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
@@ -11,29 +12,38 @@ import {usePathname, useRouter} from "next/navigation";
 const blogsData = [
   {
     id: 1,
-    title: "5 Essential Driving Tips for Beginners",
-    slug: "blogs/5-essential-driving-tips-for-beginners",
+    title: "How to Pass the Driving Test in NSW",
+    slug: "blog/how-to-pass-the-driving-test-in-nsw",
     excerpt:
-      "Learn the most important driving habits that will keep you safe and confident on the road.",
+      "Learn how to pass the driving test in NSW on your first try with expert tips from certified instructors. Avoid common failures and book your lesson today for guaranteed confidence.",
     image: blogImg1,
     link: "#",
   },
   {
-    id: 2,
+    id: 16,
+    title: "5 Essential Driving Tips for Beginners",
+    slug: "blogs/5-essential-driving-tips-for-beginners",
+    excerpt:
+      "Learn the most important driving habits that will keep you safe and confident on the road.",
+    image: blogImg16,
+    link: "#",
+  },
+  {
+    id: 17,
     title: "How to Master Parallel Parking",
     slug: "blogs/how-to-master-parallel-parking",
     excerpt:
       "Step-by-step guide to improve your parking skills and avoid common mistakes.",
-    image: blogImg2,
+    image: blogImg17,
     link: "#",
   },
   {
-    id: 3,
+    id: 18,
     title: "Manual vs Automatic Cars: Which to Choose?",
     slug: "blogs/manual-vs-automatic-cars-which-to-choose",
     excerpt:
       "Pros and cons of manual and automatic cars to help you make the right decision.",
-    image: blogImg3,
+    image: blogImg18,
     link: "#",
   },
 ];
@@ -84,9 +94,9 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                   <Image
                     src={blog.image}
                     alt={blog.title}
-                    width={300}
-                    height={300}
-                    className="w-full h-48 object-cover"
+                    width={800}
+                    height={800}
+                    className="w-full h-55 md:h-50 object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
                     <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
@@ -115,9 +125,9 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                   <Image
                     src={blog.image}
                     alt={blog.title}
-                    width={300}
-                    height={300}
-                    className="w-full h-48 object-cover"
+                    width={800}
+                    height={800}
+                    className="w-full h-55 md:h-50 object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
                     <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>

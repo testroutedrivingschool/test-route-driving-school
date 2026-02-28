@@ -40,8 +40,8 @@ function pickBookingRow(booking, invoice) {
     address: booking?.address ?? null,
 
     paymentIntentId: booking?.paymentIntentId ?? null,
-    paymentStatus: booking?.paymentStatus ?? null,
-    paymentMethod: booking?.paymentMethod ?? null,
+    paymentStatus: booking?.paymentStatus ?? invoice?.paymentStatus ?? null,
+    paymentMethod: booking?.paymentMethod ?? invoice?.paymentMethod ?? null,
 
     invoiceNo: booking?.invoiceNo ?? invoice?.invoiceNo ?? null,
     invoiceKey: booking?.invoiceKey ?? invoice?.invoiceKey ?? null,
@@ -51,13 +51,11 @@ function pickBookingRow(booking, invoice) {
     createdAt: invoice?.createdAt ?? booking?.createdAt ?? null,
 
     status: booking?.status ?? null,
-
-    bookingId: invoice?.bookingId ?? booking?._id ?? null,
+    bookingId: booking?._id ?? null,
   };
 }
 
-function pickPurchaseRow(purchase) {
-  const firstPkg = purchase?.packages?.[0];
+function pickPurchaseRow(purchase, invoice) {
   const pkgLabel = purchase?.packages?.length
     ? purchase.packages.map((p) => p.packageName).filter(Boolean).join(", ")
     : null;
@@ -65,7 +63,7 @@ function pickPurchaseRow(purchase) {
   return {
     source: "purchase",
 
-    bookingType: "purchase", // so UI can label it as Purchase
+    bookingType: "purchase",
     bookingDate: null,
     bookingTime: null,
 
@@ -76,49 +74,59 @@ function pickPurchaseRow(purchase) {
     userPhone: purchase?.billing?.mobile ?? null,
     userEmail: purchase?.userEmail ?? purchase?.billing?.email ?? null,
 
-    // show something meaningful in Services column
     serviceName: "Package Purchase",
-    duration: pkgLabel ? `(${pkgLabel})` : firstPkg?.packageName ? `(${firstPkg.packageName})` : null,
+    duration: pkgLabel ? `(${pkgLabel})` : null,
     suburb: purchase?.billing?.suburb ?? null,
     address: purchase?.billing?.address ?? null,
 
     paymentIntentId: purchase?.paymentIntentId ?? null,
-    paymentStatus: purchase?.paymentStatus ?? null,
-    paymentMethod: purchase?.paymentMethod ?? null,
+    paymentStatus: purchase?.paymentStatus ?? invoice?.paymentStatus ?? null,
+    paymentMethod: purchase?.paymentMethod ?? invoice?.paymentMethod ?? null,
 
-    invoiceNo: purchase?.invoiceNo ?? null,
-    invoiceKey: purchase?.invoiceKey ?? null,
-    invoiceFilename: purchase?.invoiceFilename ?? null,
+    invoiceNo: purchase?.invoiceNo ?? invoice?.invoiceNo ?? null,
+    invoiceKey: purchase?.invoiceKey ?? invoice?.invoiceKey ?? null,
+    invoiceFilename: purchase?.invoiceFilename ?? invoice?.filename ?? null,
 
-    total: Number(purchase?.amount ?? 0),
-    createdAt: purchase?.createdAt ?? null,
+    total: Number(purchase?.amount ?? invoice?.total ?? 0),
+    createdAt: purchase?.createdAt ?? invoice?.createdAt ?? null,
 
     status: purchase?.status ?? null,
-
-    // keep id for linking if needed later
     purchaseId: purchase?._id ?? null,
   };
+}
+
+function toObjectIdMaybe(v) {
+  try {
+    if (!v) return null;
+    if (typeof v === "object" && v instanceof ObjectId) return v;
+    const s = String(v);
+    if (!ObjectId.isValid(s)) return null;
+    return new ObjectId(s);
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const qRaw = safe(searchParams.get("q")).trim();
-    if (!qRaw) return NextResponse.json({ error: "q is required" }, { status: 400 });
+
+    if (!qRaw) {
+      return NextResponse.json({ error: "q is required" }, { status: 400 });
+    }
 
     const invCol = await invoicesCollection();
     const bookCol = await bookingsCollection();
     const purCol = await purchasesCollection();
 
     // =========================
-    // 1) Transaction ID search
+    // 1) Transaction ID (pi_...)
     // =========================
     if (looksLikeTransactionId(qRaw)) {
-      // try bookings first
       const booking = await bookCol.findOne({ paymentIntentId: qRaw });
-
       if (booking) {
-        const invoice =
+        const inv =
           (booking?._id ? await invCol.findOne({ bookingId: booking._id }) : null) ||
           (booking?.invoiceNo ? await invCol.findOne({ invoiceNo: Number(booking.invoiceNo) }) : null);
 
@@ -126,19 +134,24 @@ export async function GET(req) {
           found: true,
           searchType: "transaction",
           transactionId: qRaw,
-          ...pickBookingRow(booking, invoice),
+          ...pickBookingRow(booking, inv),
         });
       }
 
-      // fallback purchases
       const purchase = await purCol.findOne({ paymentIntentId: qRaw });
-      if (!purchase) return NextResponse.json({ found: false, q: qRaw }, { status: 404 });
+      if (!purchase) {
+        return NextResponse.json({ found: false, q: qRaw }, { status: 404 });
+      }
+
+      const inv = purchase?.invoiceNo
+        ? await invCol.findOne({ invoiceNo: Number(purchase.invoiceNo) })
+        : null;
 
       return NextResponse.json({
         found: true,
         searchType: "transaction",
         transactionId: qRaw,
-        ...pickPurchaseRow(purchase),
+        ...pickPurchaseRow(purchase, inv),
       });
     }
 
@@ -154,7 +167,6 @@ export async function GET(req) {
           .sort({ createdAt: -1 })
           .limit(20)
           .toArray(),
-
         purCol
           .find({ userEmail: email })
           .sort({ createdAt: -1 })
@@ -166,12 +178,27 @@ export async function GET(req) {
         return NextResponse.json({ found: false, q: email }, { status: 404 });
       }
 
-      // preload invoices for bookings
-      const invoiceNos = bookings.map((b) => Number(b.invoiceNo)).filter(Boolean);
+      // preload invoices by invoiceNo for both
+      const invoiceNos = [
+        ...bookings.map((b) => Number(b.invoiceNo)).filter(Boolean),
+        ...purchases.map((p) => Number(p.invoiceNo)).filter(Boolean),
+      ];
+
       const invoices = invoiceNos.length
         ? await invCol
             .find({ invoiceNo: { $in: invoiceNos } })
-            .project({ invoiceNo: 1, invoiceKey: 1, filename: 1, total: 1, paymentStatus: 1, createdAt: 1, bookingId: 1 })
+            .project({
+              invoiceNo: 1,
+              invoiceKey: 1,
+              filename: 1,
+              total: 1,
+              paymentStatus: 1,
+              paymentMethod: 1,
+              createdAt: 1,
+              bookingId: 1,
+              purchaseId: 1,
+              source: 1,
+            })
             .toArray()
         : [];
 
@@ -182,9 +209,11 @@ export async function GET(req) {
         return pickBookingRow(b, inv);
       });
 
-      const purchaseRows = purchases.map((p) => pickPurchaseRow(p));
+      const purchaseRows = purchases.map((p) => {
+        const inv = p.invoiceNo ? invMap.get(Number(p.invoiceNo)) : null;
+        return pickPurchaseRow(p, inv);
+      });
 
-      // merge and sort by createdAt desc
       const rows = [...bookingRows, ...purchaseRows].sort((a, b) => {
         const ta = a?.createdAt ? new Date(a.createdAt).getTime() : 0;
         const tb = b?.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -215,26 +244,40 @@ export async function GET(req) {
       return NextResponse.json({ error: "Invalid invoice number" }, { status: 400 });
     }
 
-    // try invoices -> booking
     const inv = await invCol.findOne({ invoiceNo });
-    if (inv) {
-      const bookingId =
-        typeof inv.bookingId === "string" ? new ObjectId(inv.bookingId) : inv.bookingId;
-
-      const booking = bookingId ? await bookCol.findOne({ _id: bookingId }) : null;
-
-      if (booking) {
+    if (!inv) {
+      // fallback: purchase might exist even if invoice doc missing
+      const purchase = await purCol.findOne({ invoiceNo });
+      if (purchase) {
         return NextResponse.json({
           found: true,
           searchType: "invoice",
-          ...pickBookingRow(booking, inv),
+          ...pickPurchaseRow(purchase, null),
+        });
+      }
+      return NextResponse.json({ found: false, invoiceNo }, { status: 404 });
+    }
+
+    // ✅ if purchase invoice
+    if (inv.source === "purchase" || inv.purchaseId) {
+      const purchaseId = toObjectIdMaybe(inv.purchaseId);
+      const purchase =
+        (purchaseId ? await purCol.findOne({ _id: purchaseId }) : null) ||
+        (await purCol.findOne({ invoiceNo }));
+
+      if (purchase) {
+        return NextResponse.json({
+          found: true,
+          searchType: "invoice",
+          ...pickPurchaseRow(purchase, inv),
         });
       }
 
-      // invoice exists but booking missing
+      // invoice exists but purchase missing
       return NextResponse.json({
         found: true,
         searchType: "invoice",
+        source: "purchase",
         invoiceNo: inv.invoiceNo,
         invoiceKey: inv.invoiceKey,
         invoiceFilename: inv.filename,
@@ -243,17 +286,31 @@ export async function GET(req) {
       });
     }
 
-    // fallback purchase by invoiceNo
-    const purchase = await purCol.findOne({ invoiceNo });
-    if (purchase) {
+    // ✅ booking invoice (default)
+    const bookingId = toObjectIdMaybe(inv.bookingId);
+    const booking =
+      (bookingId ? await bookCol.findOne({ _id: bookingId }) : null) ||
+      (await bookCol.findOne({ invoiceNo }));
+
+    if (booking) {
       return NextResponse.json({
         found: true,
         searchType: "invoice",
-        ...pickPurchaseRow(purchase),
+        ...pickBookingRow(booking, inv),
       });
     }
 
-    return NextResponse.json({ found: false, invoiceNo }, { status: 404 });
+    // invoice exists but booking missing
+    return NextResponse.json({
+      found: true,
+      searchType: "invoice",
+      source: inv.source || "booking",
+      invoiceNo: inv.invoiceNo,
+      invoiceKey: inv.invoiceKey,
+      invoiceFilename: inv.filename,
+      total: inv.total ?? 0,
+      createdAt: inv.createdAt ?? null,
+    });
   } catch (err) {
     console.error("GET /api/sales/search-invoice error:", err);
     return NextResponse.json({ error: "Failed to search" }, { status: 500 });
