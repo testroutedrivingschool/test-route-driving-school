@@ -45,24 +45,29 @@ function Stars({rating = 0}) {
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass?",
-    answer: <>Most learners succeed within 15–30 professional sessions.</>,
+    question: "Why do students choose Test Route Driving School over other schools?",
+    answer: <>Students consistently highlight our test-route-specific training as the key to their success. Unlike general driving schools, our testimonials show that we focus on the exact paths used by examiners at local VicRoads or Service NSW centers, which significantly reduces &quot;test day nerves&quot; and surprises.
+</>,
   },
   {
-    question: "Do you provide pickup and drop-off?",
-    answer: <>Yes. We provide door-to-door service in most suburbs.</>,
+    question: "Can nervous or anxious drivers pass their test on the first attempt?",
+    answer: <>Yes. Many of our success stories come from students who suffered from severe driving anxiety. Our instructors use a patient, &quot;calm-climate&quot; coaching method that builds confidence incrementally, leading to a high first-time pass rate even for the most hesitant learners.
+</>,
   },
   {
-    question: "Which areas do you cover?",
-    answer: <>We serve Kogarah and the surrounding Sydney suburbs.</>,
+    question: "Is it worth paying for professional driving lessons instead of private practice?",
+    answer: <>According to our student feedback, professional lessons are a &quot;time-saver.&quot; While private practice builds hours, our instructors teach the specific marking criteria examiners use. This targeted approach often results in students needing fewer total hours to become test-ready, saving money in the long run.
+</>,
   },
   {
-    question: "What vehicle will I learn in?",
-    answer: <>You will train in a modern automatic car.</>,
+    question: `How effective is the "Mock Test" provided by Test Route Driving School?`,
+    answer:`Our testimonials frequently cite the Mock Driving Test as the turning point in their preparation. By simulating the exact exam conditions and providing a "scorecard," we identify critical errors (like failing to head-check) before the actual test, ensuring a much higher success rate.
+`,
   },
   {
-    question: "Can I book lessons online?",
-    answer: <>Yes. Online booking is fast and secure.</>,
+    question: "Do you help international license holders convert to an Australian license?",
+    answer: `Yes, we have a dedicated section of testimonials from international drivers. We specialize in helping overseas license holders unlearn "old habits" and quickly and efficiently adapt to Australian road rules and Victorian/NSW testing standards.
+`,
   },
 ];
 export default function Testimonials() {

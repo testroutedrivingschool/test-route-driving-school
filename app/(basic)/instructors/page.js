@@ -31,7 +31,7 @@ export default function Instructors() {
         <PageHeroSection title="Our Instructors" subtitle="..." />
         <Container className="pb-16">
           <SectionHeader title="Our Instructors" />
-          <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Show Skeletons while loading */}
             {Array.from({ length: 8 }).map((_, i) => (
               <SkeletonCard key={i} isInstructor={true} />
@@ -47,7 +47,7 @@ export default function Instructors() {
       <PageHeroSection title={`Our Instructors`} subtitle={`Our team of skilled and passionate instructors is dedicated to helping you achieve your goals. With years of experience and a commitment to personalized learning, they provide the guidance, support, and motivation you need to master every skill confidently. Whether you’re just starting out or looking to sharpen your abilities, our instructors are here to make your learning journey engaging, effective, and inspiring.`}/>
       <Container className={`pb-16`}>
         <SectionHeader title="Our Instructors" />
-        <div className="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {instructors.map((inst) =>{
               const avatarSrc = inst?.photo
     ? inst.photo
@@ -57,12 +57,12 @@ export default function Instructors() {
             return (
             <div
               key={inst._id}
-              className="bg-white   shadow-lg rounded-lg overflow-hidden"
+              className="bg-white border border-border-color  shadow-lg rounded-lg overflow-hidden"
             >
               <Image
                 width={800}
                 height={800}
-                className="md:w-full md:h-70 h-80 object-cover object-top md:object-center"
+                className="md:w-full md:h-70 h-85 object-cover object-top md:object-center "
                 src={avatarSrc}
                 alt={inst.name}
               />

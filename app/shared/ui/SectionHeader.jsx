@@ -1,7 +1,7 @@
 export default function SectionHeader({title, subtitle, className}) {
   return (
     <div className={`mt-20 md:mt-25 mb-10 ${className || ""}`}>
-      <h2 className="relative text-lg sm:text-2xl md:text-4xl font-bold text-gray-800 mb-3 text-center">
+      <h2 className="relative text-xl sm:text-2xl md:text-4xl font-bold text-gray-800 mb-3 text-center">
          {(() => {
       const words = title.split(" ");
       const lastWord = words.pop(); 

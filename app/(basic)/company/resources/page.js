@@ -111,24 +111,25 @@ const drivingLessonTips = [
 ];
 const faqs = [
   {
-    question: "How many lessons do I need to pass?",
-    answer: <>Most learners succeed within 15–30 professional sessions.</>,
+    question: "What is the most effective way to use driving test route maps?",
+    answer: <>Use test route maps to identify &quot;high-risk&quot; areas such as complex roundabouts, hidden stop signs, and school zones. Practicing these specific segments helps eliminate the element of surprise during the actual Victorian (VicRoads) or NSW driving assessment.
+</>,
   },
   {
-    question: "Do you provide pickup and drop-off?",
-    answer: <>Yes. We provide door-to-door service in most suburbs.</>,
+    question: "Why should I take a mock driving test before the real one?",
+    answer: `A mock test simulates the exact conditions of the official exam, including the examiner's marking criteria. It identifies "Critical Errors" (like failing to check blind spots) and "Immediate Termination Errors" (like mounting a kerb) that you can fix before your test date.`,
   },
   {
-    question: "Which areas do you cover?",
-    answer: <>We serve Kogarah and the surrounding Sydney suburbs.</>,
+    question: "How do I ensure my car is eligible for the driving test?",
+    answer: <>Your vehicle must be roadworthy, registered, and clean. Key checks include working indicators/brake lights, tires with at least 1.5mm tread, and a clear windscreen. If using your own car, it must have a functional handbrake accessible to the examiner.</>,
   },
   {
-    question: "Can I book lessons online?",
-    answer: <>Yes. Online booking is fast and secure.</>,
+    question: "What are the most common reasons for failing a driving test?",
+    answer: ` Most failures occur due to inadequate observation (not doing head checks), speeding (even 1-2 km/h over the speed limit in school zones), and failing to come to a complete stop at "Stop" signs. Resource guides help you master these habits through repetitive practice.`,
   },
   {
-    question: "What vehicle will I learn in?",
-    answer: <>You will train in a modern automatic car.</>,
+    question: "How many driving lessons do I need to pass on the first attempt?",
+    answer: ` While the legal requirement varies by state (e.g., 120 hours in NSW), most students find that 5-10 professional lessons focused on "test-specific" techniques significantly increase their first-time pass rate compared to private practice alone.`,
   },
 ];
 export default function Resources() {
@@ -199,9 +200,7 @@ export default function Resources() {
                   Automatic Driving Lesson Guides & Learning Materials
                 </h3>
                 <p className="text-neutral text-lg mb-3">
-                  Our learning guides help you master automatic driving step by
-                  step. They focus on real roads, real traffic, and real test
-                  conditions.
+                  Our learning guides help you master automatic driving step by step, based on actual RMS testing criteria and real-world Sydney traffic patterns. They focus on real roads, real traffic, and real test conditions that our instructors encounter daily.
                 </p>
                 <h3 className="mt-2 text-lg font-bold">
                   You will learn about:
@@ -210,28 +209,29 @@ export default function Resources() {
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
-                    <span className="text-gray-700">Lesson structures</span>
+                    <span className="text-gray-700">Structured lesson frameworks aligned with the graduated licensing system</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
-                    <span className="text-gray-700">Parking methods</span>
+                    <span className="text-gray-700">Precision parking methods tested in Sydney RTA locations</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
-                    <span className="text-gray-700">Traffic handling</span>
+                    <span className="text-gray-700">Advanced traffic handling in complex Sydney intersections</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
-                    <span className="text-gray-700">Test route planning</span>
+                    <span className="text-gray-700">Strategic test route planning for your local examination centre</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
                     <span className="text-gray-700">
-                      City and highway driving
+                    Safe city and highway driving protocols specific to NSW road rules
+
                     </span>
                   </li>
                 </ul>
@@ -239,7 +239,7 @@ export default function Resources() {
 
               <div className="">
                 <h3 className="text-2xl font-bold  mb-2">
-                  Learn at Your Own Speed with Structured Practice
+                 Learn at Your Own Speed with Structured Practice
                 </h3>
                 <p className="text-neutral text-lg mb-3">
                   Every learner grows at a different pace. Our resources help
@@ -253,32 +253,29 @@ export default function Resources() {
                     <FaCheck className="text-green-500" size={16} />
 
                     <span className="text-gray-700">
-                      Set weekly learning goals
+                     Set weekly learning goals tied to official competency standards
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
                     <span className="text-gray-700">
-                      Track skill improvement
+                   Track skill improvement using instructor-validated methods
                     </span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
-                    <span className="text-gray-700">Manage test timelines</span>
+                    <span className="text-gray-700">Manage test timelines based on real booking windows and preparation needs</span>
                   </li>
                   <li className="flex items-center gap-3">
                     <FaCheck className="text-green-500" size={16} />
 
-                    <span className="text-gray-700">Focus on weak areas</span>
+                    <span className="text-gray-700">Focus on weak areas identified through professional assessment</span>
                   </li>
                 </ul>
                 <p className="text-neutral  mt-4">
-                  Each guide uses clear steps and instructor insights. This
-                  improves awareness, hazard response, and road judgement. These
-                  skills matter in tests. They matter even more in daily
-                  driving.
+                  Each guide uses clear steps, RMS-curriculum alignment, and instructor insights gained from preparing Sydney learners for test success. This improves awareness, hazard response, and road judgement. These skills matter in tests. They matter even more in daily driving.
                 </p>
               </div>
             </div>
@@ -295,12 +292,12 @@ export default function Resources() {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 ">
             {[
-              "Skipping mirror checks before lane changes",
-              "Driving too fast in school zones",
-              "Rolling through stop signs",
-              "Missing hazards at intersections",
-              "Late or incorrect indicator use",
-              "Sudden braking due to nervousness",
+"Skipping mirror checks before lane changes (a leading fail reason)",
+"Driving too fast in school zones (40km/h enforcement areas)",
+"Rolling through stop signs (common in Sydney suburban tests)",
+"Missing hazards at complex intersections (especially roundabouts)",
+"Late or incorrect indicator use (required 3+ seconds before turning)",
+"Sudden braking due to nervousness (indicates poor anticipation)",
             ].map((mistake, index) => (
               <div
                 key={index}
@@ -316,7 +313,8 @@ export default function Resources() {
             ))}
           </div>
           <p className="text-neutral  mt-4">
-            Fixing these habits early increases your pass rate.
+           Fixing these habits early, with professional feedback, significantly increases first-attempt pass rates.
+
           </p>
         </Container>
       </section>
@@ -332,6 +330,7 @@ export default function Resources() {
           </>
         }
         tips={drivingLessonTips}
+        extra="Sleep well. Arrive early with required documents. Trust your training and structured preparation. Strong preparation removes panic and demonstrates the composure examiners expect. Confidence delivers results."
       />
       <Faq
         className={`bg-white`}

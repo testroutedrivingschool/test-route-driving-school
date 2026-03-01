@@ -11,7 +11,7 @@ import {
   FaAward,
 } from "react-icons/fa";
 
-export default function DrivingTipsSection({title, subtitle, tips}) {
+export default function DrivingTipsSection({title, subtitle, tips,extra}) {
   const defaultTips = [
     {
       title: "Practice Regularly",
@@ -235,6 +235,7 @@ export default function DrivingTipsSection({title, subtitle, tips}) {
                 </div>
               ))}
         </div>
+        {extra && <p className="mt-4 text-neutral">{extra}</p>}
       </Container>
     </section>
   );

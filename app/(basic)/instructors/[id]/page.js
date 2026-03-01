@@ -8,10 +8,9 @@ import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Link from "next/link";
-import Skeleton from "@/app/shared/ui/Skelton";
+import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
 export default function InstructorDetails() {
   const router = useRouter();
@@ -62,7 +61,7 @@ export default function InstructorDetails() {
       .filter(Boolean);
   }, [instructor]);
 
-  if (isLoading) return <Skeleton />;
+  if (isLoading) return <LoadingSpinner />;
 
   if (isError || !instructor) {
     return (
@@ -155,6 +154,7 @@ export default function InstructorDetails() {
                           {lang}
                         </span>
                       ))}
+                      {instructor?.customLanguage &&<span className="px-3 py-1 rounded border border-border-color text-sm bg-gray-50">{instructor.customLanguage}</span>}
                     </div>
                   </div>
 

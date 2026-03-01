@@ -17,7 +17,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
       <Container>
         <SectionHeader
           className={`mt-0!`}
-          title={sectionTitle ? sectionTitle : `Our Driving School Blog`}
+          title={sectionTitle ? sectionTitle : `Our Driving School Blogs`}
           subtitle={
             sectionSubTitle ? (
               sectionSubTitle
@@ -58,7 +58,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                     alt={blog.title}
                     width={800}
                     height={800}
-                    className="w-full h-55 md:h-50 object-cover object-center"
+                    className="w-full h-60 md:h-50 object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
                     <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
@@ -89,7 +89,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                     alt={blog.title}
                     width={800}
                     height={800}
-                    className="w-full h-55 md:h-55 object-cover object-center"
+                    className="w-full h-60 md:h-55 object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
                     <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>

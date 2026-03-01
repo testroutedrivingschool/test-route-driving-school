@@ -245,7 +245,17 @@ const faqs = [
   {
     question: "What skills do city driving lessons build?",
     answer:
-      "You improve lane discipline and gap selection. You learn defensive driving techniques.",
+    <>
+    
+    You improve lane discipline and gap selection. You learn defensive driving  <a
+          target="_blank"
+          className="location-link"
+          href={"https://en.wikipedia.org/wiki/Driver%27s_education"}
+        >
+          {" "}
+          techniques.
+        </a>
+    </>
   },
   {
     question: "Are city lessons helpful before the test?",

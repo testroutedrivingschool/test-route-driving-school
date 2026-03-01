@@ -113,47 +113,56 @@ const whyChoosePoints = [
 
 const faqs = [
   {
-    question: "How many lessons do I need to pass?",
+    question: "What is the pass rate for students at Test Route Driving School?",
     answer: (
       <>
-        Most learners succeed within 15–30 professional sessions.
+        Test Route Driving School maintains a high first-time pass rate by focusing on specific Vicroads/Service NSW test routes. Our gallery showcases hundreds of successful students who have mastered complex traffic scenarios and gained their licenses on the first attempt.
 
       </>
     ),
   },
   {
-    question: "Do you provide pickup and drop-off?",
+    question: "Can I see the types of cars used for driving lessons?",
     answer: (
       <>
-        Yes. We provide door-to-door service in most suburbs.
+        Yes, our gallery features our modern fleet of dual-controlled vehicles. We use late-model, 5-star ANCAP safety-rated cars (both Automatic and Manual) to ensure students learn in a comfortable, safe, and reliable environment.
 
       </>
     ),
   },
   {
-    question: "Which suburbs do you cover?",
+    question: "Are the instructors at Test Route Driving School qualified?",
     answer: (
       <>
-       We operate across Kogarah and the nearby Sydney areas.
+       Every instructor pictured in our gallery is a fully licensed and accredited professional. They specialize in anxiety management and advanced defensive driving techniques, ensuring every student becomes a  <Link
+        href={`https://www.nhtsa.gov/ten-tips-for-safe-driving`}
+        className="location-link"
+        target="_blank"
+      >safe, 
+      </Link>independent driver.
 
       </>
     ),
   },
   {
-    question: "Can I book lessons online?",
+    question: "Do you provide driving lessons for nervous or beginner drivers?",
     answer: (
       <>
-      Yes. Online booking is fast and secure.
-
+      Absolutely. A large portion of our gallery features beginner <Link
+        href={`https://en.wikipedia.org/wiki/Driver%27s_education`}
+        className="location-link"
+        target="_blank"
+      >drivers 
+      </Link> who started with zero experience. Our &quot;Step-by-Step&quot; curriculum is designed to build confidence gradually, moving from quiet backstreets to busy test routes.
 
       </>
     ),
   },
   {
-    question: "What type of car will I learn in?",
+    question: "Where can I see real student reviews and success stories?",
     answer: (
       <>
-       You will train in a modern automatic vehicle.
+       Our gallery serves as a visual testimonial of our success. Each photo represents a student who has successfully navigated the specific challenges of their local driving test center with the help of our expert instructors.
 
       </>
     ),
@@ -165,7 +174,13 @@ export default function Gallery() {
       <PageHeroSection
         title={`Our Driving School Gallery`}
         subtitle={<>
-        View real lesson moments, student progress, and training quality. See why learners trust Test Route Driving School. Explore our gallery and book your lesson today.
+      View real moments from our  <Link
+        href={`/services/automatic-driving-lessons`}
+        className="location-link"
+      >
+        Driving Lessons
+      </Link> practice sessions, and student success stories.
+ See how learners grow in confidence, skill, and road awareness through professional training. Each image reflects commitment, safety, and real progress on Sydney roads.
         </>}
       />
       <section className="py-16">
@@ -203,7 +218,7 @@ export default function Gallery() {
         </Link> supports learners with expert guidance and proven teaching methods. We help students gain confidence, pass tests, and drive safely for life. Here’s why learners trust us for quality driving education.
 
 </>} points={whyChoosePoints}/>
-      <Faq />
+      <Faq faqs={faqs}/>
           <HomeMap/>
     </>
   );
