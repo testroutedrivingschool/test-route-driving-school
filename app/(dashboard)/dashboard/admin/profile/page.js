@@ -174,22 +174,22 @@ export default function AdminProfile() {
 
   return (
     <div className="min-h-screen ">
-      <div className="max-w-7xl mx-auto">
+      <div className="">
         <div className="bg-white shadow rounded-lg">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200">
+          <div className="px-4 py-4 border-b border-gray-200">
             <h1 className="text-2xl font-bold text-gray-800">Admin Profile</h1>
             <p className="text-neutral">
               View and manage your profile information
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-4">
             {/* Left */}
             <div className="lg:col-span-2 space-y-6">
               {/* Photo Card */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b border-gray-200">
+                <div className="px-4 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold">Profile Photo</h2>
                 </div>
 
@@ -243,7 +243,7 @@ export default function AdminProfile() {
 
               {/* Personal info */}
               <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <div className="px-4 py-4 border-b border-gray-200 flex justify-between items-center">
                   <h2 className="text-lg font-semibold">
                     Personal Information
                   </h2>
@@ -255,7 +255,7 @@ export default function AdminProfile() {
                 </div>
 
                 <form onSubmit={handleProfileSubmit}>
-                  <div className="p-6 space-y-6">
+                  <div className="p-4 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -367,13 +367,13 @@ export default function AdminProfile() {
             <div className="space-y-6">
               {userData.provider === "Credential" && (
                 <div className="bg-white border border-gray-200 rounded-lg shadow-sm">
-                  <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="px-4 py-4 border-b border-gray-200">
                     <h2 className="text-lg font-semibold text-gray-800">
                       Change Password
                     </h2>
                   </div>
 
-                  <div className="p-6">
+                  <div className="p-4">
                     {!isChangingPassword ? (
                       <div className="text-center">
                         <p className="text-neutral mb-4">

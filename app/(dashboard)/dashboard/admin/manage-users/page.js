@@ -56,23 +56,29 @@ export default function ManageUsers() {
   });
 
   // Handle role change
-  const handleRoleChange = async (email, newRole) => {
-    if (newRole !== "admin") {
-      const result = await Swal.fire({
-        title: `Change role to ${newRole}?`,
-        text: "This user will lose admin privileges!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, change it!",
-      });
+const handleRoleChange = async (email, currentRole, newRole) => {
+  // instructors are locked
+  if (currentRole === "instructor") return;
 
-      if (!result.isConfirmed) return;
-    }
+  // only allow user <-> admin
+  if (!["user", "admin"].includes(newRole)) return;
 
-    updateRoleMutation.mutate({email, role: newRole});
-  };
+  // confirm when removing admin
+  if (currentRole === "admin" && newRole !== "admin") {
+    const result = await Swal.fire({
+      title: `Change role to ${newRole}?`,
+      text: "This user will lose admin privileges!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, change it!",
+    });
+    if (!result.isConfirmed) return;
+  }
+
+  updateRoleMutation.mutate({ email, role: newRole });
+};
 
   // Handle delete user with SweetAlert2
   const handleDeleteUser = async (user) => {
@@ -122,7 +128,7 @@ export default function ManageUsers() {
       </div>
 
       {/* users Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-border-color overflow-hidden">
+      <div className="hidden md:block  bg-white rounded-xl shadow-sm border border-border-color overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-base-300">
@@ -186,34 +192,37 @@ export default function ManageUsers() {
                         </div>
                       </div>
                     </td>
-                    <td className="py-4 px-6">
-                      <div className="flex items-center">
-                        <select
-                          value={user.role}
-                          onChange={(e) =>
-                            handleRoleChange(user.email, e.target.value)
-                          }
-                          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
-                        >
-                          <option value="admin">Admin</option>
-                          <option value="instructor">Instructor</option>
-                          <option value="user">User</option>
-                        </select>
-                        <span
-                          className={`ml-3 px-2 py-1 text-xs font-medium rounded-full ${
-                            user.role === "admin"
-                              ? "bg-primary/10 text-primary"
-                              : user.role === "instructor"
-                                ? "bg-red-100 text-red-800"
-                                : user.role === "user"
-                                  ? "bg-gray-100 text-gray-500"
-                                  : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {user.role}
-                        </span>
-                      </div>
-                    </td>
+                   <td className="py-4 px-6">
+  <div className="flex items-center gap-3">
+    {user.role === "instructor" ? (
+      // locked view-only
+      <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">
+        instructor
+      </span>
+    ) : (
+      <>
+        <select
+          value={user.role}
+          onChange={(e) => handleRoleChange(user.email, user.role, e.target.value)}
+          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white"
+        >
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+        </select>
+
+        <span
+          className={`px-2 py-1 text-xs font-medium rounded-full ${
+            user.role === "admin"
+              ? "bg-primary/10 text-primary"
+              : "bg-gray-100 text-gray-600"
+          }`}
+        >
+          {user.role}
+        </span>
+      </>
+    )}
+  </div>
+</td>
 
                     <td className="py-4 px-6">
                       <div className="">
@@ -232,6 +241,91 @@ export default function ManageUsers() {
           </table>
         </div>
       </div>
+      {/* Mobile Cards */}
+<div className="md:hidden space-y-3">
+  {users.map((user) => {
+    const avatarSrc = user?.photo
+      ? user.photo
+      : user?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(user.photoKey)}`
+      : "/profile-avatar.png";
+
+    return (
+      <div
+        key={user._id}
+        className="bg-white rounded-xl border border-border-color shadow-sm p-4 w-full"
+      >
+        {/* top */}
+<div className="flex items-start justify-between gap-3">
+  <div className="flex items-center gap-3 min-w-0">
+    <Image
+      width={56}
+      height={56}
+      className="h-14 w-14 rounded-full object-cover shrink-0"
+      src={avatarSrc}
+      alt={user.name || "user"}
+    />
+
+    <div className="min-w-0">
+      <div className="font-semibold truncate">{user.name}</div>
+      <div className="text-xs text-gray-500">ID: {user._id.slice(-8)}</div>
+
+      <div className="mt-1 text-sm text-gray-700 flex items-center gap-2 min-w-0">
+        <FiMail className="text-gray-400 shrink-0" />
+        <span className="truncate">{user.email}</span>
+      </div>
+
+      <div className="text-sm text-gray-500 flex items-center gap-2">
+        <FaPhone className="text-gray-400 shrink-0" />
+        <span className="truncate">{user.phone || "Not provided"}</span>
+      </div>
+    </div>
+  </div>
+
+  {/* Remove button (top-right) */}
+  <PrimaryBtn
+    className="bg-red-500 text-xs px-1! md:px-3! py-2! whitespace-nowrap"
+    onClick={() => handleDeleteUser(user)}
+  >
+    Remove user
+  </PrimaryBtn>
+</div>
+
+     
+<div className="mt-3 flex items-center gap-3">
+  {user.role === "instructor" ? (
+    <span className="px-3 py-2 text-xs font-medium rounded-full bg-red-100 text-red-800">
+      instructor
+    </span>
+  ) : (
+    <>
+      <select
+        value={user.role}
+        onChange={(e) => handleRoleChange(user.email, user.role, e.target.value)}
+        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white"
+      >
+        <option value="admin">Admin</option>
+        <option value="user">User</option>
+      </select>
+
+      <span
+        className={`px-2 py-1 text-xs font-medium rounded-full whitespace-nowrap ${
+          user.role === "admin"
+            ? "bg-primary/10 text-primary"
+            : "bg-gray-100 text-gray-600"
+        }`}
+      >
+        {user.role}
+      </span>
+    </>
+  )}
+</div>
+
+       
+      </div>
+    );
+  })}
+</div>
     </div>
   );
 }

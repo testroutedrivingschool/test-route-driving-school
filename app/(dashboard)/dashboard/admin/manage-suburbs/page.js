@@ -146,19 +146,19 @@ export default function ManageSuburbs() {
                   key={loc?._id || loc?.name}
                   className="hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-4 px-6 text-left">{loc?.name}</td>
-                  <td className="py-4 px-6 text-left">{loc?.zone || "-"}</td>
+                  <td className="px-2 md:px-4 py-4 text-left text-sm md:text-base">{loc?.name}</td>
+                  <td className="px-2 md:px-4 py-4 text-left text-sm md:text-base">{loc?.zone || "-"}</td>
 
-                  <td className="py-4 px-6 flex justify-center gap-2">
+                  <td className="px-2 md:px-4 flex justify-center gap-2">
                     <PrimaryBtn
-                      className="text-sm px-2 py-1"
+                      className="text-sm! md:text-base! px-1! md:px-2! py-1"
                       onClick={() => setSelectedSuburb(loc)}
                     >
                       View
                     </PrimaryBtn>
 
                     <PrimaryBtn
-                      className="text-sm px-2 py-1 bg-red-600 hover:bg-red-700"
+                      className="text-sm! md:text-base! px-1! md:px-2! py-1 bg-red-600 hover:bg-red-700"
                       onClick={() => setDeleteTarget(loc)}
                     >
                       <FaTrash /> Delete

@@ -184,11 +184,11 @@ export default function ManagePackages() {
             className="bg-white rounded-xl shadow border border-border-color p-4 flex flex-col"
           >
             <Image
-              width={600}
-              height={600}
+              width={1000}
+              height={1000}
               src={pkg.packageThumbline}
               alt={pkg.name}
-              className="h-40 w-full object-cover object-top rounded-lg mb-3"
+              className="h-88 md:h-75 w-full object-cover object-center rounded-lg mb-3"
             />
 
             <h3 className="font-bold text-lg">{pkg.name}</h3>
@@ -225,11 +225,11 @@ export default function ManagePackages() {
       {/* ================= MODAL ================= */}
       {showModal && (
         <Modal onClose={() => setShowModal(false)}>
-          <h3 className="text-2xl font-bold mb-4">
+          <h3 className="text-2xl font-bold mb-2">
             {editingPackage ? "Edit Package" : "Add Package"}
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {[
               ["Name", "name"],
 

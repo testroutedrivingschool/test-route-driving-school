@@ -136,7 +136,7 @@ export default function DrivingTestPackage() {
                   Car Hire with 2 Hour lesson
                 </h2>
                 <div className="text-right">
-                  <p className="text-lg md:text-2xl font-bold text-primary">$220</p>
+                  <p className="text-lg md:text-2xl font-bold text-primary">$290</p>
                 </div>
               </div>
 

@@ -11,7 +11,19 @@ import Swal from "sweetalert2";
 import Modal from "@/app/shared/ui/Modal";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import avatarImg from "@/app/assets/profile-avatar.png";
+
+const DAY_LABEL = {
+  M: "Mon",
+  T: "Tue",
+  W: "Wed",
+  TH: "Thu",
+  F: "Fri",
+  S: "Sat",
+  SU: "Sun",
+};
+
+const DURATION_LABELS = ["1 Hr", "1.5 Hr", "2 Hr", "3 Hr", "4 Hr", "5 Hr", "6 Hr"];
+
 export default function ManageInstructors() {
   const queryClient = useQueryClient();
   const [selectedInstructor, setSelectedInstructor] = useState(null);
@@ -114,8 +126,8 @@ const modalAvatarSrc = selectedInstructor?.photo
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-border-color overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-border-color overflow-hidden">
+  <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-base-300">
               <tr>
@@ -231,11 +243,95 @@ const modalAvatarSrc = selectedInstructor?.photo
           </table>
         </div>
       </div>
+{/* Mobile Cards */}
+<div className="md:hidden space-y-3">
+  {instructors.map((ins) => {
+    const avatarSrc = ins?.photo
+      ? ins.photo
+      : ins?.photoKey
+      ? `/api/storage/proxy?key=${encodeURIComponent(ins.photoKey)}`
+      : "/profile-avatar.png";
 
+    return (
+      <div
+        key={ins._id}
+        className="bg-white rounded-xl border border-border-color shadow-sm p-4 w-full"
+      >
+        {/* top */}
+        <div className="flex items-center gap-3">
+          <Image
+            width={56}
+            height={56}
+            className="h-14 w-14 rounded-full object-cover shrink-0"
+            src={avatarSrc}
+            alt={ins.name || "user"}
+          />
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold truncate">{ins.name}</div>
+            <div className="text-xs text-gray-500">
+              ID: {ins._id.slice(-8)}
+            </div>
+            <div className="text-sm text-gray-700 truncate flex items-center gap-2">
+              <FiMail className="text-gray-400 shrink-0" />
+              <span className="truncate">{ins.email}</span>
+            </div>
+            <div className="text-sm text-gray-500 flex items-center gap-2">
+              <FaPhone className="text-gray-400 shrink-0" />
+              <span className="truncate">{ins.phone || "Not provided"}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* status */}
+        <div className="mt-3 flex items-center gap-4">
+          <select
+            value={ins.status}
+            onChange={(e) => handleStatusChange(ins, e.target.value)}
+            className="flex-1 border rounded-lg px-3 py-2 text-sm bg-white"
+          >
+            <option value="pending">Pending</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+
+          <span
+            className={`px-2 py-1 text-xs rounded-full font-medium whitespace-nowrap
+              ${
+                ins.status === "approved"
+                  ? "bg-green-100 text-green-700"
+                  : ins.status === "rejected"
+                  ? "bg-red-100 text-red-700"
+                  : "bg-yellow-100 text-yellow-700"
+              }`}
+          >
+            {ins.status}
+          </span>
+        </div>
+
+        {/* actions */}
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <PrimaryBtn
+            className="text-sm w-full justify-center!  py-2!"
+            onClick={() => setSelectedInstructor(ins)}
+          >
+            View
+          </PrimaryBtn>
+
+          <PrimaryBtn
+            className="bg-red-500 text-sm justify-center! w-full py-2!"
+            onClick={() => handleDeleteInstructor(ins)}
+          >
+            Delete
+          </PrimaryBtn>
+        </div>
+      </div>
+    );
+  })}
+</div>
       {/* Modal */}
       {selectedInstructor && (
         <Modal onClose={() => setSelectedInstructor(null)}>
-          <div className="space-y-6 text-sm">
+        <div className=" overflow-y-auto">
             {/* Header */}
             <div className="flex items-center gap-4">
               <Image
@@ -264,7 +360,7 @@ const modalAvatarSrc = selectedInstructor?.photo
             </div>
 
             {/* Basic Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <p>
                 <b>Phone:</b> {selectedInstructor.phone || "N/A"}
               </p>
@@ -301,26 +397,38 @@ const modalAvatarSrc = selectedInstructor?.photo
                 </p>
               </div>
             </div>
-
+<div className="mt-4">
+  <h3 className="font-bold text-lg text-neutral">Extra Details</h3>
+  <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <p><b>Suburb:</b> {selectedInstructor.suburb || "N/A"}</p>
+    <p><b>State:</b> {selectedInstructor.state || "N/A"}</p>
+    <p><b>Post Code:</b> {selectedInstructor.postCode || "N/A"}</p>
+    <p><b>Home Phone:</b> {selectedInstructor.homePhone || "N/A"}</p>
+    <p><b>Work Phone:</b> {selectedInstructor.workPhone || "N/A"}</p>
+    <p><b>Emergency Contact:</b> {selectedInstructor.emergencyContact || "N/A"}</p>
+    <p><b>Car Insurance No:</b> {selectedInstructor.carInsuranceNumber || "N/A"}</p>
+    <p><b>Insurance Expiry:</b> {selectedInstructor.carInsuranceExpiry || "N/A"}</p>
+  </div>
+</div>
             {/* Qualifications */}
-            <div>
-              <h3 className="font-semibold mb-1">Qualifications</h3>
+            <div className="mt-4">
+              <h3 className="font-bold text-lg text-neutral mb-1">Qualifications</h3>
               <p className="text-gray-700">
                 {selectedInstructor.qualifications || "Not provided"}
               </p>
             </div>
 
             {/* Bio */}
-            <div>
-              <h3 className="font-semibold mb-1">Bio</h3>
+            <div className="mt-4">
+              <h3 className="font-bold text-lg text-neutral mb-1">Bio</h3>
               <p className="text-gray-700">
                 {selectedInstructor.bio || "Not provided"}
               </p>
             </div>
 
             {/* Areas */}
-            <div>
-              <h3 className="font-semibold mb-1">Teaching Areas</h3>
+            <div className="mt-4">
+              <h3 className="font-bold text-lg text-neutral mb-1">Teaching Areas</h3>
               <div className="flex flex-wrap gap-2">
                 {selectedInstructor.suburbs?.length ? (
   selectedInstructor.suburbs.map((s) => (
@@ -336,17 +444,20 @@ const modalAvatarSrc = selectedInstructor?.photo
             </div>
 
             {/* Languages */}
-            <div>
+            <div className="mt-2">
               <h3 className="font-semibold mb-1">Languages</h3>
               <div className="flex flex-wrap gap-2">
                 {selectedInstructor.languages?.length ? (
                   selectedInstructor.languages.map((lang) => (
+                    <>
                     <span
                       key={lang}
                       className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs"
-                    >
+                      >
                       {lang}
                     </span>
+                   {selectedInstructor.customLanguage &&  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs">{selectedInstructor.customLanguage}</span>}
+                      </>
                   ))
                 ) : (
                   <span className="text-gray-500">No languages selected</span>
@@ -354,31 +465,49 @@ const modalAvatarSrc = selectedInstructor?.photo
               </div>
             </div>
 
-            {/* Availability */}
-            <div>
-              <h3 className="font-semibold mb-2">Availability</h3>
-              <div className="space-y-2">
-                {Object.entries(selectedInstructor.availability || {}).map(
-                  ([day, data]) => (
-                    <div
-                      key={day}
-                      className="flex items-center justify-between border border-border-color rounded-lg px-3 py-2"
-                    >
-                      <span className="font-medium">{day}</span>
-                      {data.enabled ? (
-                        <span className="text-green-700 text-sm">
-                          {data.from} – {data.to}
-                        </span>
-                      ) : (
-                        <span className="text-gray-400 text-sm">
-                          Unavailable
-                        </span>
-                      )}
-                    </div>
-                  )
-                )}
+          
+            {/* Services */}
+<div className="mt-4">
+  <h3 className="font-bold text-lg text-neutral">Services & Pricing</h3>
+
+  {selectedInstructor.services?.length ? (
+    <div className="mt-3 space-y-3">
+      {selectedInstructor.services.map((srv, idx) => {
+        const prices = srv?.prices || [];
+        const active = srv?.activeDurations || [];
+
+        const activeItems = prices
+          .map((p, i) => ({ price: p, active: active?.[i], label: DURATION_LABELS[i] }))
+          .filter((x) => x.active && x.price !== null && x.price !== undefined);
+
+        return (
+          <div key={`${srv.name}-${idx}`} className="border border-border-color rounded-lg p-3">
+            <div className="font-semibold">{srv.name}</div>
+
+            {activeItems.length ? (
+              <div className="mt-2 flex flex-wrap gap-2">
+                {activeItems.map((x, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-xs"
+                  >
+                    {x.label}: ${x.price}
+                  </span>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className="text-gray-500 text-sm mt-2">No active pricing set</div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  ) : (
+    <p className="text-gray-500 mt-2">No services added</p>
+  )}
+</div>
+
+
           </div>
         </Modal>
       )}

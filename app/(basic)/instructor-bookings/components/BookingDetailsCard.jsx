@@ -835,11 +835,11 @@ if (emailInvoice) {
     <Modal onClose={onClose}>
       <div className="p-0">
         {/* Header */}
-        <div className="bg-green-500 text-black font-extrabold text-2xl px-6 py-4 rounded-t-lg flex items-center justify-between">
+        <div className="bg-green-500 text-black font-extrabold text-2xl px-6 py-1 rounded-t-lg flex items-center justify-between">
           <span>Payment Detail</span>
         </div>
 
-        <div className="px-8 py-6">
+        <div className="px-2 py-4">
           {/* Cost */}
           <div className="flex justify-between items-center">
             <p className="text-lg font-bold">Total Cost:</p>
@@ -848,7 +848,7 @@ if (emailInvoice) {
             </p>
           </div>
 
-          <div className="my-5 border-t border-gray-300" />
+          <div className="my-4 border-t border-gray-300" />
 
           {/* Cash/Credit */}
           <div className="grid grid-cols-12 gap-4 items-center">
@@ -911,12 +911,12 @@ if (emailInvoice) {
           {/* Stripe section only if credit > 0 */}
           {showCardSection && (
             <div className="mt-6 border border-gray-200 rounded-md">
-              <div className="px-4 py-3 bg-gray-50 font-bold text-red-600 flex items-center justify-between">
+              <div className="px-2 py-3 bg-gray-50 font-bold text-red-600 flex items-center justify-between">
                 <span>Process Credit Card</span>
                 <span>🔒</span>
               </div>
 
-              <div className="p-4">
+              <div className="p-2">
                 {/* ✅ reuse your working component */}
                 <StripeCardInput />
 

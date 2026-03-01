@@ -139,7 +139,7 @@ export default function CouponAndVouchers() {
       )}
 
       {/* Coupons Table */}
-      <div className="overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200">
+      <div className="hidden md:block  overflow-x-auto bg-white rounded-xl shadow-md border border-gray-200">
         <table className="min-w-full divide-y divide-border-color">
           <thead className="bg-gray-50">
             <tr>
@@ -203,6 +203,58 @@ export default function CouponAndVouchers() {
           </tbody>
         </table>
       </div>
+      {/* Coupons Cards (Mobile) */}
+<div className="md:hidden space-y-3">
+  {coupons.length === 0 ? (
+    <div className="bg-white rounded-xl shadow-md border border-gray-200 p-4 text-center text-gray-500">
+      <h2 className="font-bold">No Coupon Found</h2>
+    </div>
+  ) : (
+    coupons.map((coupon) => {
+      const isExpired = new Date(coupon.expires) < new Date();
+
+      return (
+        <div
+          key={coupon._id}
+          className="bg-white rounded-xl shadow-md border border-gray-200 p-4 w-full"
+        >
+          {/* top row */}
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <div className="text-lg font-bold text-neutral truncate">
+                {coupon.code}
+              </div>
+              <div className="text-sm text-gray-600 mt-1">
+                {coupon.discount}% Off
+              </div>
+              <div className="text-sm text-gray-500 mt-1">
+                Expires: {coupon.expires}
+              </div>
+            </div>
+
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                isExpired
+                  ? "bg-red-100 text-red-700"
+                  : "bg-green-100 text-green-700"
+              }`}
+            >
+              {isExpired ? "Expired" : "Active"}
+            </span>
+          </div>
+
+          {/* action */}
+          <button
+            onClick={() => handleDeleteCoupon(coupon._id)}
+            className="mt-3 w-full flex items-center justify-center gap-2 px-3 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
+          >
+            <FaTrash /> Delete
+          </button>
+        </div>
+      );
+    })
+  )}
+</div>
     </div>
   );
 }
