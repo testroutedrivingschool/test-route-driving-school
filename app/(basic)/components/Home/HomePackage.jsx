@@ -113,7 +113,7 @@ export default function HomePackage() {
                     <span className="text-lg text-gray-500 line-through">
                       ${pkg.regularPrice}
                     </span>
-                    <span className="ml-auto text-sm font-semibold text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                    <span className="ml-auto text-sm font-semibold text-green-600 bg-white border border-green-600 px-3 py-1 rounded-full">
                       Save $
                       {parseInt(pkg.regularPrice.slice(1)) -
                         parseInt(pkg.price)}

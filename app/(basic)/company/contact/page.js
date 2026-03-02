@@ -119,6 +119,7 @@ export default function Contact() {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                      title="Google Map showing our office location"
                   ></iframe>
                 </div>
               </div>

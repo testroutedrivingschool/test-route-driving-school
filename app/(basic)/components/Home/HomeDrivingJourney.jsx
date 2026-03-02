@@ -73,7 +73,7 @@ export default function HomeDrivingJourney() {
             <div className="flex flex-wrap gap-4 mt-6">
               <Link href="/bookings" aria-label="Book Now" className="group">
                 <PrimaryBtn className="py-4 bg-accent!">
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 text-neutral-900">
                     Get started now
                     <FaArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
                   </span>

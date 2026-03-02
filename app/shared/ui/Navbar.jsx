@@ -293,7 +293,7 @@ const dashHref =
   />
               </div>
             ) : (
-              <Link href="/login" className="inline-block">
+              <Link href="/login" className="inline-block"   aria-label="Login to your account">
                 <SecondaryBtn className="hidden md:flex">
                   Login <FaAngleRight />
                 </SecondaryBtn>

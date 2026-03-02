@@ -53,8 +53,8 @@ export default function LocalDrivingLessons() {
               <Link href={"/bookings"}>
                 <PrimaryBtn className={`px-2! md:px-4`}>Book a Lesson</PrimaryBtn>
               </Link>
-              <Link  aria-label="Learn More: Automatic driving lesson" href={`/services/automatic-driving-lessons`}>
-                <OutlineBtn className={"py-1.5! px-2! md:px-4"}>Learn More</OutlineBtn>
+              <Link  href={`/services/automatic-driving-lessons`} className={"bg-transparent text-primary transition font-bold text-lg  border border-primary hover:bg-primary hover:border-base-300 hover:text-white rounded-md md:px-4 py-1.5 px-2! "}> 
+               Learn More
               </Link>
             </div>
           </div>

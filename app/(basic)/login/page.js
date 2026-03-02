@@ -210,7 +210,7 @@ export default function Login() {
         <div className="mt-4 text-center">
           <p className="text-neutral">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-primary font-semibold">
+            <Link href="/register" className="text-primary font-semibold"   aria-label="Register to your account">
               Register
             </Link>
           </p>

@@ -97,12 +97,12 @@ export default function Footer() {
             </ul>
             {(!userData || userData.role === "user") && (
               <div className="mt-6">
-                <Link
-                  href="/become-instructor"
-                  className="inline-block bg-accent text-white font-semibold px-6 py-3 rounded-xl hover:bg-accent/90 transition-all duration-300"
-                >
-                  Join as an Instructor
-                </Link>
+              <Link
+  href="/become-instructor"
+  className="inline-block text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 bg-[hsl(262_60%_35%)] hover:bg-[hsl(262_60%_30%)]"
+>
+  Join as an Instructor
+</Link>
               </div>
             )}
           </div>

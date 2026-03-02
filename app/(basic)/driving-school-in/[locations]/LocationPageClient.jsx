@@ -260,6 +260,7 @@ const formattedLocation = slug
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
+                title="Google Map showing our suburbs area"
             />
           </div>
         </Container>

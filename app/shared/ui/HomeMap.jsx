@@ -16,6 +16,7 @@ export default function HomeMap() {
           style={{border: 0}}
           allowFullScreen
           loading="lazy"
+            title="Google Map showing our suburbs area"
           referrerPolicy="no-referrer-when-downgrade"
           />
       </div>
@@ -30,6 +31,7 @@ export default function HomeMap() {
           style={{border: 0}}
           allowFullScreen
           loading="lazy"
+            title="Google Map showing our suburbs area"
           referrerPolicy="no-referrer-when-downgrade"
           />
       </div>
