@@ -6,7 +6,7 @@ export const uploadProfilePhotoToMinio = async (file) => {
     fileName: file.name,
     fileType: file.type,
     fileSize: file.size,
-    folder: "images", // private images folder
+    folder: "images", 
   });
 
   // 2) upload directly to MinIO
@@ -17,5 +17,5 @@ export const uploadProfilePhotoToMinio = async (file) => {
   });
 
   // 3) return key to store in DB
-  return data.key; // e.g. "images/uuid.webp"
+  return data.key; 
 };

@@ -4,7 +4,7 @@ import { s3 } from "@/app/libs/s3/s3";
 
 export async function GET(req) {
   const { searchParams } = new URL(req.url);
-  const prefix = searchParams.get("prefix") || ""; // e.g. "images/" or "documents/"
+  const prefix = searchParams.get("prefix") || ""; 
 
   const out = await s3.send(
     new ListObjectsV2Command({

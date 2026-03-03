@@ -15,21 +15,29 @@ export default function Modal({children, onClose}) {
           relative
         "
       >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="
-            absolute top-2 right-3
-            text-gray-500 hover:text-gray-700
-            font-bold text-2xl
-            sm:top-4 sm:right-4
-          "
-        >
-          &times;
-        </button>
+   
+       {/* Sticky Header */}
+<div className="sticky top-0 z-20 flex justify-end ">
+  <button
+    onClick={onClose}
+    className="
+      w-7 h-7
+      flex items-center justify-center
+      rounded-full
+      bg-gray-100
+      text-gray-600
+      hover:bg-red-500 hover:text-white
+      transition-all duration-200
+      shadow-sm
+      hover:shadow-md
+    "
+  >
+    ✕
+  </button>
+</div>
 
         {/* Content */}
-        <div className="pt-6">{children}</div>
+        <div className="pt-1">{children}</div>
       </div>
     </div>
   );

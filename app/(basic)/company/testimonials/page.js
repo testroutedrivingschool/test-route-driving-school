@@ -78,6 +78,7 @@ export default function Testimonials() {
       return res.data;
     },
   });
+  console.log(reviewsData);
   if (isLoading) return <Skeleton />;
   if (!reviewsData.length) {
     return (

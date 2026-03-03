@@ -174,8 +174,10 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <FeatureCards />
-      <HomeAbout />
+      
+      <HomePackage />
+          <DrivingTestPackage />
+          <DrivingTestAssessment />
       <WhatWeOffer
         sectionTitle={
           "Reliable Services Designed for Your Convenience and Comfort"
@@ -185,17 +187,16 @@ export default function Home() {
         }
         services={whatWeOfferServices}
       />
-      <HomePackage />
-      <DrivingTestPackage />
-      <DrivingTestAssessment />
-      <WhyChooseUs />
+      <WhyChooseUs className={"bg-base-300"}/>
       <MovingCar />
       <LocalDrivingLessons />
       <FindInstructor />
       <HomeDrivingJourney />
       <DrivingTipsSection />
+      <FeatureCards />
       <GoogleReviewCard />
       <Reviews />
+      <HomeAbout />
       <HowItWorks />
       <BlogSection
         sectionTitle={`Our Blog`}

@@ -841,7 +841,7 @@ export default function BookingsPage() {
                               {/* legend */}
                               <div className="mt-3 flex items-center gap-4 text-xs text-neutral">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-3 h-3 bg-[#A2B5D8] rounded" />
+                                  <div className="w-3 h-3 bg-[#B20606] rounded" />
                                   <span>Booked</span>
                                 </div>
                                 <div className="flex items-center gap-2">
@@ -927,7 +927,7 @@ export default function BookingsPage() {
                                                   key={dayIndex}
                                                   className={tdClass}
                                                 >
-                                                  <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
+                                                  <div className="w-full h-full min-h-11 py-2 text-xs font-medium md:font-semibold bg-[#B20606] text-white flex items-center justify-center">
                                                     Booked
                                                   </div>
                                                 </td>
@@ -985,7 +985,7 @@ export default function BookingsPage() {
                                                   key={dayIndex}
                                                   className={tdClass}
                                                 >
-                                                  <div className="w-full h-full min-h-11 py-2 text-xs font-semibold bg-[#A2B5D8] text-black/40 flex items-center justify-center">
+                                                  <div className="w-full h-full min-h-11 py-2 text-xs font-medium md:font-semibold bg-[#B20606] text-white flex items-center justify-center">
                                                     Booked
                                                   </div>
                                                 </td>
@@ -1208,7 +1208,7 @@ export default function BookingsPage() {
                                                       key={dayIndex}
                                                       className={cellClass}
                                                     >
-                                                      <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[8px] font-bold">
+                                                      <div className="w-full min-h-10 flex items-center justify-center bg-[#B20606] text-white text-[8px] font-medium sm:font-bold">
                                                         Booked
                                                       </div>
                                                     </td>
@@ -1237,7 +1237,7 @@ export default function BookingsPage() {
                                                       key={dayIndex}
                                                       className={cellClass}
                                                     >
-                                                      <div className="w-full min-h-10 px-1 py-1 bg-[#FF9933] text-[8px] font-bold text-black flex items-center justify-center text-center wrap-break-word leading-tight">
+                                                      <div className="w-full min-h-10 px-1 py-1 bg-[#FF9933] text-[8px] font-medium md:font-bold text-black flex items-center justify-center text-center wrap-break-word leading-tight">
                                                         {slot.publicNote || ""}
                                                       </div>
                                                     </td>
@@ -1250,7 +1250,7 @@ export default function BookingsPage() {
                                                       key={dayIndex}
                                                       className={cellClass}
                                                     >
-                                                      <div className="w-full min-h-10 flex items-center justify-center bg-[#A2B5D8] text-black/40 text-[10px] font-bold">
+                                                      <div className="w-full min-h-10 flex items-center justify-center bg-[#B20606] text-white text-[8px] font-medium0 md:font-bold">
                                                         Booked
                                                       </div>
                                                     </td>

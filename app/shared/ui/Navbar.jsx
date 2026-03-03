@@ -8,7 +8,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {FiMenu, FiX, FiChevronRight, FiChevronDown} from "react-icons/fi";
 import {FaAngleRight} from "react-icons/fa";
-import {MdDashboard, MdKeyboardArrowDown} from "react-icons/md";
+import { MdKeyboardArrowDown} from "react-icons/md";
 import Container from "./Container";
 import SecondaryBtn from "../Buttons/SecondaryBtn";
 import PrimaryBtn from "../Buttons/PrimaryBtn";
@@ -20,8 +20,8 @@ import {useRouter} from "next/navigation";
 import AvatarDropdown from "./AvatarDropdown";
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
-  {id: 2, label: "About", pathname: "/about"},
-  {id: 3, label: "Instructors", pathname: "/instructors"},
+  {id: 2, label: "Instructors", pathname: "/instructors"},
+    {id: 3, label: "Package", pathname: "/packages"},
   {
     id: 4,
     label: "Services",
@@ -70,7 +70,8 @@ const navlinks = [
     ],
   },
 
-  {id: 5, label: "Package", pathname: "/packages"},
+  {id: 5, label: "About Us", pathname: "/about"},
+
   {id: 6, label: "Area Covered", pathname: "/area-covered"},
   {id: 7, label: "FAQ", pathname: "/faq"},
   {
@@ -149,25 +150,25 @@ const dashHref =
     <nav
       className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
     >
-      <Container>
+      <Container className={`px-1! sm:px-2!`}>
         <div className="flex items-center justify-between ">
           {/* Logo */}
           <div className="lg:flex-none flex justify-center lg:justify-start">
-            <Link href="/" className="flex items-center gap-2 group">
+            <Link href="/" className="flex items-center gap-1 md:gap-2 group">
               <Image
                 src="/test-route-driving-school-logo.png"
                 alt="Test Route Driving School Logo"
-                width={80}
-                height={80}
+                width={800}
+                height={800}
                 loading="eager"
                 className="object-contain rounded-full transition-all duration-300
-                 w-13 h-13 sm:w-16 sm:h-16 md:w-18 md:h-18"
+                 w-15 h-15 sm:w-16 sm:h-16 md:w-19 md:h-19"
               />
               <div>
-                <h2 className="block font-bold text-primary text-lg md:text-lg leading-4.5">
+                <h2 className="block font-bold md:font-black text-primary text-base md:text-lg leading-4.5">
                   Test Route
                 </h2>
-                <h2 className="block font-black text-primary text-lg md:text-lg ">
+                <h2 className="block font-bold md:font-black text-primary text-base md:text-lg ">
                   Driving School
                 </h2>
               </div>

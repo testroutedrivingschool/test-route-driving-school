@@ -122,6 +122,17 @@ export default function Footer() {
                     {" "}
                     <FaPhoneAlt size={22} className="text-accent" />
                     <span> 0412 018 593</span>
+                    
+                  </a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <a
+                    className="flex items-center gap-2"
+                    href="tel:+61469046923"
+                  >
+                    {" "}
+                    <FaPhoneAlt size={22} className="text-accent" />
+                    <span> 0469 046 923</span>
                   </a>
                 </li>
 

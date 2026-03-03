@@ -67,7 +67,7 @@ export default function WhatWeOffer({
               
               className="group relative 
   bg-base-300 
-  rounded-xl p-8 lg:p-10 
+  rounded-xl p-4 md:p-8 lg:p-10 
   shadow 
   transition-all duration-500
    hover:-translate-y-2 border-b-8 border-primary cursor-pointer"

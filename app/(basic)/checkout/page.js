@@ -169,7 +169,6 @@ function CheckoutPage() {
     }));
   };
 
-console.log(appliedCoupon);
 const handleProceed = async () => {
   if (!billing.state) return toast.error("Select your State");
 

@@ -7,8 +7,7 @@ export async function GET(req) {
   const key = searchParams.get("key");
   if (!key) return NextResponse.json({ error: "Missing key" }, { status: 400 });
 
-  // TODO: Add auth check (recommended):
-  // verify this key belongs to logged-in user
+
 
   try {
     const obj = await s3.send(

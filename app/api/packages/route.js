@@ -22,7 +22,33 @@ export async function GET(request) {
       return NextResponse.json(singlePackage);
     }
 
-    const packages = await collection.find().toArray();
+   const packages = await collection
+  .aggregate([
+    {
+      $addFields: {
+        categoryOrder: {
+          $switch: {
+            branches: [
+              { case: { $eq: ["$category", "driving-lesson"] }, then: 1 },
+              { case: { $eq: ["$category", "test-package"] }, then: 2 },
+              { case: { $eq: ["$category", "all"] }, then: 3 }
+            ],
+            default: 4
+          }
+        }
+      }
+    },
+    {
+      $sort: {
+        categoryOrder: 1,
+        durationNum: 1
+      }
+    },
+    {
+      $project: { categoryOrder: 0 } 
+    }
+  ])
+  .toArray();
     return NextResponse.json(packages);
   } catch (error) {
     console.error("GET /api/packages error:", error);

@@ -60,14 +60,14 @@ export default function PageHeroSection({title, subtitle}) {
 
             {/* Call Now */}
             <a
-              href="tel:61412018593"
+              href="tel:+61469046923"
               className="
                bg-transparent text-white transition font-bold text-xs md:text-lg px-2 md:px-5  border-2 border-white hover:bg-primary hover:text-white rounded-md py-2 hover:border-transparent flex  sm:flex-row items-center gap-2
               "
             >
               <FaPhoneVolume className="text-white" />
 
-              <span className="text-white">0412 018 593</span>
+              <span className="text-white">0469 046 923</span>
             </a>
           </div>
         </Container>

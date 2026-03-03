@@ -297,10 +297,15 @@ const safeTitleSlug = checklistTitle
 const filename = `checklist-${safeTitleSlug}-${clientId}.pdf`;
 const invoiceKey = `checklists/${clientId}/${Date.now()}-${filename}`;
 
-// ✅ Upload pdfBuffer to S3/Minio
+
+
 await uploadPdfToS3({
   key: invoiceKey,
   buffer: pdfBuffer,
+   originalName: filename,
+     ownerEmail: userEmail, 
+      status: "active",
+   folder: "checklists",
   contentType: "application/pdf",
 });
 const invoiceNo = await getNextInvoiceNo();

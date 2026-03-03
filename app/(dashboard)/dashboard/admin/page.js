@@ -114,13 +114,12 @@ useEffect(() => {
     return { totalSales, webBookings,webSales };
   }, [statsData]);
   const monthLabel = useMemo(() => {
-  const key = statsData?.monthStats?.month; // "2026-02"
+  const key = statsData?.monthStats?.month; 
   if (!key) return "This Month";
   const [y, m] = key.split("-").map(Number);
   const d = new Date(y, (m || 1) - 1, 1);
-  return d.toLocaleDateString("en-AU", { month: "long" }); // "February"
+  return d.toLocaleDateString("en-AU", { month: "long" }); 
 }, [statsData?.monthStats?.month]);
-console.log(statsData);
   if (!statsData) {
     return <LoadingSpinner/>;
   }

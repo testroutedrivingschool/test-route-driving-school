@@ -59,7 +59,15 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
   const invoiceKey = `invoices/${filename}`;
 
   // 2) Upload PDF to S3
-  await uploadPdfToS3({ key: invoiceKey, buffer: pdfBuffer });
+  await uploadPdfToS3({
+  key: invoiceKey,
+  buffer: pdfBuffer,
+  originalName: filename,
+  folder: "invoices",
+  ownerEmail: bookingDoc.userEmail || bookingDoc.clientEmail || "",  
+  status: "active",
+});
+ 
 
   // Prepare email contents
   const userSubject = `Booking Confirmed - Invoice #${invoiceNo}`;

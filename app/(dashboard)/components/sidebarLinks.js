@@ -8,7 +8,6 @@ import {
   FiMessageSquare,
   FiMapPin,
   FiDollarSign,
-  FiFileText,
   FiCreditCard,
   FiGift,
 } from "react-icons/fi";
@@ -101,6 +100,12 @@ export const adminSidebarLinks = [
     label: "Coupon & Vouchers",
     icon: <FiGift />,
     path: "/dashboard/admin/add-coupon-vouchers",
+  },
+  {
+    id: 9,
+    label: "Manage Files",
+    icon: <FaFileAlt />,
+    path: "/dashboard/admin/manage-files",
   },
 ];
 

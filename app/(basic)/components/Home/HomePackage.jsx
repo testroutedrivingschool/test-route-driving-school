@@ -14,7 +14,7 @@ export const packages = [
     packageThumbline: "/pkg.png",
     description:
       "The 1 Hour Lesson Package is designed to give learner drivers to prepare for their driving test.",
-    regularPrice: "$100",
+    regularPrice: "",
     price: 75,
     duration: "1 hour",
     features: [
@@ -25,13 +25,29 @@ export const packages = [
     ],
   },
   {
+    _id: "695be2ce1f72e6c2fa81e095",
+    name: "2 Hours Lesson Package",
+    packageThumbline: "/pkg.png",
+    description:
+      "1 Hour × 2 Lessons Package at Test Route Driving School is perfect for learner.",
+    regularPrice: "$150",
+    price: 140,
+    duration: "2 hours",
+    features: [
+      "Automatic Driving Lesson - 7 days a week",
+      "Pick up and drop off at your desired location",
+      "One-to-one in-vehicle coaching",
+      "Teaching materials are provided",
+    ],
+  },
+  {
     _id: "695bfae01f72e6c2fa81e09d",
     name: "5 Hours Lesson Package",
     packageThumbline: "/pkg.png",
     description:
       "1 Hour × 5 Lessons Package at Test Route Driving School is perfect for learner drivers.",
     regularPrice: "$375",
-    price: 360,
+    price: 350,
     duration: "5 hours",
     features: [
       "Automatic Driving Lesson - 7 days a week",
@@ -41,24 +57,7 @@ export const packages = [
     ],
   
   },
-  {
-    _id: "695bfb6b1f72e6c2fa81e09e",
-    name: "10 Hours Lesson Pack",
-    packageThumbline: "/pkg.png",
-    description:
-      "1 Hour × 10 Lessons Package at Test Route Driving School is perfect for learner.",
-    regularPrice: "$750",
-    price: 700,
-    duration: "10 hours",
-    features: [
-      "Automatic Driving Lesson - 7 days a week",
-      "Pick up and drop off at your desired location",
-      "One-to-one in-vehicle coaching",
-      "Teaching materials are provided",
-    
-
-    ],
-  },
+  
 ];
 
 export default function HomePackage() {
@@ -110,14 +109,12 @@ export default function HomePackage() {
                     <span className="text-3xl font-bold text-gray-900">
                       ${pkg.price}
                     </span>
-                    <span className="text-lg text-gray-500 line-through">
-                      ${pkg.regularPrice}
-                    </span>
-                    <span className="ml-auto text-sm font-semibold text-green-600 bg-white border border-green-600 px-3 py-1 rounded-full">
-                      Save $
-                      {parseInt(pkg.regularPrice.slice(1)) -
-                        parseInt(pkg.price)}
-                    </span>
+                   {pkg.regularPrice && <span className="text-lg text-gray-500 line-through">
+                      {pkg.regularPrice}
+                    </span>} 
+                   {pkg.regularPrice && <span className="ml-auto text-sm font-semibold text-green-900 bg-green-50 border border-green-700 px-3 py-1 rounded-full">
+  Save ${parseInt(pkg.regularPrice.slice(1)) - parseInt(pkg.price)}
+</span>}
                   </div>
                 </div>
 

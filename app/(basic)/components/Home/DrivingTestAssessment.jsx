@@ -124,7 +124,7 @@ export default function DrivingTestAssessment() {
                       <div className="text-2xl">{pkg.icon}</div>
                     </div>
                     <h3 className="text-lg md:text-2xl font-bold text-gray-900">
-                      {pkg.duration} Package
+                      {pkg.duration} Mock Test
                     </h3>
                   </div>
 

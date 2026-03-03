@@ -68,7 +68,15 @@ export async function POST(req) {
     const invoiceKey = `invoices/${filename}`; // ✅ SAME KEY
 
     // ✅ overwrite existing PDF in S3/MinIO
-    await uploadPdfToS3({key: invoiceKey, buffer: pdfBuffer});
+    await uploadPdfToS3({
+  key: invoiceKey,
+  buffer: pdfBuffer,
+  originalName: filename,
+  folder: "invoices",
+  ownerEmail: toEmail,  
+  status: "active",
+});
+   
 
     // ✅ send email (optional)
     const ps = String(booking.paymentStatus || "").toLowerCase();

@@ -78,11 +78,18 @@ export default function Contact() {
               {/* Contact Info */}
               <div className="space-y-4">
                 <a
-                  href="tel:61412018593"
+                  href="tel:+61412018593"
                   className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-sm sm:text-base md:text-xl transition hover:underline"
                 >
                   <FaPhoneAlt className="text-lg md:text-xl" />
                   <span>0412 018 593</span>
+                </a>
+                <a
+                  href="tel:+61469046923"
+                  className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-sm sm:text-base md:text-xl transition hover:underline"
+                >
+                  <FaPhoneAlt className="text-lg md:text-xl" />
+                  <span>0469 046 923</span>
                 </a>
 
                 <a

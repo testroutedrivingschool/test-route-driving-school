@@ -47,7 +47,7 @@ export default function Instructors() {
       <PageHeroSection title={`Our Instructors`} subtitle={`Our team of skilled and passionate instructors is dedicated to helping you achieve your goals. With years of experience and a commitment to personalized learning, they provide the guidance, support, and motivation you need to master every skill confidently. Whether you’re just starting out or looking to sharpen your abilities, our instructors are here to make your learning journey engaging, effective, and inspiring.`}/>
       <Container className={`pb-16`}>
         <SectionHeader title="Our Instructors" />
-        <div className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="p-0 md:p-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-5">
           {instructors.map((inst) =>{
               const avatarSrc = inst?.photo
     ? inst.photo
@@ -57,21 +57,21 @@ export default function Instructors() {
             return (
             <div
               key={inst._id}
-              className="bg-white border border-border-color  shadow-lg rounded-lg overflow-hidden"
+              className="bg-white  border border-border-color  shadow-lg rounded-lg overflow-hidden"
             >
               <Image
                 width={800}
                 height={800}
-                className="md:w-full md:h-70 h-85 object-cover object-top md:object-center "
+                className="md:w-full h-48 sm:h-50 md:h-70  object-cover object-top md:object-center "
                 src={avatarSrc}
                 alt={inst.name}
               />
-              <div className="p-4">
-                <h2 className="text-2xl font-bold mb-2">{inst.name}</h2>
+              <div className="p-2 sm:p-4">
+                <h2 className="text-sm sm:text-lg md:text-2xl font-bold mb-2">{inst.name}</h2>
                 <p className="text-gray-700 mb-2">{inst.experience}</p>
                 <div className="flex flex-col md:flex-row justify-between gap-2 mt-4">
-                  <PrimaryBtn   onClick={() => router.push(`/bookings?instructorId=${inst._id}`)} className={`flex-1 text-center justify-center text-sm font-medium `}>Book Now</PrimaryBtn>
-                  <OutlineBtn  className={`flex-1 text-center justify-center text-sm font-medium `} onClick={()=>router.push(`/instructors/${inst._id}`)}>View Profile</OutlineBtn>
+                  <PrimaryBtn   onClick={() => router.push(`/bookings?instructorId=${inst._id}`)} className={`flex-1 text-center justify-center text-xs! md:text-base! py-1! md:py-2! font-medium `}>Book Now</PrimaryBtn>
+                  <OutlineBtn  className={`flex-1 text-center justify-center  text-xs! md:text-base! py-1! md:py-2! font-medium `} onClick={()=>router.push(`/instructors/${inst._id}`)}>View Profile</OutlineBtn>
              
                 </div>
               </div>

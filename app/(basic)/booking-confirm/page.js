@@ -158,7 +158,6 @@ router.push("/select-client");
     : instructor?.photoKey
       ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
       : "/profile-avatar.png";
-      console.log(booking);
   if (isLoading || isUserLoading || !instructor || !booking)
     return <LoadingSpinner />;
   const services =

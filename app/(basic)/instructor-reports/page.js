@@ -67,8 +67,6 @@ export default function InstructorReportPage() {
   const d = new Date(y, m - 1, 1);
   return d.toLocaleString("en-AU", { month: "long" }); 
 })();
-  console.log(websiteData);
-  console.log(bookingData);
   if (isLoading) return <LoadingSpinner/>;
   return (
     <section className="py-8">

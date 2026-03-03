@@ -12,22 +12,22 @@ import Modal from "@/app/shared/ui/Modal";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 
-const DAY_LABEL = {
-  M: "Mon",
-  T: "Tue",
-  W: "Wed",
-  TH: "Thu",
-  F: "Fri",
-  S: "Sat",
-  SU: "Sun",
-};
+
 
 const DURATION_LABELS = ["1 Hr", "1.5 Hr", "2 Hr", "3 Hr", "4 Hr", "5 Hr", "6 Hr"];
 
 export default function ManageInstructors() {
   const queryClient = useQueryClient();
   const [selectedInstructor, setSelectedInstructor] = useState(null);
+const [openSections, setOpenSections] = useState({
+  areas: true,
+  services: true,
+  files: true,
+});
 
+const toggleSection = (key) => {
+  setOpenSections((s) => ({ ...s, [key]: !s[key] }));
+};
   const {
     data: instructors = [],
     isLoading,
@@ -39,7 +39,19 @@ export default function ManageInstructors() {
       return res.data;
     },
   });
-
+const selectedEmail = (selectedInstructor?.email || "").trim().toLowerCase();
+const {
+  data: instructorFiles = [],
+  isLoading: isFilesLoading,
+  isError: isFilesError,
+} = useQuery({
+  queryKey: ["instructor-files", selectedEmail],
+  enabled: !!selectedEmail, 
+  queryFn: async () => {
+    const res = await axios.get(`/api/instructor-files?email=${encodeURIComponent(selectedEmail)}`);
+    return res.data || [];
+  },
+});
   // Update instructor status
 const updateStatusMutation = useMutation({
   mutationFn: async ({ email, status }) => {
@@ -100,11 +112,53 @@ const updateStatusMutation = useMutation({
     }
   };
 
+const deleteFileMutation = useMutation({
+  mutationFn: async (key) => {
+    const res = await axios.delete(`/api/instructor-files?key=${encodeURIComponent(key)}`);
+    return res.data;
+  },
+  onSuccess: (data) => {
+    toast.success(data?.message || "File deleted");
+    queryClient.invalidateQueries(["instructor-files", selectedEmail]);
+  },
+  onError: (err) => {
+    toast.error(err?.response?.data?.message || "Failed to delete file");
+  },
+});
+const handleDeleteFile = async (file) => {
+  const result = await Swal.fire({
+    title: "Delete this file?",
+    text: file?.originalName || "This action cannot be undone.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#d33",
+    confirmButtonText: "Yes, delete",
+  });
+
+  if (!result.isConfirmed) return;
+  deleteFileMutation.mutate(file.key);
+};
+const openFile = async (key) => {
+  try {
+    const { data } = await axios.post("/api/storage/download-url", { key });
+    if (data?.url) window.open(data.url, "_blank", "noopener,noreferrer");
+    else toast.error("Failed to get download URL");
+  } catch (err) {
+    toast.error("Failed to open file");
+  }
+};
+const handleView = (ins) => {
+  setSelectedInstructor(ins);
+  setOpenSections({ areas: true, services: true, files: true });
+};
+
+
 const modalAvatarSrc = selectedInstructor?.photo
   ? selectedInstructor.photo
   : selectedInstructor?.photoKey
   ? `/api/storage/proxy?key=${encodeURIComponent(selectedInstructor.photoKey)}`
   : "/profile-avatar.png";
+  
   if (isLoading) return <LoadingSpinner />;
 
   if (isError) {
@@ -225,7 +279,7 @@ const modalAvatarSrc = selectedInstructor?.photo
                   <td className="flex flex-wrap py-4 px-6 space-x-2">
                     <PrimaryBtn
                       className="text-sm px-2! py-2!"
-                      onClick={() => setSelectedInstructor(ins)}
+                    onClick={() => handleView(ins)}
                     >
                       View
                     </PrimaryBtn>
@@ -312,7 +366,7 @@ const modalAvatarSrc = selectedInstructor?.photo
         <div className="mt-3 grid grid-cols-2 gap-2">
           <PrimaryBtn
             className="text-sm w-full justify-center!  py-2!"
-            onClick={() => setSelectedInstructor(ins)}
+            onClick={() => handleView(ins)}
           >
             View
           </PrimaryBtn>
@@ -427,90 +481,155 @@ const modalAvatarSrc = selectedInstructor?.photo
             </div>
 
             {/* Areas */}
-            <div className="mt-4">
-              <h3 className="font-bold text-lg text-neutral mb-1">Teaching Areas</h3>
-              <div className="flex flex-wrap gap-2">
-                {selectedInstructor.suburbs?.length ? (
-  selectedInstructor.suburbs.map((s) => (
-    <span key={s.name} className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">
-      {s.name}
-    </span>
-  ))
-) : (
-  <span className="text-gray-500">No suburbs selected</span>
+            <SectionToggle id="areas" title="Teaching Areas" />
+{openSections.areas && (
+  <div className="mt-2">
+    <div className="flex flex-wrap gap-2">
+      {selectedInstructor.suburbs?.length ? (
+        selectedInstructor.suburbs.map((s) => (
+          <span key={s.name} className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs">
+            {s.name}
+          </span>
+        ))
+      ) : (
+        <span className="text-gray-500">No suburbs selected</span>
+      )}
+    </div>
+  </div>
 )}
-
-              </div>
-            </div>
-
-            {/* Languages */}
+{/* Languages */}
             <div className="mt-2">
-              <h3 className="font-semibold mb-1">Languages</h3>
-              <div className="flex flex-wrap gap-2">
-                {selectedInstructor.languages?.length ? (
-                  selectedInstructor.languages.map((lang) => (
-                    <>
-                    <span
-                      key={lang}
-                      className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs"
-                      >
-                      {lang}
-                    </span>
-                   {selectedInstructor.customLanguage &&  <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs">{selectedInstructor.customLanguage}</span>}
-                      </>
-                  ))
-                ) : (
-                  <span className="text-gray-500">No languages selected</span>
-                )}
-              </div>
-            </div>
+  <h3 className="font-semibold mb-1">Languages</h3>
+  <div className="flex flex-wrap gap-2">
+    {selectedInstructor.languages?.length ? (
+      <>
+        {selectedInstructor.languages.map((lang) => (
+          <span
+            key={lang}
+            className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs"
+          >
+            {lang}
+          </span>
+        ))}
+        {selectedInstructor.customLanguage ? (
+          <span className="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs">
+            {selectedInstructor.customLanguage}
+          </span>
+        ) : null}
+      </>
+    ) : (
+      <span className="text-gray-500">No languages selected</span>
+    )}
+  </div>
+</div>
 
           
             {/* Services */}
-<div className="mt-4">
-  <h3 className="font-bold text-lg text-neutral">Services & Pricing</h3>
+<SectionToggle id="services" title="Services & Pricing" />
+{openSections.services && (
+  <div className="mt-2">
+    {selectedInstructor.services?.length ? (
+      <div className="mt-3 space-y-3">
+        {selectedInstructor.services.map((srv, idx) => {
+          const prices = srv?.prices || [];
+          const active = srv?.activeDurations || [];
 
-  {selectedInstructor.services?.length ? (
-    <div className="mt-3 space-y-3">
-      {selectedInstructor.services.map((srv, idx) => {
-        const prices = srv?.prices || [];
-        const active = srv?.activeDurations || [];
+          const activeItems = prices
+            .map((p, i) => ({ price: p, active: active?.[i], label: DURATION_LABELS[i] }))
+            .filter((x) => x.active && x.price !== null && x.price !== undefined);
 
-        const activeItems = prices
-          .map((p, i) => ({ price: p, active: active?.[i], label: DURATION_LABELS[i] }))
-          .filter((x) => x.active && x.price !== null && x.price !== undefined);
+          return (
+            <div key={`${srv.name}-${idx}`} className="border border-border-color rounded-lg p-3">
+              <div className="font-semibold">{srv.name}</div>
 
-        return (
-          <div key={`${srv.name}-${idx}`} className="border border-border-color rounded-lg p-3">
-            <div className="font-semibold">{srv.name}</div>
+              {activeItems.length ? (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {activeItems.map((x, i) => (
+                    <span key={i} className="px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-xs">
+                      {x.label}: ${x.price}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-gray-500 text-sm mt-2">No active pricing set</div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    ) : (
+      <p className="text-gray-500 mt-2">No services added</p>
+    )}
+  </div>
+)}
 
-            {activeItems.length ? (
-              <div className="mt-2 flex flex-wrap gap-2">
-                {activeItems.map((x, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 rounded-full bg-gray-100 text-gray-800 text-xs"
-                  >
-                    {x.label}: ${x.price}
-                  </span>
-                ))}
+{/* Instructor Files */}
+<SectionToggle id="files" title="Uploaded Files"   open={openSections.files}
+  onToggle={(id) => toggleSection(id)}/>
+{openSections.files && (
+  <div className="mt-2">
+    {isFilesLoading ? (
+      <div className="text-gray-500 text-sm">Loading files...</div>
+    ) : isFilesError ? (
+      <div className="text-red-500 text-sm">Failed to load files</div>
+    ) : instructorFiles.length ? (
+      <div className="space-y-2">
+        {instructorFiles.map((f) => (
+          <div
+            key={f._id}
+            className="flex items-center justify-between gap-3 border border-border-color rounded-lg p-3"
+          >
+            <div className="min-w-0 flex-1">
+              <div className="font-medium truncate">{f.originalName || "Unnamed file"}</div>
+              <div className="text-xs text-gray-500">
+                {(f.size ? (f.size / 1024).toFixed(1) : "0")} KB •{" "}
+                {f.updatedAt ? new Date(f.updatedAt).toLocaleString() : ""}
               </div>
-            ) : (
-              <div className="text-gray-500 text-sm mt-2">No active pricing set</div>
-            )}
-          </div>
-        );
-      })}
-    </div>
-  ) : (
-    <p className="text-gray-500 mt-2">No services added</p>
-  )}
-</div>
+            </div>
 
+            <div className="flex items-center gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => openFile(f.key)}
+                className="text-primary font-semibold hover:underline text-sm"
+              >
+                View
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleDeleteFile(f)}
+                className="text-red-600 font-semibold hover:underline text-sm"
+                disabled={deleteFileMutation.isPending}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-gray-500 text-sm">No files uploaded</div>
+    )}
+  </div>
+)}
 
           </div>
         </Modal>
       )}
     </div>
+  );
+}
+
+function SectionToggle({ id, title, open, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onToggle(id)}
+      className="w-full flex items-center justify-between py-2 mt-4 border-b border-border-color"
+    >
+      <h3 className="font-bold text-lg text-neutral">{title}</h3>
+      <span className="text-sm text-gray-500">{open ? "Hide" : "Show"}</span>
+    </button>
   );
 }

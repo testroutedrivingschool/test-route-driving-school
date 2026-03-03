@@ -15,7 +15,7 @@ const features = [
   {
     id: 1,
     title: "Google Rating",
-    value: 4.9,
+    value: 5.0,
     isFloat: true,
     suffix: "★",
     icon: <FaStar />,

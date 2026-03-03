@@ -34,7 +34,7 @@ export const metadata = {
 const automaticDrivingPackages = [
   {
      _id: "695be1371f72e6c2fa81e094",
-    name: "1 hour 30 mins Driving Test Assessment",
+    name: "1 hour 30 mins Driving Mock Test",
     packageThumbline: "/pkg.png",
     duration: "1 hr 30 min",
     price: 140,
@@ -47,7 +47,7 @@ const automaticDrivingPackages = [
   },
   {
      _id: "695beb281f72e6c2fa81e097",
-    name: "2 Hours Driving Test Assessment",
+    name: "2 Hours Driving Mock Test",
     packageThumbline: "/pkg.png",
     duration: "2 hr",
     price: 175,

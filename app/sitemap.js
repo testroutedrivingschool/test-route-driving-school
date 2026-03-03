@@ -1,10 +1,12 @@
+import { blogsData } from "./(basic)/blogs/blogsData";
+
 // app/sitemap.js
-export default async function sitemap () {
+export default async function sitemap() {
   const baseUrl = "https://testroutedrivingschool.com.au";
   const lastModified = new Date();
-   const locationRes = await fetch(
+  const locationRes = await fetch(
     "https://testroutedrivingschool.com.au/api/locations",
-    { cache: "no-store" }
+    {cache: "no-store"},
   );
 
   const locations = await locationRes.json();
@@ -22,18 +24,13 @@ export default async function sitemap () {
     };
   });
 
-
   //blogs
-  const blogs = [
-  "5-essential-driving-tips-for-beginners",
-  "how-to-master-parallel-parking",
-  "manual-vs-automatic-cars-which-to-choose",
-];
 
-const blogUrls = blogs.map(slug => ({
-  url: `${baseUrl}/blogs/${slug}`,
-  lastModified,
-}));
+  const blogUrls = (blogsData ?? []).map((blog) => ({
+    url: `${baseUrl}/${blog.slug}`, 
+    lastModified,
+  }));
+
 
   return [
     // Core pages
@@ -61,7 +58,7 @@ const blogUrls = blogs.map(slug => ({
       url: `${baseUrl}/area-covered`,
       lastModified,
     },
-  
+
     {
       url: `${baseUrl}/faq`,
       lastModified,
@@ -82,12 +79,24 @@ const blogUrls = blogs.map(slug => ({
       url: `${baseUrl}/blogs`,
       lastModified,
     },
-    ...blogUrls,
     {
       url: `${baseUrl}/company/contact`,
       lastModified,
     },
-
+    {
+      url: `${baseUrl}/terms`,
+      lastModified,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified,
+    },
+    {
+      url: `${baseUrl}/return-refund`,
+      lastModified,
+    },
+    // BLogs Pages
+    ...blogUrls,
     // Service pages
     {
       url: `${baseUrl}/services/automatic-driving-lessons`,
@@ -121,7 +130,7 @@ const blogUrls = blogs.map(slug => ({
       url: `${baseUrl}/services/city-driving-package`,
       lastModified,
     },
-
-      ...locationUrls,
+// Location pages
+    ...locationUrls,
   ];
 }

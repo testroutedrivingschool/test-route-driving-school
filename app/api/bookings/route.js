@@ -58,9 +58,14 @@ async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
   const filename = `invoice-${invoiceNo}.pdf`;
   const invoiceKey = `invoices/${filename}`;
 
-  await uploadPdfToS3({key: invoiceKey, buffer: pdfBuffer});
-console.log(filename);
-console.log(invoiceKey);
+await uploadPdfToS3({
+  key: invoiceKey,
+  buffer: pdfBuffer,
+  originalName: filename,
+  folder: "invoices",
+  ownerEmail: bookingDoc?.userEmail || bookingDoc?.clientEmail || "",  
+  status: "active",
+});
   // 3) Prepare email contents
   const bookingDateText = bookingDoc.bookingDate
     ? new Date(bookingDoc.bookingDate).toLocaleDateString("en-AU", {

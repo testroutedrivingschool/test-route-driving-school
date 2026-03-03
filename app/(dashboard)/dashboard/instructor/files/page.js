@@ -60,8 +60,7 @@ export default function InstructorFiles() {
     try {
       setUploading(true);
 
-      // 1) get presigned uploadUrl + key (folder = documents/invoices/images)
-      // choose folder: images for jpg/png/webp, documents for pdf
+      
       const folder = file.type === "application/pdf" ? "documents" : "images";
 
       const {data: up} = await axios.post("/api/storage/upload-url", {
