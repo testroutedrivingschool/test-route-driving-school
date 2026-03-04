@@ -45,16 +45,19 @@ const initialState = {
   accountBalance: "",
   referredBy: "Not Specified",
 
-  activeClient: false,
-  marketingSubscriber: false,
-  receiveReminders: false,
+  activeClient: true,
+  marketingSubscriber: true,
+  receiveReminders: true,
   loginAccess: false,
-  onlineBooking: false,
-  showPhoto: false,
+  onlineBooking: true,
+  showPhoto: true,
 
   actionShot: "No Action Set",
   actionRequired: "",
-  assignedTo: "Anyone",
+  assignedTo: "Anyone",       
+assignedInstructorId: "",     
+assignedInstructorEmail: "",  
+assignedInstructorName: "",  
   actionBy: "",
   alerts: "",
   clientNote: "",
@@ -73,10 +76,17 @@ export default function AddClients() {
       return res.data;
     },
   });
-  const assignedToOptions = [
-    "Anyone",
-    ...instructors.map((i) => i?.name).filter(Boolean),
-  ];
+const instructorOptions = [
+  { value: "Anyone", label: "Anyone" },
+  ...instructors
+    .filter((i) => i?._id && i?.name)
+    .map((i) => ({
+      value: i._id,          // ✅ store id
+      label: i.name,
+      email: i.email || "",
+      name: i.name,
+    })),
+];
   const addClient = useMutation({
     mutationFn: async (payload) => {
       // 1) create client in Mongo
@@ -125,6 +135,9 @@ export default function AddClients() {
 
     if (!form.firstName.trim() || !form.lastName.trim()) {
       return toast.error("First Name and Last Name are required");
+    }
+    if(!form.email.trim()){
+      return toast.error("Email Required");
     }
     if (form.loginAccess === true && !form.email.trim()) {
       return toast.error("Email is required if Login Access is enabled");
@@ -197,7 +210,7 @@ export default function AddClients() {
             </Row>
 
             <Row label="Email:">
-              <Input name="email" value={form.email} onChange={onChange} />
+              <Input name="email" required value={form.email} onChange={onChange} />
             </Row>
 
             <Row label="Another Email:">
@@ -379,25 +392,47 @@ export default function AddClients() {
               />
             </Row>
 
-            <Row label="Assigned to:">
-              <select
-                name="assignedTo"
-                value={form.assignedTo}
-                onChange={onChange}
-                disabled={instructorsLoading}
-                className="input-class py-1!"
-              >
-                {instructorsLoading ? (
-                  <option>Loading instructors...</option>
-                ) : (
-                  assignedToOptions.map((op) => (
-                    <option key={op} value={op}>
-                      {op}
-                    </option>
-                  ))
-                )}
-              </select>
-            </Row>
+           <Row label="Assigned to:">
+  <select
+    value={form.assignedInstructorId || "Anyone"}
+    onChange={(e) => {
+      const v = e.target.value;
+
+      if (v === "Anyone") {
+        setForm((p) => ({
+          ...p,
+          assignedTo: "Anyone",
+          assignedInstructorId: "",
+          assignedInstructorEmail: "",
+          assignedInstructorName: "",
+        }));
+        return;
+      }
+
+      const ins = instructors.find((x) => String(x._id) === String(v));
+
+      setForm((p) => ({
+        ...p,
+        assignedTo: ins?.name || "Anyone",
+        assignedInstructorId: String(ins?._id || ""),
+        assignedInstructorEmail: (ins?.email || "").toLowerCase(),
+        assignedInstructorName: ins?.name || "",
+      }));
+    }}
+    disabled={instructorsLoading}
+    className="input-class py-1!"
+  >
+    {instructorsLoading ? (
+      <option>Loading instructors...</option>
+    ) : (
+      instructorOptions.map((op) => (
+        <option key={op.value} value={op.value}>
+          {op.label}
+        </option>
+      ))
+    )}
+  </select>
+</Row>
 
             <Row label="Action by:">
               <Input

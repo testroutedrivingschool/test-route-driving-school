@@ -1395,25 +1395,35 @@ const formatMobileTime = (t) => {
         </table>
 
         {/* Mobile More/Less (optional) */}
-        <div className="sticky bottom-0 left-0 right-0 bg-white z-40 border-t border-border-color p-2 flex justify-between">
-          {!showMoreTimes ? (
-            <button onClick={() => setShowMoreTimes(true)} className="text-primary font-semibold text-sm">
-              More
-            </button>
-          ) : (
-            <button onClick={() => setShowMoreTimes(false)} className="text-primary font-semibold text-sm">
-              Less
-            </button>
-          )}
-          {visibleDayIdx.map((dayIndex) => (
-                <td
-                  key={dayIndex}
-                  className="py-2 px-0.5 text-center text-[10px] font-bold"
-                >
-                  {weekDates[dayIndex].toLocaleDateString("en-US", {weekday: "short"})}
-                </td>
-              ))}
-        </div>
+        <div className="sticky bottom-0 left-0 right-0 bg-white z-40 border-t border-border-color p-2 flex justify-between items-center gap-2">
+  {!showMoreTimes ? (
+    <button
+      onClick={() => setShowMoreTimes(true)}
+      className="text-primary font-semibold text-sm"
+    >
+      More
+    </button>
+  ) : (
+    <button
+      onClick={() => setShowMoreTimes(false)}
+      className="text-primary font-semibold text-sm"
+    >
+      Less
+    </button>
+  )}
+
+  <div className="flex-1 grid"
+       style={{ gridTemplateColumns: `repeat(${visibleDayIdx.length}, minmax(0, 1fr))` }}>
+    {visibleDayIdx.map((dayIndex) => (
+      <div
+        key={dayIndex}
+        className="text-center text-[10px] font-bold"
+      >
+        {weekDates[dayIndex].toLocaleDateString("en-US", { weekday: "short" })}
+      </div>
+    ))}
+  </div>
+</div>
 
        
       </div>

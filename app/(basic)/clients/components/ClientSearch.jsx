@@ -1,5 +1,6 @@
 "use client";
 
+import {useUserData} from "@/app/hooks/useUserData";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {useQuery} from "@tanstack/react-query";
@@ -11,20 +12,22 @@ import {HiUserAdd} from "react-icons/hi";
 
 export default function ClientSearch({setActiveTab, setSelectedClient}) {
   const router = useRouter();
+  const {data: userData} = useUserData();
+  const myInstructorId = userData?.instructorId || "";
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
     phone: "",
     email: "",
     address: "",
-    clientNote: "", // (your API doesn't filter by this yet, fine)
-    licence: "", // (your API doesn't filter by this yet, fine)
-    clientId: "", // (your API doesn't filter by this yet, fine)
+    clientNote: "",
+    licence: "",
+    clientId: "",
     activeOnly: true,
     showClientNote: true,
   });
 
-  // 🔥 this controls when query runs
+ 
   const [filters, setFilters] = useState(null);
 
   const onChange = (e) => {
@@ -41,6 +44,7 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
       params.set("firstName", filters.firstName.trim());
     if (filters.lastName?.trim())
       params.set("lastName", filters.lastName.trim());
+    if (myInstructorId) params.set("assignedInstructorId", myInstructorId);
     if (filters.email?.trim()) params.set("email", filters.email.trim());
     if (filters.phone?.trim()) params.set("mobile", filters.phone.trim());
     if (filters.address?.trim()) params.set("address", filters.address.trim());
@@ -50,11 +54,10 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
     if (filters.licence?.trim()) params.set("licence", filters.licence.trim());
     if (filters.clientId?.trim())
       params.set("clientId", filters.clientId.trim());
-
     params.set("activeOnly", String(!!filters.activeOnly));
 
     return params.toString();
-  }, [filters]);
+  }, [filters, myInstructorId]);
 
   const {
     data: clients = [],
@@ -165,7 +168,7 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
           </div>
         </form>
 
-        {/* النتائج */}
+        {/*  */}
         <div className="mt-8">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-gray-900">Results</h2>
@@ -188,84 +191,110 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
             <p className="mt-4 text-sm text-neutral">No clients found.</p>
           )}
 
-         {!!clients?.length && (
-  <div className="mt-4 w-full">
-    <table className="w-full table-fixed border border-border-color text-xs sm:text-sm">
-      <thead className="bg-secondary text-white">
-        <tr>
-          <th className="text-left px-2 sm:px-3 py-2 w-[45%] sm:w-auto">Name</th>
-          <th className="text-left px-2 sm:px-3 py-2 w-[35%] sm:w-auto">Mobile</th>
+          {!!clients?.length && (
+            <div className="mt-4 w-full">
+              <table className="w-full table-fixed border border-border-color text-xs sm:text-sm">
+                <thead className="bg-secondary text-white">
+                  <tr>
+                    <th className="text-left px-2 sm:px-3 py-2 w-[45%] sm:w-auto">
+                      Name
+                    </th>
+                    <th className="text-left px-2 sm:px-3 py-2 w-[35%] sm:w-auto">
+                      Mobile
+                    </th>
 
-          {/* hide on mobile */}
-          <th className="hidden sm:table-cell text-left px-3 py-2">Address</th>
+                    {/* hide on mobile */}
+                    <th className="hidden sm:table-cell text-left px-3 py-2">
+                      Address
+                    </th>
 
-          <th className="text-left px-2 sm:px-3 py-2 w-[20%] sm:w-auto">#</th>
+                    <th className="text-left px-2 sm:px-3 py-2 w-[20%] sm:w-auto">
+                      #
+                    </th>
 
-          {/* hide on mobile */}
-          <th className="hidden sm:table-cell text-left px-3 py-2">Bookings</th>
+                    {/* hide on mobile */}
+                    <th className="hidden sm:table-cell text-left px-3 py-2">
+                      Bookings
+                    </th>
 
-          {form.showClientNote && (
-            <th className="hidden md:table-cell text-left px-3 py-2">Note</th>
+                    {form.showClientNote && (
+                      <th className="hidden md:table-cell text-left px-3 py-2">
+                        Note
+                      </th>
+                    )}
+                    <th className="hidden sm:table-cell text-left px-3 py-2">
+                      Assigned
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {clients.map((c, idx) => {
+                    const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
+                    const mobile = c.mobile || c.phone || "—";
+                    const address = c.address || "—";
+
+                    return (
+                      <tr
+                        key={c._id || idx}
+                        onClick={() => {
+                          setSelectedClient(c);
+                          setActiveTab("client-details");
+                        }}
+                        className={`cursor-pointer ${rowBg} hover:brightness-95 transition`}
+                      >
+                        {/* Name (and show last booking UNDER it on mobile) */}
+                        <td className="px-2 sm:px-3 py-2 font-semibold wrap-break-word">
+                          <div className="leading-snug">
+                            {c.firstName} {c.lastName}
+                          </div>
+
+                          {/* mobile-only: show last booking */}
+                          <div className="sm:hidden text-[11px] font-medium text-primary mt-1">
+                            {c.bookingCount > 0
+                              ? `Last: ${c.lastBookingLabel}`
+                              : "—"}
+                          </div>
+                        </td>
+
+                        {/* Mobile */}
+                        <td className="px-2 sm:px-3 py-2 wrap-break-word">
+                          {mobile}
+                        </td>
+
+                        {/* Address hidden on mobile */}
+                        <td className="hidden sm:table-cell px-3 py-2 wrap-break-word">
+                          {address}
+                        </td>
+
+                        {/* Count */}
+                        <td className="px-2 sm:px-3 py-2">
+                          {c.bookingCount || "-"}
+                        </td>
+
+                        {/* Bookings hidden on mobile */}
+                        <td className="hidden sm:table-cell px-3 py-2 text-primary font-semibold wrap-break-word">
+                          {c.bookingCount > 0
+                            ? `Last: ${c.lastBookingLabel}`
+                            : "—"}
+                        </td>
+
+                        {/* Note hidden on small screens */}
+                        {form.showClientNote && (
+                          <td className="hidden md:table-cell px-3 py-2 text-gray-700 wrap-break-word">
+                            {c.clientNote || "—"}
+                          </td>
+                        )}
+                        <td className="hidden sm:table-cell px-3 py-2">
+                          {c.assignedInstructorName || c.assignedTo || "Anyone"}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
-        </tr>
-      </thead>
-
-      <tbody>
-        {clients.map((c, idx) => {
-          const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
-          const mobile = c.mobile || c.phone || "—";
-          const address = c.address || "—";
-
-          return (
-            <tr
-              key={c._id || idx}
-              onClick={() => {
-                setSelectedClient(c);
-                setActiveTab("client-details");
-              }}
-              className={`cursor-pointer ${rowBg} hover:brightness-95 transition`}
-            >
-              {/* Name (and show last booking UNDER it on mobile) */}
-              <td className="px-2 sm:px-3 py-2 font-semibold wrap-break-word">
-                <div className="leading-snug">
-                  {c.firstName} {c.lastName}
-                </div>
-
-                {/* mobile-only: show last booking */}
-                <div className="sm:hidden text-[11px] font-medium text-primary mt-1">
-                  {c.bookingCount > 0 ? `Last: ${c.lastBookingLabel}` : "—"}
-                </div>
-              </td>
-
-              {/* Mobile */}
-              <td className="px-2 sm:px-3 py-2 wrap-break-word">{mobile}</td>
-
-              {/* Address hidden on mobile */}
-              <td className="hidden sm:table-cell px-3 py-2 wrap-break-word">
-                {address}
-              </td>
-
-              {/* Count */}
-              <td className="px-2 sm:px-3 py-2">{c.bookingCount || "-"}</td>
-
-              {/* Bookings hidden on mobile */}
-              <td className="hidden sm:table-cell px-3 py-2 text-primary font-semibold wrap-break-word">
-                {c.bookingCount > 0 ? `Last: ${c.lastBookingLabel}` : "—"}
-              </td>
-
-              {/* Note hidden on small screens */}
-              {form.showClientNote && (
-                <td className="hidden md:table-cell px-3 py-2 text-gray-700 wrap-break-word">
-                  {c.clientNote || "—"}
-                </td>
-              )}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-)}
         </div>
       </div>
 

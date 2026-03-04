@@ -18,15 +18,26 @@ export async function GET(req) {
     const clientId = searchParams.get("clientId") || "";
     const activeOnly = searchParams.get("activeOnly") === "true";
     const q = (searchParams.get("q") || "").trim();
-
+    const hasSearch =
+  !!firstName.trim() ||
+  !!lastName.trim() ||
+  !!mobile.trim() ||
+  !!email.trim() ||
+  !!address.trim() ||
+  !!clientNote.trim() ||
+  !!licence.trim() ||
+  !!clientId.trim() ||
+  !!q.trim();
+const assignedInstructorId = (searchParams.get("assignedInstructorId") || "").trim();
     const and = [];
     and.push({roleType: "client"});
     // ✅ safer active filter (includes old docs missing activeClient)
-    if (activeOnly) {
-      and.push({
-        $or: [{activeClient: true}, {activeClient: {$exists: false}}],
-      });
-    }
+  // ✅ Only filter active when NOT searching
+if (activeOnly && !hasSearch) {
+  and.push({
+    $or: [{ activeClient: true }, { activeClient: { $exists: false } }],
+  });
+}
 
     if (clientId.trim()) {
       if (!ObjectId.isValid(clientId.trim()))
@@ -43,7 +54,17 @@ export async function GET(req) {
     if (address.trim()) and.push({address: rx(address)});
     if (clientNote.trim()) and.push({clientNote: rx(clientNote)});
     if (licence.trim()) and.push({licence: rx(licence)});
-
+if (assignedInstructorId) {
+  and.push({
+    $or: [
+      { assignedInstructorId },             
+      { assignedTo: "Anyone" },           
+      { assignedTo: { $exists: false } },  
+      { assignedInstructorId: { $exists: false } }, 
+      { assignedInstructorId: "" },       
+    ],
+  });
+}
     if (q) {
       const qr = rx(q);
       and.push({
@@ -212,6 +233,9 @@ export async function POST(req) {
       actionShot: body.actionShot ?? "No Action Set",
       actionRequired: body.actionRequired ?? "",
       assignedTo: body.assignedTo ?? "Anyone",
+      assignedInstructorId: body.assignedInstructorId?.trim() || "",
+assignedInstructorEmail: body.assignedInstructorEmail?.trim()?.toLowerCase() || "",
+assignedInstructorName: body.assignedInstructorName?.trim() || "",
       actionBy: body.actionBy ?? "",
       alerts: body.alerts ?? "",
       clientNote: body.clientNote ?? "",

@@ -162,13 +162,13 @@ const dashHref =
                 height={800}
                 loading="eager"
                 className="object-contain rounded-full transition-all duration-300
-                 w-15 h-15 sm:w-16 sm:h-16 md:w-19 md:h-19"
+                 w-17 h-17 sm:w-16 sm:h-16 md:w-19 md:h-19"
               />
               <div>
-                <h2 className="block font-bold md:font-black text-primary text-base md:text-lg leading-4.5">
+                <h2 className="block font-black md:font-black text-primary text-base md:text-lg leading-4.5">
                   Test Route
                 </h2>
-                <h2 className="block font-bold md:font-black text-primary text-base md:text-lg ">
+                <h2 className="block font-black md:font-black text-primary text-base md:text-lg ">
                   Driving School
                 </h2>
               </div>

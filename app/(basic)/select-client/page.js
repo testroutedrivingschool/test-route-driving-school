@@ -2,21 +2,23 @@
 
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import {useRouter} from "next/navigation";
-import {useEffect, useMemo, useState} from "react";
+import {useCallback, useEffect, useMemo, useState} from "react";
 import {HiUserAdd} from "react-icons/hi";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {toast} from "react-toastify";
+import {useUserData} from "@/app/hooks/useUserData";
 
 export default function SelectClientForBooking() {
   const [booking, setBooking] = useState(null);
   const router = useRouter();
   const queryClient = useQueryClient();
-
+  const {data: userData} = useUserData();
+  const myInstructorId = userData?.instructorId || "";
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
-    phone: "",     // search input
+    phone: "", // search input
     email: "",
     address: "",
     organization: "",
@@ -58,22 +60,33 @@ export default function SelectClientForBooking() {
     setForm((p) => ({...p, [name]: type === "checkbox" ? checked : value}));
   };
 
-  const buildQueryString = (payload) => {
-    const params = new URLSearchParams();
-    if (payload.email?.trim()) params.set("email", payload.email.trim());
-    if (payload.phone?.trim()) params.set("mobile", payload.phone.trim());
-    if (payload.firstName?.trim()) params.set("firstName", payload.firstName.trim());
-    if (payload.lastName?.trim()) params.set("lastName", payload.lastName.trim());
-    if (payload.address?.trim()) params.set("address", payload.address.trim());
-    if (payload.organization?.trim()) params.set("organization", payload.organization.trim());
-    if (payload.activeOnly === true) params.set("activeOnly", "true");
-    return params.toString();
-  };
+  const buildQueryString = useCallback(
+    (payload) => {
+      const params = new URLSearchParams();
+
+      if (payload.email?.trim()) params.set("email", payload.email.trim());
+      if (payload.phone?.trim()) params.set("mobile", payload.phone.trim());
+      if (payload.firstName?.trim())
+        params.set("firstName", payload.firstName.trim());
+      if (payload.lastName?.trim())
+        params.set("lastName", payload.lastName.trim());
+      if (payload.address?.trim())
+        params.set("address", payload.address.trim());
+      if (payload.organization?.trim())
+        params.set("organization", payload.organization.trim());
+      if (payload.activeOnly === true) params.set("activeOnly", "true");
+
+      if (myInstructorId) params.set("assignedInstructorId", myInstructorId);
+
+      return params.toString();
+    },
+    [myInstructorId],
+  );
 
   const queryString = useMemo(() => {
     if (!searchParams) return "";
     return buildQueryString(searchParams);
-  }, [searchParams]);
+  }, [searchParams, buildQueryString]);
 
   const {data: clients = [], isLoading} = useQuery({
     queryKey: ["clients-search", queryString],
@@ -109,23 +122,22 @@ export default function SelectClientForBooking() {
   });
 
   const selectClient = (client) => {
-  const id = client?._id || client?.insertedId; 
-  if (!id) return;
+    const id = client?._id || client?.insertedId;
+    if (!id) return;
 
-  const next = {
-    ...(booking || {}),
-    clientId:id,
-    clientName: `${client.firstName || ""} ${client.lastName || ""}`.trim(),
-    clientEmail: client.email || "",
-    clientPhone: client.mobile || client.phone || "",
-    clientAddress: client.address || "",
-    suburb: client.suburb || "",
+    const next = {
+      ...(booking || {}),
+      clientId: id,
+      clientName: `${client.firstName || ""} ${client.lastName || ""}`.trim(),
+      clientEmail: client.email || "",
+      clientPhone: client.mobile || client.phone || "",
+      clientAddress: client.address || "",
+      suburb: client.suburb || "",
+    };
+
+    sessionStorage.setItem("pendingBooking", JSON.stringify(next));
+    router.push("/booking-confirm/payment-confirm");
   };
-
-  sessionStorage.setItem("pendingBooking", JSON.stringify(next));
-  router.push("/booking-confirm/payment-confirm");
-};
-
 
   // ✅ Create New Client click (validate first)
   const onCreateNewClient = () => {
@@ -155,7 +167,9 @@ export default function SelectClientForBooking() {
           <h1 className="text-4xl font-bold mb-2">Select Client</h1>
 
           <p className="text-neutral font-semibold">
-            {dateValue ? `${new Date(dateValue).toDateString()} at ${timeValue || ""}` : ""}
+            {dateValue
+              ? `${new Date(dateValue).toDateString()} at ${timeValue || ""}`
+              : ""}
           </p>
 
           <form onSubmit={onSearch} className="mt-6 space-y-3">
@@ -224,8 +238,6 @@ export default function SelectClientForBooking() {
                 />
                 Active Only
               </label>
-
-             
             </div>
 
             <div className="pt-4 flex justify-start">
@@ -234,8 +246,6 @@ export default function SelectClientForBooking() {
               </PrimaryBtn>
             </div>
           </form>
-
-          
         </div>
 
         {/* Right side - Create new client */}
@@ -284,7 +294,7 @@ function Field({label, name, value, onChange, required, error, onBlur}) {
   );
 }
 
-function ClientsResultTable({ clients = [], onSelect }) {
+function ClientsResultTable({clients = [], onSelect}) {
   const formatLast = (c) => {
     if (!c?.lastBooking) return "—";
     const d = new Date(c.lastBooking);
@@ -348,8 +358,7 @@ function ClientsResultTable({ clients = [], onSelect }) {
                   `${c.firstName || ""} ${c.lastName || ""}`.trim() || "—";
                 const mobile = c.mobile || c.phone || "—";
                 const address = c.address || "—";
-                const lastLabel =
-                  c.bookingCount > 0 ? formatLast(c) : "—";
+                const lastLabel = c.bookingCount > 0 ? formatLast(c) : "—";
 
                 return (
                   <tr
