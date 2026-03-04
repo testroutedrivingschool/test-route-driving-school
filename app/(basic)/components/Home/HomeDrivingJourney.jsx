@@ -21,7 +21,7 @@ export default function HomeDrivingJourney() {
   }, []);
 
   return (
-    <section className="py-20 bg-primary text-white overflow-hidden relative">
+    <section className="py-10 md:py-20 bg-primary text-white overflow-hidden relative">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
@@ -31,10 +31,10 @@ export default function HomeDrivingJourney() {
       <Container>
         <div className="flex flex-col md:flex-row items-center gap-12 relative z-10">
           {/* Left Text Column */}
-          <div className="w-full md:w-1/2 flex flex-col gap-8">
+          <div className="w-full md:w-1/2 flex flex-col gap-5 md:gap-8">
             {/* Header */}
-            <div className="space-y-4">
-              <h2 className="text-4xl md:text-5xl font-bold leading-tight">
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold leading-tight">
                 Your Driving Journey
                 <span className="block text-accent">Starts Here</span>
               </h2>
@@ -70,9 +70,9 @@ export default function HomeDrivingJourney() {
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap gap-4 mt-6">
+            <div className="flex flex-wrap gap-4 mt-4 md:mt-6">
               <Link href="/bookings" aria-label="Book Now" className="group">
-                <PrimaryBtn className="py-4 bg-accent!">
+                <PrimaryBtn className="py-2! md:py-4 bg-accent!">
                   <span className="flex items-center gap-2 text-neutral-900">
                     Get started now
                     <FaArrowRight className="group-hover:translate-x-1 transition-transform duration-300" />
@@ -81,7 +81,7 @@ export default function HomeDrivingJourney() {
               </Link>
 
               <Link href="/packages" aria-label="View Packages" className="group">
-                <SecondaryBtn className="py-4">View All Packages</SecondaryBtn>
+                <SecondaryBtn className="py-2! md:py-4">View All Packages</SecondaryBtn>
               </Link>
             </div>
           </div>

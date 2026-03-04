@@ -2,13 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import automaticLessonImg from "@/app/assets/service-lesson-test-route-driving-school.png";
 import {
-  FaAward,
-  FaBrain,
-  FaCalendarAlt,
-  FaCar,
-  FaChartLine,
   FaCheckCircle,
-  FaShieldAlt,
 } from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
@@ -232,7 +226,7 @@ export default function DrivingTestPackage() {
             <div className="lg:flex-1 w-full">
               <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
                 Let us help you on your
-                <span className="pl-2 inline-block text-primary">
+                <span className="pl-2 text-primary">
                   test day!
                 </span>
               </h2>
@@ -267,14 +261,14 @@ export default function DrivingTestPackage() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/bookings" className="group">
-                  <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
+                  <PrimaryBtn className="px-4 md:px-8 py-2! md:py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </PrimaryBtn>
                 </Link>
 
                 <Link href="/instructors" className="group">
-                  <OutlineBtn className="py-3! px-8! border-2!">
+                  <OutlineBtn className="py-2! md:py-3! px-4 md:px-8 border-2!">
                     Meet Our Instructors
                   </OutlineBtn>
                 </Link>
@@ -313,12 +307,12 @@ export default function DrivingTestPackage() {
           <div className="flex flex-col-reverse md:flex-row items-center gap-12">
             {/* Left Text Content */}
             <div className="flex-1 space-y-6">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900">
                 Driving Test Package Lessons in
                 <span className="text-primary"> Sydney, NSW</span>
               </h2>
 
-              <p className="text-neutral text-lg leading-relaxed">
+              <p className="text-neutral text-base md:text-lg leading-relaxed">
                 Are you looking for a reliable{" "}
                 <strong>driving school in Sydney suburbs</strong>? At{" "}
                 <strong>Test Route Driving School</strong>, we offer both
@@ -340,7 +334,7 @@ export default function DrivingTestPackage() {
                 to see how we can help you.
               </p>
 
-              <p className="text-neutral text-lg leading-relaxed">
+              <p className="text-neutral text-base md:text-lg leading-relaxed">
                 Whether you want to master city streets, highway driving, or
                 parking techniques, our structured driving programs in provide
                 everything you need to become a safe and confident driver.
@@ -375,10 +369,10 @@ export default function DrivingTestPackage() {
           <div className="space-y-4">
             <div>
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Get Ready to Pass Your Driving Test Package
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   Learning to drive is challenging, but our{" "}
                   <strong> Driving test car</strong> instructors in Sydney
                   suburbs make it easy. You will receive personalized guidance
@@ -401,10 +395,10 @@ export default function DrivingTestPackage() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Pre-Driving Test Package Lessons for Learners
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   We understand that every learner has a unique schedule and
                   pace. That is why we offer flexible lesson timings throughout
                   the

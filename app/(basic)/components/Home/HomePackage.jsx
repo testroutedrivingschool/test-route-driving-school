@@ -77,7 +77,7 @@ export default function HomePackage() {
           subtitle="Choose the perfect package for your learning journey. All lessons include certified instructors and modern vehicles."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mt-6 md:mt-10">
           {packages.map((pkg) => (
             <div
               key={pkg._id}
@@ -89,14 +89,14 @@ export default function HomePackage() {
                 </div>
               )}
 
-              <div className="p-6 flex-1 flex flex-col">
+              <div className="p-4 md:p-6 flex-1 flex flex-col">
                 {/* Package Header */}
                 <div className="mb-6">
                   <div className="flex justify-between gap-1 items-start mb-2">
                     <h3 className="text-lg md:text-2xl font-bold text-gray-900">
                       {pkg.name}
                     </h3>
-                    <span className="w-22 text-xs md:text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
+                    <span className="w-18 md:w-24 text-center text-xs md:text-sm font-medium text-primary bg-primary/10 px-3 py-1 rounded-full">
                       {pkg.duration}
                     </span>
                   </div>
@@ -126,8 +126,8 @@ export default function HomePackage() {
                   <ul className="space-y-3">
                     {pkg.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <div className="shrink-0 w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center mt-0.5">
-                          <FaCheck className="text-blue-600" size={12} />
+                        <div className="shrink-0 w-5 h-5 bg-primary/10 rounded-full flex items-center justify-center mt-0.5">
+                          <FaCheck className="text-primary" size={12} />
                         </div>
                         <span className="text-gray-700">{feature}</span>
                       </li>
@@ -138,7 +138,7 @@ export default function HomePackage() {
                 {/* CTA Button */}
                 <PrimaryBtn
                   onClick={(e) => handleAddToCart(pkg, e)}
-                  className="mt-auto w-full py-3 group hover:scale-[1.02] transition-transform duration-200"
+                  className="mt-auto w-full py-2! md:py-3! group hover:scale-[1.02] transition-transform duration-200"
                 >
                   <span className="flex items-center justify-center gap-2 font-semibold">
                     Get This Package
@@ -149,10 +149,10 @@ export default function HomePackage() {
             </div>
           ))}
         </div>
-        <div className="mt-8 flex justify-center">
+        <div className="mt-6 md:mt-8 flex justify-center">
           <PrimaryBtn
             onClick={() => router.push("/packages")}
-            className={`py-4`}
+            className={`py-2! md:py-4 text-base! md:text-lg`}
           >
             View All Packages
           </PrimaryBtn>

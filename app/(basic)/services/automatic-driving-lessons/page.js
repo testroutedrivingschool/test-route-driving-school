@@ -302,7 +302,7 @@ export default function AutomaticDrivingLesson() {
 
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
                 Cruise Sydney with Confidence in
                 <span className="pl-2 inline-block text-primary">
                   Automatic Cars
@@ -343,14 +343,14 @@ export default function AutomaticDrivingLesson() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/bookings" className="group">
-                  <PrimaryBtn className="px-8 py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
+                  <PrimaryBtn className="px-4 md:px-8 py-2! md:py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </PrimaryBtn>
                 </Link>
 
                 <Link href="/instructors" className="group">
-                  <OutlineBtn className="py-3! px-8! border-2!">
+                  <OutlineBtn className="py-2! md:py-3! px-4 md:px-8 border-2!">
                     Meet Our Instructors
                   </OutlineBtn>
                 </Link>
@@ -392,13 +392,13 @@ export default function AutomaticDrivingLesson() {
         <Container>
           <div className="flex flex-col-reverse md:flex-row items-center gap-12">
             {/* Left Text Content */}
-            <div className="flex-1 space-y-6">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+            <div className="flex-1 space-y-4 md:space-y-6">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900">
                 Driving Lessons for Beginners Sydney suburbs
                 <span className="text-primary px-1">Residents Trust</span>
               </h2>
 
-              <p className="text-neutral text-lg leading-relaxed">
+              <p className="text-neutral text-base md:text-lg leading-relaxed">
                 Our
                 <strong>
                   driving lessons for beginners in Sydney suburbs
@@ -435,7 +435,7 @@ export default function AutomaticDrivingLesson() {
                 merging, and overtaking.
               </p>
 
-              <p className="text-neutral text-lg leading-relaxed">
+              <p className="text-neutral text-base md:text-lg leading-relaxed">
                 Whether you want to master city streets, highway driving, or
                 parking techniques, our structured driving programs in provide
                 everything you need to become a safe and confident driver.
@@ -470,10 +470,10 @@ export default function AutomaticDrivingLesson() {
           <div className="space-y-4">
             <div>
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Flexible Driving Lessons Near Sydney suburbs for Busy Lives
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   We offer flexible{" "}
                   <strong>driving lessons near Sydney suburbs</strong>,
                   including weekdays, evenings, and weekends. Our instructors
@@ -502,7 +502,7 @@ export default function AutomaticDrivingLesson() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Flexible Schedules and Tailored Learning Plans
                 </h3>
                 <p className="text-gray-700 text-lg mb-3">

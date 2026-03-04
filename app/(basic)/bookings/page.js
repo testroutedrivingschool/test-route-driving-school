@@ -600,7 +600,7 @@ export default function BookingsPage() {
               {/* Header */}
               <div className="mb-8 flex justify-between items-center">
                 <div>
-                  <h1 className="text-3xl font-bold ">
+                  <h1 className="text-2xl sm:text-3xl font-bold ">
                     Test Route Driving School
                   </h1>
                   <p className="text-neutral mt-2">
@@ -674,7 +674,7 @@ export default function BookingsPage() {
                             }
                           >
                             {/* Selected Instructor Card */}
-                            <div className="w-[260px] shrink-0">
+                            <div className="md:w-[260px] shrink-0">
                               {selectedInstructor && (
                                 <div className="flex flex-col items-center cursor-pointer p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md">
                                   <div className="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mb-3">

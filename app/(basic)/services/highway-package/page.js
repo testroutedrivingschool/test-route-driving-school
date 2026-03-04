@@ -191,9 +191,9 @@ export default function HighwayPackage() {
 
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
                 Highway Driving Lessons in Sydney suburbs
-                <span className="pl-2 inline-block text-primary">
+                <span className="pl-2  text-primary">
                   Package Details
                 </span>
               </h2>
@@ -233,14 +233,14 @@ export default function HighwayPackage() {
               {/* CTA Buttons */}
               <div className="mt-4 flex flex-col sm:flex-row gap-4">
                 <Link href="/bookings" className="group">
-                  <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
+                  <PrimaryBtn className="px-4 md:px-8 py-2! md:py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Highway Package
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </PrimaryBtn>
                 </Link>
 
                 <Link href="/instructors" className="group">
-                  <OutlineBtn className="py-3! px-8! border-2!">
+                  <OutlineBtn className="py-2! md:py-3! px-4 md:px-8 border-2!">
                     Meet Our Instructors
                   </OutlineBtn>
                 </Link>
@@ -251,7 +251,7 @@ export default function HighwayPackage() {
       </section>
       <section className="py-12 bg-primary/80 text-white">
         <Container>
-          <h3 className="text-lg md:text-2xl font-semibold">
+          <h3 className="text-xl md:text-2xl font-semibold">
             Who Needs Highway Driving Lessons in Kogarah?
           </h3>
           <p className="mt-2 text-base-300">

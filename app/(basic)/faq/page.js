@@ -343,7 +343,7 @@ export default function FAQPAGE() {
                   className="w-full flex justify-between items-center text-left"
                   onClick={() => toggleFaq(index)}
                 >
-                  <h3 className="text-lg font-bold">{faq.question}</h3>
+                  <h3 className="text-base md:text-lg font-bold">{faq.question}</h3>
                   <FaChevronDown
                     className={`transition-transform duration-300 ${
                       openIndex === index ? "rotate-180" : ""

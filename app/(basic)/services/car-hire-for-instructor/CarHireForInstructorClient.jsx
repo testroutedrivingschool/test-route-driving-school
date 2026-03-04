@@ -260,9 +260,9 @@ export default function CarHireForInstructorClient() {
 
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-4 md:mb-6">
                 Dual-controlled Vehicles Available
-                <span className="pl-2 inline-block text-primary">for Hire</span>
+                <span className="pl-2  text-primary">for Hire</span>
               </h2>
 
               <p className="text-neutral leading-relaxed mb-6">
@@ -306,14 +306,14 @@ export default function CarHireForInstructorClient() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/bookings" className="group">
-                  <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
+                  <PrimaryBtn className="px-4 md:px-8 py-2! md:py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </PrimaryBtn>
                 </Link>
 
                 <Link href="/instructors" className="group">
-                  <OutlineBtn className="py-3! px-8! border-2!">
+                  <OutlineBtn className="py-2! md:py-3! px-4 md:px-8 border-2!">
                     Meet Our Instructors
                   </OutlineBtn>
                 </Link>
@@ -386,10 +386,10 @@ export default function CarHireForInstructorClient() {
           <div className="space-y-4">
             <div>
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Why Instructors Choose Our Dual Brake Car Hire
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   Driving instructors face many challenges, and we are here to
                   help you solve them. Our Dual Brake Car Hire for instructors
                   in Sydney Suburbs ensures your lessons run smoothly without
@@ -406,10 +406,10 @@ export default function CarHireForInstructorClient() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Flexible Schedules and Tailored Learning Plans in Kogarah
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base sm:text-lg mb-3">
                   Every learner has a unique schedule and a different learning
                   pace. That is why we offer flexible lesson timings throughout
                   Sydney Suburbs for our students. This includes evenings and

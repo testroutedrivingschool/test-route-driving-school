@@ -162,7 +162,7 @@ function PaymentForm() {
   return (
     <section className="py-20 bg-gray-50">
       <Container>
-        <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-md p-6 space-y-6">
+        <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-md p-4 md:p-6 space-y-6">
           <h2 className="text-2xl font-bold text-center">Confirm Payment</h2>
 
           {/* Booking Summary */}

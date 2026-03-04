@@ -45,11 +45,12 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section className="pb-17">
+      <Container >
         <SectionHeader
   title="Our Simple 4-Step Learning Process"
   subtitle="From booking your lesson to driving with confidence"
 />
-      <Container className={` relative`}>
+<div className={` relative`}>
 
         {/* MIDDLE LINE IMAGE */}
         <div className="absolute left-1/2 top-1 -translate-x-1/2 h-full hidden lg:block">
@@ -74,7 +75,7 @@ export default function HowItWorks() {
             <p className="text-sm text-gray-500 font-semibold">
               {item.step}
             </p>
-            <h3 className="text-xl font-bold text-primary mt-1">
+            <h3 className="text-lg md:text-xl font-bold text-primary mt-1">
               {item.title}
             </h3>
             <p className="text-neutral mt-2 max-w-lg">
@@ -117,7 +118,7 @@ export default function HowItWorks() {
 ))}
 
 
-        </div>
+        </div></div>
       </Container>
     </section>
   );

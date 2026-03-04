@@ -74,13 +74,13 @@ export default function WhatWeOffer({
             >
       
               <div
-                className="w-14 h-14 mb-5 flex items-center justify-center rounded-2xl
-bg-primary shadow-lg"
+                className="w-12 h-12 md:w-14 md:h-14 mb-5 flex items-center justify-center rounded-2xl
+bg-primary shadow-lg text-lg"
               >
                 {service.icon}
               </div>
-                <h3 className="text-xl font-semibold mb-2 hover:underline">{service.title}</h3>
-              <p className="text-neutral">{service.description}</p>
+                <h3 className="text-lg md:text-xl font-semibold mb-2 hover:underline">{service.title}</h3>
+              <p className="text-neutral text-sm md:text-base">{service.description}</p>
              
             </div>
           ))}

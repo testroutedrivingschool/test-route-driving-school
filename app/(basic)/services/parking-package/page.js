@@ -204,7 +204,7 @@ export default function ParkingPackage() {
 
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
                 Master Your Skills with a Parking Driving Lesson Package in
                 <span className="pl-2 inline-block text-primary">
                   Sydney suburbs
@@ -252,14 +252,14 @@ export default function ParkingPackage() {
               {/* CTA Buttons */}
               <div className="mt-4 flex flex-col sm:flex-row gap-4">
                 <Link href="/bookings" className="group">
-                  <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
+                  <PrimaryBtn className="px-4 md:px-8 py-2! md:py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your First Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </PrimaryBtn>
                 </Link>
 
                 <Link href="/instructors" className="group">
-                  <OutlineBtn className="py-3! px-8! border-2!">
+                  <OutlineBtn className="py-2! md:py-3! px-4 md:px-8 border-2!">
                     Meet Our Instructors
                   </OutlineBtn>
                 </Link>
@@ -270,7 +270,7 @@ export default function ParkingPackage() {
       </section>
       <section className="py-16 bg-primary/80 text-white">
         <Container>
-          <h3 className="text-2xl lg:text-3xl font-semibold mb-4">
+          <h3 className="text-xl sm:text-2xl lg:text-3xl font-semibold mb-4">
             Real-World Training with a Driving Instructor in Sydney suburbs
           </h3>
 
@@ -296,7 +296,7 @@ export default function ParkingPackage() {
               <strong>Arncliffe.</strong>
             </li>
           </ul>
-          <h3 className="mt-6 text-2xl lg:text-3xl font-semibold mb-4">
+          <h3 className="mt-6  text-xl sm:text-2xl lg:text-3xl font-semibold mb-4">
             Who Can Use These Parking Lessons for Learners in Sydney suburbs?
           </h3>
           <p className="leading-relaxed ">

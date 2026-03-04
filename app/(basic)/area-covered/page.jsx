@@ -213,7 +213,7 @@ export default function AreaCovered() {
                 <div className="text-3xl mb-3 flex justify-center">
                   {stat.icon}
                 </div>
-                <div className="text-3xl font-bold  mb-1">
+                <div className="text-2xl md:text-3xl font-bold  mb-1">
                   {stat.value}
                 </div>
                 <div className="text-neutral">{stat.label}</div>
@@ -225,7 +225,7 @@ export default function AreaCovered() {
             {/* Left Column - Content */}
             <div className="lg:w-1/2 space-y-8">
               <div>
-                <h2 className="text-2xl lg:text-3xl font-bold  mb-6">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold  mb-6">
                   Comprehensive Areas Covered by Driving School for 
                   <span className="text-primary px-1">Driving Lessons</span>
                 </h2>
@@ -260,7 +260,7 @@ export default function AreaCovered() {
 
             {/* Right Column - Locations */}
             <div className="lg:w-1/2">
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-6 h-full">
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 h-full">
                 {/* Search and Filter */}
                 <div className="mb-6">
                   <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -309,7 +309,7 @@ export default function AreaCovered() {
                         <Link
                           key={index}
                           href={`/driving-school-in/${locSlug}`}
-                          className="group flex items-center gap-2 p-3 bg-base-300 rounded-lg hover:bg-primary/10 cursor-pointer  border border-transparent transition-all"
+                          className="group flex items-center gap-2 p-2 bg-base-300 rounded-lg hover:bg-primary/10 cursor-pointer  border border-transparent transition-all"
                         >
                           <FaMapMarkerAlt className="text-primary " />
                           <div>
@@ -368,19 +368,19 @@ export default function AreaCovered() {
                 <div className="space-y-4">
                   <div>
                     <div className="mb-8">
-                      <h3 className="text-2xl font-bold  mb-4">
+                      <h3 className="text-xl sm:text-2xl font-bold  mb-4">
                          Flexible Automatic Driving Lessons Across Sydney
                       </h3>
-                      <p className="text-gray-700 text-lg mb-3">
+                      <p className="text-gray-700 md:text-lg mb-3">
                         We offer automatic <a className="location-link" href={"https://www.nsw.gov.au/driving-boating-and-transport/driver-and-rider-licences/driver-licences/learner-driver-licence"} >driving lessons</a> throughout Sydney, including weekdays, evenings, and weekends. Our professional instructors adjust each lesson to your pace, teaching city driving, parking, and test route practice so you feel confident on your driving test day.
                       </p>
                     </div>
       
                     <div className="mb-8">
-                      <h3 className="text-2xl font-bold  mb-4">
+                      <h3 className="text-xl sm:text-2xl font-bold  mb-4">
                         Flexible Schedules and Tailored Learning Plans
                       </h3>
-                      <p className="text-gray-700 text-lg mb-3">
+                      <p className="text-gray-700 md:text-lg mb-3">
                         Every learner is unique, so we create custom lesson plans based on your skills and progress. You’ll practise real-life scenarios, receive continuous feedback, and enjoy lessons that fit your schedule, including evenings and weekends. By the end, you’ll be ready for both your driving test and independent driving. Test Route Driving School is a trusted local driving school supporting you every step of the way.
                       </p>
                     </div>
@@ -398,15 +398,15 @@ export default function AreaCovered() {
       <section className="mt-16 mb-16">
         <Container>
           {/* CTA Section */}
-          <div className=" bg-primary rounded-xl p-8 text-white text-center">
-            <h3 className="text-2xl font-bold mb-4">
+          <div className=" bg-primary rounded-xl p-4 py-6 md:p-8 text-white text-center">
+            <h3 className="text-xl md:text-2xl font-bold mb-4">
               Ready to Start Your Driving Journey?
             </h3>
             <p className="text-blue-100 mb-6 max-w-2xl mx-auto">
            Book your first lesson today and enjoy professional <Link className="font-semibold underline px-1" href={`/services/automatic-driving-lessons`}>driving lessons</Link>  in your local area. Our instructors help you feel confident, prepared, and comfortable on the road. Start <a className="location-link" href={"https://www.gov.uk/driving-lessons-learning-to-drive/taking-driving-lessons"} >learning</a> today with Test Route Driving School.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href={`/bookings`}>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link className="" href={`/bookings`}>
               
               <SecondaryBtn>Check Availability</SecondaryBtn>
               </Link>

@@ -42,13 +42,13 @@ const formattedLocation = slug
         <Container>
           <div className="flex flex-col lg:flex-row items-center gap-10">
             {/* Left Content */}
-            <div className="flex-1 space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">
+            <div className="flex-1 space-y-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                 {locationData.section1Title
                   ? locationData.section1Title
                   : "Learn to Drive with Confidence at Test Route Driving School"}
               </h2>
-              <p className="text-gray-700 text-lg">
+              <p className="text-gray-700 text-base md:text-lg">
                 {locationData.section1SubTitle
                   ? locationData.section1SubTitle
                   : "You deserve an affordable driving school that truly cares about your success. Many learners feel nervous during their first few lessons, which is completely normal. We create a calm, patient, and supportive learning environment to help you build confidence step by step. Our experienced instructors focus on real-world driving skills and proper test preparation, so you feel ready for any traffic situation."}
@@ -87,13 +87,13 @@ const formattedLocation = slug
               />
             </div>
             <div className="flex-1 space-y-6">
-              <h2 className="text-3xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                 {locationData.section2Title
                   ? locationData.section2Title
                   : "Learn to Drive with Confidence at Test Route Driving School"}
               </h2>
 
-              <p className="text-gray-700 text-lg">
+              <p className="text-gray-700 text-base md:text-lg">
                 {locationData.section2SubTitle
                   ? locationData.section2SubTitle
                   : "You deserve an affordable driving school that truly cares about your success. Many learners feel nervous during their first few lessons, which is completely normal. We create a calm, patient, and supportive learning environment to help you build confidence step by step. Our experienced instructors focus on real-world driving skills and proper test preparation, so you feel ready for any traffic situation."}
@@ -114,12 +114,12 @@ const formattedLocation = slug
           <div className="space-y-4">
             <div>
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl  md:text-2xl font-bold text-gray-900 mb-4">
                   {locationData?.section3Title1
                     ? locationData.section3Title1
                     : ""}
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   {locationData?.section3Description1
                     ? locationData.section3Description1
                     : ""}
@@ -127,12 +127,12 @@ const formattedLocation = slug
               </div>
 
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
                   {locationData?.section3Title2
                     ? locationData.section3Title2
                     : ""}
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   {locationData?.section3Description2
                     ? locationData.section3Description2
                     : ""}
@@ -160,10 +160,10 @@ const formattedLocation = slug
                 <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-blue-400 to-blue-600 text-white rounded-full mb-4 mx-auto text-2xl">
                   <FaCar />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
                   {locationData.lessonTips[0].name || ""}
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 md:leading-relaxed">
                   {locationData.lessonTips[0].description || ""}
                 </p>
               </div>
@@ -172,10 +172,10 @@ const formattedLocation = slug
                 <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-green-400 to-green-600 text-white rounded-full mb-4 mx-auto text-2xl">
                   <IoIosWarning />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
+                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3 group-hover:text-green-600 transition-colors">
                   {locationData.lessonTips[1].name || ""}
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 md:leading-relaxed">
                   {locationData.lessonTips[1].description || ""}
                 </p>
               </div>
@@ -184,10 +184,10 @@ const formattedLocation = slug
                 <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-purple-400 to-purple-600 text-white rounded-full mb-4 mx-auto text-2xl">
                   <FaTrafficLight />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
+                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors">
                   {locationData.lessonTips[2].name || ""}
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 md:leading-relaxed">
                   {locationData.lessonTips[2].description || ""}
                 </p>
               </div>
@@ -196,10 +196,10 @@ const formattedLocation = slug
                 <div className="flex items-center justify-center w-16 h-16 bg-linear-to-r from-yellow-400 to-yellow-600 text-white rounded-full mb-4 mx-auto text-2xl">
                   <FaArrowRotateLeft />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 mb-3 group-hover:text-yellow-500 transition-colors">
+                <h3 className="text-xl md:text-2xl font-semibold text-gray-900 mb-3 group-hover:text-yellow-500 transition-colors">
                   {locationData.lessonTips[3].name || ""}
                 </h3>
-                <p className="text-gray-700 leading-relaxed">
+                <p className="text-gray-700 md:leading-relaxed">
                   {locationData.lessonTips[3].description || ""}
                 </p>
               </div>
@@ -210,8 +210,8 @@ const formattedLocation = slug
       <section className="mt-10 mb-10">
         <Container>
           {/* CTA Section */}
-          <div className=" bg-primary rounded-xl p-8 text-white text-center">
-            <h3 className="text-xl md:text-2xl font-bold mb-4">Start Your Driving Journey Today</h3>
+          <div className=" bg-primary rounded-xl p-4 md:p-8 text-white text-center">
+            <h3 className="text-xl md:text-2xl font-bold mb-3">Start Your Driving Journey Today</h3>
             <p className="text-blue-100 mb-4 md:max-w-2xl mx-auto text-sm md:text-base">
               {locationData.ctaDescription
                 ? locationData.ctaDescription
@@ -251,7 +251,7 @@ const formattedLocation = slug
       {/* Map*/}
       <section className="py-16">
         <Container>
-          <div className="w-full h-[450px] rounded-xl overflow-hidden border border-border-color">
+          <div className="w-full h-[350px] md:h-[450px] rounded-xl overflow-hidden border border-border-color">
             <iframe
               src={locationData.mapUrl}
               width="100%"

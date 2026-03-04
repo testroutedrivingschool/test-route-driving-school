@@ -56,12 +56,12 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                   <Image
                     src={blog.image}
                     alt={blog.title}
-                    width={800}
-                    height={800}
-                    className="w-full h-60 md:h-50 object-cover object-center"
+                    width={1000}
+                    height={1000}
+                    className="w-full  object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
+                    <h3 className="text-lg md:text-xl font-bold mb-2">{blog.title}</h3>
 
                     <p className="text-neutral mb-4 flex-1 ">
                       {blog.excerpt.length > 60
@@ -87,14 +87,14 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                   <Image
                     src={blog.image}
                     alt={blog.title}
-                    width={800}
-                    height={800}
-                    className="w-full h-60 md:h-55 object-cover object-center"
+                    width={1000}
+                    height={1000}
+                    className="w-full max-h-[220px]   object-cover object-center"
                   />
                   <div className="p-4 flex flex-col flex-1">
-                    <h3 className="text-xl font-semibold mb-2">{blog.title}</h3>
+                    <h3 className="text-lg md:text-xl font-bold mb-2">{blog.title}</h3>
 
-                    <p className="text-neutral mb-4 flex-1 ">
+                    <p className="text-neutral mb-2 flex-1 ">
                       {blog.excerpt.length > 60
                         ? blog.excerpt.slice(0, 60) + "..."
                         : blog.excerpt || ""}

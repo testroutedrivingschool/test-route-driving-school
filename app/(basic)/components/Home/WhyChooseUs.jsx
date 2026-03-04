@@ -39,7 +39,7 @@ export default function WhyChooseUs({className, title, subTitle, points}) {
         <div className="flex flex-col md:flex-row gap-10 items-center ">
           {/* Left Content */}
           <div className="flex-1 flex flex-col gap-4">
-            <h2 className="text-2xl md:text-4xl font-bold">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">
               {title ? (
                 title
               ) : (

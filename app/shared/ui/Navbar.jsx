@@ -150,7 +150,7 @@ const dashHref =
     <nav
       className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
     >
-      <Container className={`px-1! sm:px-2!`}>
+      <Container className={`px-1.5! sm:px-2!`}>
         <div className="flex items-center justify-between ">
           {/* Logo */}
           <div className="lg:flex-none flex justify-center lg:justify-start">

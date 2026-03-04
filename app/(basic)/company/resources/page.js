@@ -146,7 +146,7 @@ export default function Resources() {
         />
         {/* Resources */}
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center text-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
@@ -156,7 +156,7 @@ export default function Resources() {
               </h2>
             </a>
           </div>
-          <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center text-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
@@ -167,7 +167,7 @@ export default function Resources() {
             </a>
            
           </div>
-          <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center text-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
@@ -178,7 +178,7 @@ export default function Resources() {
             </a>
            
           </div>
-          <div className="flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-center items-center text-center">
             <div className="bg-primary p-4 rounded-full">
               <IoDocumentText className="text-6xl text-white  " />
             </div>
@@ -196,10 +196,10 @@ export default function Resources() {
           <div className="space-y-4">
             <div>
               <div className="mb-8">
-                <h3 className="text-2xl font-bold  mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold  mb-4">
                   Automatic Driving Lesson Guides & Learning Materials
                 </h3>
-                <p className="text-neutral text-lg mb-3">
+                <p className="text-neutral text-base md:text-lg mb-3">
                   Our learning guides help you master automatic driving step by step, based on actual RMS testing criteria and real-world Sydney traffic patterns. They focus on real roads, real traffic, and real test conditions that our instructors encounter daily.
                 </p>
                 <h3 className="mt-2 text-lg font-bold">
@@ -238,10 +238,10 @@ export default function Resources() {
               </div>
 
               <div className="">
-                <h3 className="text-2xl font-bold  mb-2">
+                <h3 className="text-xl sm:text-2xl font-bold  mb-2">
                  Learn at Your Own Speed with Structured Practice
                 </h3>
-                <p className="text-neutral text-lg mb-3">
+                <p className="text-neutral md:text-lg mb-3">
                   Every learner grows at a different pace. Our resources help
                   you plan smarter practice sessions.
                 </p>

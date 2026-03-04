@@ -197,9 +197,9 @@ export default function NightDrivingLesson() {
 
             {/* Content Section */}
             <div className="lg:flex-1 w-full">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-6">
                 Gain Confidence with Night Driving Lessons in Sydney suburbs
-                <span className="pl-2 inline-block text-primary">
+                <span className="pl-2 text-primary">
                   After Dark
                 </span>
               </h2>
@@ -237,14 +237,14 @@ export default function NightDrivingLesson() {
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/bookings" className="group">
-                  <PrimaryBtn className="px-8 py-3 text-lg font-semibold group-hover:scale-105 transition-transform">
+                  <PrimaryBtn className="px-4 md:px-8 py-2! md:py-3 min-w-12 text-lg font-semibold group-hover:scale-105 transition-transform">
                     Book Your Night Lesson
                     <FiArrowRight className="group-hover:translate-x-1 transition-transform" />
                   </PrimaryBtn>
                 </Link>
 
                 <Link href="/instructors" className="group">
-                  <OutlineBtn className="py-3! px-8! border-2!">
+                  <OutlineBtn className="py-2! md:py-3! px-4 md:px-8 border-2!">
                     Meet Our Instructors
                   </OutlineBtn>
                 </Link>
@@ -266,12 +266,12 @@ export default function NightDrivingLesson() {
           <div className="flex flex-col-reverse md:flex-row items-center gap-12">
             {/* Left Text Content */}
             <div className="flex-1 space-y-6">
-              <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+              <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-gray-900">
                 Affordable Night Driving Lessons in Sydney suburbsand
                 <span className="text-primary px-1">Sydney, NSW</span>
               </h2>
 
-              <p className="text-neutral text-lg leading-relaxed">
+              <p className="text-neutral text-base md:text-lg leading-relaxed">
                 Are you looking for reliable local night driving lessons in
                 Sydney suburbsthat you can trust? We offer both automatic and
                 manual sessions tailored for every beginner driver. Our
@@ -291,7 +291,7 @@ export default function NightDrivingLesson() {
                 truly independent driver.
               </p>
 
-              <p className="text-neutral text-lg leading-relaxed">
+              <p className="text-neutral text-base md:text-lg leading-relaxed">
                 Whether you want to master city streets, highway driving, or
                 parking techniques, our structured driving programs in provide
                 everything you need to become a safe and confident driver.
@@ -326,10 +326,10 @@ export default function NightDrivingLesson() {
           <div className="space-y-4">
             <div>
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Get Ready with a Night Driving Instructor Sydney suburbsExpert
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700  text-base sm:text-lg mb-3">
                   Learning to drive at night is challenging without the right
                   professional guidance. With a dedicated night driving
                   instructor from our team, you receive personal care. We tailor
@@ -364,10 +364,10 @@ export default function NightDrivingLesson() {
               </div>
 
               <div className="mb-8">
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">
                   Pre-Test Assessment and Night Driving Classes Near Kogarah
                 </h3>
-                <p className="text-gray-700 text-lg mb-3">
+                <p className="text-gray-700 text-base md:text-lg mb-3">
                   We understand that every learner has a unique and busy
                   schedule. That is why we offer night driving classes near
                   Sydney suburbsduring flexible hours. You can book sessions on

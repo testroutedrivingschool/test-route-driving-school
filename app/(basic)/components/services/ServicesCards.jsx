@@ -183,7 +183,7 @@ export default function ServicesCards() {
               return (
                 <div
                   key={service.id}
-                  className="group bg-base-300 rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-1"
+                  className="group bg-base-300 rounded-xl p-4 md:p-6 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-1"
                 >
                   <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary mb-4 group-hover:bg-primary group-hover:text-white transition">
                     <Icon size={26} />
@@ -220,7 +220,7 @@ export default function ServicesCards() {
                 return (
                   <div
                     key={service.id}
-                    className="group bg-base-300 rounded-xl p-6 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-1"
+                    className="group bg-base-300 rounded-xl p-4 md:p-6 shadow-md hover:shadow-2xl border border-gray-100 transition-all duration-300 hover:-translate-y-1"
                   >
                     <div className="w-14 h-14 flex items-center justify-center rounded-xl bg-primary/10 text-primary mb-4 group-hover:bg-primary group-hover:text-white transition">
                       <Icon size={26} />

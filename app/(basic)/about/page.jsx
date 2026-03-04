@@ -242,7 +242,7 @@ export default function About() {
      
             <div className="lg:w-1/2 w-full space-y-6">
               <div>
-                <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                   Learn to Drive with Confidence & Safety
                 </h2>
                 <div className="space-y-4">
@@ -309,12 +309,12 @@ export default function About() {
           </section>
         </Container>
 
-        <section className="py-16 bg-base-300">
+        <section className="py-10 md:py-16 bg-base-300">
           <Container>
             <div className="flex flex-col md:flex-row gap-5 md:gap-10 items-center ">
            
               <div className="flex-1 space-y-6 ">
-                <h2 className="text-2xl lg:text-4xl font-bold ">
+                <h2 className="text-xl sm:text-2xl lg:text-4xl font-bold ">
                   Professional Driving School You{" "}
                   <span className="text-primary">Can Trust</span>
                 </h2>

@@ -73,7 +73,7 @@ export default function LocalDrivingLessons() {
 
         {/* Enhanced SEO Section */}
         <div
-          className="mt-16 p-6 md:p-12 rounded-xl shadow-2xl  space-y-8"
+          className="mt-16 p-4 py-6 md:p-12 rounded-xl shadow-2xl  space-y-8"
           style={{
             background: "linear-gradient(135deg, #301b92 0%, #4623c2 100%)",
             color: "#ffffff",

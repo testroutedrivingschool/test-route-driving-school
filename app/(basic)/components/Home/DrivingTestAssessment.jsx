@@ -140,7 +140,7 @@ export default function DrivingTestAssessment() {
 
                 {/* Features List */}
                 <div className="p-4 flex-1">
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     {pkg.features.map((feature, idx) => (
                       <div
                         key={idx}
@@ -182,7 +182,7 @@ export default function DrivingTestAssessment() {
                 <div className="p-4">
                   <PrimaryBtn
                     onClick={(e) => handleAddToCart(pkg, e)}
-                    className={`w-full py-4 rounded-xl font-bold text-base! md:text-lg group ${
+                    className={`py-2! md:py-4 text-base! md:text-lg! w-full  rounded-lg font-bold  group ${
                       pkg.highlight
                         ? "bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
                         : ""

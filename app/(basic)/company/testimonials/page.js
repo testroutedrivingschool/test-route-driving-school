@@ -119,7 +119,7 @@ export default function Testimonials() {
           <div>
             {/* Summary card */}
 <div className="mt-10 ">
-  <div className="rounded-2xl border border-border-color bg-white p-8 shadow-sm">
+  <div className="rounded-2xl border border-border-color bg-white p-4 md:p-8 shadow-sm">
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
         <h3 className="text-2xl font-extrabold text-gray-900">
@@ -164,7 +164,7 @@ export default function Testimonials() {
 {/* ✅ Reviews  */}
 <div className="mt-12 ">
   <div className="rounded-2xl border border-border-color bg-white shadow-sm overflow-hidden">
-    <div className="px-7 py-6 border-b border-border-color">
+    <div className="px-4 md:px-7 py-6 border-b border-border-color">
       <h3 className="text-2xl font-extrabold text-gray-900">Latest Reviews</h3>
       <p className="mt-2 text-sm text-gray-600">
         Real feedback from learners across Sydney suburbs.
@@ -179,7 +179,7 @@ export default function Testimonials() {
       ? `/api/storage/proxy?key=${encodeURIComponent(r.authorImageKey)}`
       : "/profile-avatar.png";
         return(
-        <div key={r._id} className="px-7 py-7">
+        <div key={r._id} className="px-4 md:px-6 py-7">
           <div className="flex gap-5 items-start">
             {/* Avatar */}
             <div className="shrink-0">

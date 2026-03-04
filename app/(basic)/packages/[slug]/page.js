@@ -87,11 +87,11 @@ export default function PackageDetails() {
           </div>
 
           {/* Right - Details */}
-          <div className="flex-1 flex flex-col gap-6">
-            <h1 className="text-4xl font-bold text-gray-900">
+          <div className="flex-1 flex flex-col gap-4 md:gap-6">
+            <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
               {singlePackage.name}
             </h1>
-            <p className="text-gray-700 text-lg">{singlePackage.description}</p>
+            <p className="text-gray-700 text-base md:text-lg">{singlePackage.description}</p>
 
             {/* Pricing */}
             <div className="flex items-center gap-4 text-gray-900">
@@ -117,7 +117,7 @@ export default function PackageDetails() {
             </div>
             {/* Features */}
             <div>
-              <h3 className="text-xl font-semibold mb-2">
+              <h3 className="text-lg md:text-xl font-semibold mb-2">
                 This Package included:
               </h3>
               <ul className="space-y-2">

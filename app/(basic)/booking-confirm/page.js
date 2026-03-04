@@ -294,11 +294,11 @@ function ServiceRow({
 
   return (
     <tr className={`${rowBg} border-t border-border-color`}>
-      <td className="px-3 py-2 font-semibold">{name}</td>
+      <td className="px-2 md:px-3 py-2 font-semibold text-[10px] md:text-sm">{name}</td>
       {durations.map((d, i) => (
         <td key={i} className="text-center py-2">
           {prices[i] && activeDurations[i] ? (
-            <label className="flex flex-col items-center font-medium gap-1 cursor-pointer text-xs md:text-sm">
+            <label className="flex flex-col items-center font-medium gap-1 cursor-pointer text-[8px] md:text-sm">
               <input
                 type="radio"
                 name={`servicePick`}
@@ -364,7 +364,7 @@ function MobileTable({ services, durations, selectedBooking, setSelectedBooking 
       <table className="w-full table-fixed border border-border-color text-[11px]">
         <thead className="bg-secondary text-white">
           <tr>
-            <th className="text-left px-2 py-2 w-[40%]">Service</th>
+            <th className="text-left px-1 md:px-2 py-2 w-[30%]">Service</th>
             {durations.map((d) => (
               <th key={d.minutes} className="px-1 py-2 text-center font-bold">
                 {d.minutes === 60 && "1 hr"}

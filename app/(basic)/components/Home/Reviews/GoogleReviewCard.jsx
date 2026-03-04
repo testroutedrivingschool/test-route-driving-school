@@ -10,7 +10,7 @@ export default function GoogleReviewCard() {
     <section className="pt-16 mt-5 md:mt-10">
       <Container>
         <div>
-          <div className="bg-base-300 border border-gray-200 rounded-xl p-6 shadow transition-all duration-300 hover:-translate-y-1">
+          <div className="bg-base-300 border border-gray-200 rounded-xl p-4 md:p-6 shadow transition-all duration-300 hover:-translate-y-1">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
               {/* Left Section - Google Logo & Info */}
               <div className="flex items-center gap-5">
@@ -30,7 +30,7 @@ export default function GoogleReviewCard() {
                         alt="Google Logo"
                         className="w-8 h-8"
                       />
-                      <span className="text-center md:text-left font-bold text-gray-900 md:text-lg">
+                      <span className="text-center md:text-left font-bold text-gray-900 text-sm md:text-lg">
                         Google <br />
                         Reviews
                       </span>
@@ -55,7 +55,7 @@ export default function GoogleReviewCard() {
                   </div>
 
                   <div className="flex items-center gap-3 text-neutral">
-                    <span className="text-sm font-bold bg-gray-100 px-3 py-1 rounded-full">
+                    <span className="text-sm font-bold bg-gray-100 px-1 py-1 rounded-full">
                       850+ reviews
                     </span>
                     <span className="text-xs">
