@@ -1,5 +1,5 @@
 import {admin} from "@/app/libs/firebase/firebase.admin";
-import {usersCollection} from "@/app/libs/mongodb/db";
+import {clientsCollection, usersCollection} from "@/app/libs/mongodb/db";
 import {NextResponse} from "next/server";
 
 export async function GET(req) {
@@ -45,6 +45,7 @@ export async function POST(req) {
 
 export async function PATCH(req) {
   try {
+   
     const body = await req.json();
     const {
       email,
@@ -60,6 +61,7 @@ export async function PATCH(req) {
       photoKey,
       photo,
       emailScheduleTime,
+      clientId,
     } = body;
 
     if (!email)
@@ -98,6 +100,30 @@ export async function PATCH(req) {
 
     if (result.matchedCount === 0) {
       return NextResponse.json({error: "User not found"}, {status: 404});
+    }
+
+
+    if (!ObjectId.isValid(clientId)) {
+      return NextResponse.json({error: "Invalid clientId"}, {status: 400});
+    }
+
+    const clientsCol = await clientsCollection();
+    const clientUpdateResult = await clientsCol.updateOne(
+      { _id: new ObjectId(clientId) }, 
+      {
+        $set: {
+          mobile: phone || "",
+          address: address || "",
+          suburb: suburb || "",
+          state: state || "",
+          postCode: postCode || "",
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    if (clientUpdateResult.matchedCount === 0) {
+      console.warn(`No client found with the clientId: ${clientId}`);
     }
 
     return NextResponse.json({message: "User updated successfully"});

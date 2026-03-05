@@ -200,7 +200,7 @@ export async function POST(req) {
       firstName: body.firstName.trim(),
       lastName: body.lastName.trim(),
       organization: body.organization ?? "None",
-      provider: body.provider || "Credential",
+      provider: body.provider || "",
       linkedUserEmail: body.email?.trim()?.toLowerCase() || "",
       mobile: body.mobile?.trim() || "",
       homePhone: body.homePhone?.trim() || "",
@@ -210,7 +210,7 @@ export async function POST(req) {
       anotherEmail: body.anotherEmail?.trim()?.toLowerCase() || "",
 
       dob: body.dob || "",
-      gender: body.gender || "male",
+      gender: body.gender || "",
 
       emergencyContact: body.emergencyContact?.trim() || "",
       emergencyPhone: body.emergencyPhone?.trim() || "",

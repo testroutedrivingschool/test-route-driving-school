@@ -101,36 +101,41 @@ const shouldHide = (key) => HIDE_BY_STATUS[status]?.has(key);
 
 
 const menuItems = useMemo(() => {
-  const paidMenu = [
-    { key: "sessionNote", label: "Edit Session Note", icon: <GrNotes size={20} /> },
-    { key: "invoiceNote", label: "Add Invoice Note" },
-    { key: "emailInvoice", label: "Email Invoice" },
-    { key: "viewInvoice", label: "View Invoice" },
+  let base = isPaid
+    ? [
+        { key: "sessionNote", label: "Edit Session Note", icon: <GrNotes size={20} /> },
+        { key: "invoiceNote", label: "Add Invoice Note" },
+        { key: "emailInvoice", label: "Email Invoice" },
+        { key: "viewInvoice", label: "View Invoice" },
         { key: "confirmBooking", label: "Confirm Booking" },
-     { key: "moveBooking", label: "Move Booking" }, 
-    { key: "rebook", label: "Rebook Client" },
-  ];
+        { key: "moveBooking", label: "Move Booking" },
+        { key: "rebook", label: "Rebook Client" },
+      ]
+    : [
+        { key: "sessionNote", label: "Session Note", icon: <GrNotes size={20} /> },
+        { key: "invoiceNote", label: "Add Invoice Note" },
+        { key: "emailInvoice", label: "Email Invoice" },
+        { key: "viewInvoice", label: "View Invoice" },
+        { key: "confirmBooking", label: "Confirm Booking" },
+        { key: "markUnattended", label: "Mark Unattended" },
+        { key: "cancelBooking", label: "Cancel Booking" },
+        { key: "moveBooking", label: "Move Booking" },
+        { key: "rebook", label: "Rebook Client" },
+      ];
 
-  const unpaidMenu = [
-    { key: "sessionNote", label: "Session Note", icon: <GrNotes size={20} /> },
-    { key: "invoiceNote", label: "Add Invoice Note" },
-    { key: "emailInvoice", label: "Email Invoice" },
-    { key: "viewInvoice", label: "View Invoice" },
+  // Show "Completed" when status is "confirmed" and payment is "paid"
+  if (isPaid && status === "confirmed") {
+    base.push({ key: "markCompleted", label: "Mark as Completed" });
+  }
 
-    { key: "confirmBooking", label: "Confirm Booking" },
-    { key: "markUnattended", label: "Mark Unattended" },
-    { key: "cancelBooking", label: "Cancel Booking" },
-    { key: "moveBooking", label: "Move Booking" },
+  // Hide "Confirm Booking" and "Move Booking" when status is "completed"
+  if (status === "completed") {
+    base = base.filter(item => item.key !== "confirmBooking" && item.key !== "moveBooking");
+  }
 
-    { key: "rebook", label: "Rebook Client" },
-  ];
-
-  const base = isPaid ? paidMenu : unpaidMenu;
-
-  // ✅ hide rules
+  // Hide other unnecessary items if status is "completed"
   const hide = new Set();
 
-  // status rules
   if (status === "confirmed") hide.add("confirmBooking");
   if (status === "unattended") {
     hide.add("confirmBooking");
@@ -145,15 +150,11 @@ const menuItems = useMemo(() => {
     hide.add("markUnattended");
   }
 
-  // time rule
+  // Time-based rule (move booking only allowed if booking is not expired)
   if (isMoveExpired) hide.add("moveBooking");
-
-  // payment rule (extra safety — in case paid menu ever changes)
-
 
   return base.filter((item) => !hide.has(item.key));
 }, [isPaid, status, isMoveExpired]);
-
 
   const openFromMenu = (key) => setOpenModal(key);
 
@@ -302,6 +303,32 @@ if (key === "cancelBooking") {
     setSaving(false);
   }
 }
+ if (key === "markCompleted") {
+    try {
+      setSaving(true);
+
+      const id = oid(booking?._id);
+      if (!id) {
+        toast.error("Booking ID missing");
+        return;
+      }
+
+      // Call your API to update the booking status to "completed"
+      const response = await axios.patch(`/api/bookings/${id}`, {
+        status: "completed",  
+      });
+
+     
+      queryClient.invalidateQueries({ queryKey: ["booking"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+
+      toast.success("Booking marked as completed");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to mark as completed");
+    } finally {
+      setSaving(false);
+    }
+  }
 if (key === "moveBooking") {
   const id = oid(booking?._id);
   if (!id) return toast.error("Booking ID missing");

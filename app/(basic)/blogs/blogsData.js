@@ -4,6 +4,10 @@ import blogImg3 from "@/app/assets/blog/blog3.png";
 import blogImg4 from "@/app/assets/blog/blog4.png";
 import blogImg5 from "@/app/assets/blog/blog5.png";
 import blogImg6 from "@/app/assets/blog/blog6.png";
+import blogImg7 from "@/app/assets/blog/blog7.png";
+import blogImg8 from "@/app/assets/blog/blog8.png";
+import blogImg9 from "@/app/assets/blog/blog9.png";
+import blogImg10 from "@/app/assets/blog/blog10.png";
 import blogImg16 from "@/app/assets/car-hire.jpg";
 import blogImg17 from "@/app/assets/blog/blog17.jpg";
 import blogImg18 from "@/app/assets/blog/blog18.jpg";
@@ -62,6 +66,43 @@ export  const blogsData = [
     image: blogImg6,
     link: "#",
   },
+  {
+    id:7,
+    title: "Automatic vs Manual Driving Lessons in Sydney – Which Is Better?",
+    slug: "blogs/automatic-vs-manual-driving-lessons-in-sydney-which-is-better",
+    excerpt:
+      "Choosing between Automatic vs Manual Driving Lessons depends on your goals and lifestyle. Automatic cars offer a faster learning curve for busy Sydney traffic. Manual cars provide more control and a versatile license. This guide compares the pros, cons, and license restrictions in NSW to help you decide. Understanding these differences ensures you pick the right training for your driving future.",
+    image: blogImg7,
+    link: "#",
+  },
+  {
+    id:8,
+    title: "P-Plate Rules in NSW – What Every New Driver Must Know",
+    slug: "blogs/p-plate-rules-in-nsw-what-every-new-driver-must-know",
+    excerpt:
+      "Mastering P-Plate Rules is the final hurdle to keeping your freedom on the road. In NSW, provisional drivers face strict restrictions on speed, passengers, and technology to ensure safety. This guide breaks down red and green P-plate laws, alcohol limits, and mobile phone bans. Stay informed to protect your license and avoid heavy fines while driving throughout Sydney and beyond.",
+    image: blogImg8,
+    link: "#",
+  },
+  {
+    id:9,
+    title: "How Mock Driving Tests Increase Your Chances of Passing",
+    slug: "blogs/how-mock-driving-tests-increase-your-chances-of-passing",
+    excerpt:
+      "Mock Driving Tests are the best way to bridge the gap between learning and passing. These simulations replicate real exam conditions to highlight your hidden mistakes. By taking a practice test, you lower your anxiety and learn exactly what examiners want. Research shows that students who complete a mock assessment are 40% more likely to pass their actual test. This guide explains how these sessions work and why they are essential for your success.",
+    image: blogImg9,
+    link: "#",
+  },
+  {
+    id:10,
+    title: "NSW Driving Test Instant Fail Errors – Complete 2026 Guide",
+    slug: "blogs/nsw-driving-test-instant-fail-errors-complete-2026-guide",
+    excerpt:
+      "Driving Test Instant Fail Errors are the most common reason learners walk away without their P1 license. In NSW, a single major mistake ends your assessment immediately, even if your overall score is high. Common errors include speeding, failing to stop at signs, and poor observation during lane changes. Understanding these fatal flaws allows you to prepare better and stay calm under pressure. This guide breaks down the critical mistakes to avoid so you can pass your test on the first try.",
+    image: blogImg10,
+    link: "#",
+  },
+  
   {
     id: 16,
     title: "5 Essential Driving Tips for Beginners",

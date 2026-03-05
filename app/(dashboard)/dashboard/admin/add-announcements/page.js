@@ -64,12 +64,12 @@ export default function AddAnnouncements() {
     <div>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-lg md:text-3xl font-bold flex items-center gap-2 text-gray-900">
+        <h1 className="text-lg sm:text-2xl md:text-3xl font-bold flex items-center gap-2 text-gray-900">
           <FiBell className="text-primary text-3xl" /> Announcements
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+          className="flex items-center gap-2 bg-primary text-white px-2 md:px-4 py-2  text-sm md:text-base rounded-lg hover:bg-primary/90 transition"
         >
           <FiPlus /> Add Announcement
         </button>

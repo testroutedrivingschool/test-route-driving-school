@@ -42,6 +42,7 @@ function PaymentForm() {
   const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+
   /* Load booking */
   useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
@@ -87,7 +88,7 @@ function PaymentForm() {
       // ✅ MANUAL booking => NO payment
       if (booking.bookingType === "manual") {
         if (clientId) {
-          await axios.patch(`/api/clients/${clientId}`, {address, suburb});
+          await axios.patch(`/api/clients/${clientId}`, {address, suburb,mobile:phone});
         }
 
         await axios.post("/api/bookings", {
@@ -132,9 +133,10 @@ function PaymentForm() {
           toast.error(result.error.message);
           return;
         }
-
+const clientId = String(booking?.clientId);
         await axios.post("/api/bookings", {
           ...booking,
+          phone,
           address,
           suburb,
           paymentIntentId: result.paymentIntent.id,
@@ -146,6 +148,7 @@ function PaymentForm() {
           address,
           suburb,
           phone,
+          clientId,
         });
         sessionStorage.removeItem("pendingBooking");
         toast.success("Booking confirmed 🎉");
@@ -208,6 +211,7 @@ function PaymentForm() {
               onChange={(e) => setAddress(e.target.value)}
               className="input-class"
               placeholder="123 Main Street"
+              required
             />
           </div>
 
@@ -218,6 +222,7 @@ function PaymentForm() {
               value={suburb}
               onChange={(e) => setSuburb(e.target.value)}
               className="input-class"
+              required
             >
               <option value="">Select suburb</option>
               {locations.map((loc) => (
@@ -227,7 +232,6 @@ function PaymentForm() {
               ))}
             </select>
           </div>
-          {/* Terms and Conditions Checkbox */}
           {/* Terms and Conditions Checkbox */}
           <div className="flex items-start gap-2">
             <input

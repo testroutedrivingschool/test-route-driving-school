@@ -155,6 +155,10 @@ export default function SelectClientForBooking() {
       address: form.address,
       organization: form.organization || "None",
       activeClient: true,
+      assignedTo:userData?.name || "",
+       assignedInstructorId: myInstructorId,  
+    assignedInstructorName: userData?.name || "",  
+    assignedInstructorEmail: userData?.email || "",  
     };
 
     createClient.mutate(payload);
@@ -332,7 +336,7 @@ function ClientsResultTable({clients = [], onSelect}) {
                   Name
                 </th>
                 <th className="text-left px-2 sm:px-3 py-2 w-[35%] sm:w-auto">
-                  Mobile
+                  Phone
                 </th>
 
                 {/* hide on mobile */}
@@ -353,6 +357,7 @@ function ClientsResultTable({clients = [], onSelect}) {
 
             <tbody>
               {clients.map((c, idx) => {
+            
                 const rowBg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
                 const name =
                   `${c.firstName || ""} ${c.lastName || ""}`.trim() || "—";

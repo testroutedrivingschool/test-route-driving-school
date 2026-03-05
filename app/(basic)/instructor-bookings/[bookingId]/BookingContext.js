@@ -6,7 +6,7 @@ const BookingContext = createContext(null);
 export function BookingProvider({ value, children }) {
   return (
     <BookingContext.Provider value={value}>
-      {children}
+     {children}
     </BookingContext.Provider>
   );
 }

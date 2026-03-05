@@ -44,25 +44,27 @@ export default function BookingDetailLayout({children}) {
     );
   }
   return (
-    <section className="py-6 ">
-      <Container>
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5 ">
-          <div className="md:col-span-3 ">
+   <section className="py-6">
+      <Container >
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+          {/* Left Column: Sidebar */}
+          <div className="md:col-span-3 h-screen overflow-y-auto">
             <BookingSidebar booking={booking} />
           </div>
 
-          <div className="md:col-span-9 grid grid-cols-1 ">
+          {/* Right Column: Main Content */}
+          <div className="md:col-span-9 flex flex-col">
             <BookingHeader booking={booking} />
 
-            {/* ✅ real route tabs */}
             <div className="mb-3">
               <BookingTabsNav bookingId={bookingId} activeTab={activeTab} />
             </div>
 
-            {/* ✅ tab page content */}
-      
-    <BookingProvider value={booking}>{children}</BookingProvider>
- 
+            {/* Tab Page Content */}
+            <div className="grow-0">{/* Content Area */}</div>
+
+            {/* Wrapping content in a BookingProvider */}
+            <BookingProvider value={booking}>{children}</BookingProvider>
           </div>
         </div>
       </Container>

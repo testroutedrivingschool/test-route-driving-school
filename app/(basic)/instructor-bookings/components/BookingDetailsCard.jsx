@@ -733,7 +733,7 @@ function PayNowModal({booking, client, onClose, onSuccess}) {
   const queryClient = useQueryClient();
 
   const bookingId = oid(booking?._id);
-const [emailInvoice, setEmailInvoice] = useState(false);
+const [emailInvoice, setEmailInvoice] = useState(true);
   const price = Number(booking?.price || 0);
   const alreadyPaid = Number(booking?.paidAmount || 0);
   const outstanding = Number(booking?.outstanding ?? Math.max(0, price - alreadyPaid));

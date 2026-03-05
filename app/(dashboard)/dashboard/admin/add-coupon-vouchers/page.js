@@ -59,12 +59,12 @@ export default function CouponAndVouchers() {
     <div className="">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-lg md:text-3xl font-bold text-gray-900 flex items-center gap-2">
+        <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-2">
           <FiGift className="text-primary text-3xl" /> Coupons & Vouchers
         </h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition"
+          className="flex items-center gap-2 bg-primary text-white px-2 md:px-4 py-2 text-sm! md:text-base rounded-lg hover:bg-primary/90 transition"
         >
           <FiPlus /> Add Coupon
         </button>
@@ -161,46 +161,48 @@ export default function CouponAndVouchers() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border-color">
-            {coupons.length === 0 ? (
-              <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
-                <h2 className="font-bold">No Coupon Found</h2>
-              </td>
-            ) : (
-              coupons.map((coupon) => {
-                const isExpired = new Date(coupon.expires) < new Date();
-                return (
-                  <tr key={coupon._id} className="font-montserrat">
-                    <td className="px-6 py-4 text-neutral font-bold">
-                      {coupon.code}
-                    </td>
-                    <td className="px-6 py-4 text-neutral">
-                      {coupon.discount}% Off
-                    </td>
-                    <td className="px-6 py-4 text-neutral">{coupon.expires}</td>
-                    <td className="px-6 py-4 text-left">
-                      <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          isExpired
-                            ? "bg-red-100 text-red-700"
-                            : "bg-green-100 text-green-700"
-                        }`}
-                      >
-                        {isExpired ? "Expired" : "Active"}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-center">
-                      <button
-                        onClick={() => handleDeleteCoupon(coupon._id)}
-                        className="flex items-center gap-1 justify-center px-3 py-1 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
-                      >
-                        <FaTrash /> Delete
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
+  {coupons.length === 0 ? (
+    <tr>
+      <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+        <h2 className="font-bold">No Coupon Found</h2>
+      </td>
+    </tr>
+  ) : (
+    coupons.map((coupon) => {
+      const isExpired = new Date(coupon.expires) < new Date();
+      return (
+        <tr key={coupon._id} className="font-montserrat">
+          <td className="px-6 py-4 text-neutral font-bold">
+            {coupon.code}
+          </td>
+          <td className="px-6 py-4 text-neutral">
+            {coupon.discount}% Off
+          </td>
+          <td className="px-6 py-4 text-neutral">{coupon.expires}</td>
+          <td className="px-6 py-4 text-left">
+            <span
+              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                isExpired
+                  ? "bg-red-100 text-red-700"
+                  : "bg-green-100 text-green-700"
+              }`}
+            >
+              {isExpired ? "Expired" : "Active"}
+            </span>
+          </td>
+          <td className="px-6 py-4 text-center">
+            <button
+              onClick={() => handleDeleteCoupon(coupon._id)}
+              className="flex items-center gap-1 justify-center px-3 py-1 border border-red-500 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition"
+            >
+              <FaTrash /> Delete
+            </button>
+          </td>
+        </tr>
+      );
+    })
+  )}
+</tbody>
         </table>
       </div>
       {/* Coupons Cards (Mobile) */}
