@@ -174,6 +174,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+          <GoogleReviewCard />
       
       <HomePackage />
           <DrivingTestPackage />

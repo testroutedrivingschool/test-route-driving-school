@@ -18,7 +18,9 @@ export function middleware(req) {
   /* ================= AUTH CHECK ================= */
   const userCookie = req.cookies.get("user");
   if (!userCookie) {
-    return NextResponse.redirect(new URL("/login", req.url));
+   const loginUrl = new URL("/login", req.url);
+loginUrl.searchParams.set("redirect", pathname);
+return NextResponse.redirect(loginUrl);
   }
 
   let user;

@@ -1,5 +1,6 @@
 import {admin} from "@/app/libs/firebase/firebase.admin";
 import {clientsCollection, usersCollection} from "@/app/libs/mongodb/db";
+import { ObjectId } from "mongodb";
 import {NextResponse} from "next/server";
 
 export async function GET(req) {
@@ -103,28 +104,27 @@ export async function PATCH(req) {
     }
 
 
-    if (!ObjectId.isValid(clientId)) {
-      return NextResponse.json({error: "Invalid clientId"}, {status: 400});
-    }
+    if (clientId && ObjectId.isValid(clientId)) {
+  const clientsCol = await clientsCollection();
 
-    const clientsCol = await clientsCollection();
-    const clientUpdateResult = await clientsCol.updateOne(
-      { _id: new ObjectId(clientId) }, 
-      {
-        $set: {
-          mobile: phone || "",
-          address: address || "",
-          suburb: suburb || "",
-          state: state || "",
-          postCode: postCode || "",
-          updatedAt: new Date(),
-        },
-      }
-    );
-
-    if (clientUpdateResult.matchedCount === 0) {
-      console.warn(`No client found with the clientId: ${clientId}`);
+  const clientUpdateResult = await clientsCol.updateOne(
+    { _id: new ObjectId(clientId) },
+    {
+      $set: {
+        mobile: phone || "",
+        address: address || "",
+        suburb: suburb || "",
+        state: state || "",
+        postCode: postCode || "",
+        updatedAt: new Date(),
+      },
     }
+  );
+
+  if (clientUpdateResult.matchedCount === 0) {
+    console.warn(`No client found with the clientId: ${clientId}`);
+  }
+}
 
     return NextResponse.json({message: "User updated successfully"});
   } catch (error) {

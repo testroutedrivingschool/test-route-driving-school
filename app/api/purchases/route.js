@@ -2,7 +2,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import { ObjectId } from "mongodb";
 
 import { sendMailWithPdf } from "@/app/libs/mail/mailer";
@@ -25,7 +24,7 @@ async function generatePurchaseInvoicePdfBuffer(purchaseDoc, reqUrl) {
 
   const mapped = {
     invoiceNo: purchaseDoc.invoiceNo,
-    bookingId: purchaseDoc._id?.toString() || "", 
+    purchaseId: purchaseDoc._id?.toString() || "", 
     userName: purchaseDoc.userName,
     userEmail: purchaseDoc.userEmail,
     userPhone: purchaseDoc.billing?.mobile || "",
@@ -48,11 +47,12 @@ source: "purchase",
   return generateInvoicePdfBuffer(mapped, reqUrl);
 }
 
-async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl }) {
+async function runInvoiceAndEmails({ purchaseDoc, purchaseId, invoiceNo, reqUrl }) {
   // 1) Generate PDF
-  const pdfBuffer = await generateInvoicePdfBuffer(
-    { ...bookingDoc, bookingId: String(bookingId) },
-    reqUrl
+  const pdfBuffer = await generatePurchaseInvoicePdfBuffer(
+    { ...purchaseDoc,
+      purchaseId: String(purchaseId) },
+    reqUrl,
   );
 
   const filename = `invoice-${invoiceNo}.pdf`;
@@ -64,7 +64,7 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
   buffer: pdfBuffer,
   originalName: filename,
   folder: "invoices",
-  ownerEmail: bookingDoc.userEmail || bookingDoc.clientEmail || "",  
+  ownerEmail: purchaseDoc.userEmail || purchaseDoc.clientEmail || "",  
   status: "active",
 });
  
@@ -73,19 +73,19 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
   const userSubject = `Booking Confirmed - Invoice #${invoiceNo}`;
   const instructorSubject = `New Booking - Invoice #${invoiceNo}`;
 
-  const userText = `Hi ${bookingDoc.userName || "there"}, Your booking is confirmed. Invoice attached.`;
-  const instructorText = `Hi ${bookingDoc.instructorName || "Instructor"}, You have a new booking. Invoice attached.`;
+  const userText = `Hi ${purchaseDoc.userName || "there"}, Your booking is confirmed. Invoice attached.`;
+  const instructorText = `Hi ${purchaseDoc.instructorName || "Instructor"}, You have a new booking. Invoice attached.`;
 
   // 3) Send emails
   const sendUser = async () => {
-    if (!bookingDoc.userEmail) return;
+    if (!purchaseDoc.userEmail) return;
 
     let status = "SENT";
     let errorMsg = null;
 
     try {
       await sendMailWithPdf({
-        to: bookingDoc.userEmail,
+        to: purchaseDoc.userEmail,
         subject: userSubject,
         html: userText,
         text: userText,
@@ -97,12 +97,12 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
       errorMsg = String(e?.message || e);
     }
 
-    await emailsCollection().insertOne({
-      bookingId,
+    await (await emailsCollection()).insertOne({
+      purchaseId,
       invoiceNo,
       actorType: "USER",
       type: "BOOKINGS_CONFIRM",
-      to: bookingDoc.userEmail,
+      to: purchaseDoc.userEmail,
       subject: userSubject,
       text: userText,
       status,
@@ -114,14 +114,14 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
   };
 
   const sendInstructor = async () => {
-    if (!bookingDoc.instructorEmail) return;
+    if (!purchaseDoc.instructorEmail) return;
 
     let status = "SENT";
     let errorMsg = null;
 
     try {
       await sendMailWithPdf({
-        to: bookingDoc.instructorEmail,
+        to: purchaseDoc.instructorEmail,
         subject: instructorSubject,
         html: instructorText,
         text: instructorText,
@@ -134,11 +134,11 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
     }
 
     await emailsCollection().insertOne({
-      bookingId,
+      purchaseId,
       invoiceNo,
       actorType: "INSTRUCTOR",
       type: "BOOKINGS_CONFIRM",
-      to: bookingDoc.instructorEmail,
+      to: purchaseDoc.instructorEmail,
       subject: instructorSubject,
       text: instructorText,
       status,
@@ -152,17 +152,17 @@ async function runInvoiceAndEmails({ bookingDoc, bookingId, invoiceNo, reqUrl })
   await Promise.all([sendUser(), sendInstructor()]);
 
   // Save invoice document
-  await invoicesCollection().insertOne({
+  await (await invoicesCollection()).insertOne({
     invoiceNo,
-    bookingId,
+    purchaseId,
     invoiceKey,
     filename,
     createdAt: new Date(),
   });
 
   // Update booking with invoiceKey
-  await bookingsCollection().updateOne(
-    { _id: bookingId },
+  await (await purchasesCollection()).updateOne(
+    { _id: new ObjectId(purchaseId) },
     {
       $set: {
         invoiceKey,
@@ -350,7 +350,7 @@ export async function POST(req) {
       cardLast4,
 
       invoiceNo,
-      invoiceKey: null,
+      invoiceKey: `invoices/invoice-${invoiceNo}.pdf`,
       invoiceFilename: null,
       invoiceCreatedAt: null,
 
@@ -378,7 +378,7 @@ export async function POST(req) {
 
     // ✅ background invoice/email
     setTimeout(() => {
-      runPurchaseInvoiceAndEmails({
+      runInvoiceAndEmails({
         purchaseDoc: { ...doc, _id: purchaseId }, 
         purchaseId,
         invoiceNo,

@@ -46,7 +46,7 @@ export default function WhatWeOffer({
 }) {
   const router = useRouter();
   return (
-    <section className={`relative py-20 bg-white overflow-hidden ${className}`}>
+    <section className={`relative py-14 md:py-16 bg-white overflow-hidden ${className}`}>
       <Container>
         <SectionHeader
           className={`mt-0!`}

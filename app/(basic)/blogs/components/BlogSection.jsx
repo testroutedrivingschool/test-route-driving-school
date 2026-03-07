@@ -13,7 +13,7 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
   const pathname = usePathname();
   const blogs = blogsData??[];
   return (
-    <section className="py-16">
+    <section className="py-10 md:py-16">
       <Container>
         <SectionHeader
           className={`mt-0!`}

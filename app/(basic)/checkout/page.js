@@ -282,141 +282,190 @@ const handleProceed = async () => {
       <Container className={`max-w-4xl!`}>
         <h1 className="text-3xl font-bold mb-6">Billing Details</h1>
 
-        <div className="space-y-4">
+        <div className="space-y-4 md:space-y-5">
+  <FormRow label="Name:">
+    <input
+      type="text"
+      name="name"
+      placeholder="Enter your Name"
+      value={billing.name}
+      onChange={handleBillingChange}
+      className="input-class w-full"
+    />
+  </FormRow>
+
+  <FormRow label="Email:">
+    <input
+      type="email"
+      name="email"
+      placeholder="Email"
+      value={billing.email}
+      onChange={handleBillingChange}
+      className="input-class w-full"
+    />
+  </FormRow>
+
+  <FormRow label="Mobile:">
+    <input
+      type="text"
+      name="mobile"
+      placeholder="0412 123 456"
+      value={billing.mobile}
+      onChange={handleBillingChange}
+      className="input-class w-full"
+    />
+  </FormRow>
+
+  <FormRow label="Address:">
+    <input
+      type="text"
+      name="address"
+      placeholder="Address"
+      value={billing.address}
+      onChange={handleBillingChange}
+      className="input-class w-full"
+    />
+  </FormRow>
+
+  <FormRow label="Suburb:">
+    <select
+      name="suburb"
+      value={billing.suburb}
+      onChange={handleBillingChange}
+      required
+      className="input-class w-full"
+    >
+      <option value="">Choose Suburb</option>
+      {suburbOptions.map((s) => (
+        <option key={s} value={s}>
+          {s}
+        </option>
+      ))}
+    </select>
+  </FormRow>
+
+  <FormRow label="State:">
+    <select
+      name="state"
+      value={billing.state}
+      onChange={handleBillingChange}
+      required
+      className="input-class w-full"
+    >
+      <option value="">Choose State</option>
+      <option value="NSW">New South Wales</option>
+    </select>
+  </FormRow>
+
+  <FormRow label="Post Code:">
+    <input
+      type="text"
+      name="postCode"
+      placeholder="Post Code"
+      value={billing.postCode}
+      onChange={handleBillingChange}
+      className="input-class w-full"
+    />
+  </FormRow>
+
+  <FormRow label="Instructor:">
+    <select
+      name="instructorId"
+      value={billing.instructorId}
+      onChange={handleBillingChange}
+      className="input-class w-full"
+    >
+      <option value="">Choose Instructor</option>
+      {instructors.map((inst) => (
+        <option key={inst._id} value={inst._id}>
+          {inst.name}
+        </option>
+      ))}
+    </select>
+  </FormRow>
+
+  <FormRow label="Coupon:">
+    <div>
+      <p
+        className="cursor-pointer text-primary font-bold"
+        onClick={() => setShowCouponInput((prev) => !prev)}
+      >
+        {showCouponInput ? "Hide coupon code" : "Have a coupon code?"}
+      </p>
+
+      {showCouponInput && !appliedCoupon && (
+        <div className="mt-3 space-y-3">
           <input
             type="text"
-            name="name"
-            placeholder="Enter your Name"
-            value={billing.name}
-            onChange={handleBillingChange}
-            className="input-class"
+            placeholder="Enter coupon code"
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            className="input-class w-full"
           />
+          <PrimaryBtn
+            className="text-sm! px-3! py-2!"
+            onClick={handleApplyCoupon}
+          >
+            Apply Coupon
+          </PrimaryBtn>
+        </div>
+      )}
 
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={billing.email}
-            onChange={handleBillingChange}
-            className="input-class"
-          />
-   <PhoneInput
-              country={"au"}
-              value={billing.mobile}
-              onChange={(value) => setBilling({ ...billing, mobile: value })}
-              inputStyle={{
-                width: "100%",
-                height: "48px",
-                borderRadius: "12px",
-                border: "1px solid #e7e7e9e6",
-              }}
-            />
-        
-           
-
-
-          <input
-            type="text"
-            name="address"
-            placeholder="Address"
-            value={billing.address}
-            onChange={handleBillingChange}
-            className="input-class"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <select
-              name="suburb"
-              value={billing.suburb}
-              onChange={handleBillingChange}
-              required
-              className="input-class"
-            >
-              <option value="">Choose Suburb</option>
-              {suburbOptions.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-
-            <select
-              name="state"
-              value={billing.state}
-              onChange={handleBillingChange}
-              required
-              className="input-class"
-            >
-              <option value="">Choose State</option>
-              <option defaultValue={true} value="NSW">
-                New South Wales
-              </option>
-            </select>
-
-            <input
-              type="text"
-              name="postCode"
-              placeholder="Post Code"
-              value={billing.postCode}
-              onChange={handleBillingChange}
-              className="input-class"
-            />
-          </div>
-<div> <label className="font-bold text-lg mb-4 block">Select Instructor:</label> <select name="instructorId" value={billing.instructorId} onChange={handleBillingChange} className="input-class" > <option value="">Choose Instructor</option> {instructors.map((inst) => ( <option key={inst._id} value={inst._id}> {inst.name} </option> ))} </select> </div>
-          {/* Coupon Input Section */}
-          <div className="my-4">
-            <p
-              className="cursor-pointer text-primary font-bold"
-              onClick={() => setShowCouponInput((prev) => !prev)}
-            >
-              {showCouponInput ? "Hide coupon code" : "Have a coupon code?"}
-            </p>
-
-            {showCouponInput && !appliedCoupon && (
-              <div className="mt-2 space-y-4">
-                <input
-                  type="text"
-                  placeholder="Enter coupon code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  className={`input-class`}
-                />
-                <PrimaryBtn className={`text-sm! px-2!`} onClick={handleApplyCoupon}>
-                  Apply Coupon
-                </PrimaryBtn>
-              </div>
-            )}
-          </div>
-
-          {/* Display applied coupon */}
-          {appliedCoupon && (
-            <div className="my-4 text-green-600">
-              <p className="font-bold flex items-center">
-                Coupon applied: <span className="bg-green-100 p-1 px-2 text-sm flex items-center gap-1 rounded-full">{appliedCoupon} <FaXmark className="cursor-pointer "
-                  onClick={handleRemoveCoupon}/></span><span className="px-1"> -${discount.toFixed(2)}</span>
-              
-                 
-               
-              </p>
-            </div>
-          )}
-
-          <p className="font-bold my-5 text-lg">
-            Total Amount: <span className="text-primary">${total.toFixed(2)}</span>
+      {appliedCoupon && (
+        <div className="mt-3 text-green-600">
+          <p className="font-bold flex flex-wrap items-center gap-2">
+            <span className="bg-green-100 p-1 px-2 text-sm flex items-center gap-1 rounded-full">
+              {appliedCoupon}
+              <FaXmark className="cursor-pointer" onClick={handleRemoveCoupon} />
+            </span>
+            <span>- ${discount.toFixed(2)}</span>
           </p>
         </div>
+      )}
+    </div>
+  </FormRow>
 
-        <div className="mt-4 space-y-2">
-          <StripeCardInput />
-        </div>
+  <FormRow label="Total Amount:">
+    <p className="font-bold text-lg">
+      <span className="text-primary">${total.toFixed(2)}</span>
+    </p>
+  </FormRow>
+</div>
 
-        <PrimaryBtn
-          onClick={handleProceed}
-          className="mt-6 text-base! md:text-lg! py-2! md:py-3! px-2! md:px-4!"
-        >
-          {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
-        </PrimaryBtn>
+       <div className="mt-8">
+  <div className="grid grid-cols-1 md:grid-cols-[170px_1fr] gap-2 md:gap-6 items-start">
+    <div className="text-sm md:text-base font-semibold text-gray-900 md:pt-3">
+      Card Details:
+    </div>
+    <div className="space-y-2">
+      <StripeCardInput />
+    </div>
+  </div>
+
+  <div className="grid grid-cols-1 md:grid-cols-[170px_1fr] gap-2 md:gap-6 mt-6">
+    <div></div>
+    <div>
+      <PrimaryBtn
+        onClick={handleProceed}
+        className="text-base! md:text-lg! py-2! md:py-3! px-4!"
+      >
+        {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
+      </PrimaryBtn>
+    </div>
+  </div>
+</div>
       </Container>
     </section>
+  );
+}
+
+function FormRow({ label, children }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-[170px_1fr] gap-2 md:gap-6 items-start">
+      <label className="text-sm md:text-base font-semibold text-gray-800 md:pt-3">
+        {label}
+      </label>
+      <div>{children}</div>
+    </div>
   );
 }

@@ -46,6 +46,7 @@ export function getFirebaseAuthErrorMessage(error) {
       return "For security reasons, please log in again and retry.";
   case "auth/invalid-credential":
   return "The email or password you entered is incorrect.";
+  
     // ---------- Fallback ----------
     default:
       return "Authentication failed. Please try again.";

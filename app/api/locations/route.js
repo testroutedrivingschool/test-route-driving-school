@@ -3,7 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   const collection = await locationsCollection();
-  const locations = await collection.find().toArray();
+
+  const locations = await collection
+    .find({})
+    .sort({ name: 1 })
+    .toArray();
+
   return NextResponse.json(locations);
 }
 

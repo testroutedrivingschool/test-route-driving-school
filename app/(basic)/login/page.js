@@ -18,7 +18,15 @@ export default function Login() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const redirect = searchParams.get("redirect") || "/";
-  const {loginWithGoogle, loginUserWithCredential, forgetPassword} = useAuth();
+  const role = searchParams.get("role") || "user";
+  const {
+    user,
+    loading,
+    logoutUser,
+    loginWithGoogle,
+    loginUserWithCredential,
+    forgetPassword,
+  } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -35,70 +43,112 @@ export default function Login() {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    loginUserWithCredential(formData.email, formData.password)
-      .then(async (data) => {
-        toast.success("Log in successfully 🎉");
-        await axios.patch("/api/users", {email: formData.email});
-        router.refresh();
-        router.push(redirect || "/");
 
-        setIsLoading(false);
-        setFormData({
-          email: "",
-          password: "",
-          phone: "",
-          otp: "",
-          rememberMe: false,
-        });
-      })
-      .catch((err) => {
-   
-        setIsLoading(false);
-        toast.error(
-          getFirebaseAuthErrorMessage(err) || "Otp Verification Failed",
-        );
+    try {
+      const result = await loginUserWithCredential(
+        formData.email,
+        formData.password,
+      );
+      const firebaseUser = result.user;
+
+      const token = await firebaseUser.getIdToken(true);
+
+      const sessionRes = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
       });
+
+      const sessionData = await sessionRes.json();
+
+      if (!sessionRes.ok) {
+        throw new Error(sessionData?.error || "Failed to create session");
+      }
+
+      try {
+        await axios.patch("/api/users", {email: formData.email});
+      } catch (apiErr) {
+        console.error("PATCH /api/users failed:", apiErr);
+      }
+
+      await queryClient.invalidateQueries({queryKey: ["userData"]});
+
+      toast.success("Log in successfully 🎉");
+
+      setFormData({
+        email: "",
+        password: "",
+        phone: "",
+        otp: "",
+        rememberMe: false,
+      });
+
+      router.refresh();
+      router.push(redirect || "/");
+    } catch (err) {
+      toast.error(
+        getFirebaseAuthErrorMessage(err) || err?.message || "Login failed",
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
     try {
       const result = await loginWithGoogle();
-      const user = result.user;
+      const firebaseUser = result.user;
 
       const {data} = await axios.get(
-        `/api/users/check-email?email=${user.email}`,
+        `/api/users/check-email?email=${firebaseUser.email}`,
       );
 
       if (!data.exists) {
-        // Auto-register user in MongoDB
         const userData = {
-          name: user.displayName || "",
-          email: user.email,
-          phone: user.phoneNumber || "",
-          photo: user.photoURL || "",
+          name: firebaseUser.displayName || "",
+          email: firebaseUser.email,
+          phone: firebaseUser.phoneNumber || "",
+          photo: firebaseUser.photoURL || "",
           provider: "Google",
           role: "user",
           registeredAt: new Date(),
           lastLogin: new Date(),
         };
+
         await axios.post("/api/users", userData);
         await axios.post("/api/clients/sync-from-user", {
-          email: user?.email,
+          email: firebaseUser.email,
           provider: "Google",
         });
       } else {
-        // Update last login for existing user
-        await axios.patch("/api/users", {email: user.email});
+        await axios.patch("/api/users", {email: firebaseUser.email});
       }
+
+      const token = await firebaseUser.getIdToken(true);
+
+      await fetch("/api/auth/session", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+      });
+
       await queryClient.invalidateQueries({queryKey: ["userData"]});
-      router.push(redirect || "/");
-      router.refresh();
+
       toast.success("Logged in successfully 🎉");
+      router.refresh();
+      router.push(redirect || "/");
     } catch (error) {
-      toast.error( error?.response?.data?.message || "Google login failed. Please try again." );
+      toast.error(
+        error?.response?.data?.message ||
+          "Google login failed. Please try again.",
+      );
     }
   };
   const handleForgetPassword = async (email) => {
@@ -113,17 +163,54 @@ export default function Login() {
       );
     }
   };
+  if (loading) return;
+  if (user) {
+    return (
+      <div className="py-16 min-h-[80vh] flex items-center">
+        <div className="max-w-xl mx-auto bg-white rounded-xl shadow-xl p-10 text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            You are already logged in
+          </h2>
 
+          <p className="text-neutral mb-6">
+            Welcome back, <span className="font-semibold">{user?.email}</span>
+          </p>
+
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={() => router.push("/")}
+              className="bg-primary text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              Go to Home
+            </button>
+
+            <button
+              onClick={async () => {
+                await logoutUser();
+                toast.success("Logged out successfully");
+                router.refresh();
+              }}
+              className="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold"
+            >
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="py-16">
       <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden p-8">
         {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome Back
+            {role === "instructor" ? "Login as instructor" : "Welcome Back"}
           </h1>
           <p className="text-neutral">
-            Sign in to your account to continue your driving journey
+            {role === "instructor"
+              ? "Sign in to your instructor account"
+              : "Sign in to your account to continue your driving journey"}
           </p>
         </div>
 
@@ -210,7 +297,11 @@ export default function Login() {
         <div className="mt-4 text-center">
           <p className="text-neutral">
             Don&apos;t have an account?{" "}
-            <Link href="/register" className="text-primary font-semibold"   aria-label="Register to your account">
+            <Link
+              href="/register"
+              className="text-primary font-semibold"
+              aria-label="Register to your account"
+            >
               Register
             </Link>
           </p>

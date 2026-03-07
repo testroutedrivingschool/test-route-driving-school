@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function HomeAbout() {
   return (
-    <section className="py-20 bg-base-300">
+    <section className="py-10 md:py-16 bg-base-300">
       <Container>
         <div className="flex flex-col lg:flex-row items-center gap-12">
           {/* Left Text Content */}

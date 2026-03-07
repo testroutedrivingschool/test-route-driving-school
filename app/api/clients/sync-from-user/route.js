@@ -42,6 +42,7 @@ export async function POST(req) {
           onlineBooking: true,
           activeClient: true,
           updatedAt: new Date(),
+          roleType: "client",
         },
       },
       { upsert: true }

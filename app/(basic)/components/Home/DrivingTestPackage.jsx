@@ -39,7 +39,7 @@ export default function DrivingTestPackage() {
     router.push("/cart");
   };
   return (
-    <section className="py-20 bg-white">
+    <section className="py-10 md:py-16 bg-white">
       <Container>
         <SectionHeader
           title="Driving Test Packages"

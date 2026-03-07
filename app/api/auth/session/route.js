@@ -10,45 +10,48 @@ export async function POST(req) {
       : null;
 
     if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "No token provided" }, { status: 401 });
     }
 
-    // ✅ verify firebase idToken
     const decoded = await admin.auth().verifyIdToken(token);
     const email = decoded?.email;
 
     if (!email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Token has no email" }, { status: 401 });
     }
 
-    // ✅ get user from Mongo (where role is stored)
     const col = await usersCollection();
     const dbUser = await col.findOne({ email });
 
     if (!dbUser) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: `User not found in DB for email: ${email}` },
+        { status: 404 }
+      );
     }
 
-    // ✅ store minimal safe data in cookie
     const cookieUser = {
       email: dbUser.email,
       role: dbUser.role,
       name: dbUser.name || "",
     };
 
-    const res = NextResponse.json({ ok: true });
+    const res = NextResponse.json({ ok: true, user: cookieUser });
 
-    // HttpOnly cookie (middleware can read)
     res.cookies.set("user", encodeURIComponent(JSON.stringify(cookieUser)), {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return res;
   } catch (err) {
-    return NextResponse.json({ error: "Failed to create session" }, { status: 500 });
+    console.error("SESSION ROUTE ERROR:", err);
+    return NextResponse.json(
+      { error: err?.message || "Failed to create session" },
+      { status: 500 }
+    );
   }
 }

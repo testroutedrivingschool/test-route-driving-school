@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {FaSearch, FaFilter, FaTimes} from "react-icons/fa";
 import {FiChevronRight} from "react-icons/fi";
 import Image from "next/image";
@@ -15,7 +15,7 @@ import {useRouter} from "next/navigation";
 import HomeMap from "@/app/shared/ui/HomeMap";
 import Skeleton from "@/app/shared/ui/Skelton";
 import SkeletonCard from "@/app/shared/Skeleton/SkeletonCard";
-
+import Modal from "@/app/shared/ui/Modal";
 export default function Packages() {
   const {data: packagesData = [], isLoading} = useQuery({
     queryKey: ["packages"],
@@ -30,6 +30,8 @@ export default function Packages() {
   const [sort, setSort] = useState("default");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedArea, setSelectedArea] = useState("all");
+  const [locationSearch, setLocationSearch] = useState("");
+const [showLocationModal, setShowLocationModal] = useState(false);
 const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
     queryKey:["locations"],
     queryFn:async()=>{
@@ -39,6 +41,43 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
   })
 
 
+  const LS_KEY = "packageLocationModalLastShown";
+const LS_SELECTED_LOC = "bookingSelectedLocation";
+
+const getTodayYMD = () => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
+
+const markModalSeenToday = () => {
+  localStorage.setItem(LS_KEY, getTodayYMD());
+};
+useEffect(() => {
+  const saved = localStorage.getItem(LS_SELECTED_LOC);
+  if (saved) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSelectedArea(saved);
+  }
+}, []);
+
+useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
+  const todayDate = getTodayYMD();
+  const lastShownDate = localStorage.getItem(LS_KEY);
+
+  if (savedLocation) return;
+
+  if (lastShownDate !== todayDate) {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setShowLocationModal(true);
+    localStorage.setItem(LS_KEY, todayDate);
+  }
+}, []);
   const categoryOptions = [
     {value: "all", label: "All Categories"},
     {value: "driving-lesson", label: "Driving Lesson"},
@@ -139,26 +178,41 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
         }
       />
       <Container className={`mb-10!`}>
-        <div className="text-center mb-12">
-          <SectionHeader
-            title="Find Your Perfect Driving Package"
-            subtitle={
-              <>
-                Choosing the right{" "}
-                <Link
-                  className="font-semibold underline px-1"
-                  href={`/services/automatic-driving-lessons`}
-                >
-                  driving lesson package
-                </Link>{" "}
-                is simple. Our <strong>driving school packages</strong> fit your
-                schedule, skill, and needs, making learning easy, flexible, and
-                confidence-boosting in every session.
-              </>
-            }
-          />
-        </div>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 ">
+  <div>
+    <SectionHeader
+    className={`mb-0!`}
+      title="Find Your Perfect Driving Package"
+      subtitle={
+        <>
+          Choosing the right{" "}
+          <Link
+            className="font-semibold underline px-1"
+            href={`/services/automatic-driving-lessons`}
+          >
+            driving lesson package
+          </Link>{" "}
+          is simple. Our <strong>driving school packages</strong> fit your
+          schedule, skill, and needs, making learning easy, flexible, and
+          confidence-boosting in every session.
+        </>
+      }
+    />
+  </div>
 
+  
+</div>
+<div className=" mb-4 text-left sm:text-right">
+    <h3 className="font-bold text-lg">
+      {selectedArea === "all" ? "All Areas" : selectedArea}
+    </h3>
+    <button
+      onClick={() => setShowLocationModal(true)}
+      className="text-primary font-medium hover:font-bold transition"
+    >
+      Change
+    </button>
+  </div>
         {/* Filter Controls */}
         <div className="mb-8">
           <div className="bg-white shadow-lg rounded-2xl p-6 border border-border-color">
@@ -301,7 +355,7 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
                 className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
               >
                 {/* Image */}
-                <div className="w-full h-95 md:h-65">
+                <div className="w-full h-70 md:h-65">
                   <Image
                     src={pkg.packageThumbline}
                     alt={pkg.name}
@@ -348,6 +402,48 @@ const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
         )}
       </Container>
           <HomeMap/>
+          {showLocationModal && (
+  <Modal
+    onClose={() => {
+      markModalSeenToday();
+      setShowLocationModal(false);
+    }}
+  >
+    <h2 className="text-lg font-bold mb-4">Select Location</h2>
+
+    <input
+      type="text"
+      placeholder="Search locations..."
+      className="w-full mb-4 px-4 py-2 border border-border-color rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+      value={locationSearch}
+      onChange={(e) => setLocationSearch(e.target.value)}
+    />
+
+    <ul className="space-y-2 max-h-60 overflow-y-auto">
+      {areaOptions
+        ?.filter((loc) =>
+          loc.name.toLowerCase().includes(locationSearch.toLowerCase()),
+        )
+        .map((location, idx) => (
+          <li key={location._id || idx}>
+            <button
+              onClick={() => {
+                localStorage.setItem(LS_SELECTED_LOC, location.name);
+                markModalSeenToday();
+                setSelectedArea(location.name);
+                setShowLocationModal(false);
+                setLocationSearch("");
+              }}
+              className="w-full text-left px-4 py-2 rounded-lg hover:bg-gray-100 transition"
+            >
+              {location.name}
+            </button>
+          </li>
+        ))}
+    </ul>
+  </Modal>
+)}
     </section>
   );
 }
+

@@ -88,12 +88,12 @@ const navlinks = [
   },
 ];
 const instructorNavLinks = [
-  {id: 1, label: "Home", pathname: "/"},
-  {id: 2, label: "Dashboard", pathname: "/dashboard/instructor"},
-  {id: 3, label: "Bookings", pathname: "/instructor-bookings"},
-  {id: 4, label: "Clients", pathname: "/clients"},
-  {id: 5, label: "Sales", pathname: "/instructor/sales/search"},
-  {id: 6, label: "Reports", pathname: "/instructor-reports"},
+
+  {id: 1, label: "Dashboard", pathname: "/dashboard/instructor"},
+  {id: 2, label: "Bookings", pathname: "/instructor-bookings"},
+  {id: 3, label: "Clients", pathname: "/clients"},
+  {id: 4, label: "Sales", pathname: "/instructor/sales/search"},
+  {id: 5, label: "Reports", pathname: "/instructor-reports"},
 ];
 
 export default function Navbar({className}) {
@@ -104,6 +104,7 @@ export default function Navbar({className}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const {logoutUser} = useAuth();
   const {data: userData} = useUserData();
   const router = useRouter();
@@ -264,42 +265,68 @@ const dashHref =
             ))}
           </ul>
           <div className="flex gap-4 md:gap-6 z-99">
-            {userData ? (
-              <div ref={avatarRef} className="relative">
-  <button
-    ref={avatarBtnRef}
-    onClick={() => setAvatarOpen(v => !v)}
-    className="flex items-center gap-2 focus:outline-none"
-  >
-     <div className="w-10 h-10 md:w-11 md:h-11  rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
-                    <Image
-                      src={avatarSrc}
-                      alt={userData?.name || "User"}
-                      width={48}
-                      height={48}
-                      className="object-cover object-top w-full h-full"
-                    />
-                  </div>
-  </button>
-            
+           {userData ? (
+  <div ref={avatarRef} className="relative">
+    <button
+      ref={avatarBtnRef}
+      onClick={() => setAvatarOpen((v) => !v)}
+      className="flex items-center gap-2 focus:outline-none"
+    >
+      <div className="w-10 h-10 md:w-11 md:h-11 rounded-full overflow-hidden border-2 border-primary ring-2 ring-offset-2 ring-offset-white hover:ring-primary/40 transition">
+        <Image
+          src={avatarSrc}
+          alt={userData?.name || "User"}
+          width={48}
+          height={48}
+          className="object-cover object-top w-full h-full"
+        />
+      </div>
+    </button>
 
-                {/* Dropdown */}
-                <AvatarDropdown
-    open={avatarOpen}
-    onClose={() => setAvatarOpen(false)}
-    anchorRef={avatarBtnRef}
-    dashHref={dashHref}
-    user={userData}
-    onLogout={handleLogout}
-  />
-              </div>
-            ) : (
-              <Link href="/login" className="inline-block"   aria-label="Login to your account">
-                <SecondaryBtn className="hidden md:flex">
-                  Login <FaAngleRight />
-                </SecondaryBtn>
-              </Link>
-            )}
+    <AvatarDropdown
+      open={avatarOpen}
+      onClose={() => setAvatarOpen(false)}
+      anchorRef={avatarBtnRef}
+      dashHref={dashHref}
+      user={userData}
+      onLogout={handleLogout}
+    />
+  </div>
+) : (
+  <div className="relative hidden md:block">
+  <SecondaryBtn
+    onClick={() => setLoginDropdownOpen((v) => !v)}
+    className="hidden md:flex items-center gap-2"
+    aria-label="Open login options"
+  >
+    Login <MdKeyboardArrowDown size={18} />
+  </SecondaryBtn>
+
+    {loginDropdownOpen && (
+      <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-999">
+        <button
+          onClick={() => {
+            router.push("/login?role=user");
+            setLoginDropdownOpen(false);
+          }}
+          className="w-full text-left px-4 py-3 hover:bg-primary/10 text-gray-800 font-medium transition border-b border-border-color"
+        >
+          Login as User
+        </button>
+
+        <button
+          onClick={() => {
+            router.push("/login?role=instructor");
+            setLoginDropdownOpen(false);
+          }}
+          className="w-full text-left px-4 py-3 hover:bg-primary/10 text-gray-800 font-medium transition"
+        >
+          Login as Instructor
+        </button>
+      </div>
+    )}
+  </div>
+)}
 
             <button
               className="lg:hidden text-2xl p-2 md:p-3 rounded-xl bg-blue-50 hover:bg-blue-50 hover:text-primary transition-all duration-300 group text-black"
@@ -374,31 +401,60 @@ const dashHref =
             ))}
             {/* Mobile CTA Button */}
             {userData ? (
-              <li className="mt-4 px-5">
-                <button
-                  onClick={() => {
-                    handleLogout();
-                  }}
-                  className="w-full flex items-center gap-3 px-4 bg-red-500 rounded border border-transparent  hover:border-red-500 py-2 text-white hover:bg-red-600 transition"
-                >
-                  <FaSignOutAlt />
-                  Logout
-                </button>
-              </li>
-            ) : (
-              <li className="mt-4 px-5">
-                <PrimaryBtn
-                  onClick={() => {
-                    router.push("/login");
-                    setOpen(false);
-                  }}
-                  className="w-full flex justify-center items-center gap-2"
-                >
-                  Login
-                  <FiChevronRight className="group-hover:translate-x-1 transition-transform duration-300" />
-                </PrimaryBtn>
-              </li>
-            )}
+  <li className="mt-4 px-5">
+    <button
+      onClick={() => {
+        handleLogout();
+      }}
+      className="w-full flex items-center gap-3 px-4 bg-red-500 rounded border border-transparent hover:border-red-500 py-2 text-white hover:bg-red-600 transition"
+    >
+      <FaSignOutAlt />
+      Logout
+    </button>
+  </li>
+) : (
+  <li className="mt-4 px-5">
+    <div className="space-y-2">
+      <PrimaryBtn
+        onClick={() => setLoginDropdownOpen((v) => !v)}
+        className="w-full flex justify-center items-center gap-2"
+      >
+        Login
+        <FiChevronRight
+          className={`transition-transform duration-300 ${
+            loginDropdownOpen ? "rotate-90" : ""
+          }`}
+        />
+      </PrimaryBtn>
+
+      {loginDropdownOpen && (
+        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
+          <button
+            onClick={() => {
+              router.push("/login?role=user");
+              setOpen(false);
+              setLoginDropdownOpen(false);
+            }}
+            className="w-full text-left px-4 py-3 hover:bg-primary hover:text-white transition"
+          >
+            Login as User
+          </button>
+
+          <button
+            onClick={() => {
+              router.push("/login?role=instructor");
+              setOpen(false);
+              setLoginDropdownOpen(false);
+            }}
+            className="w-full text-left px-4 py-3 hover:bg-primary hover:text-white transition border-t border-gray-200"
+          >
+            Login as Instructor
+          </button>
+        </div>
+      )}
+    </div>
+  </li>
+)}
           </ul>
         </div>
       </div>
