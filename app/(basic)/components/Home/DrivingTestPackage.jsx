@@ -75,8 +75,9 @@ export default function DrivingTestPackage() {
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-lg md:text-2xl text-gray-800">
-                  Car Hire with 1 Hour Lesson
-                </h2>
+                  Car Hire with 1 Hour Lesson <span className="text-neutral text-xs font-medium block md:inline">(Use car for driving test)</span>
+                </h2> 
+              
                 <div className="text-right">
                   <p className="text-lg md:text-2xl font-bold text-primary">$220</p>
                 </div>
@@ -132,9 +133,9 @@ export default function DrivingTestPackage() {
             {/* Content */}
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-bold text-lg md:text-2xl text-gray-800">
-                  Car Hire with 2 Hour lesson
-                </h2>
+               <h2 className="font-bold text-lg md:text-2xl text-gray-800">
+                  Car Hire with 2 Hour Lesson <span className="text-neutral text-xs font-medium block md:inline">(Use car for driving test)</span>
+                </h2> 
                 <div className="text-right">
                   <p className="text-lg md:text-2xl font-bold text-primary">$290</p>
                 </div>

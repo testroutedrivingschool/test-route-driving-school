@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import React, {useState, useEffect} from "react";
-import {FaChevronLeft, FaChevronRight} from "react-icons/fa";
 
 const months = [
   "January",
@@ -17,20 +16,18 @@ const months = [
   "December",
 ];
 
-// ✅ Monday → Sunday
 const weekdays = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
-export default function BookingCalendar({selectedDate, setSelectedDate}) {
+export default function BookingCalendar({selectedDate, setSelectedDate, disablePastDates= false}) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [weekDates, setWeekDates] = useState([]);
 
-  // ✅ Build week (Mon → Sun) from selectedDate
   useEffect(() => {
     const startOfWeek = new Date(selectedDate);
     startOfWeek.setHours(0, 0, 0, 0);
 
-    const day = startOfWeek.getDay(); // Sun=0..Sat=6
-    const diffToMonday = (day + 6) % 7; // Mon=0..Sun=6
+    const day = startOfWeek.getDay();
+    const diffToMonday = (day + 6) % 7;
     startOfWeek.setDate(startOfWeek.getDate() - diffToMonday);
 
     const dates = [];
@@ -42,21 +39,17 @@ export default function BookingCalendar({selectedDate, setSelectedDate}) {
     setWeekDates(dates);
   }, [selectedDate]);
 
-  // ✅ Calendar grid (Mon-first)
   const getDaysInMonth = (date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
 
     const firstDay = new Date(year, month, 1);
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    // Mon-first index
     const firstDayIndex = (firstDay.getDay() + 6) % 7;
 
     const days = [];
-
-    // previous month fillers
     const prevMonthLastDay = new Date(year, month, 0).getDate();
+
     for (let i = firstDayIndex; i > 0; i--) {
       days.push({
         date: new Date(year, month - 1, prevMonthLastDay - i + 1),
@@ -64,7 +57,6 @@ export default function BookingCalendar({selectedDate, setSelectedDate}) {
       });
     }
 
-    // current month days
     const today = new Date();
     for (let i = 1; i <= daysInMonth; i++) {
       const d = new Date(year, month, i);
@@ -75,7 +67,6 @@ export default function BookingCalendar({selectedDate, setSelectedDate}) {
       });
     }
 
-    // next month fillers (42 total)
     const totalCells = 42;
     const nextMonthDays = totalCells - days.length;
     for (let i = 1; i <= nextMonthDays; i++) {
@@ -87,91 +78,137 @@ export default function BookingCalendar({selectedDate, setSelectedDate}) {
 
     return days;
   };
+const isPastDate = (date) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-  const calendarDays = getDaysInMonth(currentDate);
-  const currentMonth = months[currentDate.getMonth()];
-  const currentYear = currentDate.getFullYear();
+  const checkDate = new Date(date);
+  checkDate.setHours(0, 0, 0, 0);
 
-  // Navigate months
-  const prevMonth = () =>
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1),
-    );
-  const nextMonth = () =>
-    setCurrentDate(
-      new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1),
-    );
-
-  // ✅ Week highlight check
+  return checkDate < today;
+};
   const isInSelectedWeek = (date) =>
     weekDates.some((d) => d.toDateString() === date.toDateString());
 
-  // ✅ When selecting a date, also move month view to that date’s month
-  const handleSelectDate = (date) => {
-    setSelectedDate(date);
+ const handleSelectDate = (date) => {
+  if (disablePastDates && isPastDate(date)) return;
+
+  setSelectedDate(date);
+  setCurrentDate(new Date(date.getFullYear(), date.getMonth(), 1));
+};
+
+  const goToMonth = (date) => {
     setCurrentDate(new Date(date.getFullYear(), date.getMonth(), 1));
   };
 
-  return (
-    <div className="rounded-xl shadow-sm border border-border-color">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4 px-4 py-4 rounded-t-xl text-center bg-primary">
-        <h2 className="text-base font-bold text-white">
-          Find Next Available Time
-        </h2>
-      </div>
+  const renderMonth = (monthDate) => {
+    const calendarDays = getDaysInMonth(monthDate);
+    const currentMonth = months[monthDate.getMonth()];
+    const currentYear = monthDate.getFullYear();
 
-      {/* Month Navigation */}
-      <div className="flex items-center justify-between mb-4 px-2">
-        <button
-          onClick={prevMonth}
-          className="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
-        >
-          <FaChevronLeft className="h-4 w-4 text-neutral" />
-        </button>
-        <h3 className="text-lg font-semibold text-gray-800">
-          {currentMonth} {currentYear}
-        </h3>
-        <button
-          onClick={nextMonth}
-          className="p-2 hover:bg-gray-100 rounded-lg transition duration-200"
-        >
-          <FaChevronRight className="h-4 w-4 text-neutral" />
-        </button>
-      </div>
+    const prevMonthDate = new Date(
+      monthDate.getFullYear(),
+      monthDate.getMonth() - 1,
+      1,
+    );
+    const nextMonthDate = new Date(
+      monthDate.getFullYear(),
+      monthDate.getMonth() + 1,
+      1,
+    );
 
-      {/* Weekday Headers (Mon → Sun) */}
-      <div className="grid grid-cols-7 gap-1 mb-2 bg-secondary px-2">
-        {weekdays.map((day) => (
-          <div
-            key={day}
-            className="text-center text-sm font-medium text-white py-2"
+    return (
+      <div className="border border-black bg-white ">
+        {/* Month Header */}
+        <div className="flex justify-between items-center px-2 md:px-2 py-2 border-b border-border-color ">
+          <button
+            onClick={() => goToMonth(prevMonthDate)}
+            className="justify-self-start text-xs  text-gray-500 font-semibold border border-gray-400 px-1 py-1 leading-none hover:bg-gray-100 transition"
           >
-            {day}
-          </div>
-        ))}
-      </div>
+            {months[prevMonthDate.getMonth()].slice(0, 3)}
+          </button>
 
-      {/* Calendar Days */}
-      <div className="grid grid-cols-7 gap-1 px-1 pb-2">
-        {calendarDays.map((day, index) => {
-          const inWeek = isInSelectedWeek(day.date);
+          <h3 className="text-center text-sm  font-bold text-black">
+            {currentMonth} {currentYear}
+          </h3>
 
-          return (
-            <button
-              key={index}
-              onClick={() => handleSelectDate(day.date)}
-              className={`py-1 rounded-lg flex items-center justify-center text-sm font-medium transition-all duration-200
-                ${day.isCurrentMonth ? "text-gray-900" : "text-gray-400"}
-                ${inWeek ? "bg-primary text-white" : "hover:bg-gray-100"}
-                ${!inWeek && day.isToday ? "bg-blue-100 text-blue-900" : ""}
-              `}
+          <button
+            onClick={() => goToMonth(nextMonthDate)}
+            className="justify-self-end text-xs  text-gray-500 font-semibold border border-gray-400 px-2 py-1 leading-none hover:bg-gray-100 transition"
+          >
+            {months[nextMonthDate.getMonth()].slice(0, 3)}
+          </button>
+        </div>
+
+        {/* Weekdays */}
+        <div className="grid grid-cols-7 bg-secondary">
+          {weekdays.map((day) => (
+            <div
+              key={day}
+              className="text-center text-xs md:text-[15px] font-bold text-white py-1 "
             >
-              {day.date.getDate()}
-            </button>
-          );
-        })}
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* Days */}
+        <div className="grid grid-cols-7">
+        {calendarDays.map((day, index) => {
+  const inWeek = isInSelectedWeek(day.date);
+  const isDisabled = disablePastDates && isPastDate(day.date);
+
+  return (
+    <button
+      key={index}
+      onClick={() => handleSelectDate(day.date)}
+      disabled={isDisabled}
+      className={`py-1 flex items-center justify-center text-sm transition
+        ${day.isCurrentMonth ? "text-black" : "text-gray-400"}
+        ${inWeek ? "bg-primary text-white" : "hover:bg-gray-100"}
+        ${!inWeek && day.isToday ? "bg-secondary text-white " : ""}
+        ${isDisabled ? "opacity-40 cursor-not-allowed hover:bg-transparent" : ""}
+      `}
+    >
+      {day.date.getDate()}
+    </button>
+  );
+})}
+        </div>
       </div>
-    </div>
+    );
+  };
+
+  const nextMonthDate = new Date(
+    currentDate.getFullYear(),
+    currentDate.getMonth() + 1,
+    1,
+  );
+
+  return (
+    <section className="px-[15%] md:px-0">
+      <div className="overflow-hidden">
+        {/* Header */}
+        <div className="bg-primary rounded-lg px-4 py-2 md:py-4 text-center">
+          <h2 className="text-xs md:text-lg font-bold text-white">
+            Find Next Available Time
+          </h2>
+        </div>
+
+        {/* gap below header */}
+        <div className="mt-4 md:mt-5 space-y-6">
+          {/* Mobile */}
+          <div className="block md:hidden">
+            {renderMonth(currentDate)}
+          </div>
+
+          {/* Desktop */}
+          <div className="hidden md:grid md:grid-cols-1 gap-6">
+            {renderMonth(currentDate)}
+            {renderMonth(nextMonthDate)}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }

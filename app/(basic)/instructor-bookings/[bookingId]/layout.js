@@ -46,9 +46,9 @@ export default function BookingDetailLayout({children}) {
   return (
    <section className="py-6">
       <Container >
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-12 md:gap-5 ">
           {/* Left Column: Sidebar */}
-          <div className="md:col-span-3 h-screen overflow-y-auto">
+          <div className="md:col-span-3 md:h-screen overflow-y-auto ">
             <BookingSidebar booking={booking} />
           </div>
 

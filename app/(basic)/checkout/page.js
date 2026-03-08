@@ -59,13 +59,13 @@ function CheckoutPage() {
     },
   });
 
-  const { data: instructors = [], isLoading: isInstructorsLoading } = useQuery({
-    queryKey: ["instructors"],
-    queryFn: async () => {
-      const res = await axios.get("/api/instructors?status=approved");
-      return res.data || [];
-    },
-  });
+  // const { data: instructors = [], isLoading: isInstructorsLoading } = useQuery({
+  //   queryKey: ["instructors"],
+  //   queryFn: async () => {
+  //     const res = await axios.get("/api/instructors?status=approved");
+  //     return res.data || [];
+  //   },
+  // });
 
   const { data: coupons = [], isLoading: isCouponsLoading } = useQuery({
     queryKey: ["coupons"],
@@ -172,8 +172,8 @@ function CheckoutPage() {
 const handleProceed = async () => {
   if (!billing.state) return toast.error("Select your State");
 
-  const selectedInstructorId = billing.instructorId || instructors?.[0]?._id;
-  if (!selectedInstructorId) return toast.error("No instructor available");
+  // const selectedInstructorId = billing.instructorId || instructors?.[0]?._id;
+  // if (!selectedInstructorId) return toast.error("No instructor available");
 
   if (!stripe || !elements) return;
 
@@ -275,11 +275,11 @@ const handleProceed = async () => {
 };
   if (authLoading) return <LoadingSpinner />;
   if (profileLoading) return <LoadingSpinner />;
-  if (isLocationsLoading || isInstructorsLoading) return <LoadingSpinner />;
+  if (isLocationsLoading) return <LoadingSpinner />;
 
   return (
-    <section className="py-16">
-      <Container className={`max-w-4xl!`}>
+    <section className="py-10 md:py-16">
+      <Container className={`max-w-5xl!`}>
         <h1 className="text-3xl font-bold mb-6">Billing Details</h1>
 
         <div className="space-y-4 md:space-y-5">
@@ -368,7 +368,7 @@ const handleProceed = async () => {
     />
   </FormRow>
 
-  <FormRow label="Instructor:">
+  {/* <FormRow label="Instructor:">
     <select
       name="instructorId"
       value={billing.instructorId}
@@ -382,7 +382,7 @@ const handleProceed = async () => {
         </option>
       ))}
     </select>
-  </FormRow>
+  </FormRow> */}
 
   <FormRow label="Coupon:">
     <div>

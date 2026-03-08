@@ -66,16 +66,12 @@ useEffect(() => {
 useEffect(() => {
   if (typeof window === "undefined") return;
 
-  const savedLocation = localStorage.getItem(LS_SELECTED_LOC);
   const todayDate = getTodayYMD();
   const lastShownDate = localStorage.getItem(LS_KEY);
-
-  if (savedLocation) return;
 
   if (lastShownDate !== todayDate) {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setShowLocationModal(true);
-    localStorage.setItem(LS_KEY, todayDate);
   }
 }, []);
   const categoryOptions = [
@@ -120,10 +116,11 @@ useEffect(() => {
   ].filter(Boolean);
 
   const clearAllFilters = () => {
-    setSearch("");
-    setSelectedCategory("all");
-    setSelectedArea("all");
-    setSort("default");
+   setSearch("");
+  setSelectedCategory("all");
+  setSelectedArea("all");
+  setSort("default");
+  localStorage.removeItem(LS_SELECTED_LOC);
   };
 
   const handleAddToCart = (pkg, e) => {
@@ -202,7 +199,7 @@ useEffect(() => {
 
   
 </div>
-<div className=" mb-4 text-left sm:text-right">
+<div className="mt-2 mb-4 text-right">
     <h3 className="font-bold text-lg">
       {selectedArea === "all" ? "All Areas" : selectedArea}
     </h3>
@@ -355,7 +352,7 @@ useEffect(() => {
                 className="group bg-white rounded-xl shadow hover:shadow-xl transition transform hover:-translate-y-1 cursor-pointer border border-gray-200 overflow-hidden flex flex-col"
               >
                 {/* Image */}
-                <div className="w-full h-70 md:h-65">
+                <div className="w-full sm:h-98 md:h-65">
                   <Image
                     src={pkg.packageThumbline}
                     alt={pkg.name}

@@ -16,8 +16,6 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import {toast} from "react-toastify";
 import StripeCardInput from "@/app/shared/ui/StripeCardInput";
 import Link from "next/link";
-import PhoneInput from "react-phone-input-2";
-import "react-phone-input-2/lib/style.css";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_Stripe_Publishable_key,
 );
@@ -187,19 +185,15 @@ const clientId = String(booking?.clientId);
           {/* Phone */}
           <div className="space-y-2">
             <label className="font-medium">Phone</label>
-            <PhoneInput
-                    country={"au"}
-                    required
-                 value={phone}
-                      onChange={(value) => setPhone(value)}
-                    inputStyle={{
-                      width: "100%",
-                      height: "48px",
-                      borderRadius: "12px",
-                      border:"1px solid #e7e7e9e6",
-                    }}
-                    
-                  />
+            <input
+              type="number"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="input-class"
+              placeholder="0469 123 456"
+              required
+            />
+         
            
           </div>
           {/* Address */}

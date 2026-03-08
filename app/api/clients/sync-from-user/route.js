@@ -43,6 +43,7 @@ export async function POST(req) {
           activeClient: true,
           updatedAt: new Date(),
           roleType: "client",
+          emailScheduleTime: "00:00",
         },
       },
       { upsert: true }
