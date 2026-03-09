@@ -899,7 +899,7 @@ const handleBooking = (date, slot, time) => {
     style={{
       WebkitOverflowScrolling: "touch",
       cursor: "grab",
-      touchAction: "pan-x",
+      touchAction: "auto",
       maxHeight: "calc(100vh - 60px)",
     }}
   >
