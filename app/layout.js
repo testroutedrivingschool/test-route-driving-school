@@ -126,7 +126,7 @@ const schema = {
     "Roselands",
     "Sandringham",
     "Sutherland",
-    "Wali Creek",
+    "Wolli Creek",
     "Miranda",
     "Monterey",
     "Ramsgate",

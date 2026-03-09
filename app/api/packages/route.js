@@ -22,45 +22,48 @@ export async function GET(request) {
       return NextResponse.json(singlePackage);
     }
 
-    const packages = await collection
-      .aggregate([
-        {
-          $addFields: {
-            categoryOrder: {
-              $switch: {
-                branches: [
-                  {case: {$eq: ["$category", "driving-lesson"]}, then: 1},
-                  {case: {$eq: ["$category", "test-package"]}, then: 2},
-                  {case: {$eq: ["$category", "all"]}, then: 3},
-                ],
-                default: 4,
-              },
-            },
+   const packages = await collection
+  .aggregate([
+    {
+      $addFields: {
+        categoryOrder: {
+          $switch: {
+            branches: [
+              {case: {$eq: ["$category", "driving-lesson"]}, then: 1},
+              {case: {$eq: ["$category", "test-package"]}, then: 2},
+              {case: {$eq: ["$category", "all"]}, then: 3},
+            ],
+            default: 4,
+          },
+        },
 
-            disabilityOrder: {
-              $cond: [
-                {$regexMatch: {input: "$name", regex: /disability/i}},
-                2,
-                1,
-              ],
-            },
-          },
+        // detect disability package
+        disabilityOrder: {
+          $cond: [
+            {$regexMatch: {input: "$name", regex: /disability/i}},
+            1, 
+            0, 
+          ],
         },
-        {
-          $sort: {
-            categoryOrder: 1,
-            disabilityOrder: 1,
-            durationNum: 1,
-          },
-        },
-        {
-          $project: {
-            categoryOrder: 0,
-            disabilityOrder: 0,
-          },
-        },
-      ])
-      .toArray();
+      },
+    },
+
+    {
+      $sort: {
+        disabilityOrder: 1, // normal first
+        categoryOrder: 1,
+        durationNum: 1,
+      },
+    },
+
+    {
+      $project: {
+        categoryOrder: 0,
+        disabilityOrder: 0,
+      },
+    },
+  ])
+  .toArray();
     return NextResponse.json(packages);
   } catch (error) {
     console.error("GET /api/packages error:", error);
