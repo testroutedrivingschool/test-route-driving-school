@@ -131,7 +131,7 @@ export default function UserPurchase() {
 
                   <div>
                     <span className="font-bold">Instructor:</span>{" "}
-                    {p.instructorName || "—"}
+                    {p.instructorName || "Not Assigned yet"}
                   </div>
                   <div className="flex gap-2">
                     <h2 className="font-bold">Payment Status:</h2>{" "}

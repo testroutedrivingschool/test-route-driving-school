@@ -77,7 +77,64 @@ const adminSubject = `New Package Purchase - Invoice #${invoiceNo}`;
 
 const userText = `Hi ${purchaseDoc.userName || "there"}, Your package purchase is confirmed. Invoice attached.`;
 const adminText = `A new package purchase has been made by ${purchaseDoc.userName || "Unknown User"}. Invoice attached.`;
+const baseUrl = "https://testroutedrivingschool.com.au";
 
+const userPurchasesUrl = `${baseUrl}/dashboard/user/purchases`;
+const adminPurchasesUrl = `${baseUrl}/dashboard/admin/purchases`;
+
+const userHtml = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+    <h2>Package Purchase Confirmed ✅</h2>
+    <p>Hi ${purchaseDoc.userName || "there"},</p>
+    <p>Your package purchase is confirmed. Your invoice is attached.</p>
+
+    <p style="margin:20px 0;">
+      <a
+        href="${userPurchasesUrl}"
+        style="
+          display:inline-block;
+          background:#0b57d0;
+          color:#fff;
+          text-decoration:none;
+          padding:12px 20px;
+          border-radius:8px;
+          font-weight:600;
+        "
+      >
+        View Purchases
+      </a>
+    </p>
+
+    <p>Thanks,<br/>Test Route Driving School</p>
+  </div>
+`;
+
+const adminHtml = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+    <h2>New Package Purchase 📦</h2>
+    <p>A new package purchase has been made by <b>${purchaseDoc.userName || "Unknown User"}</b>.</p>
+    <p>The invoice is attached.</p>
+
+    <p style="margin:20px 0;">
+      <a
+        href="${adminPurchasesUrl}"
+        style="
+          display:inline-block;
+          background:#0b57d0;
+          color:#fff;
+          text-decoration:none;
+          padding:12px 20px;
+          border-radius:8px;
+          font-weight:600;
+        "
+      >
+        View Purchases
+      </a>
+    </p>
+
+    <p>Test Route Driving School</p>
+  </div>
+`;
   // 3) Send emails
   const sendUser = async () => {
     if (!purchaseDoc.userEmail) return;
@@ -87,19 +144,19 @@ const adminText = `A new package purchase has been made by ${purchaseDoc.userNam
 
     try {
       await sendMailWithPdf({
-        to: purchaseDoc.userEmail,
-        subject: userSubject,
-        html: userText,
-        text: userText,
-        pdfBuffer,
-        filename,
-      });
+  to: purchaseDoc.userEmail,
+  subject: userSubject,
+  html: userHtml,
+  text: userText,
+  pdfBuffer,
+  filename,
+});
     } catch (e) {
       status = "FAILED";
       errorMsg = String(e?.message || e);
     }
 
-   await (await emailsCollection()).insertOne({
+  await (await emailsCollection()).insertOne({
   purchaseId,
   invoiceNo,
   actorType: "USER",
@@ -107,6 +164,7 @@ const adminText = `A new package purchase has been made by ${purchaseDoc.userNam
   to: purchaseDoc.userEmail,
   subject: userSubject,
   text: userText,
+  html: userHtml,
   status,
   error: errorMsg,
   hasAttachment: true,
@@ -123,34 +181,35 @@ const sendAdmin = async () => {
   let errorMsg = null;
 
   try {
-    await sendMailWithPdf({
-      to: adminEmail,
-      subject: adminSubject,
-      html: adminText,
-      text: adminText,
-      pdfBuffer,
-      filename,
-    });
+  await sendMailWithPdf({
+  to: adminEmail,
+  subject: adminSubject,
+  html: adminHtml,
+  text: adminText,
+  pdfBuffer,
+  filename,
+});
   } catch (e) {
     status = "FAILED";
     errorMsg = String(e?.message || e);
   }
 
-  await (await emailsCollection()).insertOne({
-    purchaseId,
-    invoiceNo,
-    actorType: "ADMIN",
-    type: "PURCHASE_CONFIRM",
-    to: adminEmail,
-    subject: adminSubject,
-    text: adminText,
-    status,
-    error: errorMsg,
-    hasAttachment: true,
-    attachmentName: filename,
-    attachmentKey: invoiceKey,
-    createdAt: new Date(),
-  });
+await (await emailsCollection()).insertOne({
+  purchaseId,
+  invoiceNo,
+  actorType: "ADMIN",
+  type: "PURCHASE_CONFIRM",
+  to: adminEmail,
+  subject: adminSubject,
+  text: adminText,
+  html: adminHtml,
+  status,
+  error: errorMsg,
+  hasAttachment: true,
+  attachmentName: filename,
+  attachmentKey: invoiceKey,
+  createdAt: new Date(),
+});
 };
 
   await Promise.all([sendUser(), sendAdmin()]);
