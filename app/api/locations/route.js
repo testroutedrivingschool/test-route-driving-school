@@ -1,4 +1,5 @@
 import {locationsCollection} from "@/app/libs/mongodb/db";
+import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
 export async function GET() {

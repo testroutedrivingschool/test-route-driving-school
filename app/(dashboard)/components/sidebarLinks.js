@@ -65,6 +65,12 @@ export const userSidebarLinks = [
 export const adminSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard/admin"},
   {id: 2, label: "Profile", icon: <FiUser />, path: "/dashboard/admin/profile"},
+   {
+    id: 10,
+    label: "Purchases",
+    icon: <FiCreditCard />,
+    path: "/dashboard/admin/purchases",
+  },
   {
     id: 3,
     label: "Manage Packages",

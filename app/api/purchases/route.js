@@ -10,7 +10,6 @@ import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
 
 import {
   purchasesCollection,
-  instructorsCollection,
   usersCollection,
   invoicesCollection,
   emailsCollection,
@@ -30,8 +29,8 @@ async function generatePurchaseInvoicePdfBuffer(purchaseDoc, reqUrl) {
     userPhone: purchaseDoc.billing?.mobile || "",
     address: purchaseDoc.billing?.address || "",
     suburb: purchaseDoc.billing?.suburb || "",
-    instructorName: purchaseDoc.instructorName,
-    instructorEmail: purchaseDoc.instructorEmail,
+    // instructorName: purchaseDoc.instructorName,
+    // instructorEmail: purchaseDoc.instructorEmail,
 
     serviceName: "Package Purchase",
     duration: first?.packageName ? `(${first.packageName})` : "",
@@ -70,11 +69,14 @@ async function runInvoiceAndEmails({ purchaseDoc, purchaseId, invoiceNo, reqUrl 
  
 
   // Prepare email contents
-  const userSubject = `Booking Confirmed - Invoice #${invoiceNo}`;
-  const instructorSubject = `New Booking - Invoice #${invoiceNo}`;
+ 
+const adminEmail = "testroutedrivingschool@gmail.com";
 
-  const userText = `Hi ${purchaseDoc.userName || "there"}, Your booking is confirmed. Invoice attached.`;
-  const instructorText = `Hi ${purchaseDoc.instructorName || "Instructor"}, You have a new booking. Invoice attached.`;
+const userSubject = `Package Purchase Confirmed - Invoice #${invoiceNo}`;
+const adminSubject = `New Package Purchase - Invoice #${invoiceNo}`;
+
+const userText = `Hi ${purchaseDoc.userName || "there"}, Your package purchase is confirmed. Invoice attached.`;
+const adminText = `A new package purchase has been made by ${purchaseDoc.userName || "Unknown User"}. Invoice attached.`;
 
   // 3) Send emails
   const sendUser = async () => {
@@ -97,59 +99,61 @@ async function runInvoiceAndEmails({ purchaseDoc, purchaseId, invoiceNo, reqUrl 
       errorMsg = String(e?.message || e);
     }
 
-    await (await emailsCollection()).insertOne({
-      purchaseId,
-      invoiceNo,
-      actorType: "USER",
-      type: "BOOKINGS_CONFIRM",
-      to: purchaseDoc.userEmail,
-      subject: userSubject,
-      text: userText,
-      status,
-      error: errorMsg,
-      hasAttachment: true,
-      attachmentName: filename,
-      attachmentKey: invoiceKey,
-    });
+   await (await emailsCollection()).insertOne({
+  purchaseId,
+  invoiceNo,
+  actorType: "USER",
+  type: "PURCHASE_CONFIRM",
+  to: purchaseDoc.userEmail,
+  subject: userSubject,
+  text: userText,
+  status,
+  error: errorMsg,
+  hasAttachment: true,
+  attachmentName: filename,
+  attachmentKey: invoiceKey,
+  createdAt: new Date(),
+});
   };
 
-  const sendInstructor = async () => {
-    if (!purchaseDoc.instructorEmail) return;
+const sendAdmin = async () => {
+  if (!adminEmail) return;
 
-    let status = "SENT";
-    let errorMsg = null;
+  let status = "SENT";
+  let errorMsg = null;
 
-    try {
-      await sendMailWithPdf({
-        to: purchaseDoc.instructorEmail,
-        subject: instructorSubject,
-        html: instructorText,
-        text: instructorText,
-        pdfBuffer,
-        filename,
-      });
-    } catch (e) {
-      status = "FAILED";
-      errorMsg = String(e?.message || e);
-    }
-
-    await emailsCollection().insertOne({
-      purchaseId,
-      invoiceNo,
-      actorType: "INSTRUCTOR",
-      type: "BOOKINGS_CONFIRM",
-      to: purchaseDoc.instructorEmail,
-      subject: instructorSubject,
-      text: instructorText,
-      status,
-      error: errorMsg,
-      hasAttachment: true,
-      attachmentName: filename,
-      attachmentKey: invoiceKey,
+  try {
+    await sendMailWithPdf({
+      to: adminEmail,
+      subject: adminSubject,
+      html: adminText,
+      text: adminText,
+      pdfBuffer,
+      filename,
     });
-  };
+  } catch (e) {
+    status = "FAILED";
+    errorMsg = String(e?.message || e);
+  }
 
-  await Promise.all([sendUser(), sendInstructor()]);
+  await (await emailsCollection()).insertOne({
+    purchaseId,
+    invoiceNo,
+    actorType: "ADMIN",
+    type: "PURCHASE_CONFIRM",
+    to: adminEmail,
+    subject: adminSubject,
+    text: adminText,
+    status,
+    error: errorMsg,
+    hasAttachment: true,
+    attachmentName: filename,
+    attachmentKey: invoiceKey,
+    createdAt: new Date(),
+  });
+};
+
+  await Promise.all([sendUser(), sendAdmin()]);
 
   // Save invoice document
   await (await invoicesCollection()).insertOne({
@@ -266,7 +270,7 @@ export async function POST(req) {
     const {
       userId,
       userEmail,
-      instructorId,
+    
       items,                 
       currency = "aud",
       paymentIntentId,
@@ -278,7 +282,7 @@ export async function POST(req) {
     } = body || {};
 
     if (!userEmail) return NextResponse.json({ error: "userEmail required" }, { status: 400 });
-    if (!instructorId) return NextResponse.json({ error: "instructorId required" }, { status: 400 });
+  
     if (!paymentIntentId) return NextResponse.json({ error: "paymentIntentId required" }, { status: 400 });
     if (!Array.isArray(items) || items.length === 0) return NextResponse.json({ error: "items required" }, { status: 400 });
 
@@ -290,11 +294,11 @@ export async function POST(req) {
 
     // fetch user/instructor docs
     const userCol = await usersCollection();
-    const instCol = await instructorsCollection();
+   
     const pkgCol = await packagesCollection();
 
     const userDoc = await userCol.findOne({ email: userEmail });
-    const instructorDoc = await instCol.findOne({ _id: new ObjectId(instructorId) });
+    
 
     // ✅ build packages from DB
     const pkgIds = items
@@ -333,9 +337,7 @@ export async function POST(req) {
       userName: userDoc?.name || billing?.name || "",
       userEmail,
 
-      instructorId,
-      instructorName: instructorDoc?.name || "",
-      instructorEmail: instructorDoc?.email || "",
+      
 
       packages,
       amount,

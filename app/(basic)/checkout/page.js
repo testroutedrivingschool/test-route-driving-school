@@ -197,7 +197,7 @@ const handleProceed = async () => {
     const finalAmount = total - discount; // Final amount after applying the discount
     const { data } = await axios.post("/api/create-payment-intent", {
       type: "purchase",
-      instructorId: selectedInstructorId,
+      
       userEmail: billing.email,
       userName: billing.name,
       couponCode: appliedCoupon,
@@ -244,7 +244,7 @@ const handleProceed = async () => {
     await axios.post("/api/purchases", {
       userId: user?._id || "",
       userEmail: user?.email || billing.email,
-      instructorId: selectedInstructorId,
+
       items,
       discountAmount: serverDiscountAmount,
       amount: serverAmount,  // Use the discounted amount here
@@ -461,7 +461,7 @@ const handleProceed = async () => {
 
 function FormRow({ label, children }) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-[170px_1fr] gap-2 md:gap-6 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-[170px_1fr]  gap-2 md:gap-6 items-start">
       <label className="text-sm md:text-base font-semibold text-gray-800 md:pt-3">
         {label}
       </label>

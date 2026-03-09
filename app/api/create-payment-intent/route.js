@@ -12,7 +12,7 @@ export async function POST(req) {
   try {
     const body = await req.json();
     const {
-      type = "booking-new", // Default to booking-new if not provided
+      type = "booking-new", 
       currency = "aud",
       bookingId,
       amount,
@@ -131,12 +131,7 @@ export async function POST(req) {
           { status: 400 }
         );
       }
-      if (!instructorId) {
-        return new Response(
-          JSON.stringify({ error: "instructorId required" }),
-          { status: 400 }
-        );
-      }
+      
       if (!Array.isArray(items) || items.length === 0) {
         return new Response(
           JSON.stringify({ error: "items required" }),
@@ -227,7 +222,7 @@ export async function POST(req) {
           type: "purchase",
           userEmail,
           userName,
-          instructorId,
+       
           discountAmount,
           ...metadata,
         },

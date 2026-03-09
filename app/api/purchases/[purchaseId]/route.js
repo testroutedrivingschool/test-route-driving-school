@@ -1,59 +1,94 @@
 import { NextResponse } from "next/server";
-import { purchasesCollection } from "@/app/libs/mongodb/db";
+import {
+  purchasesCollection,
+  instructorsCollection,
+} from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 
-// PATCH handler for updating purchase status
 export async function PATCH(req, { params }) {
   try {
-    const { purchaseId } = await params; // Get purchaseId from URL params
+    const { purchaseId } = await params;
 
     if (!purchaseId) {
-      return NextResponse.json({ error: "purchaseId is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "purchaseId is required" },
+        { status: 400 }
+      );
     }
 
-    // Parse the body to get the status
     const body = await req.json();
-    const { status } = body;
+    const { status, instructorId } = body;
 
-    // Valid status values
-    const allowedStatuses = ["pending", "confirmed", "completed"];
-    if (!allowedStatuses.includes(status)) {
-      return NextResponse.json({ error: "Invalid status provided" }, { status: 400 });
-    }
-
-    // Fetch the purchase document from the database
     const purchaseCol = await purchasesCollection();
-    const purchase = await purchaseCol.findOne({ _id: new ObjectId(purchaseId) });
+    const purchase = await purchaseCol.findOne({
+      _id: new ObjectId(purchaseId),
+    });
 
     if (!purchase) {
       return NextResponse.json({ error: "Purchase not found" }, { status: 404 });
     }
 
-    // Check if the status transition is allowed (basic rule: pending -> confirmed, confirmed -> completed)
-    if (purchase.status !== "pending" && status === "confirmed") {
-      return NextResponse.json(
-        { error: `Cannot confirm purchase when status is ${purchase.status}` },
-        { status: 400 }
-      );
+    const updateData = {
+      updatedAt: new Date(),
+    };
+
+    // status update
+    if (status) {
+      const allowedStatuses = ["pending", "confirmed", "completed", "cancelled"];
+      if (!allowedStatuses.includes(status)) {
+        return NextResponse.json(
+          { error: "Invalid status provided" },
+          { status: 400 }
+        );
+      }
+
+      if (purchase.status !== "pending" && status === "confirmed") {
+        return NextResponse.json(
+          { error: `Cannot confirm purchase when status is ${purchase.status}` },
+          { status: 400 }
+        );
+      }
+
+      if (purchase.status === "completed" && status !== "completed") {
+        return NextResponse.json(
+          { error: "Cannot change status once the purchase is completed" },
+          { status: 400 }
+        );
+      }
+
+      updateData.status = status;
     }
 
-    if (purchase.status === "completed" && status !== "completed") {
-      return NextResponse.json(
-        { error: "Cannot change status once the purchase is completed" },
-        { status: 400 }
-      );
+    // instructor assignment
+    if (instructorId) {
+      const instructorCol = await instructorsCollection();
+      const instructor = await instructorCol.findOne({
+        _id: new ObjectId(instructorId),
+      });
+
+      if (!instructor) {
+        return NextResponse.json(
+          { error: "Instructor not found" },
+          { status: 404 }
+        );
+      }
+
+      updateData.instructorId = instructor._id.toString();
+      updateData.instructorName = instructor.name || "";
+      updateData.instructorEmail = instructor.email || "";
     }
 
-    // Update the purchase status in the database
     await purchaseCol.updateOne(
       { _id: new ObjectId(purchaseId) },
-      { $set: { status, updatedAt: new Date() } }
+      { $set: updateData }
     );
 
-    // Return success response
-    return NextResponse.json({ ok: true, status });
+    return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: "Failed to update the purchase status" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update the purchase" },
+      { status: 500 }
+    );
   }
 }

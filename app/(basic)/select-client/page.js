@@ -176,7 +176,7 @@ export default function SelectClientForBooking() {
               : ""}
           </p>
 
-          <form onSubmit={onSearch} className="mt-6 space-y-3">
+          <form onSubmit={onSearch} className="mt-6 space-y-1">
             <Field
               label="First Name:"
               name="firstName"
