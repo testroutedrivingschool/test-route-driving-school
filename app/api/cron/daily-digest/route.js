@@ -11,7 +11,7 @@ import {
 import {NextResponse} from "next/server";
 
 // ---- CONFIG ----
-const TZ = "Asia/Dhaka";
+const TZ = "Australia/Sydney";
 
 // Security: call with header x-cron-secret
 function assertCron(req) {

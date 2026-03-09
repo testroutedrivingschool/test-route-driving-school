@@ -80,9 +80,9 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
   return (
     <div className="bg-white border border-border-color rounded-md p-4 flex gap-5">
       <div className="flex-1">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">Client Search</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 md:mb-6">Client Search</h1>
 
-        <form onSubmit={onSearch} className="space-y-2">
+        <form onSubmit={onSearch} className="space-y-1 md:space-y-2">
           <Field
             label="First Name:"
             name="firstName"
@@ -315,8 +315,8 @@ export default function ClientSearch({setActiveTab, setSelectedClient}) {
 
 function Field({label, name, value, onChange}) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-3">
-      <label className="sm:col-span-4 text-sm font-medium text-gray-900">
+    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-1 md:gap-3">
+      <label className="sm:col-span-4 text-xs md:text-sm font-medium text-gray-900">
         {label}
       </label>
       <input

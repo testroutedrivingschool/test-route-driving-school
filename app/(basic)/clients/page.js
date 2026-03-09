@@ -93,10 +93,10 @@ const goTab = (tab) => {
     <button
       type="button"
       onClick={() => setMobileMenuOpen((v) => !v)}
-      className="w-full flex items-center gap-3 px-4 py-4"
+      className="w-full flex items-center gap-3 px-4 py-3 md:py-4"
     >
-      <FaBars className="text-xl" />
-      <span className="text-lg font-semibold">Client Details</span>
+      <FaBars className="text-lg md:text-xl" />
+      <span className="md:text-lg font-semibold">Client Details</span>
     </button>
 
     {mobileMenuOpen && (

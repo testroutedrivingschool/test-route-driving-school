@@ -201,7 +201,7 @@ export default function ManagePackages() {
             <div className="mt-2 text-sm text-gray-700">
               <p>Lessons: {pkg.lessons}</p>
               <p>Duration: {pkg.duration}</p>
-              <p className="font-semibold text-primary">৳ {pkg.price}</p>
+              <p className="font-semibold text-primary">$ {pkg.price}</p>
             </div>
 
             <div className="mt-auto flex gap-2 pt-4">

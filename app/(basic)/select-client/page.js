@@ -8,6 +8,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import axios from "axios";
 import {toast} from "react-toastify";
 import {useUserData} from "@/app/hooks/useUserData";
+import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 
 export default function SelectClientForBooking() {
   const [booking, setBooking] = useState(null);
@@ -99,6 +100,19 @@ export default function SelectClientForBooking() {
 
   const onSearch = (e) => {
     e.preventDefault();
+    queryClient.invalidateQueries({queryKey: ["clients-search"]});
+    const hasAtLeastOneSearchValue =
+    form.firstName.trim() ||
+    form.lastName.trim() ||
+    form.phone.trim() ||
+    form.email.trim() ||
+    form.address.trim() ||
+    form.organization.trim();
+
+  if (!hasAtLeastOneSearchValue) {
+    toast.error("Enter at least one search value");
+    return;
+  }
     setSearchParams({...form});
   };
 
@@ -165,18 +179,18 @@ export default function SelectClientForBooking() {
   };
 
   return (
-    <section className="max-w-5xl mx-auto my-16 p-6 border border-border-color">
-      <div className="bg-white  rounded-md  flex flex-col lg:flex-row gap-6">
+    <section className="max-w-5xl mx-auto my-10 md:my-16 p-4 md:p-6 border border-border-color">
+      <div className="bg-white  rounded-md  flex flex-col lg:flex-row gap-4 md:gap-6">
         <div className="flex-1">
-          <h1 className="text-4xl font-bold mb-2">Select Client</h1>
+          <h1 className="text-2xl md:text-3xl font-bold mb-1 md:mb-2">Select Client</h1>
 
-          <p className="text-neutral font-semibold">
+          <p className="text-neutral text-sm md:text-base font-semibold">
             {dateValue
               ? `${new Date(dateValue).toDateString()} at ${timeValue || ""}`
               : ""}
           </p>
 
-          <form onSubmit={onSearch} className="mt-6 space-y-1">
+          <form onSubmit={onSearch} className="mt-4 md:mt-6 space-y-1">
             <Field
               label="First Name:"
               name="firstName"
@@ -245,7 +259,7 @@ export default function SelectClientForBooking() {
             </div>
 
             <div className="pt-4 flex justify-start">
-              <PrimaryBtn type="submit" className="px-10! py-3! text-lg!">
+              <PrimaryBtn type="submit" className="w-full md:w-auto justify-center md:justify-between md:px-10! py-2! md:py-3! text-base md:text-lg!">
                 {isLoading ? "Searching..." : "Search for Client"}
               </PrimaryBtn>
             </div>
@@ -257,7 +271,7 @@ export default function SelectClientForBooking() {
           <button
             type="button"
             onClick={onCreateNewClient}
-            className="flex flex-col items-center gap-3 mt-2"
+            className="hidden md:flex flex-col items-center gap-3 mt-2"
             disabled={createClient.isPending}
           >
             <HiUserAdd className="text-7xl text-secondary" />
@@ -265,17 +279,24 @@ export default function SelectClientForBooking() {
               {createClient.isPending ? "Creating..." : "Create a New Client"}
             </span>
           </button>
+          <OutlineBtn type={`button`} onClick={onCreateNewClient}
+            className="md:hidden flex flex-col items-center gap-3 w-full!"
+            disabled={createClient.isPending}> {createClient.isPending ? "Creating..." : "Create a New Client"} </OutlineBtn>
         </aside>
+        
       </div>
-      <ClientsResultTable clients={clients} onSelect={selectClient} />
+      {
+        clients.length>0 &&  <ClientsResultTable clients={clients} onSelect={selectClient} />
+      }
+     
     </section>
   );
 }
 
 function Field({label, name, value, onChange, required, error, onBlur}) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-3">
-      <label className="sm:col-span-3 text-sm font-medium text-gray-900">
+    <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-1 md:gap-3">
+      <label className="sm:col-span-3 text-xs md:text-sm font-medium text-gray-900">
         {label}
       </label>
 

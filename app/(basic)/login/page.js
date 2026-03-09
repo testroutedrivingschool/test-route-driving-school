@@ -27,6 +27,7 @@ export default function Login() {
     loginUserWithCredential,
     forgetPassword,
   } = useAuth();
+  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
