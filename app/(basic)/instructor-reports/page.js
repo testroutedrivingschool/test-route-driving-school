@@ -74,7 +74,7 @@ export default function InstructorReportPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 min-w-0">
           {/* Website Activity */}
         <Card title="Sales & Website Activity">
-  <div className="h-80  min-w-0 w-full">
+  <div className="w-full min-w-0 h-80">
     <ResponsiveContainer width="100%" height="100%">
       <LineChart data={websiteData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" />
@@ -116,7 +116,7 @@ export default function InstructorReportPage() {
 
           {/* Booking Activity */}
           <Card title="Booking Activity">
-            <div className="h-80  min-w-0 w-full">
+            <div className="w-full min-w-0 h-80">
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={bookingData}  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" />

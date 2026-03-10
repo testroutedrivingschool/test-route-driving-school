@@ -167,7 +167,7 @@ const isPastDate = (date) => {
         ${day.isCurrentMonth ? "text-black" : "text-gray-400"}
         ${inWeek ? "bg-primary text-white" : "hover:bg-gray-100"}
         ${!inWeek && day.isToday ? "bg-secondary text-white " : ""}
-        ${isDisabled ? "opacity-40 cursor-not-allowed hover:bg-transparent" : ""}
+        ${isDisabled ? "opacity-40 cursor-not-allowed " : ""}
       `}
     >
       {day.date.getDate()}

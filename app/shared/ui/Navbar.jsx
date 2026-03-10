@@ -115,7 +115,7 @@ export default function Navbar({className}) {
       ? `/api/storage/proxy?key=${encodeURIComponent(userData.photoKey)}`
       : "/profile-avatar.png";
 
-  const finalNavLinks = isInstructor ? instructorNavLinks : navlinks;
+  // const finalNavLinks = isInstructor ? instructorNavLinks : navlinks;
 
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
@@ -147,6 +147,38 @@ const dashHref =
     ? "/dashboard/instructor"
     : "/dashboard/user";
 
+const instructorDashboardRoutes = [
+  "/dashboard/instructor",
+  "/instructor-bookings",
+  "/clients",
+  "/instructor/sales/search",
+  "/instructor-reports",
+];
+
+const isInDashboard =
+  pathname?.startsWith("/dashboard") ||
+  instructorDashboardRoutes.includes(pathname);
+
+const dynamicFirstNavItem = userData
+  ? isInDashboard
+    ? { id: "dynamic-home", label: "Home", pathname: "/" }
+    : { id: "dynamic-dashboard", label: "Dashboard", pathname: dashHref }
+  : null;
+
+const baseNavLinks = isInstructor ? instructorNavLinks : navlinks;
+
+const finalNavLinks = dynamicFirstNavItem
+  ? [
+      dynamicFirstNavItem,
+      ...baseNavLinks.filter(
+        (item) =>
+          item.pathname !== "/" &&
+          item.pathname !== "/dashboard/admin" &&
+          item.pathname !== "/dashboard/instructor" &&
+          item.pathname !== "/dashboard/user"
+      ),
+    ]
+  : baseNavLinks;
   return (
     <nav
       className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
