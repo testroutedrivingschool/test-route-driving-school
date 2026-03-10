@@ -277,7 +277,7 @@ function buildUserDigestHtml(name, bookings) {
 function buildAdminDigestHtml(bookings) {
   const map = new Map();
   for (const b of bookings) {
-    const key = b.instructorEmail || "unknown";
+    const key = b.instructorEmail || "testroutedrivingschool@gmail.com";
     if (!map.has(key))
       map.set(key, {name: b.instructorName || "Instructor", items: []});
     map.get(key).items.push(b);
@@ -318,7 +318,6 @@ export async function GET(req) {
     const usersCol = await usersCollection();
     const clientsCol = await clientsCollection();
     const emailCol = await emailsCollection();
-
     // 1) Users (admin/instructor/user)
     const userReceivers = await usersCol
       .find({
@@ -337,33 +336,46 @@ export async function GET(req) {
       .project({email: 1, name: 1, roleType: 1})
       .toArray();
 
-    // Normalize into one list
-    const userEmailSet = new Set(
-      userReceivers.map((u) => String(u.email).trim().toLowerCase()),
-    );
+    // Normalize + de-duplicate receivers
+const receiverMap = new Map();
 
-    // 2️⃣ Normalize users
-    const receivers = userReceivers.map((u) => ({
-      email: String(u.email).trim().toLowerCase(),
+// users/admin/instructors
+for (const u of userReceivers) {
+  const email = String(u.email || "").trim().toLowerCase();
+  if (!email) continue;
+
+  const key = `${email}__${u.role}`;
+  if (!receiverMap.has(key)) {
+    receiverMap.set(key, {
+      email,
       name: u.name,
       role: u.role, // user | instructor | admin
-    }));
+    });
+  }
+}
 
-    // 3️⃣ Add clients ONLY if not present in users
-    for (const c of clientReceivers) {
-      const email = String(c.email || "")
-        .trim()
-        .toLowerCase();
-      if (!email) continue;
+// clients
+for (const c of clientReceivers) {
+  const email = String(c.email || "").trim().toLowerCase();
+  if (!email) continue;
 
-      if (!userEmailSet.has(email)) {
-        receivers.push({
-          email,
-          name: c.name,
-          role: "client",
-        });
-      }
-    }
+  // if same email already exists in users collection, don't add as client again
+  const alreadyExistsAsUserLike = [...receiverMap.keys()].some((k) =>
+    k.startsWith(`${email}__`),
+  );
+  if (alreadyExistsAsUserLike) continue;
+
+  const key = `${email}__client`;
+  if (!receiverMap.has(key)) {
+    receiverMap.set(key, {
+      email,
+      name: c.name,
+      role: "client",
+    });
+  }
+}
+
+const receivers = [...receiverMap.values()];
 
     if (!receivers.length) {
       return NextResponse.json({
@@ -381,20 +393,37 @@ export async function GET(req) {
         .toLowerCase();
       if (!to) continue;
 
-      // prevent duplicate same day
-      const already = await emailCol.findOne({
-        type: "DAILY_DIGEST",
-        to,
-        digestDay: dayKey,
-        digestRole: u.role, 
-        status: "SENT",
-      });
-      if (already) continue;
+  
+     // prevent duplicate same day using DB lock row
+  try {
+    await emailCol.insertOne({
+      type: "DAILY_DIGEST",
+      actorType: null,
+      to,
+      subject: "",
+      html: "",
+      text: "",
+      status: "PROCESSING",
+      error: null,
+      hasAttachment: false,
+      sentAt: null,
+      createdAt: new Date(),
+      digestDay: dayKey,
+      digestRole: u.role,
+    });
+  } catch (e) {
+    if (e?.code === 11000) {
+      console.log("Already locked/sent, skipping:", to, u.role, dayKey);
+      continue;
+    }
+    throw e;
+  }
 
-      let subject = `Today's Bookings - ${dayKey}`;
-      let html = "";
-      let text = "";
-      let actorType="";
+  let subject = `Today's Bookings - ${dayKey}`;
+  let html = "";
+  let text = "";
+  let actorType = "";
+     
       if (u.role === "instructor") {
         const bookings = await getTodaysBookingsByInstructor(to);
         html = buildInstructorDigestHtml(u.name, bookings);
@@ -424,21 +453,26 @@ export async function GET(req) {
         errorMsg = String(e?.message || e);
       }
 
-      await emailCol.insertOne({
-        type: "DAILY_DIGEST",
-        actorType,
-        to,
-        subject,
-        html,
-        text,
-        status,
-        error: errorMsg,
-        hasAttachment: false,
-        sentAt: new Date(),
-        createdAt: new Date(),
-        digestDay: dayKey,
-        digestRole: u.role,
-      });
+         await emailCol.updateOne(
+        {
+          type: "DAILY_DIGEST",
+          to,
+          digestDay: dayKey,
+          digestRole: u.role,
+        },
+        {
+          $set: {
+            actorType,
+            subject,
+            html,
+            text,
+            status,
+            error: errorMsg,
+            hasAttachment: false,
+            sentAt: new Date(),
+          },
+        },
+      );
 
       if (status === "SENT") sent += 1;
     }

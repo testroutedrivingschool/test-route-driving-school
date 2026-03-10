@@ -311,7 +311,7 @@ const dashHref =
           }}
           className="w-full text-left px-4 py-3 hover:bg-primary/10 text-gray-800 font-medium transition border-b border-border-color"
         >
-          Login as User
+          Login as Student
         </button>
 
         <button
@@ -437,7 +437,7 @@ const dashHref =
             }}
             className="w-full text-left px-4 py-3 hover:bg-primary hover:text-white transition"
           >
-            Login as User
+            Login as Student
           </button>
 
           <button
