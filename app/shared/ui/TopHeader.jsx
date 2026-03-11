@@ -31,9 +31,10 @@ export default function TopHeader() {
   return (
     <div className="bg-primary text-white py-2 w-full">
       <Container className="flex items-center justify-between">
-        <a className=" font-semibold text-sm md:text-base" href="tel:+61469046923">
-          <span className="font-bold ">Phone:</span> 0469 046 923
-        </a>
+       <Link href="/packages" className="font-semibold text-xs md:text-base hover:underline">
+              View Packages
+            </Link>
+        
         <div className="space-x-5">
           {hasCartItem && (
             <Link href="/cart" className="hover:underline font-semibold text-xs md:text-base">
