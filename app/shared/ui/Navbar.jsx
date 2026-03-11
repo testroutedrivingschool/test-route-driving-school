@@ -104,7 +104,6 @@ export default function Navbar({className}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const [loginDropdownOpen, setLoginDropdownOpen] = useState(false);
   const {logoutUser} = useAuth();
   const {data: userData} = useUserData();
   const router = useRouter();
@@ -325,39 +324,15 @@ const finalNavLinks = dynamicFirstNavItem
     />
   </div>
 ) : (
-  <div className="relative hidden md:block">
+  <div className="hidden md:block">
   <SecondaryBtn
-    onClick={() => setLoginDropdownOpen((v) => !v)}
+    onClick={() => router.push("/login")}
     className="hidden md:flex items-center gap-2"
-    aria-label="Open login options"
+    aria-label="Login"
   >
-    Login <MdKeyboardArrowDown size={18} />
+    Login
   </SecondaryBtn>
-
-    {loginDropdownOpen && (
-      <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-lg shadow-xl border border-gray-100 overflow-hidden z-999">
-        <button
-          onClick={() => {
-            router.push("/login?role=user");
-            setLoginDropdownOpen(false);
-          }}
-          className="w-full text-left px-4 py-3 hover:bg-primary/10 text-gray-800 font-medium transition border-b border-border-color"
-        >
-          Login as Student
-        </button>
-
-        <button
-          onClick={() => {
-            router.push("/login?role=instructor");
-            setLoginDropdownOpen(false);
-          }}
-          className="w-full text-left px-4 py-3 hover:bg-primary/10 text-gray-800 font-medium transition"
-        >
-          Login as Instructor
-        </button>
-      </div>
-    )}
-  </div>
+</div>
 )}
 
             <button
@@ -446,46 +421,16 @@ const finalNavLinks = dynamicFirstNavItem
   </li>
 ) : (
   <li className="mt-4 px-5">
-    <div className="space-y-2">
-      <PrimaryBtn
-        onClick={() => setLoginDropdownOpen((v) => !v)}
-        className="w-full flex justify-center items-center gap-2"
-      >
-        Login
-        <FiChevronRight
-          className={`transition-transform duration-300 ${
-            loginDropdownOpen ? "rotate-90" : ""
-          }`}
-        />
-      </PrimaryBtn>
-
-      {loginDropdownOpen && (
-        <div className="rounded-lg border border-gray-200 overflow-hidden bg-white">
-          <button
-            onClick={() => {
-              router.push("/login?role=user");
-              setOpen(false);
-              setLoginDropdownOpen(false);
-            }}
-            className="w-full text-left px-4 py-3 hover:bg-primary hover:text-white transition"
-          >
-            Login as Student
-          </button>
-
-          <button
-            onClick={() => {
-              router.push("/login?role=instructor");
-              setOpen(false);
-              setLoginDropdownOpen(false);
-            }}
-            className="w-full text-left px-4 py-3 hover:bg-primary hover:text-white transition border-t border-gray-200"
-          >
-            Login as Instructor
-          </button>
-        </div>
-      )}
-    </div>
-  </li>
+  <PrimaryBtn
+    onClick={() => {
+      router.push("/login");
+      setOpen(false);
+    }}
+    className="w-full flex justify-center items-center gap-2"
+  >
+    Login
+  </PrimaryBtn>
+</li>
 )}
           </ul>
         </div>

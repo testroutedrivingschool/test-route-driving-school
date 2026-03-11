@@ -2,15 +2,26 @@ import {locationsCollection} from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  const collection = await locationsCollection();
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const isSort = searchParams.get("isSort") === "true";
 
-  const locations = await collection
-    .find({})
-    .sort({ name: 1 })
-    .toArray();
+    const collection = await locationsCollection();
 
-  return NextResponse.json(locations);
+    let query = collection.find({});
+
+    if (isSort) {
+      query = query.sort({ name: 1 }); // A-Z
+    }
+
+    const locations = await query.toArray();
+
+    return NextResponse.json(locations);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ message: "Server error" }, { status: 500 });
+  }
 }
 
 export async function POST(req) {

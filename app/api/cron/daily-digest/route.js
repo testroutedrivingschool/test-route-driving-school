@@ -413,7 +413,7 @@ const receivers = [...receiverMap.values()];
     });
   } catch (e) {
     if (e?.code === 11000) {
-      console.log("Already locked/sent, skipping:", to, u.role, dayKey);
+   
       continue;
     }
     throw e;

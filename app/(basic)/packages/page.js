@@ -35,7 +35,7 @@ const [showLocationModal, setShowLocationModal] = useState(false);
 const {data:areaOptions,isLoading:isAreaOptionLoading} = useQuery({
     queryKey:["locations"],
     queryFn:async()=>{
-      const res = await axios.get("/api/locations");
+      const res = await axios.get("/api/locations?isSort=true");
       return res.data
     }
   })

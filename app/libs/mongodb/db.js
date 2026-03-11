@@ -13,6 +13,11 @@ export async function usersCollection() {
   return db.collection("users");
 }
 
+export async function jobsCollection() {
+  const db = await getDb(); 
+  return db.collection("jobs");
+}
+
 export async function instructorsCollection() {
   const db = await getDb();
   return db.collection("instructors");

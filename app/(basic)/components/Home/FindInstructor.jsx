@@ -1,16 +1,22 @@
 "use client";
+import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
+import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import Container from "@/app/shared/ui/Container";
-import { useQuery } from "@tanstack/react-query";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { FaArrowRight } from "react-icons/fa";
+import {useMemo, useState} from "react";
+import {FaArrowRight} from "react-icons/fa";
 
 export default function FindInstructor() {
   const [searchLocationText, setSearchLocationText] = useState("");
 
-  const { data: locations = [], isLoading, isError } = useQuery({
+  const {
+    data: locations = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
       const res = await axios.get("/api/locations");
@@ -23,7 +29,9 @@ export default function FindInstructor() {
     const q = searchLocationText.trim().toLowerCase();
     if (!q) return [];
     return locations.filter((loc) =>
-      String(loc?.name || "").toLowerCase().includes(q)
+      String(loc?.name || "")
+        .toLowerCase()
+        .includes(q),
     );
   }, [searchLocationText, locations]);
 
@@ -83,7 +91,12 @@ export default function FindInstructor() {
                 onChange={(e) => setSearchLocationText(e.target.value)}
                 className="flex-1 border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary"
               />
-              <PrimaryBtn className={`px-2! md:px-4! text-sm! md:text-base! `} type="submit">Search</PrimaryBtn>
+              <PrimaryBtn
+                className={`px-2! md:px-4! text-sm! md:text-base! `}
+                type="submit"
+              >
+                Search
+              </PrimaryBtn>
             </form>
 
             <div className="max-h-64 overflow-y-auto space-y-2">
@@ -91,7 +104,9 @@ export default function FindInstructor() {
                 <p className="text-red-500">Failed to load locations.</p>
               )}
 
-              {!isLoading && searchLocationText && searchResultLocation.length > 0
+              {!isLoading &&
+              searchLocationText &&
+              searchResultLocation.length > 0
                 ? searchResultLocation.map((loc, idx) => {
                     const locSlug = toSlug(loc?.name);
                     return (
@@ -112,19 +127,30 @@ export default function FindInstructor() {
           </div>
 
           {/* Right Column */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {(locations || []).map((loc, idx) => {
-              const locSlug = toSlug(loc?.name);
-              return (
-                <Link
-                  key={loc?._id || idx}
-                  href={`/driving-school-in/${locSlug}`}
-                  className="bg-primary text-white py-3 rounded text-left px-4 shadow hover:scale-105 transition flex gap-1 items-center text-sm md:text-base"
-                >
-                  {loc.name} <FaArrowRight size={15} />
-                </Link>
-              );
-            })}
+          <div className="flex flex-col items-center gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full">
+              {(locations || []).slice(0, 60).map((loc, idx) => {
+                const locSlug = toSlug(loc?.name);
+                return (
+                  <Link
+                    key={loc?._id || idx}
+                    href={`/driving-school-in/${locSlug}`}
+                    className="bg-primary text-white py-3 rounded text-left px-4 shadow hover:scale-105 transition flex gap-1 items-center text-sm md:text-base"
+                  >
+                    {loc.name} <FaArrowRight size={15} />
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* View All Button */}
+
+            <Link
+              href={`/area-covered`}
+              className="bg-transparent text-primary transition font-bold text-lg  border border-primary hover:bg-primary hover:border-base-300 hover:text-white rounded-md px-4 py-1.5"
+            >
+              View All Suburbs
+            </Link>
           </div>
         </div>
       </Container>

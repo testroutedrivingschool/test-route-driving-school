@@ -64,7 +64,7 @@ function PaymentForm() {
 
   /* Load suburbs */
   useEffect(() => {
-    axios.get("/api/locations").then((res) => {
+    axios.get("/api/locations?isSort=true").then((res) => {
       setLocations(res.data);
     });
   }, []);

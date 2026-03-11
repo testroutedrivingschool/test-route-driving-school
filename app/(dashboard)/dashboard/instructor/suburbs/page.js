@@ -33,7 +33,7 @@ export default function Suburbs() {
   } = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
-      const res = await axios.get("/api/locations");
+      const res = await axios.get("/api/locations?isSort=true");
       return res.data;
     },
   });

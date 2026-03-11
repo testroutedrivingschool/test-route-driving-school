@@ -5,6 +5,7 @@ import {
   bookingsCollection,
   invoicesCollection,
   emailsCollection,
+  jobsCollection,
 } from "@/app/libs/mongodb/db";
 import {ObjectId} from "mongodb";
 import {NextResponse} from "next/server";
@@ -46,7 +47,7 @@ export async function GET(req) {
   }
 }
 
-async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
+export async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
   // 1) Generate PDF
   const pdfBuffer = await generateInvoicePdfBuffer(
     {...bookingDoc, bookingId: String(bookingId),  type: "BOOKINGS_CONFIRM",},
@@ -352,33 +353,34 @@ export async function POST(req) {
       createdAt: new Date(),
     };
 
-    const bookingResult = await (
-      await bookingsCollection()
-    ).insertOne(bookingDoc);
-    const bookingId = bookingResult.insertedId;
 
-    // ✅ Respond FAST
-    const res = NextResponse.json(
-      {
-        ok: true,
-        bookingId: String(bookingId),
-        invoiceNo,
-        message: "Booking created. Invoice/email is processing in background.",
-      },
-      {status: 201},
-    );
 
-    // ✅ Background heavy work (no await)
-    setTimeout(() => {
-      runInvoiceAndEmails({
-        bookingDoc,
-        bookingId,
-        invoiceNo,
-        reqUrl: req.url,
-      }).catch((e) => console.error("BACKGROUND INVOICE/EMAIL ERROR:", e));
-    }, 0);
+    const bookingResult = await (await bookingsCollection()).insertOne(bookingDoc);
+const bookingId = bookingResult.insertedId;
 
-    return res;
+await (await jobsCollection()).insertOne({
+  type: "BOOKING_CONFIRMATION",
+  bookingId: String(bookingId),
+  invoiceNo,
+  reqUrl: req.url,
+  status: "pending",
+  attempts: 0,
+  createdAt: new Date(),
+});
+
+return NextResponse.json(
+  {
+    ok: true,
+    bookingId: String(bookingId),
+    invoiceNo,
+    message: "Booking created successfully.",
+  },
+  { status: 201 }
+);
+    
+
+    
+
   } catch (error) {
     return NextResponse.json({error: "Failed to add booking"}, {status: 500});
   }

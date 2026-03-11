@@ -18,7 +18,6 @@ export default function Login() {
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
   const redirect = searchParams.get("redirect") || "/";
-  const role = searchParams.get("role") || "user";
   const {
     user,
     loading,
@@ -206,12 +205,10 @@ export default function Login() {
         {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {role === "instructor" ? "Login as instructor" : "Welcome Back"}
+         Welcome Back
           </h1>
           <p className="text-neutral">
-            {role === "instructor"
-              ? "Sign in to your instructor account"
-              : "Sign in to your account to continue your driving journey"}
+            Sign in to your account to continue your driving journey
           </p>
         </div>
 

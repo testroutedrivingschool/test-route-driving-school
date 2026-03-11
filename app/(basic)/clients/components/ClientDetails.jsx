@@ -20,7 +20,7 @@ export default function ClientDetails({client, onBack}) {
   const {data: suburbs, isLoading} = useQuery({
     queryKey: ["suburbs"],
     queryFn: async () => {
-      const res = await axios.get("/api/locations");
+      const res = await axios.get("/api/locations?isSort=true");
       return res.data;
     },
   });
