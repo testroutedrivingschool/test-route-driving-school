@@ -362,7 +362,7 @@ await (await jobsCollection()).insertOne({
   type: "BOOKING_CONFIRMATION",
   bookingId: String(bookingId),
   invoiceNo,
-  reqUrl: req.url,
+  reqUrl: process.env.APP_URL || req.url,
   status: "pending",
   attempts: 0,
   createdAt: new Date(),

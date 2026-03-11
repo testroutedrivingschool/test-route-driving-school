@@ -472,7 +472,7 @@ export async function POST(req) {
       type: "PURCHASE_CONFIRMATION",
       purchaseId: String(purchaseId),
       invoiceNo,
-      reqUrl: req.url,
+      reqUrl: process.env.APP_URL || req.url,
       status: "pending",
       attempts: 0,
       createdAt: new Date(),
