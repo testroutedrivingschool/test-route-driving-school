@@ -56,9 +56,23 @@ export default function UserProfile() {
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const formatAustralianPhoneNumber = (value) => {
+    const digits = value.replace(/\D/g, "").slice(0, 10);
+
+    if (digits.length <= 4) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
+    return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 10)}`;
+  };
   const handleProfileChange = (e) => {
     const {name, value} = e.target;
-    setProfile((prev) => ({...prev, [name]: value}));
+
+    setProfile((prev) => ({
+      ...prev,
+      [name]:
+        name === "phone" || name === "emergencyContact"
+          ? formatAustralianPhoneNumber(value)
+          : value,
+    }));
   };
 
   const handlePhotoChange = (e) => {
@@ -248,19 +262,25 @@ export default function UserProfile() {
                   <h2 className="text-lg font-semibold text-gray-800">
                     Personal Information
                   </h2>
-                  {isEditing?    <button
-                          type="submit"
-                          className="px-2 py-2 md:px-4 font-medium text-xs md:text-base bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
-                        >
-                          Save Changes
-                        </button> :(
-                    <PrimaryBtn className={`px-1! md:px-4! font-medium! text-xs!  md:text-base!`} onClick={() => setIsEditing(true)}>
+                  {isEditing ? (
+                    <button
+                      type="submit"
+                     form="profile-form"
+                      className="px-2 py-2 md:px-4 font-medium text-xs md:text-base bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-200"
+                    >
+                      Save Changes
+                    </button>
+                  ) : (
+                    <PrimaryBtn
+                      className={`px-1! md:px-4! font-medium! text-xs!  md:text-base!`}
+                      onClick={() => setIsEditing(true)}
+                    >
                       Edit Profile
                     </PrimaryBtn>
                   )}
                 </div>
 
-                <form onSubmit={handleProfileSubmit}>
+                <form id="profile-form" onSubmit={handleProfileSubmit}>
                   <div className="p-4 space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
@@ -296,6 +316,7 @@ export default function UserProfile() {
                         <input
                           type="tel"
                           name="phone"
+                          placeholder="0469 123 456"
                           value={profile.phone}
                           onChange={handleProfileChange}
                           disabled={!isEditing}
@@ -322,6 +343,7 @@ export default function UserProfile() {
                         <input
                           type="text"
                           name="emergencyContact"
+                          placeholder="0469 123 456"
                           value={profile.emergencyContact}
                           onChange={handleProfileChange}
                           disabled={!isEditing}

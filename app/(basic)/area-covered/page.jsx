@@ -1,6 +1,6 @@
 "use client";
 
-import React, {useState} from "react";
+import React, {useMemo, useRef, useState} from "react";
 
 import {
   FaMapMarkerAlt,
@@ -85,13 +85,7 @@ const faqs = [
 
 ];
 
-const zones = [
-  {name: "South", count: 18, color: "bg-blue-100 text-blue-700"},
-  {name: "Sutherland", count: 7, color: "bg-green-100 text-green-700"},
-  {name: "East", count: 5, color: "bg-purple-100 text-purple-700"},
-  {name: "Inner West", count: 5, color: "bg-orange-100 text-orange-700"},
-  {name: "South West", count: 1, color: "bg-red-100 text-red-700"},
-];
+
 const services = [
   {
     icon: <FaCar className="w-8 h-8 text-white" />,
@@ -145,18 +139,36 @@ const services = [
   },
 ];
 export default function AreaCovered() {
-  const router = useRouter()
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedZone, setSelectedZone] = useState("All");
   const [showMore, setShowMore] = useState(false);
-  const {data:locations,isLoading} = useQuery({
+  const locationsSectionRef = useRef(null);
+const { data: locations = [], isLoading } = useQuery({
     queryKey:["locations"],
     queryFn:async()=>{
       const res = await axios.get("/api/locations");
       return res.data
     }
   })
+
+
+  
+  const zones = useMemo(() => {
+  const zoneMap = locations.reduce((acc, location) => {
+    const zoneName = location?.zone?.trim();
+    if (!zoneName) return acc;
+
+    acc[zoneName] = (acc[zoneName] || 0) + 1;
+    return acc;
+  }, {});
+
+  return Object.entries(zoneMap)
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}, [locations]);
   if(isLoading) return <LoadingSpinner/>
+
   const filteredLocations = locations.filter((location) => {
     const matchesSearch = location.name
       .toLowerCase()
@@ -187,7 +199,7 @@ export default function AreaCovered() {
             {[
               {
                 icon: <FaMapMarkerAlt className="text-primary" />,
-                value: "80+",
+                value: locations.length+"+" || "80+",
                 label: "Suburbs Covered",
               },
               {
@@ -260,7 +272,7 @@ export default function AreaCovered() {
 
             {/* Right Column - Locations */}
             <div className="lg:w-1/2">
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 h-full">
+              <div   ref={locationsSectionRef} className="bg-white rounded-2xl border border-gray-200 shadow-lg p-4 h-full">
                 {/* Search and Filter */}
                 <div className="mb-6">
                   <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -326,10 +338,23 @@ export default function AreaCovered() {
                   </div>
 
                   {filteredLocations.length > 12 && (
-                    <button
-                      onClick={() => setShowMore(!showMore)}
-                      className="mt-6 w-full py-3 border-2 border-border-color text-primary font-semibold rounded-xl hover:bg-primary/10 transition-colors flex items-center justify-center gap-2"
-                    >
+                   <button
+  onClick={() => {
+    if (showMore) {
+      setShowMore(false);
+
+      setTimeout(() => {
+        locationsSectionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    } else {
+      setShowMore(true);
+    }
+  }}
+  className="mt-6 w-full py-3 border-2 border-border-color text-primary font-semibold rounded-xl hover:bg-primary/10 transition-colors flex items-center justify-center gap-2"
+>
                       {showMore
                         ? "Show Less"
                         : `Show All ${filteredLocations.length} Suburbs`}

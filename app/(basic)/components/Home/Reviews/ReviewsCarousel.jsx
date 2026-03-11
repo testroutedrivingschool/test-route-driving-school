@@ -26,13 +26,13 @@ const reviewsData = [
   },
   {
     _id: 2,
-    authorName: "porteboishobai",
+    authorName: "Amar Adil",
     rating: 5,
-    email: "porteboishobai@gmail.com",
-    createdAt: "2025-11-21T17:27:34.865+00:00",
-    authorImage: "",
+    email: "amaradil411@gmail.com",
+    createdAt: "2026-03-09T17:27:34.865+00:00",
+    authorImage: "https://lh3.googleusercontent.com/a/ACg8ocJ3duT80TgF7U0XltybOnwit0RiBTLkfL8woMeObBG2l2XnoZo=s96-c",
     message:
-      "My experience has been great ! Instructors were really patient with me and easygoing enough for me to communicate with them about my problems properly. Because of these lessons I am more confident than ever!",
+      "Had amazing learning experience and they were very communicative throughout the whole process . Highly recommended",
     targetType: "website",
   },
   {
@@ -42,20 +42,31 @@ const reviewsData = [
     email: "najeebzahid@gmail.com",
     createdAt: "2025-11-16T17:27:34.865+00:00",
     authorImage:
-      "https://lh3.googleusercontent.com/a-/ALV-UjVUTSfKBeBmU8-EX643CsUTkR7DK9XDwzIuhclZWYk3EizTsSrT=w45-h45-p-rp-mo-ba2-br100",
+    "https://lh3.googleusercontent.com/a-/ALV-UjVUTSfKBeBmU8-EX643CsUTkR7DK9XDwzIuhclZWYk3EizTsSrT=w45-h45-p-rp-mo-ba2-br100",
     message:
       "my nephew passed driving test on the first attempt thanks to Test Route Driving School. Instructor Firoj is extremely patient and explains everything clearly. Practicing real test routes made a huge difference.",
+      targetType: "website",
+  },
+  {
+    _id: 4,
+    authorName: "Jasmine akter",
+    rating: 5,
+    email: "jasmineakter@gmail.com",
+    createdAt: "2026-03-08T17:27:34.865+00:00",
+    authorImage:
+    "https://lh3.googleusercontent.com/a/ACg8ocL_XoH9WV4PhAI0yaH0wDfqfmkh3cXrZVyHKOWWHaUVVxhFJw=w45-h45-p-rp-mo-br100",
+    message: "I am so thankful to TEST ROUTE DRIVING SCHOOL  for helping me pass my driving test on the first attempt. Instructor  made me feel comfortable and confident during every lesson. He explains things clearly and corrects mistakes in a very calm and respectful way. If you are nervous about driving, test route driving school  has the  best instructor to learn from. Highly recommended.",
     targetType: "website",
   },
   {
-    _id: "694c2595b8e4af68da593ef8",
-    authorName: "Iqbal Hossain",
+    _id: 5,
+    authorName: "porteboishobai",
     rating: 5,
-    email: "iqbalhossain@gmail.com",
-    createdAt: "2025-08-22T17:27:34.865+00:00",
-    authorImage:
-      "https://lh3.googleusercontent.com/a-/ALV-UjXhO69RTzv5OI19axrcy0KROhPprqnmivMjY7NnOsu0SS_yhMc=w90-h90-p-rp-mo-br100",
-    message: "Nice Service",
+    email: "porteboishobai@gmail.com",
+    createdAt: "2025-11-21T17:27:34.865+00:00",
+    authorImage: "https://lh3.googleusercontent.com/a/ACg8ocIwebCDLT2mfQH9DVCmqkJQAjsdE-YekRgfSw4XfV1N_E0RSA=w45-h45-p-rp-mo-br100",
+    message:
+      "My experience has been great ! Instructors were really patient with me and easygoing enough for me to communicate with them about my problems properly. Because of these lessons I am more confident than ever!",
     targetType: "website",
   },
 ];
@@ -103,8 +114,8 @@ export default function ReviewsCarousel() {
                       <Image
                         className="rounded-full w-14 h-14 ring-2 ring-offset-2 ring-primary object-top  object-cover"
                         src={getAvatarSrc(item)}
-                        width={550}
-                        height={550}
+                        width={1000}
+                        height={1000}
                         alt={item.authorName}
                       />
                     </div>

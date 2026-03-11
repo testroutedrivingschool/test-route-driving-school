@@ -946,19 +946,20 @@ if (emailInvoice) {
           <div className="mt-8 flex items-center justify-between">
             <button
               type="button"
-              onClick={handleSavePayment}
-              disabled={loading}
+                onClick={onClose}
               className="text-primary font-semibold hover:underline disabled:opacity-60"
             >
-              {loading ? "Saving..." : "Save Payment"}
+             Close
             </button>
 
             <button
               type="button"
-              onClick={onClose}
+        
+                  onClick={handleSavePayment}
+              disabled={loading}
               className="bg-red-600 hover:bg-red-700 text-white font-bold px-10 py-3 rounded-md"
             >
-              Close
+             {loading ? "Saving..." : "Save Payment"}
             </button>
           </div>
         </div>
