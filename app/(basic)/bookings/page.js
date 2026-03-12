@@ -173,6 +173,7 @@ function canUserReschedule(bookingDate, bookingTime) {
   return dt.getTime() - Date.now() >= 24 * 60 * 60 * 1000;
 }
 
+
 export default function BookingsPage() {
   const {user} = useAuth();
   const searchParams = useSearchParams();
@@ -228,6 +229,8 @@ useEffect(() => {
   const [locationSearch, setLocationSearch] = useState("");
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
+
+
 
   const formatYMD = (date) => {
     // Safe local YYYY-MM-DD (avoids timezone issues)
@@ -1408,7 +1411,7 @@ useEffect(() => {
             onChange={(e) => setLocationSearch(e.target.value)}
           />
 
-          <ul className="space-y-2 max-h-60 overflow-y-auto">
+          <ul className="space-y-2 max-h-85 overflow-y-auto">
             {locations
               .filter((loc) =>
                 loc.name.toLowerCase().includes(locationSearch.toLowerCase()),
