@@ -190,7 +190,6 @@ const clientId = String(booking?.clientId);
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="input-class"
-              placeholder="0469 123 456"
               required
             />
          
@@ -204,7 +203,6 @@ const clientId = String(booking?.clientId);
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               className="input-class"
-              placeholder="123 Main Street"
               required
             />
           </div>

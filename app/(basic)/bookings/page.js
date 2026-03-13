@@ -20,7 +20,7 @@ import {useRouter, useSearchParams} from "next/navigation";
 import useAuth from "@/app/hooks/useAuth";
 import {toast} from "react-toastify";
 import Swal from "sweetalert2";
-import { useUserData } from "@/app/hooks/useUserData";
+import {useUserData} from "@/app/hooks/useUserData";
 
 const weekdays = [
   "Monday",
@@ -172,23 +172,28 @@ function canUserReschedule(bookingDate, bookingTime) {
   if (!dt) return false;
   return dt.getTime() - Date.now() >= 24 * 60 * 60 * 1000;
 }
+const isSlotBlockedByTime = (slotDate, slotTime) => {
+  const slotDateTime = toBookingDateTime(slotDate, slotTime);
+  if (!slotDateTime) return true;
 
-
+  const minAllowedTime = new Date(Date.now() + 3 * 60 * 60 * 1000);
+  return slotDateTime.getTime() < minAllowedTime.getTime();
+};
 export default function BookingsPage() {
   const {user} = useAuth();
   const searchParams = useSearchParams();
   const instructorId = searchParams.get("instructorId");
   const isReschedule = searchParams.get("reschedule") === "1";
   const bookingId = searchParams.get("bookingId");
-    const router = useRouter();
-const {data: userData, isLoading: userDataLoading} = useUserData();
-useEffect(() => {
-  if (userDataLoading) return;
+  const router = useRouter();
+  const {data: userData, isLoading: userDataLoading} = useUserData();
+  useEffect(() => {
+    if (userDataLoading) return;
 
-  if (userData?.role === "instructor") {
-    router.replace("/instructor-bookings");
-  }
-}, [userData, userDataLoading, router]);
+    if (userData?.role === "instructor") {
+      router.replace("/instructor-bookings");
+    }
+  }, [userData, userDataLoading, router]);
   const [rescheduleBooking, setRescheduleBooking] = useState(null);
   const {data: instructors = [], isLoading} = useQuery({
     queryKey: ["instructors"],
@@ -229,8 +234,6 @@ useEffect(() => {
   const [locationSearch, setLocationSearch] = useState("");
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
-
-
 
   const formatYMD = (date) => {
     // Safe local YYYY-MM-DD (avoids timezone issues)
@@ -338,6 +341,10 @@ useEffect(() => {
     return slot.suburb === selectedLocations;
   };
 
+  const isSlotPast = (slotDate, slotTime) => {
+  const slotDateTime = toBookingDateTime(slotDate, slotTime);  
+  return slotDateTime && slotDateTime.getTime() < Date.now(); 
+};
   const isHourStart = (time) => time?.includes(":00");
 
   // Handle booking
@@ -480,9 +487,13 @@ useEffect(() => {
       to.setHours(23, 59, 59, 999);
 
       return (res.data || []).filter((b) => {
-        const d = new Date(b.bookingDate);
-        return d >= from && d <= to;
-      });
+  const dateKey =
+    typeof b.bookingDate === "string"
+      ? b.bookingDate.slice(0, 10)
+      : formatYMD(new Date(b.bookingDate));
+
+  return dateKey >= weekStart && dateKey <= weekEnd;
+});
     },
   });
 
@@ -503,24 +514,29 @@ useEffect(() => {
     const mins = mn ? parseInt(mn[1], 10) : 0;
     return hours * 60 + mins;
   };
-  const bookedSlotsMap = (bookings || []).reduce((acc, b) => {
-    const dateKey = formatYMD(new Date(b.bookingDate));
-    const startTime = normalizeTime(b.bookingTime);
+const getBookingDateKey = (bookingDate) => {
+  if (!bookingDate) return "";
+  return formatYMD(new Date(bookingDate));
+};
 
-    const startIdx = timeIndexMap[startTime];
-    if (startIdx == null) return acc;
+const bookedSlotsMap = (bookings || []).reduce((acc, b) => {
+  const dateKey = getBookingDateKey(b.bookingDate);
+  const startTime = normalizeTime(b.bookingTime);
 
-    const mins = toMinutes(b);
-    const span = Math.max(1, Math.ceil(mins / STEP_MIN));
+  const startIdx = timeIndexMap[startTime];
+  if (startIdx == null) return acc;
 
-    for (let k = 0; k < span; k++) {
-      const t = normalizeTime(times[startIdx + k]);
-      if (!t) break;
-      acc[`${dateKey}__${t}`] = true;
-    }
+  const mins = toMinutes(b);
+  const span = Math.max(1, Math.ceil(mins / STEP_MIN));
 
-    return acc;
-  }, {});
+  for (let k = 0; k < span; k++) {
+    const t = normalizeTime(times[startIdx + k]);
+    if (!t) break;
+    acc[`${dateKey}__${t}`] = true;
+  }
+
+  return acc;
+}, {});
   useEffect(() => {
     if (instructorId) {
       const selectedInstructor = instructors.find(
@@ -535,9 +551,7 @@ useEffect(() => {
       )
     : instructors;
 
-  const displayedInstructors = selectedInstructor
-    ? filteredInstructors.filter((inst) => inst._id !== selectedInstructor._id)
-    : filteredInstructors;
+const displayedInstructors = selectedInstructor ? [selectedInstructor] : filteredInstructors;
 
   const LS_KEY = "bookingLocationModalLastShown";
   const LS_SELECTED_LOC = "bookingSelectedLocation";
@@ -612,11 +626,11 @@ useEffect(() => {
 
   return (
     <>
-      <section className="py-10">
+      <section className="py-4 md:py-10">
         <Container>
           <div>
             {/* Header */}
-            <div className="mb-8 flex justify-between items-center">
+            <div className="mb-8 hidden md:flex justify-between items-center">
               <div>
                 <h1 className="text-base sm:text-2xl md:text-3xl font-bold ">
                   Test Route Driving School
@@ -663,18 +677,33 @@ useEffect(() => {
               </div>
             ) : (
               filteredInstructors.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-9 gap-0 md:gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-9 gap-0 md:gap-6 ">
                   {/* Left Column - Calendar */}
                   <div className="md:col-span-2">
                     <BookingCalendar
                       selectedDate={selectedDate}
                       setSelectedDate={setSelectedDate}
-                        disablePastDates={true}
+                      disablePastDates={true}
                     />
                   </div>
-
+                  {!isReschedule && (
+                    <div className="md:hidden text-center">
+                      <h3 className="font-bold md:text-lg">
+                        {selectedLocations}
+                      </h3>
+                      <button
+                        onClick={() => {
+                          markModalSeenToday();
+                          setShowLocationModal(true);
+                        }}
+                        className="text-primary font-medium hover:font-bold transition"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  )}
                   {/* Right Column - Schedule Table */}
-                  <div className="md:col-span-7 ">
+                  <div className="mt-3 md:mt-0 md:col-span-7 ">
                     {/* Instructor Selection - Horizontal Scrollbar */}
                     <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-4">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -701,10 +730,10 @@ useEffect(() => {
                           }
                         >
                           {/* Selected Instructor Card */}
-                          <div className="w-full md:w-[260px] shrink-0">
+                          <div className={`w-full max-w-[200px] mx-auto ${!selectedInstructor && "md:w-[260px]"} shrink-0`}>
                             {selectedInstructor && (
                               <div className="flex flex-col items-center cursor-pointer p-3 md:p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md w-full">
-                                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden flex items-center justify-center mb-2 md:mb-3">
+                                <div className="w-30 h-30 md:w-30 md:h-30   overflow-hidden flex items-center justify-center mb-2 md:mb-3">
                                   <Image
                                     src={
                                       selectedInstructor?.photo
@@ -714,8 +743,8 @@ useEffect(() => {
                                           : "/profile-avatar.png"
                                     }
                                     alt={selectedInstructor.name}
-                                    width={80}
-                                    height={80}
+                                    width={1000}
+                                    height={1000}
                                     className="w-full h-full object-cover"
                                     onError={(e) => {
                                       e.target.style.display = "none";
@@ -735,7 +764,7 @@ useEffect(() => {
                           </div>
 
                           {/* Other Instructors - Horizontal Scroll */}
-                          <div className="w-full flex-1 min-w-0 relative">
+                          <div className={`${selectedInstructor && "hidden"} w-full flex-1 min-w-0 relative`}>
                             <Swiper
                               className="w-full"
                               onSwiper={(swiper) =>
@@ -948,29 +977,33 @@ useEffect(() => {
                                         </td>
 
                                         {weekDates.map((date, dayIndex) => {
-                                          const dateKey = formatYMD(date);
-                                          const timeKey = normalizeTime(time);
-                                          const tdClass = `p-0 ${cellBorder}`;
+  const dateKey = formatYMD(date);
+  const timeKey = normalizeTime(time);
+  const tdClass = `p-0 ${cellBorder}`;
 
-                                          const isBooked =
-                                            bookedSlotsMap[
-                                              `${dateKey}__${timeKey}`
-                                            ];
-                                          if (isBooked) {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 py-2 text-xs font-medium md:font-semibold bg-[#B20606] text-white flex items-center justify-center">
-                                                  Booked
-                                                </div>
-                                              </td>
-                                            );
-                                          }
+  const isBooked = bookedSlotsMap[`${dateKey}__${timeKey}`];
+const slot = slotsMap[`${dateKey}__${timeKey}`];
 
-                                          const key = `${dateKey}__${normalizeTime(time)}`;
-                                          const slot = slotsMap[key];
+const isBlockedByTime = isSlotBlockedByTime(date, time);
+
+if (isBlockedByTime) {
+  return (
+    <td key={dayIndex} className={tdClass}>
+      <div className="w-full h-full min-h-11 bg-[#eee]" />
+    </td>
+  );
+}
+if (isBooked) {
+  return (
+    <td key={dayIndex} className={tdClass}>
+      <div className="w-full h-full min-h-11 py-2 text-xs font-medium md:font-semibold bg-[#B20606] text-white flex items-center justify-center">
+        Booked
+      </div>
+    </td>
+  );
+}
+
+                                          
 
                                           if (
                                             !slot ||
@@ -1203,38 +1236,45 @@ useEffect(() => {
                                               })()}
                                             </td>
 
-                                            {visibleDayIdx.map((dayIndex) => {
-                                              const date = weekDates[dayIndex];
-                                              const dateKey = formatYMD(date);
-                                              const timeKey =
-                                                normalizeTime(time);
+                                             {visibleDayIdx.map((dayIndex) => {
+                    const date = weekDates[dayIndex];
+                    const dateKey = formatYMD(date);
+                    const timeKey =
+                      normalizeTime(time);
 
-                                              const isBooked =
-                                                bookedSlotsMap[
-                                                  `${dateKey}__${timeKey}`
-                                                ];
+                    const isBooked =
+                      bookedSlotsMap[
+                        `${dateKey}__${timeKey}`
+                      ];
 
-                                              const key = `${dateKey}__${normalizeTime(time)}`;
-                                              const slot = slotsMap[key];
-                                              const vis = slot
-                                                ? getVisibility(slot)
-                                                : "";
+                    const key = `${dateKey}__${normalizeTime(time)}`;
+                    const slot = slotsMap[key];
+                    const vis = slot
+                      ? getVisibility(slot)
+                      : "";
 
-                                              // cell container (tight like screenshot)
-                                              const cellClass = `p-0 border border-border-color ${topBorder}`;
+                    // cell container (tight like screenshot)
+                    const cellClass = `p-0 border border-border-color ${topBorder}`;
 
-                                              if (isBooked) {
-                                                return (
-                                                  <td
-                                                    key={dayIndex}
-                                                    className={cellClass}
-                                                  >
-                                                    <div className="w-full min-h-10 flex items-center justify-center bg-[#B20606] text-white text-[8px] font-medium sm:font-bold">
-                                                      Booked
-                                                    </div>
-                                                  </td>
-                                                );
-                                              }
+                    const isBlockedByTime = isSlotBlockedByTime(date, time);
+
+if (isBlockedByTime) {
+  return (
+    <td key={dayIndex} className={cellClass}>
+      <div className="w-full min-h-10 bg-[#eee]" />
+    </td>
+  );
+}
+
+if (isBooked) {
+  return (
+    <td key={dayIndex} className={cellClass}>
+      <div className="w-full min-h-10 flex items-center justify-center bg-[#B20606] text-white text-[8px] font-medium sm:font-bold">
+        Booked
+      </div>
+    </td>
+  );
+}
 
                                               if (
                                                 !slot ||

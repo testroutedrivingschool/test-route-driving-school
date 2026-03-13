@@ -59,13 +59,7 @@ function CheckoutPage() {
     },
   });
 
-  // const { data: instructors = [], isLoading: isInstructorsLoading } = useQuery({
-  //   queryKey: ["instructors"],
-  //   queryFn: async () => {
-  //     const res = await axios.get("/api/instructors?status=approved");
-  //     return res.data || [];
-  //   },
-  // });
+
 
   const { data: coupons = [], isLoading: isCouponsLoading } = useQuery({
     queryKey: ["coupons"],
@@ -309,7 +303,6 @@ const handleProceed = async () => {
     <input
       type="text"
       name="mobile"
-      placeholder="0412 123 456"
       value={billing.mobile}
       onChange={handleBillingChange}
       className="input-class w-full"

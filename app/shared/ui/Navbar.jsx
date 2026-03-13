@@ -6,7 +6,7 @@ import {FaSignOutAlt} from "react-icons/fa";
 
 import Link from "next/link";
 import Image from "next/image";
-import {FiMenu, FiX, FiChevronRight, FiChevronDown} from "react-icons/fi";
+import {FiMenu, FiX,  FiChevronDown} from "react-icons/fi";
 import {FaAngleRight} from "react-icons/fa";
 import { MdKeyboardArrowDown} from "react-icons/md";
 import Container from "./Container";
@@ -93,7 +93,8 @@ const instructorNavLinks = [
   {id: 2, label: "Bookings", pathname: "/instructor-bookings"},
   {id: 3, label: "Clients", pathname: "/clients"},
   {id: 4, label: "Sales", pathname: "/instructor/sales/search"},
-  {id: 5, label: "Reports", pathname: "/instructor-reports"},
+  {id: 5, label: "Suburbs", pathname: "/dashboard/instructor/suburbs"},
+  {id: 6, label: "Reports", pathname: "/instructor-reports"},
 ];
 
 export default function Navbar({className}) {
@@ -152,6 +153,7 @@ const instructorDashboardRoutes = [
   "/clients",
   "/instructor/sales/search",
   "/instructor-reports",
+  "/dashboard/instructor/suburbs",
 ];
 
 const isInDashboard =
@@ -159,16 +161,20 @@ const isInDashboard =
   instructorDashboardRoutes.includes(pathname);
 
 const dynamicFirstNavItem = userData
-  ? isInDashboard
-    ? { id: "dynamic-home", label: "Home", pathname: "/" }
-    : { id: "dynamic-dashboard", label: "Dashboard", pathname: dashHref }
+  ? userData.role === "instructor"  // If the role is instructor
+    ? { id: "dynamic-dashboard", label: "Dashboard", pathname: dashHref }  // Always show "Dashboard"
+    : pathname === "/"  // If it's the homepage
+    ? { id: "dynamic-dashboard", label: "Dashboard", pathname: dashHref }  // On homepage, show "Dashboard"
+    : pathname.startsWith("/dashboard")  // If the user is on the dashboard
+    ? { id: "dynamic-home", label: "Home", pathname: "/" }  // On dashboard page, show "Home"
+    : { id: "dynamic-home", label: "Home", pathname: "/" }  // For other pages, show "Home"
   : null;
 
 const baseNavLinks = isInstructor ? instructorNavLinks : navlinks;
 
 const finalNavLinks = dynamicFirstNavItem
   ? [
-      dynamicFirstNavItem,
+      dynamicFirstNavItem, // Always add the Dashboard or Home link first
       ...baseNavLinks.filter(
         (item) =>
           item.pathname !== "/" &&
@@ -178,6 +184,7 @@ const finalNavLinks = dynamicFirstNavItem
       ),
     ]
   : baseNavLinks;
+  
   return (
     <nav
       className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}

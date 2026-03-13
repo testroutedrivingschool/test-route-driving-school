@@ -1,16 +1,18 @@
 "use client";
+import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
 import Container from "@/app/shared/ui/Container";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
-import { addToCartLS } from "@/app/utils/cart";
-import { useRouter } from "next/navigation";
-import { FaCheck } from "react-icons/fa";
-import { FiChevronRight } from "react-icons/fi";
-import { PiSteeringWheel } from "react-icons/pi";
+import {addToCartLS} from "@/app/utils/cart";
+import {useRouter} from "next/navigation";
+import {FaCheck} from "react-icons/fa";
+import {FiChevronRight} from "react-icons/fi";
+import {PiSteeringWheel} from "react-icons/pi";
 
 export const packages = [
   {
     _id: "6952e6047fe9723b87c6aafe",
+    slug:"/packages/1-hour-lesson",
     name: "1 Hours Lesson Package",
     mobileName: "1 hour Lesson",
     packageThumbline: "/pkg.png",
@@ -27,10 +29,12 @@ export const packages = [
       "One-to-one in-vehicle coaching.",
       "Teaching materials are provided.",
     ],
+    
   },
   {
     _id: "695be2ce1f72e6c2fa81e095",
     name: "2 Hours Lesson Package",
+       slug:"/packages/2-hours-driving-lesson-package",
     mobileName: "2 hour Lesson",
     packageThumbline: "/pkg.png",
     description:
@@ -50,6 +54,7 @@ export const packages = [
   {
     _id: "695bfae01f72e6c2fa81e09d",
     name: "5 Hours Lesson Package",
+       slug:"/packages/5-hours-lesson-package",
     mobileName: "5 hour Lesson",
     packageThumbline: "/pkg.png",
     description:
@@ -69,6 +74,7 @@ export const packages = [
   {
     _id: "695bfb6b1f72e6c2fa81e09e",
     name: "10 Hours Lesson Package",
+       slug:"/packages/10-hours-lesson-pack",
     mobileName: "10 hour Lesson",
     packageThumbline: "/pkg.png",
     description:
@@ -108,7 +114,8 @@ export default function HomePackage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 mt-6 md:mt-10">
           {packages.map((pkg, index) => {
             const saving = pkg.regularPrice
-              ? parseInt(pkg.regularPrice.replace("$", "")) - parseInt(pkg.price)
+              ? parseInt(pkg.regularPrice.replace("$", "")) -
+                parseInt(pkg.price)
               : 0;
 
             const isFirstPackage = index === 0;
@@ -123,12 +130,12 @@ export default function HomePackage() {
             };
 
             return (
-             <div
-  key={pkg._id}
-  className={`bg-white rounded-xl shadow-sm border border-border-color overflow-hidden flex-col ${
-    index === packages.length - 1 ? "flex lg:hidden" : "flex"
-  }`}
->
+              <div
+                key={pkg._id}
+                className={`bg-white rounded-xl shadow-sm border border-border-color overflow-hidden flex-col ${
+                  index === packages.length - 1 ? "flex lg:hidden" : "flex"
+                }`}
+              >
                 {pkg.popular && (
                   <div className="hidden md:block bg-accent text-black text-center py-2 text-sm font-semibold">
                     ⭐ Most Popular
@@ -168,19 +175,26 @@ export default function HomePackage() {
 
                       {pkg.regularPrice ? (
                         <div className="mt-2 text-base font-semibold ">
-                          Save <br/><span className="font-bold text-2xl text-green-700">${saving}</span>
+                          Save <br />
+                          <span className="font-bold text-2xl text-green-700">
+                            ${saving}
+                          </span>
                         </div>
-                      ):"-"}
+                      ) : (
+                        "-"
+                      )}
                     </div>
-
-                    <PrimaryBtn
-                      onClick={handlePackageClick}
-                      className="w-auto px-6 py-3"
-                    >
-                      <span className="flex items-center justify-center gap-2 font-semibold">
-                        Get This Package
-                      </span>
-                    </PrimaryBtn>
+                    <div className="flex gap-3">
+                      <PrimaryBtn
+                        onClick={handlePackageClick}
+                        className=" px-2! md:px-4 py-2 md:py-3  text-sm! md:text-base"
+                      >
+                        <span className="flex items-center justify-center gap-2 font-semibold">
+                          Get This Package
+                        </span>
+                      </PrimaryBtn>
+                      <OutlineBtn onClick={()=>router.push(pkg.slug)} className={`px-2! md:px-4 py-2 md:py-3  text-sm! md:text-base`}>View Details</OutlineBtn>
+                    </div>
                   </div>
 
                   {/* DESKTOP CARD */}

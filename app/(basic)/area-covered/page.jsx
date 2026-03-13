@@ -13,6 +13,7 @@ import {
   FaClipboardCheck,
   FaFileAlt,
   FaGift,
+  FaChalkboardTeacher,
 } from "react-icons/fa";
 import {FiChevronRight} from "react-icons/fi";
 
@@ -203,9 +204,9 @@ const { data: locations = [], isLoading } = useQuery({
                 label: "Suburbs Covered",
               },
               {
-                icon: <FaCar className="text-green-600" />,
-                value: "30+",
-                label: "Service Areas",
+                icon: <FaChalkboardTeacher className="text-green-600" />,
+                value: "5+",
+                label: "Instructors",
               },
               {
                 icon: <FaClock className="text-purple-600" />,

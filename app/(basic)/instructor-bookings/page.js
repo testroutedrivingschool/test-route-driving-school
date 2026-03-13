@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 import {useRouter, useSearchParams} from "next/navigation";
 import Swal from "sweetalert2";
+import { TbCopyPlusFilled } from "react-icons/tb";
 
 const weekdays = [
   "Monday",
@@ -104,6 +105,16 @@ const times = [
 export default function InstructorBookings() {
   const router = useRouter();
   const {data: user} = useUserData();
+  const [scheduleLoading, setScheduleLoading] = useState(false);
+  const [showCopyModal, setShowCopyModal] = useState(false);
+  const [copyLoading, setCopyLoading] = useState(false);
+  const [selectedCopyWeeks, setSelectedCopyWeeks] = useState([]);
+  const [sendingSummary, setSendingSummary] = useState(false);
+  const [clearWeekLoading, setClearWeekLoading] = useState(false);
+const [copyOptions, setCopyOptions] = useState({
+  copyBookingsIfFree: false,
+  deleteBookingsWhenClearing: false,
+});
   const {data: instructor} = useQuery({
     queryKey: ["instructor", user?.email],
     enabled: !!user?.email,
@@ -645,8 +656,192 @@ const moveBookingHere = async ({ date, time }) => {
     (opt) => durationToMinutes(opt) <= modalMaxMins,
   );
 
+  const isCreatedToday = (value) => {
+  if (!value) return false;
+
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return false;
+
+  const now = new Date();
+
+  return (
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate()
+  );
+};
+
+const startOfWeekMonday = (date) => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay();
+  const diffToMonday = (day + 6) % 7;
+  d.setDate(d.getDate() - diffToMonday);
+  return d;
+};
+
+const formatDateLong = (date) => {
+  return new Date(date).toLocaleDateString("en-AU", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+};
+
+const getFutureCopyWeeks = (baseDate, count = 16) => {
+  const start = startOfWeekMonday(baseDate);
+
+  return Array.from({length: count}, (_, i) => {
+    const weekOffset = i + 1;
+    const d = new Date(start);
+    d.setDate(d.getDate() + weekOffset * 7);
+
+    return {
+      value: weekOffset,
+      label:
+        weekOffset === 1
+          ? `Next Week - starting ${formatDateLong(d)}`
+          : `${weekOffset} Weeks - starting ${formatDateLong(d)}`,
+      startDate: formatDate(d),
+    };
+  });
+};
+
+const toggleCopyWeek = (weekNo) => {
+  setSelectedCopyWeeks((prev) =>
+    prev.includes(weekNo)
+      ? prev.filter((x) => x !== weekNo)
+      : [...prev, weekNo]
+  );
+};
+
+
+const handleClearWeekSchedule = async () => {
+  if (!instructor?._id) return toast.error("Instructor not found");
+  if (clearWeekLoading) return;
+
+  const weekStart = formatDate(startOfWeekMonday(selectedDate));
+  const weekEnd = formatDate(addDays(startOfWeekMonday(selectedDate), 6));
+
+  const confirm = await Swal.fire({
+    title: "Clear this week's schedule?",
+    html: `
+      <div style="text-align:left;line-height:1.7">
+        <div><b>From:</b> ${weekStart}</div>
+        <div><b>To:</b> ${weekEnd}</div>
+        <hr/>
+        <div>This will remove all availability slots for this week.</div>
+        <div style="margin-top:8px;font-size:12px;opacity:.8">
+          Bookings will stay unless you enabled "Delete bookings when clearing".
+        </div>
+      </div>
+    `,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Yes, clear week",
+    cancelButtonText: "Cancel",
+    reverseButtons: true,
+  });
+
+  if (!confirm.isConfirmed) return;
+
+  try {
+    setClearWeekLoading(true);
+
+    const res = await axios.post("/api/instructor-slots/clear-week", {
+      instructorId: instructor._id,
+      weekStart,
+      deleteBookingsWhenClearing: copyOptions.deleteBookingsWhenClearing,
+    });
+
+    toast.success(
+      `Week cleared }`
+    );
+
+    setShowCopyModal(false);
+    setSelectedCopyWeeks([]);
+    setCopyOptions({
+      copyBookingsIfFree: false,
+      deleteBookingsWhenClearing: false,
+    });
+
+    await refetchSlots();
+    await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+  } catch (err) {
+    toast.error(err?.response?.data?.error || "Failed to clear week");
+  } finally {
+    setClearWeekLoading(false);
+  }
+};
+
+const handleCopySchedule = async () => {
+  if (!instructor?._id) return toast.error("Instructor not found");
+  if (!selectedCopyWeeks.length) return toast.error("Select at least one week");
+
+  try {
+    setCopyLoading(true);
+
+    const fromWeekStart = formatDate(startOfWeekMonday(selectedDate));
+
+    const res = await axios.post("/api/instructor-slots/copy-weekly-schedule", {
+  instructorId: instructor._id,
+  fromWeekStart,
+  targetWeeks: selectedCopyWeeks,
+  copyBookingsIfFree: copyOptions.copyBookingsIfFree,
+  deleteBookingsWhenClearing: copyOptions.deleteBookingsWhenClearing,
+});
+
+const skipped = res?.data?.skippedDates || [];
+
+if (skipped.length) {
+  toast.success(`Weekly schedule copied. Skipped some existing date(s).`);
+} else {
+  toast.success("Weekly schedule copied");
+}
+    setShowCopyModal(false);
+    setSelectedCopyWeeks([]);
+    setCopyOptions({
+      copyBookingsIfFree: false,
+      deleteBookingsWhenClearing: false,
+    });
+
+    await refetchSlots();
+    await queryClient.invalidateQueries({queryKey: ["bookings"]});
+  } catch (err) {
+    toast.error(err?.response?.data?.error || "Failed to copy schedule");
+  } finally {
+    setCopyLoading(false);
+  }
+};
+
+const handleSendWeeklySummary = async () => {
+  if (!instructor?._id) return toast.error("Instructor not found");
+  if (sendingSummary) return;
+
+  try {
+    setSendingSummary(true);
+
+    const weekStart = formatDate(startOfWeekMonday(selectedDate));
+
+    await axios.post("/api/instructor-slots/send-weekly-summary", {
+      instructorId: instructor._id,
+      instructorEmail: instructor.email,
+      instructorName: instructor.name,
+      weekStart,
+    });
+
+    toast.success("Weekly summary sent");
+  } catch (err) {
+    toast.error(err?.response?.data?.error || "Failed to send summary");
+  } finally {
+    setSendingSummary(false);
+  }
+};
   const handleSchedule = async () => {
+      if (scheduleLoading) return;
     try {
+       setScheduleLoading(true);
       if (!instructor?._id || !selectedSlot?.date || !selectedSlot?.time)
         return;
 
@@ -722,6 +917,8 @@ const moveBookingHere = async ({ date, time }) => {
     } catch (err) {
    
       toast.error(err?.message || "Update failed");
+    }finally{
+      setScheduleLoading(false)
     }
   };
 
@@ -826,14 +1023,24 @@ const handleBooking = (date, slot, time) => {
                 <div className="rounded-xl shadow-sm border border-border-color overflow-hidden ">
                   <div className="">
                     {/* Schedule Header */}
-                    <div className="sticky top-0 z-50 px-4 md:px-6 py-4 border-b border-border-color bg-white">
+                    <div className="sticky top-0 z-50 px-2 md:px-6 py-4 border-b border-border-color bg-white">
                       <div className="flex items-center justify-between gap-4">
                         {/* left: title + range */}
-                        <div>
-                          <h2 className="sm:text-lg md:text-2xl font-bold text-gray-900">
+                        <div className="">
+                      
+<div className="flex gap-2">
+
+                          <h2 className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">
                             {user?.name}&apos;s Schedule
                           </h2>
-                          <p className="text-neutral mt-1 text-sm md:text-base">
+                          <button
+  onClick={() => setShowCopyModal(true)}
+  className="text-xl border border-border-color text-primary p-1"
+>
+  <TbCopyPlusFilled />
+</button>
+</div>
+                          <p className="text-neutral mt-1 text-xs md:text-base">
                             Week of{" "}
                             {weekDates[0].toLocaleDateString("en-US", {
                               month: "short",
@@ -845,7 +1052,10 @@ const handleBooking = (date, slot, time) => {
                               day: "numeric",
                             })}
                           </p>
-                        </div>
+
+                          </div>
+                          
+                     
 
                         {/* right: prev/next week */}
                         <div className="flex items-center gap-2">
@@ -954,40 +1164,48 @@ const handleBooking = (date, slot, time) => {
               const bCov = bookingCoverage?.[dateKey]?.[time];
               if (bCov?.skip) return null;
 
-              if (bCov?.booking) {
-                const b = bCov.booking;
-                const name = b.clientName || b.userName || "Client";
-                const paid = b.paymentStatus === "paid";
+             if (bCov?.booking) {
+  const b = bCov.booking;
+  const name = b.clientName || b.userName || "Client";
+  const paid = b.paymentStatus === "paid";
+  const isNewBooking = isCreatedToday(b.createdAt);
 
-                return (
-                  <td key={dayIndex} rowSpan={bCov.rowSpan} className="p-0 align-stretch">
-                    <button
-                      type="button"
-                      onClick={() => router.push(`/instructor-bookings/${b._id}`)}
-                      className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color
-                      px-2 py-2 pt-6 md:pt-0 flex flex-col items-center justify-center text-center"
-                    >
-                      {paid && (
-                        <span
-                          className="absolute top-1 left-1 h-5 w-5 rounded-full bg-primary text-white
-                          text-[11px] font-bold flex items-center justify-center"
-                          title="Paid"
-                        >
-                          P
-                        </span>
-                      )}
+  return (
+    <td key={dayIndex} rowSpan={bCov.rowSpan} className="p-0 align-stretch">
+      <button
+        type="button"
+        onClick={() => router.push(`/instructor-bookings/${b._id}`)}
+        className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color px-2 py-2 pt-6 md:pt-0 flex flex-col items-center justify-center text-center overflow-hidden"
+      >
+        {isNewBooking && (
+          <div
+            className="absolute -top-3  -left-5 -rotate-45 bg-yellow-400 text-black text-[8px] font-medium  w-12 h-8 shadow pt-4"
+            title="New booking today"
+          >
+            NEW
+          </div>
+        )}
 
-                      <div className="text-red-600 font-semibold text-sm">{name}</div>
-                      <div className="text-red-600 text-xs font-semibold mt-1">
-                        {b.serviceName || "Driving lesson"} {b.duration || ""}
-                      </div>
-                      <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
-                        {b.address || b.userAddress || ""} {b.suburb || b.location || ""}
-                      </div>
-                    </button>
-                  </td>
-                );
-              }
+        {paid && (
+          <span
+            className="absolute top-1 right-1 h-4 w-4 md:h-5 md:w-5 rounded-full bg-primary text-white text-[9px] md:text-[11px] font-bold flex items-center justify-center"
+            title="Paid"
+          >
+            P
+          </span>
+        )}
+
+        <div className="text-red-600 font-semibold text-sm">{name}</div>
+        <div className="text-red-600 text-xs font-semibold mt-1">
+          {b.serviceName || "Driving lesson"} {b.duration || ""}
+        </div>
+        <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
+          {b.address || b.userAddress || ""} {b.suburb || b.location || ""}
+        </div>
+      </button>
+    </td>
+  );
+}
 
               const cov = coverage?.[dateKey]?.[time];
               if (cov?.skip) return null;
@@ -1443,16 +1661,144 @@ const handleBooking = (date, slot, time) => {
                 )}
               </div>
 
-              <button
-                onClick={handleSchedule}
-                className="bg-primary hover:bg-primary text-white font-semibold px-6 py-3 rounded-lg"
-              >
-                Schedule
-              </button>
+             <button
+  onClick={handleSchedule}
+  disabled={scheduleLoading}
+  className={`text-white font-semibold px-6 py-3 rounded-lg transition ${
+    scheduleLoading
+      ? "bg-gray-400 cursor-not-allowed"
+      : "bg-primary hover:bg-primary/90"
+  }`}
+>
+  {scheduleLoading ? "Scheduling..." : "Schedule"}
+</button>
             </div>
           </div>
         </Modal>
       )}
+
+      {showCopyModal && (
+  <Modal onClose={() => setShowCopyModal(false)}>
+    <div className="w-full ">
+      <div className="flex items-center justify-between mb-2">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+          Copy Weekly Schedule
+        </h2>
+      </div>
+
+      <div className="mb-2 border-t border-border-color" />
+
+      <div className="space-y-3">
+        <div className="grid grid-cols-[70px_1fr] gap-3 items-start">
+          <div className="font-medium text-gray-700">From:</div>
+          <div className="font-semibold">
+            Week starting - {formatDate(startOfWeekMonday(selectedDate))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-[70px_1fr] gap-3 items-start">
+          <div className="font-medium text-gray-700">To:</div>
+          <div className="space-y-1  max-h-[420px] overflow-y-auto pr-2">
+            {getFutureCopyWeeks(selectedDate, 16).map((w, idx) => (
+              <div key={w.value}>
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={selectedCopyWeeks.includes(w.value)}
+                    onChange={() => toggleCopyWeek(w.value)}
+                  />
+                  <span className="font-medium">{w.label}</span>
+                </label>
+
+                {(idx + 1) % 4 === 0 && idx !== 15 && <div className="h-3" />}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-1">
+          <h4 className="font-semibold text-gray-900 mb-1">Bookings</h4>
+          <div className="text-primary text-sm mb-3">Blockout weekly schedule</div>
+
+          <div className="space-y-2">
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={copyOptions.copyBookingsIfFree}
+                onChange={(e) =>
+                  setCopyOptions((prev) => ({
+                    ...prev,
+                    copyBookingsIfFree: e.target.checked,
+                  }))
+                }
+              />
+              <span>
+                Copy bookings when there is no conflicting booking or hidden schedule.
+              </span>
+            </label>
+
+            <label className="flex items-start gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={copyOptions.deleteBookingsWhenClearing}
+                onChange={(e) =>
+                  setCopyOptions((prev) => ({
+                    ...prev,
+                    deleteBookingsWhenClearing: e.target.checked,
+                  }))
+                }
+              />
+              <span>Delete bookings when clearing schedule</span>
+            </label>
+          </div>
+
+          <p className="mt-3 text-sm italic text-gray-600">
+            Note: Existing bookings and hidden schedules with private notes are not affected.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between pt-3 mt-4 border-t border-border-color">
+        <button
+  type="button"
+  onClick={handleClearWeekSchedule}
+  disabled={clearWeekLoading || copyLoading}
+  className={`font-medium text-sm hover:underline ${
+    clearWeekLoading || copyLoading
+      ? "text-gray-400 cursor-not-allowed"
+      : "text-primary"
+  }`}
+>
+  {clearWeekLoading ? "Clearing..." : "Clear Week's Schedule"}
+</button>
+        <button
+  type="button"
+  onClick={handleSendWeeklySummary}
+  disabled={sendingSummary || copyLoading || clearWeekLoading}
+  className={`font-medium text-sm hover:underline ${
+    sendingSummary || copyLoading || clearWeekLoading
+      ? "text-gray-400 cursor-not-allowed"
+      : "text-primary"
+  }`}
+>
+  {sendingSummary ? "Sending..." : "Send Weekly Summary"}
+</button>
+        <button
+          type="button"
+          onClick={handleCopySchedule}
+          disabled={copyLoading}
+          className={`px-6 py-3 rounded-lg text-white font-semibold ${
+            copyLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-primary hover:bg-primary/90"
+          }`}
+        >
+          {copyLoading ? "Copying..." : "Copy"}
+        </button>
+      </div>
+    </div>
+  </Modal>
+)}
     </>
   );
 }

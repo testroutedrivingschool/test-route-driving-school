@@ -10,7 +10,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import getAvatarSrc from "@/app/utils/getAvatarSrc";
-
+import googleLogo from "@/app/assets/google-logo.webp"
 const reviewsData = [
   {
     _id: 1,
@@ -97,9 +97,20 @@ export default function ReviewsCarousel() {
                 className="bg-base-300 rounded-xl shadow-lg border border-border-color 
     p-6 transition-all duration-300 flex flex-col h-full min-h-75"
               >
+                <div className="flex items-center justify-between mb-4">
+
                 {/* Quote Icon */}
-                <div className="text-primary text-3xl mb-4">
+                <div className="text-primary text-3xl ">
                   <FaQuoteLeft />
+                </div>
+
+                <div className="w-7 h-7">
+                  <Image  className="rounded-full w-full h-full object-cover"
+                        src={googleLogo}
+                        width={1000}
+                        height={1000}
+                        alt={"Google Logo"}/>
+                </div>
                 </div>
 
                 {/* Review Text */}

@@ -63,12 +63,12 @@ export default function PackageDetails() {
       <Container className={``}>
         {/* Back Link */}
         <div className="mt-10">
-          <Link
-            href="/packages"
+          <button
+          onClick={()=>router.back()}
             className="inline-flex rounded-xl items-center gap-2 bg-primary px-4 py-2 text-white"
           >
-            ← Back to Packages
-          </Link>
+            ← Go Back
+          </button>
         </div>
         <div className="mt-10 flex flex-col lg:flex-row  gap-10">
           {/* Left - Image */}
