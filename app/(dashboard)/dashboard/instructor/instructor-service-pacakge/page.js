@@ -13,9 +13,10 @@ const servicesObject = {
     durations: {
       60: { price: 75, active: false },
       90: { price: 110, active: false },
-      120: { price: 145, active: false },
+      120: { price: 140, active: false },
       150: { price: null, active: false },
-      180: { price: 215, active: false },
+      180: { price: null, active: false },
+      240: { price: 280, active: false },
     },
   },
   "Driving Test Assessment": {
@@ -27,13 +28,13 @@ const servicesObject = {
   },
   "Driving Test Package": {
     durations: {
-      60: { price: null, active: false },
+      60: { price: 220, active: false },
       90: { price: null, active: false },
-      120: { price: null, active: false },
-      150: { price: 220, active: false },
+      120: { price: 290, active: false },
+      150: { price: null, active: false },
       180: { price: null, active: false },
-      210: { price: 290, active: false },
-      240: { price: 400, active: false },
+      210: { price: null, active: false },
+      240: { price: null, active: false },
     },
   },
   "Parking Package": {

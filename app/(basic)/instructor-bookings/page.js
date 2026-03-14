@@ -16,10 +16,11 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaEyeSlash,
+  FaTimes,
 } from "react-icons/fa";
 import {useRouter, useSearchParams} from "next/navigation";
 import Swal from "sweetalert2";
-import { TbCopyPlusFilled } from "react-icons/tb";
+import {TbCopyPlusFilled} from "react-icons/tb";
 
 const weekdays = [
   "Monday",
@@ -111,10 +112,11 @@ export default function InstructorBookings() {
   const [selectedCopyWeeks, setSelectedCopyWeeks] = useState([]);
   const [sendingSummary, setSendingSummary] = useState(false);
   const [clearWeekLoading, setClearWeekLoading] = useState(false);
-const [copyOptions, setCopyOptions] = useState({
-  copyBookingsIfFree: false,
-  deleteBookingsWhenClearing: false,
-});
+  const [saving, setSaving] = useState(false);
+  const [copyOptions, setCopyOptions] = useState({
+    copyBookingsIfFree: false,
+    deleteBookingsWhenClearing: false,
+  });
   const {data: instructor} = useQuery({
     queryKey: ["instructor", user?.email],
     enabled: !!user?.email,
@@ -127,22 +129,22 @@ const [copyOptions, setCopyOptions] = useState({
   const moveBookingId = searchParams.get("moveBookingId"); // string | null
   const moveMode = !!moveBookingId;
   const rebookClientId = searchParams.get("rebookClientId");
-const rebookMode = !!rebookClientId;
+  const rebookMode = !!rebookClientId;
 
-const { data: rebookClient } = useQuery({
-  queryKey: ["client", rebookClientId],
-  enabled: !!rebookClientId,
-  queryFn: async () => {
-    const res = await axios.get(`/api/clients/${rebookClientId}`);
-    return res.data;
-  },
-});
+  const {data: rebookClient} = useQuery({
+    queryKey: ["client", rebookClientId],
+    enabled: !!rebookClientId,
+    queryFn: async () => {
+      const res = await axios.get(`/api/clients/${rebookClientId}`);
+      return res.data;
+    },
+  });
   const tableRef = useRef(null);
-const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showSlotModal, setShowSlotModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
-const [moving, setMoving] = useState(false);
+  const [moving, setMoving] = useState(false);
   const [showMoreTimes, setShowMoreTimes] = useState(false);
   const [suburbSearch, setSuburbSearch] = useState("");
   const [selectedSuburbs, setSelectedSuburbs] = useState([]);
@@ -171,50 +173,82 @@ const [moving, setMoving] = useState(false);
     "2 hours",
     "2 hours 15 mins",
   ];
-const isHourStart = (time) => time?.includes(":00");
+  const isHourStart = (time) => time?.includes(":00");
 
-const moveBookingHere = async ({ date, time }) => {
-  if (!moveBookingId) return;
-  if (moving) return;
-
-  const dateStr = new Date(date).toLocaleDateString("en-AU", {
-    weekday: "long",
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
+  const {data: movingBooking} = useQuery({
+    queryKey: ["booking", moveBookingId],
+    enabled: !!moveBookingId,
+    queryFn: async () => {
+      const res = await axios.get(`/api/bookings/${moveBookingId}`);
+      return res.data;
+    },
   });
+  const canSwapWith = (movingBooking, slotBooking) => {
+    if (!movingBooking || !slotBooking) return false;
+    if (String(movingBooking._id) === String(slotBooking._id)) return false;
 
-  const res = await Swal.fire({
-    title: "Move booking?",
-    html: `Move this booking to <b>${dateStr}</b> at <b>${time}</b>?`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, move it",
-    cancelButtonText: "Cancel",
-    reverseButtons: true,
-  });
+    const movingMinutes = Number(movingBooking.minutes || 0);
+    const slotMinutes = Number(slotBooking.minutes || 0);
 
-  if (!res.isConfirmed) return;
+    if (!movingMinutes || !slotMinutes) return false;
+    if (movingMinutes !== slotMinutes) return false;
 
-  setMoving(true);
-  try {
-    await axios.patch(`/api/bookings/${moveBookingId}`, {
-      bookingDate: new Date(date).toISOString(),
-      bookingTime: time,
-    });
+    const blocked = new Set(["completed", "cancelled"]);
+    if (blocked.has(String(slotBooking.status || "").toLowerCase()))
+      return false;
 
-    toast.success("Booking moved ✅");
-    await queryClient.invalidateQueries({ queryKey: ["bookings"] });
-    router.push(`/instructor-bookings/${moveBookingId}`);
-  } catch (err) {
-    toast.error(err?.response?.data?.error || "Failed to move booking");
-  } finally {
-    setMoving(false);
-  }
-};
+    const movingDateStr = formatDate(
+      movingBooking.bookingDate || movingBooking.date,
+    );
+    const movingTime = movingBooking.bookingTime || movingBooking.time;
 
+    const targetDateStr = formatDate(
+      slotBooking.bookingDate || slotBooking.date,
+    );
+    const targetTime = slotBooking.bookingTime || slotBooking.time;
 
+    if (isPastSlotDateTime(movingDateStr, movingTime)) return false;
+    if (isPastSlotDateTime(targetDateStr, targetTime)) return false;
 
+    return true;
+  };
+
+  const shouldShowMovingBlock = (dateStr, time) => {
+    if (!moveMode || !movingBooking) return false;
+    return canMoveToAvailableRange(dateStr, time);
+  };
+
+  const getMaxContinuousAvailableMinutes = (dateStr, startTime) => {
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return 0;
+
+    let totalMinutes = 0;
+
+    for (let i = startIdx; i < times.length; i++) {
+      const t = times[i];
+      if (!t) break;
+
+      const bookingCell = bookingCoverage?.[dateStr]?.[t];
+      if (bookingCell?.booking || bookingCell?.skip) break;
+
+      const slot = slotMap[`${dateStr}__${t}`];
+      if (!slot) break;
+
+      // for manual booking, all saved slot types should behave same
+      const vis = slot.visibility || "";
+      const allowed =
+        vis === "public" ||
+        vis === "hidden" ||
+        vis === "privateBooked" ||
+        vis === "publicNote";
+
+      if (!allowed) break;
+
+      totalMinutes += STEP_MIN;
+    }
+
+    return totalMinutes;
+  };
   const formatDate = (d) => {
     const date = new Date(d);
 
@@ -396,7 +430,6 @@ const moveBookingHere = async ({ date, time }) => {
       );
     },
   });
-
 
   // quick lookup map: key = "YYYY-MM-DD__7:15AM"
   const slotMap = slots.reduce((acc, s) => {
@@ -657,76 +690,101 @@ const moveBookingHere = async ({ date, time }) => {
   );
 
   const isCreatedToday = (value) => {
-  if (!value) return false;
+    if (!value) return false;
 
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return false;
+    const d = new Date(value);
+    if (Number.isNaN(d.getTime())) return false;
 
-  const now = new Date();
+    const now = new Date();
 
-  return (
-    d.getFullYear() === now.getFullYear() &&
-    d.getMonth() === now.getMonth() &&
-    d.getDate() === now.getDate()
-  );
-};
+    return (
+      d.getFullYear() === now.getFullYear() &&
+      d.getMonth() === now.getMonth() &&
+      d.getDate() === now.getDate()
+    );
+  };
 
-const startOfWeekMonday = (date) => {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay();
-  const diffToMonday = (day + 6) % 7;
-  d.setDate(d.getDate() - diffToMonday);
-  return d;
-};
+  const startOfWeekMonday = (date) => {
+    const d = new Date(date);
+    d.setHours(0, 0, 0, 0);
+    const day = d.getDay();
+    const diffToMonday = (day + 6) % 7;
+    d.setDate(d.getDate() - diffToMonday);
+    return d;
+  };
 
-const formatDateLong = (date) => {
-  return new Date(date).toLocaleDateString("en-AU", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-};
+  const formatDateLong = (date) => {
+    return new Date(date).toLocaleDateString("en-AU", {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+  };
 
-const getFutureCopyWeeks = (baseDate, count = 16) => {
-  const start = startOfWeekMonday(baseDate);
+  const parseTimeTo24h = (t) => {
+    const m = String(t || "")
+      .trim()
+      .match(/^(\d{1,2}):(\d{2})(AM|PM)$/i);
+    if (!m) return null;
 
-  return Array.from({length: count}, (_, i) => {
-    const weekOffset = i + 1;
-    const d = new Date(start);
-    d.setDate(d.getDate() + weekOffset * 7);
+    let hh = parseInt(m[1], 10);
+    const mm = parseInt(m[2], 10);
+    const ap = m[3].toUpperCase();
 
-    return {
-      value: weekOffset,
-      label:
-        weekOffset === 1
-          ? `Next Week - starting ${formatDateLong(d)}`
-          : `${weekOffset} Weeks - starting ${formatDateLong(d)}`,
-      startDate: formatDate(d),
-    };
-  });
-};
+    if (ap === "PM" && hh !== 12) hh += 12;
+    if (ap === "AM" && hh === 12) hh = 0;
 
-const toggleCopyWeek = (weekNo) => {
-  setSelectedCopyWeeks((prev) =>
-    prev.includes(weekNo)
-      ? prev.filter((x) => x !== weekNo)
-      : [...prev, weekNo]
-  );
-};
+    return {hh, mm};
+  };
 
+  const isPastSlotDateTime = (dateStr, time) => {
+    const d = new Date(dateStr);
+    const tm = parseTimeTo24h(time);
 
-const handleClearWeekSchedule = async () => {
-  if (!instructor?._id) return toast.error("Instructor not found");
-  if (clearWeekLoading) return;
+    if (Number.isNaN(d.getTime()) || !tm) return true;
 
-  const weekStart = formatDate(startOfWeekMonday(selectedDate));
-  const weekEnd = formatDate(addDays(startOfWeekMonday(selectedDate), 6));
+    d.setHours(tm.hh, tm.mm, 0, 0);
+    return d.getTime() < Date.now();
+  };
 
-  const confirm = await Swal.fire({
-    title: "Clear this week's schedule?",
-    html: `
+  const getFutureCopyWeeks = (baseDate, count = 16) => {
+    const start = startOfWeekMonday(baseDate);
+
+    return Array.from({length: count}, (_, i) => {
+      const weekOffset = i + 1;
+      const d = new Date(start);
+      d.setDate(d.getDate() + weekOffset * 7);
+
+      return {
+        value: weekOffset,
+        label:
+          weekOffset === 1
+            ? `Next Week - starting ${formatDateLong(d)}`
+            : `${weekOffset} Weeks - starting ${formatDateLong(d)}`,
+        startDate: formatDate(d),
+      };
+    });
+  };
+
+  const toggleCopyWeek = (weekNo) => {
+    setSelectedCopyWeeks((prev) =>
+      prev.includes(weekNo)
+        ? prev.filter((x) => x !== weekNo)
+        : [...prev, weekNo],
+    );
+  };
+
+  const handleClearWeekSchedule = async () => {
+    if (!instructor?._id) return toast.error("Instructor not found");
+    if (clearWeekLoading) return;
+
+    const weekStart = formatDate(startOfWeekMonday(selectedDate));
+    const weekEnd = formatDate(addDays(startOfWeekMonday(selectedDate), 6));
+
+    const confirm = await Swal.fire({
+      title: "Clear this week's schedule?",
+      html: `
       <div style="text-align:left;line-height:1.7">
         <div><b>From:</b> ${weekStart}</div>
         <div><b>To:</b> ${weekEnd}</div>
@@ -737,111 +795,152 @@ const handleClearWeekSchedule = async () => {
         </div>
       </div>
     `,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, clear week",
-    cancelButtonText: "Cancel",
-    reverseButtons: true,
-  });
-
-  if (!confirm.isConfirmed) return;
-
-  try {
-    setClearWeekLoading(true);
-
-    const res = await axios.post("/api/instructor-slots/clear-week", {
-      instructorId: instructor._id,
-      weekStart,
-      deleteBookingsWhenClearing: copyOptions.deleteBookingsWhenClearing,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, clear week",
+      cancelButtonText: "Cancel",
+      reverseButtons: true,
     });
 
-    toast.success(
-      `Week cleared }`
-    );
+    if (!confirm.isConfirmed) return;
 
-    setShowCopyModal(false);
-    setSelectedCopyWeeks([]);
-    setCopyOptions({
-      copyBookingsIfFree: false,
-      deleteBookingsWhenClearing: false,
-    });
-
-    await refetchSlots();
-    await queryClient.invalidateQueries({ queryKey: ["bookings"] });
-  } catch (err) {
-    toast.error(err?.response?.data?.error || "Failed to clear week");
-  } finally {
-    setClearWeekLoading(false);
-  }
-};
-
-const handleCopySchedule = async () => {
-  if (!instructor?._id) return toast.error("Instructor not found");
-  if (!selectedCopyWeeks.length) return toast.error("Select at least one week");
-
-  try {
-    setCopyLoading(true);
-
-    const fromWeekStart = formatDate(startOfWeekMonday(selectedDate));
-
-    const res = await axios.post("/api/instructor-slots/copy-weekly-schedule", {
-  instructorId: instructor._id,
-  fromWeekStart,
-  targetWeeks: selectedCopyWeeks,
-  copyBookingsIfFree: copyOptions.copyBookingsIfFree,
-  deleteBookingsWhenClearing: copyOptions.deleteBookingsWhenClearing,
-});
-
-const skipped = res?.data?.skippedDates || [];
-
-if (skipped.length) {
-  toast.success(`Weekly schedule copied. Skipped some existing date(s).`);
-} else {
-  toast.success("Weekly schedule copied");
-}
-    setShowCopyModal(false);
-    setSelectedCopyWeeks([]);
-    setCopyOptions({
-      copyBookingsIfFree: false,
-      deleteBookingsWhenClearing: false,
-    });
-
-    await refetchSlots();
-    await queryClient.invalidateQueries({queryKey: ["bookings"]});
-  } catch (err) {
-    toast.error(err?.response?.data?.error || "Failed to copy schedule");
-  } finally {
-    setCopyLoading(false);
-  }
-};
-
-const handleSendWeeklySummary = async () => {
-  if (!instructor?._id) return toast.error("Instructor not found");
-  if (sendingSummary) return;
-
-  try {
-    setSendingSummary(true);
-
-    const weekStart = formatDate(startOfWeekMonday(selectedDate));
-
-    await axios.post("/api/instructor-slots/send-weekly-summary", {
-      instructorId: instructor._id,
-      instructorEmail: instructor.email,
-      instructorName: instructor.name,
-      weekStart,
-    });
-
-    toast.success("Weekly summary sent");
-  } catch (err) {
-    toast.error(err?.response?.data?.error || "Failed to send summary");
-  } finally {
-    setSendingSummary(false);
-  }
-};
-  const handleSchedule = async () => {
-      if (scheduleLoading) return;
     try {
-       setScheduleLoading(true);
+      setClearWeekLoading(true);
+
+      const res = await axios.post("/api/instructor-slots/clear-week", {
+        instructorId: instructor._id,
+        weekStart,
+        deleteBookingsWhenClearing: copyOptions.deleteBookingsWhenClearing,
+      });
+
+      toast.success(`Week cleared }`);
+
+      setShowCopyModal(false);
+      setSelectedCopyWeeks([]);
+      setCopyOptions({
+        copyBookingsIfFree: false,
+        deleteBookingsWhenClearing: false,
+      });
+
+      await refetchSlots();
+      await queryClient.invalidateQueries({queryKey: ["bookings"]});
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to clear week");
+    } finally {
+      setClearWeekLoading(false);
+    }
+  };
+
+  const handleCopySchedule = async () => {
+    if (!instructor?._id) return toast.error("Instructor not found");
+    if (!selectedCopyWeeks.length)
+      return toast.error("Select at least one week");
+
+    try {
+      setCopyLoading(true);
+
+      const fromWeekStart = formatDate(startOfWeekMonday(selectedDate));
+
+      const res = await axios.post(
+        "/api/instructor-slots/copy-weekly-schedule",
+        {
+          instructorId: instructor._id,
+          fromWeekStart,
+          targetWeeks: selectedCopyWeeks,
+          copyBookingsIfFree: copyOptions.copyBookingsIfFree,
+          deleteBookingsWhenClearing: copyOptions.deleteBookingsWhenClearing,
+        },
+      );
+
+      const skipped = res?.data?.skippedDates || [];
+
+      if (skipped.length) {
+        toast.success(`Weekly schedule copied. Skipped some existing date(s).`);
+      } else {
+        toast.success("Weekly schedule copied");
+      }
+      setShowCopyModal(false);
+      setSelectedCopyWeeks([]);
+      setCopyOptions({
+        copyBookingsIfFree: false,
+        deleteBookingsWhenClearing: false,
+      });
+
+      await refetchSlots();
+      await queryClient.invalidateQueries({queryKey: ["bookings"]});
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to copy schedule");
+    } finally {
+      setCopyLoading(false);
+    }
+  };
+
+  const handleSendWeeklySummary = async () => {
+    if (!instructor?._id) return toast.error("Instructor not found");
+    if (sendingSummary) return;
+
+    try {
+      setSendingSummary(true);
+
+      const weekStart = formatDate(startOfWeekMonday(selectedDate));
+
+      await axios.post("/api/instructor-slots/send-weekly-summary", {
+        instructorId: instructor._id,
+        instructorEmail: instructor.email,
+        instructorName: instructor.name,
+        weekStart,
+      });
+
+      toast.success("Weekly summary sent");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to send summary");
+    } finally {
+      setSendingSummary(false);
+    }
+  };
+
+  const isAvailableSlot = (slot) => {
+    return slot?.visibility === "public";
+  };
+
+  const getMovingBookingMinutes = () => {
+    if (!movingBooking) return 0;
+    return Number(movingBooking.minutes || toMinutes(movingBooking) || 0);
+  };
+
+  const canMoveToAvailableRange = (dateStr, startTime) => {
+    if (!moveMode || !movingBooking) return false;
+
+    // do not allow past datetime
+    if (isPastSlotDateTime(dateStr, startTime)) return false;
+
+    const neededMinutes = getMovingBookingMinutes();
+    if (!neededMinutes) return false;
+
+    const stepsNeeded = Math.ceil(neededMinutes / STEP_MIN);
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return false;
+
+    for (let i = 0; i < stepsNeeded; i++) {
+      const t = times[startIdx + i];
+      if (!t) return false;
+
+      // optional but safer: every covered 15-min block must also not be in past
+      if (isPastSlotDateTime(dateStr, t)) return false;
+
+      const bookingCell = bookingCoverage?.[dateStr]?.[t];
+      if (bookingCell?.booking || bookingCell?.skip) return false;
+
+      const slot = slotMap[`${dateStr}__${t}`];
+      if (!isAvailableSlot(slot)) return false;
+    }
+
+    return true;
+  };
+  const handleSchedule = async () => {
+    if (scheduleLoading) return;
+    try {
+      setScheduleLoading(true);
       if (!instructor?._id || !selectedSlot?.date || !selectedSlot?.time)
         return;
 
@@ -915,10 +1014,9 @@ const handleSendWeeklySummary = async () => {
       closeSlotModal();
       await refetchSlots();
     } catch (err) {
-   
       toast.error(err?.message || "Update failed");
-    }finally{
-      setScheduleLoading(false)
+    } finally {
+      setScheduleLoading(false);
     }
   };
 
@@ -957,48 +1055,116 @@ const handleSendWeeklySummary = async () => {
       closeSlotModal();
       await refetchSlots();
     } catch (err) {
-   
       toast.error("Remove failed");
     }
   };
+  const handleMoveToEmptySlot = async (date, time) => {
+    const dateStr = formatDate(date);
 
-const handleBooking = (date, slot, time) => {
-  if (!slot?._id) return toast.error("Slot not found!");
+    if (isPastSlotDateTime(dateStr, time)) {
+      toast.error("Cannot move booking to a past date or time");
+      return;
+    }
 
-  const bookingInfo = {
-    instructorEmail: instructor?.email,
-    instructorName: instructor?.name,
-    instructorId: instructor?._id,
+    try {
+      setSaving(true);
 
-    date: new Date(date).toISOString(),
-    time,
-    location: "",
+      await axios.patch(`/api/bookings/${moveBookingId}`, {
+        bookingDate: new Date(date).toISOString(),
+        bookingTime: time,
+      });
 
-    slotId: slot._id,
-    duration: slot.duration,
-
-    bookingType: "manual",
-
-    // ✅ rebook payload
-    ...(rebookMode
-      ? {
-          clientId: rebookClientId,
-          clientName: rebookClient
-            ? `${rebookClient.firstName || ""} ${rebookClient.lastName || ""}`.trim()
-            : "",
-          clientEmail: rebookClient?.email || "",
-          clientPhone: rebookClient?.mobile || rebookClient?.phone || "",
-          clientAddress: rebookClient?.address || "",
-          suburb: rebookClient?.suburb || "",
-          skipClientSelect: true, // ✅ flag for booking-confirm
-        }
-      : {}),
+      toast.success("Booking moved successfully");
+      await queryClient.invalidateQueries({queryKey: ["bookings"]});
+      await queryClient.invalidateQueries({
+        queryKey: ["booking", moveBookingId],
+      });
+      router.push("/instructor-bookings");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to move booking");
+    } finally {
+      setSaving(false);
+    }
   };
+  const handleSwapBooking = async (targetBooking) => {
+    const movingDateStr = formatDate(
+      movingBooking?.bookingDate || movingBooking?.date,
+    );
+    const movingTime = movingBooking?.bookingTime || movingBooking?.time;
 
-  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-  router.push("/booking-confirm");
-};
-          const MOBILE_ROW_H = 40;
+    const targetDateStr = formatDate(
+      targetBooking?.bookingDate || targetBooking?.date,
+    );
+    const targetTime = targetBooking?.bookingTime || targetBooking?.time;
+
+    if (isPastSlotDateTime(movingDateStr, movingTime)) {
+      toast.error("Cannot swap because the moving booking is already over");
+      return;
+    }
+
+    if (isPastSlotDateTime(targetDateStr, targetTime)) {
+      toast.error("Cannot swap with a booking that is already over");
+      return;
+    }
+
+    try {
+      setSaving(true);
+
+      await axios.post("/api/bookings/swap", {
+        sourceBookingId: moveBookingId,
+        targetBookingId: targetBooking._id,
+      });
+
+      toast.success("Bookings swapped successfully");
+      await queryClient.invalidateQueries({queryKey: ["bookings"]});
+      await queryClient.invalidateQueries({
+        queryKey: ["booking", moveBookingId],
+      });
+      router.push("/instructor-bookings");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to swap bookings");
+    } finally {
+      setSaving(false);
+    }
+  };
+  const handleBooking = (date, slot, time) => {
+    if (!slot?._id) return toast.error("Slot not found!");
+
+    const dateStr = formatDate(date);
+    const maxAvailableMinutes = getMaxContinuousAvailableMinutes(dateStr, time);
+
+    const bookingInfo = {
+      instructorEmail: instructor?.email,
+      instructorName: instructor?.name,
+      instructorId: instructor?._id,
+
+      date: new Date(date).toISOString(),
+      time,
+      location: "",
+      suburb: "",
+      slotId: slot._id,
+      duration: slot.duration,
+      maxAvailableMinutes,
+      bookingType: "manual",
+
+      ...(rebookMode
+        ? {
+            clientId: rebookClientId,
+            clientName: rebookClient
+              ? `${rebookClient.firstName || ""} ${rebookClient.lastName || ""}`.trim()
+              : "",
+            clientEmail: rebookClient?.email || "",
+            clientPhone: rebookClient?.mobile || rebookClient?.phone || "",
+            clientAddress: rebookClient?.address || "",
+            suburb: rebookClient?.suburb || "",
+            skipClientSelect: true,
+          }
+        : {}),
+    };
+
+    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+    router.push("/booking-confirm");
+  };
 
   if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
 
@@ -1027,19 +1193,17 @@ const handleBooking = (date, slot, time) => {
                       <div className="flex items-center justify-between gap-4">
                         {/* left: title + range */}
                         <div className="">
-                      
-<div className="flex gap-2">
-
-                          <h2 className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">
-                            {user?.name}&apos;s Schedule
-                          </h2>
-                          <button
-  onClick={() => setShowCopyModal(true)}
-  className="text-xl border border-border-color text-primary p-1"
->
-  <TbCopyPlusFilled />
-</button>
-</div>
+                          <div className="flex gap-2">
+                            <h2 className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">
+                              {user?.name}&apos;s Schedule
+                            </h2>
+                            <button
+                              onClick={() => setShowCopyModal(true)}
+                              className="text-xl border border-border-color text-primary p-1"
+                            >
+                              <TbCopyPlusFilled />
+                            </button>
+                          </div>
                           <p className="text-neutral mt-1 text-xs md:text-base">
                             Week of{" "}
                             {weekDates[0].toLocaleDateString("en-US", {
@@ -1052,10 +1216,7 @@ const handleBooking = (date, slot, time) => {
                               day: "numeric",
                             })}
                           </p>
-
-                          </div>
-                          
-                     
+                        </div>
 
                         {/* right: prev/next week */}
                         <div className="flex items-center gap-2">
@@ -1079,309 +1240,466 @@ const handleBooking = (date, slot, time) => {
                     </div>
 
                     {/* Schedule Table */}
-                   {moveMode && (
-  <div className="m-3 p-3 rounded-md border border-primary bg-primary text-white text-sm flex justify-between items-center">
-    <span>Move Mode: click a new date/time to move the booking.</span>
-    <button
-      className="underline font-semibold"
-      onClick={() => router.push("/instructor-bookings")}
-    >
-      Cancel
-    </button>
-  </div>
-)}
-{rebookMode && (
-  <div className="m-3 p-3 rounded-md border border-secondary bg-secondary text-white text-sm flex justify-between items-center">
-    <span>
-      Rebook Mode: choose a slot for{" "}
-      <b>{rebookClient?.firstName} {rebookClient?.lastName}</b>
-    </span>
-    <button className="underline font-semibold" onClick={() => router.push("/instructor-bookings")}>
-      Cancel
-    </button>
-  </div>
-)}
-                    {/* table*/}
-<div className="">
-  <div
-    ref={tableRef}
-    className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
-    style={{
-      WebkitOverflowScrolling: "touch",
-      cursor: "grab",
-      touchAction: "auto",
-      maxHeight: "calc(100vh - 60px)",
-    }}
-  >
-    <table className="w-full min-w-150 md:min-w-[700px] border-separate border-spacing-0 table-fixed h-full">
-      <thead className="bg-white">
-        <tr>
-          <th className="py-2 px-1 border border-border-color text-xs md:text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center w-[55px] max-w-[55px] min-w-[55px] md:w-[65px] md:max-w-[65px] md:min-w-[65px]">
-            Time
-          </th>
+                    {moveBookingId && movingBooking && (
+                      <div className="mb-4 rounded-lg border bg-primary text-white p-2">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="font-semibold">
+                              Move / Swap Mode
+                            </div>
+                            <div className="text-sm mt-1">
+                              Moving: {movingBooking.userName} •{" "}
+                              {movingBooking.serviceName} •{" "}
+                              {movingBooking.duration}
+                            </div>
+                          </div>
 
-          {weekDates.map((date, index) => (
-            <th
-              key={index}
-              className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
-            >
-              <div className="flex flex-col items-center">
-                <div className="font-bold text-gray-900">
-                  {date.toLocaleDateString("en-US", {weekday: "long"})}
-                </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  {date.toLocaleDateString("en-US", {day: "numeric", month: "short"})}
-                </div>
-              </div>
-            </th>
-          ))}
-        </tr>
-      </thead>
-
-      <tbody className="divide-y divide-border-color">
-        {visibleTimes.map((time) => (
-          <tr key={time} className="hover:bg-gray-50/50 align-stretch">
-            <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500 max-w-[30px]">
-              {time}
-            </td>
-
-            {weekDates.map((date, dayIndex) => {
-              const dateKey = formatDate(date);
-              const key = `${dateKey}__${time}`;
-              const slot = slotMap[key];
-
-              const suburbLabel =
-                slot?.suburb === "ALL"
-                  ? ""
-                  : Array.isArray(slot?.suburb)
-                    ? (
-                      <>
-                        S <sup>{slot.suburb.length}</sup>
-                      </>
-                    )
-                    : "";
-
-              const bCov = bookingCoverage?.[dateKey]?.[time];
-              if (bCov?.skip) return null;
-
-             if (bCov?.booking) {
-  const b = bCov.booking;
-  const name = b.clientName || b.userName || "Client";
-  const paid = b.paymentStatus === "paid";
-  const isNewBooking = isCreatedToday(b.createdAt);
-
-  return (
-    <td key={dayIndex} rowSpan={bCov.rowSpan} className="p-0 align-stretch">
-      <button
-        type="button"
-        onClick={() => router.push(`/instructor-bookings/${b._id}`)}
-        className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color px-2 py-2 pt-6 md:pt-0 flex flex-col items-center justify-center text-center overflow-hidden"
-      >
-        {isNewBooking && (
-          <div
-            className="absolute -top-3  -left-5 -rotate-45 bg-yellow-400 text-black text-[8px] font-medium  w-12 h-8 shadow pt-4"
-            title="New booking today"
-          >
-            NEW
-          </div>
-        )}
-
-        {paid && (
-          <span
-            className="absolute top-1 right-1 h-4 w-4 md:h-5 md:w-5 rounded-full bg-primary text-white text-[9px] md:text-[11px] font-bold flex items-center justify-center"
-            title="Paid"
-          >
-            P
-          </span>
-        )}
-
-        <div className="text-red-600 font-semibold text-sm">{name}</div>
-        <div className="text-red-600 text-xs font-semibold mt-1">
-          {b.serviceName || "Driving lesson"} {b.duration || ""}
-        </div>
-        <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
-          {b.address || b.userAddress || ""} {b.suburb || b.location || ""}
-        </div>
-      </button>
-    </td>
-  );
-}
-
-              const cov = coverage?.[dateKey]?.[time];
-              if (cov?.skip) return null;
-
-              const rowSpan = cov?.rowSpan || 1;
-              const visibility = slot?.visibility || "empty";
-
-              return (
-                <td key={dayIndex} rowSpan={rowSpan} className="p-0 align-stretch">
-                  {visibility === "empty" ? (
-                    <button
-                      onClick={() => {
-                        if (moveMode) return moveBookingHere({date, time});
-                        openSlotModal({date, time});
-                      }}
-                      className="w-full h-full min-h-11 bg-white hover:bg-gray-50 border border-border-color flex items-center justify-between px-2"
-                      title="Add"
-                    >
-                      <div></div>
-                      <span className="text-base md:text-lg text-primary">+</span> 
-                    </button>
-                  ) : visibility === "hidden" ? (
-                    <button
-  onClick={() => {
-    if (moveMode) return moveBookingHere({ date, time });
-    return handleBooking(date, slot, time);
-  }}
-  className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-2 py-2 flex flex-col justify-between items-stretch"
->
-  <div className="flex items-start justify-between gap-1">
-    <FaEyeSlash className="h-3 w-3 md:h-4 md:w-4 text-primary shrink-0 mt-0.5" />
-
-    {!!suburbLabel && (
-      <span className="text-[10px] opacity-90 text-gray-700 shrink-0">
-        {suburbLabel}
-      </span>
-    )}
-
-    <IoMdAdd
-      onClick={(e) => {
-        e.stopPropagation();
-        if (moveMode) return;
-        openSlotModal({ date, time });
-      }}
-      className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0"
-    />
-  </div>
-
-  {slot?.privateNote && (
-    <div className="mt-2 text-xs text-center wrap-break-word whitespace-normal">
-      {slot.privateNote}
-    </div>
-  )}
-</button>
-                  ) : visibility === "privateBooked" ? (
-                  <button
-  onClick={() => {
-    if (moveMode) return moveBookingHere({ date, time });
-    return handleBooking(date, slot, time);
-  }}
-  className="w-full h-full min-h-11 bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex flex-col justify-between items-stretch"
->
-  <div className="flex items-start justify-between gap-1">
-    <FaCalendarPlus className="h-3 w-3 md:h-4 md:w-4 text-white shrink-0 mt-0.5" />
-
-    {!!suburbLabel && (
-      <span className="text-[10px] opacity-90 text-white shrink-0">
-        {suburbLabel}
-      </span>
-    )}
-
-    <IoMdAdd
-      onClick={(e) => {
-        e.stopPropagation();
-        if (moveMode) return;
-        openSlotModal({ date, time });
-      }}
-      className="h-3 w-3 md:h-5 md:w-5 text-white shrink-0"
-    />
-  </div>
-
-  {slot?.privateNote && (
-    <div className="mt-2 text-xs text-center text-white wrap-break-word whitespace-normal">
-      {slot.privateNote}
-    </div>
-  )}
-</button>
-                  ) : visibility === "publicNote" ? (
-                    <button
-                      onClick={() => openSlotModal({date, time})}
-                      className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
-                    >
-                      <span className="text-xs text-center leading-snug break-all">
-                        {slot?.publicNote}{" "}
-                        {!!suburbLabel && (
-                          <span className="text-[10px] opacity-90">{suburbLabel}</span>
-                        )}
-                      </span>
-                      <IoMdAdd className="h-5 w-5 text-black shrink-0" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        if (moveMode) return moveBookingHere({date, time});
-                        return handleBooking(date, slot, time);
-                      }}
-                      className="w-full h-full min-h-11 bg-[#7DA730] hover:bg-[#96C83A] border border-dashed border-border-color flex items-center justify-center  gap-2 text-[10px] md:text-sm font-semibold text-white px-2 py-2"
-                    >
-                      <span >Available</span>
-                      <div>
-                        {!!suburbLabel && (
-                          <span className="text-[10px] opacity-90">{suburbLabel}</span>
-                        )}
-                        <IoMdAdd
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            if (moveMode) return;
-                            openSlotModal({date, time});
-                          }}
-                          className="h-4 w-4"
-                        />
+                          <button
+                            type="button"
+                            onClick={() => router.push("/instructor-bookings")}
+                            className="shrink-0 rounded-md p-2 transition"
+                            title="Cancel move mode"
+                            aria-label="Cancel move mode"
+                          >
+                            <FaTimes className="h-4 w-4 " />
+                          </button>
+                        </div>
                       </div>
-                    </button>
-                  )}
-                </td>
-              );
-            })}
-          </tr>
-        ))}
-      </tbody>
-    </table>
+                    )}
+                    {rebookMode && (
+                      <div className="m-3 p-3 rounded-md border border-secondary bg-secondary text-white text-sm flex justify-between items-center">
+                        <span>
+                          Rebook Mode: choose a slot for{" "}
+                          <b>
+                            {rebookClient?.firstName} {rebookClient?.lastName}
+                          </b>
+                        </span>
+                        <button
+                          className="underline font-semibold"
+                          onClick={() => router.push("/instructor-bookings")}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                    {/* table*/}
+                    <div className="">
+                      <div
+                        ref={tableRef}
+                        className="overflow-x-auto overflow-y-auto touch-pan-x select-none scrollbar-hide"
+                        style={{
+                          WebkitOverflowScrolling: "touch",
+                          cursor: "grab",
+                          touchAction: "auto",
+                          maxHeight: "calc(100vh - 60px)",
+                        }}
+                      >
+                        <table className="w-full min-w-150 md:min-w-[700px] border-separate border-spacing-0 table-fixed h-full">
+                          <thead className="bg-white">
+                            <tr>
+                              <th className="py-2 px-1 border border-border-color text-xs md:text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center w-[55px] max-w-[55px] min-w-[55px] md:w-[65px] md:max-w-[65px] md:min-w-[65px]">
+                                Time
+                              </th>
 
-    {/* Desktop footer: keep your More/Less bar */}
-    <div className="sticky bottom-0 left-0 right-0 bg-white z-50">
-    <div className="flex items-stretch justify-between gap-1 md:gap-2">
-        {!showMoreTimes ? (
-          <button
-            onClick={() => setShowMoreTimes(true)}
-            className="text-primary font-semibold hover:underline ml-4"
-          >
-            More
-          </button>
-        ) : (
-          <button
-            onClick={() => setShowMoreTimes(false)}
-            className="text-primary font-semibold hover:underline ml-4"
-          >
-            Less
-          </button>
-        )}
+                              {weekDates.map((date, index) => (
+                                <th
+                                  key={index}
+                                  className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
+                                >
+                                  <div className="flex flex-col items-center">
+                                    <div className="font-bold text-gray-900">
+                                      {date.toLocaleDateString("en-US", {
+                                        weekday: "long",
+                                      })}
+                                    </div>
+                                    <div className="text-xs text-gray-500 mt-1">
+                                      {date.toLocaleDateString("en-US", {
+                                        day: "numeric",
+                                        month: "short",
+                                      })}
+                                    </div>
+                                  </div>
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
 
-        {weekDates.map((date, index) => (
-  <div
-    key={index}
-    className="flex-1 min-w-0 py-1 md:py-2 text-center font-medium  text-gray-500 "
-  >
-    <div className="flex flex-col items-center leading-tight ">
-      <div className="font-bold text-[10px] md:text-sm text-gray-900 truncate">
-        {weekdays[index].slice(0, 3)}
-      </div>
-      <div className="text-[9px] md:text-xs text-gray-500 mt-0.5 md:mt-1 truncate">
-        {date.toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        })}
-      </div>
-    </div>
-  </div>
-))}
-      </div>
-    </div>
-  </div>
-</div>
+                          <tbody className="divide-y divide-border-color">
+                            {visibleTimes.map((time) => (
+                              <tr
+                                key={time}
+                                className="hover:bg-gray-50/50 align-stretch"
+                              >
+                                <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500 max-w-[30px]">
+                                  {time}
+                                </td>
 
+                                {weekDates.map((date, dayIndex) => {
+                                  const dateKey = formatDate(date);
+                                  const key = `${dateKey}__${time}`;
+                                  const slot = slotMap[key];
+                                  const canMoveHere = shouldShowMovingBlock(
+                                    dateKey,
+                                    time,
+                                  );
+                                  const suburbLabel =
+                                    slot?.suburb === "ALL" ? (
+                                      ""
+                                    ) : Array.isArray(slot?.suburb) ? (
+                                      <>
+                                        S <sup>{slot.suburb.length}</sup>
+                                      </>
+                                    ) : (
+                                      ""
+                                    );
 
+                                  const bCov =
+                                    bookingCoverage?.[dateKey]?.[time];
+                                  if (bCov?.skip) return null;
 
+                                  if (bCov?.booking) {
+                                    const b = bCov.booking;
+                                    const name =
+                                      b.clientName || b.userName || "Client";
+                                    const paid = b.paymentStatus === "paid";
+                                    const isNewBooking = isCreatedToday(
+                                      b.createdAt,
+                                    );
+                                    const canSwap =
+                                      moveMode && canSwapWith(movingBooking, b);
+                                    const isMovingSource =
+                                      moveMode &&
+                                      String(b._id) === String(moveBookingId);
+
+                                    if (isMovingSource) {
+                                      return (
+                                        <td
+                                          key={dayIndex}
+                                          rowSpan={bCov.rowSpan}
+                                          className="p-0 align-stretch"
+                                        >
+                                          <div className="w-full h-full min-h-11 bg-red-600 border border-border-color px-2 py-2 flex items-center justify-center text-center">
+                                            <div className="text-white font-bold text-sm md:text-base">
+                                              Moving
+                                            </div>
+                                          </div>
+                                        </td>
+                                      );
+                                    }
+
+                                    return (
+                                      <td
+                                        key={dayIndex}
+                                        rowSpan={bCov.rowSpan}
+                                        className="p-0 align-stretch"
+                                      >
+                                        <button
+                                          type="button"
+                                          onClick={() => {
+                                            if (!moveMode) {
+                                              router.push(
+                                                `/instructor-bookings/${b._id}`,
+                                              );
+                                              return;
+                                            }
+
+                                            if (!canSwap) {
+                                              toast.error(
+                                                "Swap allowed only with same lesson duration",
+                                              );
+                                              return;
+                                            }
+
+                                            handleSwapBooking(b);
+                                          }}
+                                          className="relative w-full h-full min-h-11 bg-[#c9b0cf] hover:brightness-95 border border-border-color px-2 py-2 pt-6 md:pt-0 flex flex-col items-center justify-center text-center overflow-hidden"
+                                        >
+                                          {isNewBooking && (
+                                            <div
+                                              className="absolute -top-3 -left-5 -rotate-45 bg-yellow-400 text-black text-[8px] font-medium w-12 h-8 shadow pt-4"
+                                              title="New booking today"
+                                            >
+                                              NEW
+                                            </div>
+                                          )}
+
+                                          {paid && (
+                                            <span
+                                              className="absolute top-1 right-1 h-4 w-4 md:h-5 md:w-5 rounded-full bg-primary text-white text-[9px] md:text-[11px] font-bold flex items-center justify-center"
+                                              title="Paid"
+                                            >
+                                              P
+                                            </span>
+                                          )}
+
+                                          <div className="text-red-600 font-semibold text-sm">
+                                            {name}
+                                          </div>
+                                          <div className="text-red-600 text-xs font-semibold mt-1">
+                                            {b.serviceName || "Driving lesson"}{" "}
+                                            {b.duration || ""}
+                                          </div>
+                                          <div className="text-red-600 text-[11px] mt-1 wrap-break-word">
+                                            {b.address || b.userAddress || ""}{" "}
+                                            {b.suburb || b.location || ""}
+                                          </div>
+
+                                          {moveMode && canSwap && (
+                                            <div className="mt-2 px-4 py-1 rounded bg-red-600 text-white text-xs font-bold">
+                                              SWAP
+                                            </div>
+                                          )}
+                                        </button>
+                                      </td>
+                                    );
+                                  }
+
+                                  const cov = coverage?.[dateKey]?.[time];
+                                  if (cov?.skip) return null;
+
+                                  const rowSpan = cov?.rowSpan || 1;
+                                  const visibility =
+                                    slot?.visibility || "empty";
+
+                                  return (
+                                    <td
+                                      key={dayIndex}
+                                      rowSpan={rowSpan}
+                                      className="p-0 align-stretch"
+                                    >
+                                      {visibility === "empty" ? (
+                                        <button
+                                          type="button"
+                                          disabled={moveMode}
+                                          onClick={() => {
+                                            if (moveMode) return;
+                                            openSlotModal({date, time});
+                                          }}
+                                          className={`w-full h-full min-h-11 border border-border-color flex items-center justify-between px-2 ${
+                                            moveMode
+                                              ? "bg-white text-gray-400 cursor-not-allowed opacity-60"
+                                              : "bg-white hover:bg-gray-50"
+                                          }`}
+                                          title={
+                                            moveMode
+                                              ? "Disabled in move mode"
+                                              : "Add"
+                                          }
+                                        >
+                                          <div></div>
+                                          <span
+                                            className={`text-base md:text-lg ${moveMode ? "text-gray-400" : "text-primary"}`}
+                                          >
+                                            +
+                                          </span>
+                                        </button>
+                                      ) : visibility === "hidden" ? (
+                                        <button
+                                          type="button"
+                                          disabled={moveMode}
+                                          onClick={() => {
+                                            if (moveMode) return;
+                                            return handleBooking(
+                                              date,
+                                              slot,
+                                              time,
+                                            );
+                                          }}
+                                          className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-2 py-2 flex flex-col justify-between items-stretch"
+                                        >
+                                          <div className="flex items-start justify-between gap-1">
+                                            <FaEyeSlash className="h-3 w-3 md:h-4 md:w-4 text-primary shrink-0 mt-0.5" />
+
+                                            {!!suburbLabel && (
+                                              <span className="text-[10px] opacity-90 text-gray-700 shrink-0">
+                                                {suburbLabel}
+                                              </span>
+                                            )}
+
+                                            <IoMdAdd
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (moveMode) return;
+                                                openSlotModal({date, time});
+                                              }}
+                                              className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0"
+                                            />
+                                          </div>
+
+                                          {slot?.privateNote && (
+                                            <div className="mt-2 text-xs text-center wrap-break-word whitespace-normal">
+                                              {slot.privateNote}
+                                            </div>
+                                          )}
+                                        </button>
+                                      ) : visibility === "privateBooked" ? (
+                                        <button
+                                          type="button"
+                                          disabled={moveMode}
+                                          onClick={() => {
+                                            if (moveMode) return;
+                                            return handleBooking(
+                                              date,
+                                              slot,
+                                              time,
+                                            );
+                                          }}
+                                          className="w-full h-full min-h-11 bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex flex-col justify-between items-stretch"
+                                        >
+                                          <div className="flex items-start justify-between gap-1">
+                                            <FaCalendarPlus className="h-3 w-3 md:h-4 md:w-4 text-white shrink-0 mt-0.5" />
+
+                                            {!!suburbLabel && (
+                                              <span className="text-[10px] opacity-90 text-white shrink-0">
+                                                {suburbLabel}
+                                              </span>
+                                            )}
+
+                                            <IoMdAdd
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (moveMode) return;
+                                                openSlotModal({date, time});
+                                              }}
+                                              className="h-3 w-3 md:h-5 md:w-5 text-white shrink-0"
+                                            />
+                                          </div>
+
+                                          {slot?.privateNote && (
+                                            <div className="mt-2 text-xs text-center text-white wrap-break-word whitespace-normal">
+                                              {slot.privateNote}
+                                            </div>
+                                          )}
+                                        </button>
+                                      ) : visibility === "publicNote" ? (
+                                        <button
+                                          type="button"
+                                          disabled={moveMode}
+                                          onClick={() => {
+                                            if (moveMode) return;
+                                            return handleBooking(
+                                              date,
+                                              slot,
+                                              time,
+                                            );
+                                          }}
+                                          className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
+                                        >
+                                          <span className="text-xs text-center leading-snug break-all">
+                                            {slot?.publicNote}{" "}
+                                            {!!suburbLabel && (
+                                              <span className="text-[10px] opacity-90">
+                                                {suburbLabel}
+                                              </span>
+                                            )}
+                                          </span>
+                                          <IoMdAdd
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              if (moveMode) return;
+                                              openSlotModal({date, time});
+                                            }}
+                                            className="h-5 w-5 text-black shrink-0"
+                                          />
+                                        </button>
+                                      ) : (
+                                        <button
+                                          onClick={() => {
+                                            if (moveMode) {
+                                              if (!canMoveHere) return;
+                                              return handleMoveToEmptySlot(
+                                                date,
+                                                time,
+                                              );
+                                            }
+                                            return handleBooking(
+                                              date,
+                                              slot,
+                                              time,
+                                            );
+                                          }}
+                                          disabled={moveMode && !canMoveHere}
+                                          className={`w-full h-full min-h-11 border border-dashed border-border-color flex items-center justify-center gap-2 text-[10px] md:text-sm font-semibold px-2 py-2 ${
+                                            moveMode
+                                              ? canMoveHere
+                                                ? "bg-[#7DA730] hover:bg-[#96C83A] text-white"
+                                                : "bg-[#7DA730] text-white opacity-60 cursor-not-allowed"
+                                              : "bg-[#7DA730] hover:bg-[#96C83A] text-white"
+                                          }`}
+                                        >
+                                          <span>
+                                            {moveMode
+                                              ? canMoveHere
+                                                ? "Available"
+                                                : "Available"
+                                              : "Available"}
+                                          </span>
+                                          <div>
+                                            {!!suburbLabel && (
+                                              <span className="text-[10px] opacity-90">
+                                                {suburbLabel}
+                                              </span>
+                                            )}
+                                            <IoMdAdd
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (moveMode) return;
+                                                openSlotModal({date, time});
+                                              }}
+                                              className="h-4 w-4"
+                                            />
+                                          </div>
+                                        </button>
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+
+                        {/* Desktop footer: keep your More/Less bar */}
+                        <div className="sticky bottom-0 left-0 right-0 bg-white z-50">
+                          <div className="flex items-stretch justify-between gap-1 md:gap-2">
+                            {!showMoreTimes ? (
+                              <button
+                                onClick={() => setShowMoreTimes(true)}
+                                className="text-primary font-semibold hover:underline ml-4"
+                              >
+                                More
+                              </button>
+                            ) : (
+                              <button
+                                onClick={() => setShowMoreTimes(false)}
+                                className="text-primary font-semibold hover:underline ml-4"
+                              >
+                                Less
+                              </button>
+                            )}
+
+                            {weekDates.map((date, index) => (
+                              <div
+                                key={index}
+                                className="flex-1 min-w-0 py-1 md:py-2 text-center font-medium  text-gray-500 "
+                              >
+                                <div className="flex flex-col items-center leading-tight ">
+                                  <div className="font-bold text-[10px] md:text-sm text-gray-900 truncate">
+                                    {weekdays[index].slice(0, 3)}
+                                  </div>
+                                  <div className="text-[9px] md:text-xs text-gray-500 mt-0.5 md:mt-1 truncate">
+                                    {date.toLocaleDateString("en-US", {
+                                      month: "short",
+                                      day: "numeric",
+                                    })}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1661,144 +1979,150 @@ const handleBooking = (date, slot, time) => {
                 )}
               </div>
 
-             <button
-  onClick={handleSchedule}
-  disabled={scheduleLoading}
-  className={`text-white font-semibold px-6 py-3 rounded-lg transition ${
-    scheduleLoading
-      ? "bg-gray-400 cursor-not-allowed"
-      : "bg-primary hover:bg-primary/90"
-  }`}
->
-  {scheduleLoading ? "Scheduling..." : "Schedule"}
-</button>
+              <button
+                onClick={handleSchedule}
+                disabled={scheduleLoading}
+                className={`text-white font-semibold px-6 py-3 rounded-lg transition ${
+                  scheduleLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primary hover:bg-primary/90"
+                }`}
+              >
+                {scheduleLoading ? "Scheduling..." : "Schedule"}
+              </button>
             </div>
           </div>
         </Modal>
       )}
 
       {showCopyModal && (
-  <Modal onClose={() => setShowCopyModal(false)}>
-    <div className="w-full ">
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          Copy Weekly Schedule
-        </h2>
-      </div>
+        <Modal onClose={() => setShowCopyModal(false)}>
+          <div className="w-full ">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                Copy Weekly Schedule
+              </h2>
+            </div>
 
-      <div className="mb-2 border-t border-border-color" />
+            <div className="mb-2 border-t border-border-color" />
 
-      <div className="space-y-3">
-        <div className="grid grid-cols-[70px_1fr] gap-3 items-start">
-          <div className="font-medium text-gray-700">From:</div>
-          <div className="font-semibold">
-            Week starting - {formatDate(startOfWeekMonday(selectedDate))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-[70px_1fr] gap-3 items-start">
-          <div className="font-medium text-gray-700">To:</div>
-          <div className="space-y-1  max-h-[420px] overflow-y-auto pr-2">
-            {getFutureCopyWeeks(selectedDate, 16).map((w, idx) => (
-              <div key={w.value}>
-                <label className="flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={selectedCopyWeeks.includes(w.value)}
-                    onChange={() => toggleCopyWeek(w.value)}
-                  />
-                  <span className="font-medium">{w.label}</span>
-                </label>
-
-                {(idx + 1) % 4 === 0 && idx !== 15 && <div className="h-3" />}
+            <div className="space-y-3">
+              <div className="grid grid-cols-[70px_1fr] gap-3 items-start">
+                <div className="font-medium text-gray-700">From:</div>
+                <div className="font-semibold">
+                  Week starting - {formatDate(startOfWeekMonday(selectedDate))}
+                </div>
               </div>
-            ))}
+
+              <div className="grid grid-cols-[70px_1fr] gap-3 items-start">
+                <div className="font-medium text-gray-700">To:</div>
+                <div className="space-y-1  max-h-[420px] overflow-y-auto pr-2">
+                  {getFutureCopyWeeks(selectedDate, 16).map((w, idx) => (
+                    <div key={w.value}>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="checkbox"
+                          checked={selectedCopyWeeks.includes(w.value)}
+                          onChange={() => toggleCopyWeek(w.value)}
+                        />
+                        <span className="font-medium">{w.label}</span>
+                      </label>
+
+                      {(idx + 1) % 4 === 0 && idx !== 15 && (
+                        <div className="h-3" />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-1">
+                <h4 className="font-semibold text-gray-900 mb-1">Bookings</h4>
+                <div className="text-primary text-sm mb-3">
+                  Blockout weekly schedule
+                </div>
+
+                <div className="space-y-2">
+                  <label className="flex items-start gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={copyOptions.copyBookingsIfFree}
+                      onChange={(e) =>
+                        setCopyOptions((prev) => ({
+                          ...prev,
+                          copyBookingsIfFree: e.target.checked,
+                        }))
+                      }
+                    />
+                    <span>
+                      Copy bookings when there is no conflicting booking or
+                      hidden schedule.
+                    </span>
+                  </label>
+
+                  <label className="flex items-start gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={copyOptions.deleteBookingsWhenClearing}
+                      onChange={(e) =>
+                        setCopyOptions((prev) => ({
+                          ...prev,
+                          deleteBookingsWhenClearing: e.target.checked,
+                        }))
+                      }
+                    />
+                    <span>Delete bookings when clearing schedule</span>
+                  </label>
+                </div>
+
+                <p className="mt-3 text-sm italic text-gray-600">
+                  Note: Existing bookings and hidden schedules with private
+                  notes are not affected.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-3 mt-4 border-t border-border-color">
+              <button
+                type="button"
+                onClick={handleClearWeekSchedule}
+                disabled={clearWeekLoading || copyLoading}
+                className={`font-medium text-sm hover:underline ${
+                  clearWeekLoading || copyLoading
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-primary"
+                }`}
+              >
+                {clearWeekLoading ? "Clearing..." : "Clear Week's Schedule"}
+              </button>
+              <button
+                type="button"
+                onClick={handleSendWeeklySummary}
+                disabled={sendingSummary || copyLoading || clearWeekLoading}
+                className={`font-medium text-sm hover:underline ${
+                  sendingSummary || copyLoading || clearWeekLoading
+                    ? "text-gray-400 cursor-not-allowed"
+                    : "text-primary"
+                }`}
+              >
+                {sendingSummary ? "Sending..." : "Send Weekly Summary"}
+              </button>
+              <button
+                type="button"
+                onClick={handleCopySchedule}
+                disabled={copyLoading}
+                className={`px-6 py-3 rounded-lg text-white font-semibold ${
+                  copyLoading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-primary hover:bg-primary/90"
+                }`}
+              >
+                {copyLoading ? "Copying..." : "Copy"}
+              </button>
+            </div>
           </div>
-        </div>
-
-        <div className="mt-1">
-          <h4 className="font-semibold text-gray-900 mb-1">Bookings</h4>
-          <div className="text-primary text-sm mb-3">Blockout weekly schedule</div>
-
-          <div className="space-y-2">
-            <label className="flex items-start gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={copyOptions.copyBookingsIfFree}
-                onChange={(e) =>
-                  setCopyOptions((prev) => ({
-                    ...prev,
-                    copyBookingsIfFree: e.target.checked,
-                  }))
-                }
-              />
-              <span>
-                Copy bookings when there is no conflicting booking or hidden schedule.
-              </span>
-            </label>
-
-            <label className="flex items-start gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={copyOptions.deleteBookingsWhenClearing}
-                onChange={(e) =>
-                  setCopyOptions((prev) => ({
-                    ...prev,
-                    deleteBookingsWhenClearing: e.target.checked,
-                  }))
-                }
-              />
-              <span>Delete bookings when clearing schedule</span>
-            </label>
-          </div>
-
-          <p className="mt-3 text-sm italic text-gray-600">
-            Note: Existing bookings and hidden schedules with private notes are not affected.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between pt-3 mt-4 border-t border-border-color">
-        <button
-  type="button"
-  onClick={handleClearWeekSchedule}
-  disabled={clearWeekLoading || copyLoading}
-  className={`font-medium text-sm hover:underline ${
-    clearWeekLoading || copyLoading
-      ? "text-gray-400 cursor-not-allowed"
-      : "text-primary"
-  }`}
->
-  {clearWeekLoading ? "Clearing..." : "Clear Week's Schedule"}
-</button>
-        <button
-  type="button"
-  onClick={handleSendWeeklySummary}
-  disabled={sendingSummary || copyLoading || clearWeekLoading}
-  className={`font-medium text-sm hover:underline ${
-    sendingSummary || copyLoading || clearWeekLoading
-      ? "text-gray-400 cursor-not-allowed"
-      : "text-primary"
-  }`}
->
-  {sendingSummary ? "Sending..." : "Send Weekly Summary"}
-</button>
-        <button
-          type="button"
-          onClick={handleCopySchedule}
-          disabled={copyLoading}
-          className={`px-6 py-3 rounded-lg text-white font-semibold ${
-            copyLoading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-primary hover:bg-primary/90"
-          }`}
-        >
-          {copyLoading ? "Copying..." : "Copy"}
-        </button>
-      </div>
-    </div>
-  </Modal>
-)}
+        </Modal>
+      )}
     </>
   );
 }

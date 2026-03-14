@@ -15,7 +15,7 @@ export default function UserDashboard() {
 
   useEffect(() => {
     if (userData?.role === "instructor") {
-      router.replace("/dashboard/instructor-dashboard");
+      router.replace("/dashboard/instructor");
     }
   }, [userData?.role, router]);
 

@@ -45,13 +45,15 @@ export async function POST(req) {
       );
     }
 
-    const toEmail = to || booking.userEmail;
-    if (!toEmail || !isEmail(toEmail)) {
-      return NextResponse.json(
-        {error: "Valid recipient email required"},
-        {status: 400},
-      );
-    }
+   const userEmail = to || booking.userEmail;
+const instructorEmail = booking.instructorEmail;
+
+if (!isEmail(userEmail) && !isEmail(instructorEmail)) {
+  return NextResponse.json(
+    {error: "Valid recipient email required"},
+    {status: 400},
+  );
+}
 
     // ✅ Generate updated PDF using SAME invoiceNo
     const pdfBuffer = await generateInvoicePdfBuffer(
@@ -73,7 +75,7 @@ export async function POST(req) {
   buffer: pdfBuffer,
   originalName: filename,
   folder: "invoices",
-  ownerEmail: toEmail,  
+  ownerEmail: booking.userEmail || booking.instructorEmail || null,
   status: "active",
 });
    
@@ -85,53 +87,140 @@ export async function POST(req) {
         ? `Payment Confirmed - Invoice #${invoiceNo}`
         : `Invoice Updated - Invoice #${invoiceNo}`;
 
-    const html = `
-      <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-        <h2>${ps === "paid" ? "Payment Confirmed 🎉" : "Invoice Updated ✅"}</h2>
-        <p>Hi ${booking.userName || "there"},</p>
-        <p>Please find your updated invoice attached.</p>
-      </div>
-    `;
+    const userHtml = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+    <h2>${ps === "paid" ? "Payment Confirmed 🎉" : "Invoice Updated ✅"}</h2>
+    <p>Hi ${booking.userName || "there"},</p>
+    <p>Please find your updated invoice attached.</p>
+  </div>
+`;
 
-    const text = `Please find your updated invoice attached. Invoice #${invoiceNo}\n`;
+const userText = `Hi ${booking.userName || "there"},
 
-    let status = "SENT";
-    let errorMsg = null;
-    try {
-      await sendMailWithPdf({
-        to: toEmail,
-        subject,
-        html,
-        text,
-        pdfBuffer,
-        filename,
-      });
-    } catch (e) {
-      status = "FAILED";
-      errorMsg = String(e?.message || e);
-    }
+Please find your updated invoice attached.
+
+Invoice #${invoiceNo}
+`;
+
+const instructorHtml = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+    <h2>${ps === "paid" ? "Payment Confirmed 🎉" : "Invoice Updated ✅"}</h2>
+    <p>Hi ${booking.instructorName || "Instructor"},</p>
+    <p>An updated invoice for this booking is attached.</p>
+    <p><b>Customer:</b> ${booking.userName || "-"}</p>
+    <p><b>Invoice #:</b> ${invoiceNo}</p>
+  </div>
+`;
+
+const instructorText = `Hi ${booking.instructorName || "Instructor"},
+
+An updated invoice for this booking is attached.
+
+Customer: ${booking.userName || "-"}
+Invoice #${invoiceNo}
+`;
+
+  
 
     // ✅ log email
-    await (
-      await emailsCollection()
-    ).insertOne({
-      bookingId: new ObjectId(bookingId),
-      invoiceNo,
-      actorType: "USER",
-      type: "PAYMENT_INVOICE",
-      to: toEmail,
+const bookingObjectId = new ObjectId(bookingId);
+
+const sendUser = async () => {
+  if (!userEmail || !isEmail(userEmail)) {
+    return {status: "SKIPPED", error: null};
+  }
+
+  let status = "SENT";
+  let errorMsg = null;
+
+  try {
+    await sendMailWithPdf({
+      to: userEmail,
       subject,
-      text,
-      html,
-      preview: text.slice(0, 200),
-      status,
-      error: errorMsg,
-      hasAttachment: true,
-      attachmentName: filename,
-      attachmentKey: invoiceKey,
-      sentAt: new Date(),
-      createdAt: new Date(),
+      html: userHtml,
+  text: userText,
+      pdfBuffer,
+      filename,
     });
+  } catch (e) {
+    status = "FAILED";
+    errorMsg = String(e?.message || e);
+  }
+
+  await (
+    await emailsCollection()
+  ).insertOne({
+    bookingId: bookingObjectId,
+    invoiceNo,
+    actorType: "USER",
+    type: "PAYMENT_INVOICE",
+    to: userEmail,
+    subject,
+    html: userHtml,
+  text: userText,
+    preview: userText.slice(0, 200),
+    status,
+    error: errorMsg,
+    hasAttachment: true,
+    attachmentName: filename,
+    attachmentKey: invoiceKey,
+    sentAt: new Date(),
+    createdAt: new Date(),
+  });
+
+  return {status, error: errorMsg};
+};
+
+const sendInstructor = async () => {
+  if (!instructorEmail || !isEmail(instructorEmail)) {
+    return {status: "SKIPPED", error: null};
+  }
+
+  let status = "SENT";
+  let errorMsg = null;
+
+  try {
+   await sendMailWithPdf({
+  to: instructorEmail,
+  subject,
+  html: instructorHtml,
+  text: instructorText,
+  pdfBuffer,
+  filename,
+});
+  } catch (e) {
+    status = "FAILED";
+    errorMsg = String(e?.message || e);
+  }
+
+  await (
+    await emailsCollection()
+  ).insertOne({
+    bookingId: bookingObjectId,
+    invoiceNo,
+    actorType: "INSTRUCTOR",
+    type: "PAYMENT_INVOICE",
+    to: instructorEmail,
+    subject,
+    html: instructorHtml,
+  text: instructorText,
+    preview: instructorText.slice(0, 200),
+    status,
+    error: errorMsg,
+    hasAttachment: true,
+    attachmentName: filename,
+    attachmentKey: invoiceKey,
+    sentAt: new Date(),
+    createdAt: new Date(),
+  });
+
+  return {status, error: errorMsg};
+};
+
+const [userMailResult, instructorMailResult] = await Promise.all([
+  sendUser(),
+  sendInstructor(),
+]);
 
     // ✅ update invoice doc (overwrite/refresh existing one)
     await (
@@ -168,9 +257,22 @@ export async function POST(req) {
       },
     );
 
-    if (status !== "SENT") {
-      return NextResponse.json({ok: false, error: errorMsg}, {status: 500});
-    }
+   const hasFailure =
+  userMailResult?.status === "FAILED" ||
+  instructorMailResult?.status === "FAILED";
+
+if (hasFailure) {
+  return NextResponse.json(
+    {
+      ok: false,
+      error:
+        userMailResult?.error ||
+        instructorMailResult?.error ||
+        "Failed to send one or more emails",
+    },
+    {status: 500},
+  );
+}
 
     return NextResponse.json({ok: true, invoiceNo, invoiceKey});
   } catch (e) {

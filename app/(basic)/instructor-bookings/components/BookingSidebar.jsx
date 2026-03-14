@@ -27,7 +27,6 @@ const [invoiceNoteText, setInvoiceNoteText] = useState("");
 const router = useRouter()
   const queryClient = useQueryClient();
   const {data: user} = useUserData();
-
  const paymentStatus = String(booking?.paymentStatus || "").toLowerCase();
 const isPaid =
   paymentStatus === "paid" ||
@@ -61,11 +60,7 @@ const isPaid =
   const existingSessionNote = sessionNotes?.[0]; // newest one (because API sorts desc)
 const status = String(booking?.status || "pending").toLowerCase();
 
-const HIDE_BY_STATUS = {
-  confirmed: new Set(["confirmBooking", "cancelBooking"]),
-  unattended: new Set(["confirmBooking", "cancelBooking", "moveBooking", "markUnattended"]),
-  cancelled: new Set(["cancelBooking", "confirmBooking", "markUnattended", "moveBooking"]),
-};
+
 const parseTimeTo24h = (t) => {
   // "7:15AM" / "12:00PM"
   const m = String(t || "").trim().match(/^(\d{1,2}):(\d{2})(AM|PM)$/i);
@@ -94,67 +89,56 @@ const isMoveExpired = useMemo(() => {
 }, [booking?.bookingDate, booking?.date, booking?.bookingTime, booking?.time]);
 
 
-const shouldHide = (key) => HIDE_BY_STATUS[status]?.has(key);
+
 
   // ✅ Menu items based on payment status
 
 
 
 const menuItems = useMemo(() => {
-  let base = isPaid
-    ? [
-        { key: "sessionNote", label: "Edit Session Note", icon: <GrNotes size={20} /> },
-        { key: "invoiceNote", label: "Add Invoice Note" },
-        { key: "emailInvoice", label: "Email Invoice" },
-        { key: "viewInvoice", label: "View Invoice" },
-        { key: "confirmBooking", label: "Confirm Booking" },
-        { key: "moveBooking", label: "Move Booking" },
-        { key: "rebook", label: "Rebook Client" },
-      ]
-    : [
-        { key: "sessionNote", label: "Session Note", icon: <GrNotes size={20} /> },
-        { key: "invoiceNote", label: "Add Invoice Note" },
-        { key: "emailInvoice", label: "Email Invoice" },
-        { key: "viewInvoice", label: "View Invoice" },
-        { key: "confirmBooking", label: "Confirm Booking" },
-        { key: "markUnattended", label: "Mark Unattended" },
-        { key: "cancelBooking", label: "Cancel Booking" },
-        { key: "moveBooking", label: "Move Booking" },
-        { key: "rebook", label: "Rebook Client" },
-      ];
+  const baseCommon = [
+    {
+      key: "sessionNote",
+      label: isPaid ? "Edit Session Note" : "Session Note",
+      icon: <GrNotes size={20} />,
+    },
+    { key: "invoiceNote", label: "Add Invoice Note" },
+    { key: "emailInvoice", label: "Email Invoice" },
+    { key: "viewInvoice", label: "View Invoice" },
+  ];
 
-  // Show "Completed" when status is "confirmed" and payment is "paid"
-  if (isPaid && status === "confirmed") {
-    base.push({ key: "markCompleted", label: "Mark as Completed" });
+  const statusItemsMap = {
+    pending: ["confirmBooking", "markUnattended", "cancelBooking","moveBooking"],
+    confirmed: ["markUnattended", "cancelBooking","markCompleted", "moveBooking"],
+    completed: [],
+    unattended: ["moveBooking", "cancelBooking"],
+    cancelled: [],
+  };
+
+  const labelMap = {
+    confirmBooking: "Confirm Booking",
+    markCompleted: "Mark Completed",
+    markUnattended: "Mark Unattended",
+    cancelBooking: "Cancel Booking",
+    moveBooking: "Move Booking",
+  };
+
+  let statusItems = (statusItemsMap[status] || []).map((key) => ({
+    key,
+    label: labelMap[key],
+  }));
+
+  // optional: hide move booking if time already passed
+  if (isMoveExpired) {
+    statusItems = statusItems.filter((item) => item.key !== "moveBooking");
   }
 
-  // Hide "Confirm Booking" and "Move Booking" when status is "completed"
-  if (status === "completed") {
-    base = base.filter(item => item.key !== "confirmBooking" && item.key !== "moveBooking");
-  }
-
-  // Hide other unnecessary items if status is "completed"
-  const hide = new Set();
-
-  if (status === "confirmed") hide.add("confirmBooking");
-  if (status === "unattended") {
-    hide.add("confirmBooking");
-    hide.add("cancelBooking");
-    hide.add("moveBooking");
-    hide.add("markUnattended");
-  }
-  if (status === "cancelled") {
-    hide.add("confirmBooking");
-    hide.add("cancelBooking");
-    hide.add("moveBooking");
-    hide.add("markUnattended");
-  }
-
-  // Time-based rule (move booking only allowed if booking is not expired)
-  if (isMoveExpired) hide.add("moveBooking");
-
-  return base.filter((item) => !hide.has(item.key));
-}, [isPaid, status, isMoveExpired]);
+  return [
+    ...baseCommon,
+    ...statusItems,
+    { key: "rebook", label: "Rebook Client" },
+  ];
+}, [status, isPaid, isMoveExpired]);
 
   const openFromMenu = (key) => setOpenModal(key);
 
@@ -325,6 +309,32 @@ if (key === "cancelBooking") {
       toast.success("Booking marked as completed");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Failed to mark as completed");
+    } finally {
+      setSaving(false);
+    }
+  }
+ if (key === "markUnattended") {
+    try {
+      setSaving(true);
+
+      const id = oid(booking?._id);
+      if (!id) {
+        toast.error("Booking ID missing");
+        return;
+      }
+
+      // Call your API to update the booking status to "completed"
+      const response = await axios.patch(`/api/bookings/${id}`, {
+        status: "unattended",  
+      });
+
+     
+      queryClient.invalidateQueries({ queryKey: ["booking"] });
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+
+      toast.success("Booking marked as Unattended");
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to mark as unAttended");
     } finally {
       setSaving(false);
     }

@@ -21,11 +21,54 @@ const dayShort = [
 ];
 const zones = ["South", "North", "East", "West", "Central"];
 
-export default function Suburbs() {
+const durationsOrder = [
+  {label: "1 Hour", minutes: 60},
+  {label: "1hr 30m", minutes: 90},
+  {label: "2 Hours", minutes: 120},
+  {label: "2hr 30m", minutes: 150},
+  {label: "3 Hours", minutes: 180},
+  {label: "3hr 30m", minutes: 210},
+  {label: "4 Hours", minutes: 240},
+];
+
+const defaultServices = [
+  "Automatic Driving Lesson",
+  "Driving Test Assessment",
+  "Driving Test Package",
+  "Parking Package",
+  "Highway Package",
+  "Night Driving Lesson",
+  "City Driving Package",
+];
+
+function buildDefaultSuburbPackages(instructorServices = []) {
+  if (Array.isArray(instructorServices) && instructorServices.length > 0) {
+    return instructorServices
+      .filter((service) =>
+        Array.isArray(service.prices) && service.prices.some((p) => p != null)
+      )
+      .map((service) => {
+        const activeDurations = durationsOrder.map((_, i) => {
+          const hasPrice = service.prices?.[i] != null;
+          const isActive = !!service.activeDurations?.[i];
+          return hasPrice && isActive;
+        });
+
+        return {
+          serviceName: service.name,
+          activeDurations,
+        };
+      });
+  }
+
+  return [];
+}
+export default function InstructorSuburbs() {
   const {user} = useAuth();
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [newSuburb, setNewSuburb] = useState({name: "", zone: "South"});
   const [isAdding, setIsAdding] = useState(false);
+  const [packageDraft, setPackageDraft] = useState(null);
   const {
     data: suburbs = [],
     isLoading: isSuburbsLocations,
@@ -38,7 +81,7 @@ export default function Suburbs() {
     },
   });
 
-  const {data: instructorData = {}, isLoading: isInstructorLoading} = useQuery({
+  const {data: instructorData = {}, isLoading: isInstructorLoading, refetch: refetchInstructor,} = useQuery({
     queryKey: ["instructor", user?.email],
     queryFn: async () => {
       const res = await axios.get(`/api/instructors?email=${user.email}`);
@@ -50,38 +93,129 @@ export default function Suburbs() {
   const [selectedSuburb, setSelectedSuburb] = useState(null);
   const [search, setSearch] = useState("");
   const [showActiveOnly, setShowActiveOnly] = useState(false);
+  const [isUpdatingPackages, setIsUpdatingPackages] = useState(false);
   const ALL_DAYS = dayShort.map((d) => d.label);
 
-  // Initialize suburbsData after fetching
-  useEffect(() => {
-    if (
-      !isSuburbsLocations &&
-      !isInstructorLoading &&
-      suburbs.length &&
-      !suburbsData.length
-    ) {
-      const initialSuburbs = suburbs.map((loc) => {
-        const name = loc.name; // <-- get the name string
-        const suburbData = instructorData.suburbs?.find((s) => s.name === name);
+const openManagePackagesModal = (suburb) => {
+  setSelectedSuburb(suburb);
+  setPackageDraft({
+    name: suburb.name,
+    packages: JSON.parse(JSON.stringify(suburb.packages || [])),
+  });
+};
+
+
+
+const toggleDraftPackageDuration = (serviceName, durationIdx) => {
+  setPackageDraft((prev) => {
+    if (!prev) return prev;
+
+    return {
+      ...prev,
+      packages: prev.packages.map((pkg) => {
+        if (pkg.serviceName !== serviceName) return pkg;
+
+        const updated = [...pkg.activeDurations];
+        updated[durationIdx] = !updated[durationIdx];
 
         return {
-          name,
-          active: suburbData ? suburbData.availableDays.length > 0 : false,
-          availableDays: suburbData
-            ? [...suburbData.availableDays]
-            : [...ALL_DAYS],
+          ...pkg,
+          activeDurations: updated,
         };
-      });
-      setSuburbsData(initialSuburbs);
-    }
-  }, [
-    suburbs,
-    instructorData,
-    isSuburbsLocations,
-    isInstructorLoading,
-    suburbsData.length,
-    ALL_DAYS,
-  ]);
+      }),
+    };
+  });
+};
+
+const applyPackageChanges = async () => {
+  if (!selectedSuburb || !packageDraft || !user?.email) return;
+
+  try {
+    setIsUpdatingPackages(true);
+
+    const updatedSuburbs = suburbsData.map((suburb) =>
+      suburb.name === selectedSuburb.name
+        ? {
+            ...suburb,
+            packages: packageDraft.packages,
+          }
+        : suburb
+    );
+
+    const activeSuburbs = updatedSuburbs
+      .filter((s) => s.active)
+      .map((s) => ({
+        name: s.name,
+        availableDays: s.availableDays,
+        packages: (s.packages || []).map((pkg) => ({
+  serviceName: pkg.serviceName,
+  activeDurations: (pkg.activeDurations || []).map(Boolean),
+})),
+      }));
+
+   await axios.patch("/api/instructors", {
+  email: user.email,
+  suburbs: activeSuburbs,
+});
+
+await refetchInstructor();
+setSuburbsData(updatedSuburbs);
+setSelectedSuburb(null);
+setPackageDraft(null);
+
+toast.success("Packages updated successfully!");
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.message || "Failed to update package settings"
+    );
+  } finally {
+    setIsUpdatingPackages(false);
+  }
+};
+const closePackagesModal = () => {
+  setSelectedSuburb(null);
+  setPackageDraft(null);
+};
+  // Initialize suburbsData after fetching
+ useEffect(() => {
+  if (
+    !isSuburbsLocations &&
+    !isInstructorLoading &&
+    suburbs.length &&
+    !suburbsData.length
+  ) {
+    const initialSuburbs = suburbs.map((loc) => {
+      const name = loc.name;
+      const suburbData = instructorData.suburbs?.find((s) => s.name === name);
+
+      return {
+        name,
+        active: suburbData ? suburbData.availableDays.length > 0 : false,
+        availableDays: suburbData
+          ? [...suburbData.availableDays]
+          : [...ALL_DAYS],
+       packages:
+  suburbData?.packages?.length > 0
+    ? suburbData.packages.map((p) => ({
+        serviceName: p.serviceName,
+        activeDurations: durationsOrder.map((_, i) => !!p.activeDurations?.[i]),
+      }))
+    : buildDefaultSuburbPackages(instructorData?.services || []),
+      };
+    });
+
+    setSuburbsData(initialSuburbs);
+  }
+}, [
+  suburbs,
+  instructorData,
+  isSuburbsLocations,
+  isInstructorLoading,
+  suburbsData.length,
+  ALL_DAYS,
+]);
+
+
 
   const toggleActiveByName = (name) => {
     setSuburbsData((prev) =>
@@ -129,7 +263,15 @@ export default function Suburbs() {
           (s) => s.name.toLowerCase() === name.toLowerCase(),
         );
         if (exists) return prev;
-        return [...prev, {name, active: true, availableDays: [...ALL_DAYS]}];
+       return [
+  ...prev,
+  {
+    name,
+    active: true,
+    availableDays: [...ALL_DAYS],
+    packages: buildDefaultSuburbPackages(instructorData?.services || []),
+  },
+];
       });
     } catch (err) {
   
@@ -139,26 +281,31 @@ export default function Suburbs() {
     }
   };
 
-  const handleSave = async () => {
-    try {
-      const activeSuburbs = suburbsData
-        .filter((s) => s.active)
-        .map((s) => ({
-          name: s.name,
-          availableDays: s.availableDays,
-        }));
+ const handleSave = async () => {
+  try {
+    const activeSuburbs = suburbsData
+      .filter((s) => s.active)
+      .map((s) => ({
+        name: s.name,
+        availableDays: s.availableDays,
+       packages: (s.packages || []).map((pkg) => ({
+  serviceName: pkg.serviceName,
+  activeDurations: pkg.activeDurations.map(Boolean),
+})),
+      }));
 
-      await axios.patch("/api/instructors", {
-        email: user.email,
-        suburbs: activeSuburbs,
-      });
+    await axios.patch("/api/instructors", {
+      email: user.email,
+      suburbs: activeSuburbs,
+    });
 
-      toast.success("Suburbs availability updated successfully!");
-    } catch (err) {
-     
-      toast.error(err?.response?.data?.message || "Failed to update suburbs availability");
-    }
-  };
+    toast.success("Suburbs availability updated successfully!");
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.message || "Failed to update suburbs availability"
+    );
+  }
+};
 
   // Filtered view
   const filteredSuburbs = suburbsData.filter((s) => {
@@ -211,18 +358,21 @@ export default function Suburbs() {
 
       <div className="bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full table-auto">
+          <table className="w-auto md:w-full table-auto">
             <thead className="bg-gray-100">
               <tr>
-                <th className="py-3 px-6 text-left text-xs font-medium uppercase">
+                <th className="py-3 px-2 md:px-4 text-left text-xs font-medium uppercase">
                   Active
                 </th>
-                <th className="py-3 px-6 text-left text-xs font-medium uppercase">
+                <th className="py-3 px-2 md:px-4 text-left text-xs font-medium uppercase">
                   Suburb
                 </th>
-                <th className="py-3 px-6 text-left text-xs font-medium uppercase">
-                  Days Available
-                </th>
+                <th className="py-3 px-2 md:px-4 text-left text-xs font-medium uppercase">
+  Days Available
+</th>
+<th className="py-3 px-2 md:px-4 text-left text-xs font-medium uppercase">
+  Packages
+</th>
              
               </tr>
             </thead>
@@ -261,7 +411,24 @@ export default function Suburbs() {
                       ))}
                     </div>
                   </td>
+<td className="px-2 md:px-4 py-4 align-top">
+  {suburb.active ? (
+    <div className="flex flex-col gap-2">
+      <span className="text-xs text-gray-500">
+       {(suburb.packages || []).filter((p) => p.activeDurations?.some(Boolean)).length} package(s) selected
+      </span>
 
+      <PrimaryBtn
+        onClick={() => openManagePackagesModal(suburb)}
+        className="justify-center text-xs! md:text-sm px-3! py-2!"
+      >
+        Packages
+      </PrimaryBtn>
+    </div>
+  ) : (
+    <span className="text-xs text-gray-400">Activate suburb first</span>
+  )}
+</td>
                 </tr>
               ))}
             </tbody>
@@ -269,22 +436,97 @@ export default function Suburbs() {
         </div>
       </div>
 
-      {selectedSuburb && (
-        <Modal onClose={() => setSelectedSuburb(null)}>
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">{selectedSuburb.name}</h2>
-            <p>
-              <b>Active:</b> {selectedSuburb.active ? "Yes" : "No"}
-            </p>
-            <p>
-              <b>Days Available:</b> {selectedSuburb.availableDays.join(", ")}
-            </p>
-            <PrimaryBtn onClick={() => setSelectedSuburb(null)}>
-              Close
-            </PrimaryBtn>
+     {selectedSuburb && (
+<Modal onClose={closePackagesModal}>
+   <div className="max-h-[80vh] overflow-y-auto">
+  <div className="space-y-4">
+    <div className="sticky top-0 z-20 bg-white border-b border-gray-200 pb-3 pt-1">
+  <div className="flex items-start justify-between gap-3">
+    <div>
+      <h2 className="text-xl font-bold">
+        Manage Packages - {selectedSuburb.name}
+      </h2>
+      <p className="text-sm text-gray-500 mt-1">
+        Enable packages and durations for this suburb.
+      </p>
+    </div>
+
+   <PrimaryBtn
+  className="justify-center px-3! py-2! text-xs! md:text-sm hover:scale-100!"
+  onClick={applyPackageChanges}
+  disabled={isUpdatingPackages}
+>
+  {isUpdatingPackages ? "Updating..." : "Update"}
+</PrimaryBtn>
+  </div>
+</div>
+
+      <div className="space-y-3">
+  {(packageDraft?.packages || []).length > 0 ? (
+  packageDraft.packages.map((pkg) => (
+            <div
+              key={pkg.serviceName}
+              className="border border-gray-200 rounded-lg p-3"
+            >
+              <div className="mb-3">
+  <p className="text-sm md:text-base font-semibold">
+    {pkg.serviceName}
+  </p>
+</div>
+
+              <div className="flex flex-wrap gap-2">
+  {durationsOrder.map((duration, idx) => {
+    const instructorService = instructorData?.services?.find(
+      (s) => s.name === pkg.serviceName
+    );
+
+    const price = instructorService?.prices?.[idx];
+    const hasPrice = price != null;
+
+    if (!hasPrice) return null;
+
+    return (
+      <button
+  type="button"
+  key={duration.minutes}
+  onClick={() => toggleDraftPackageDuration(pkg.serviceName, idx)}
+  className={`px-2 py-2 rounded text-xs font-semibold border leading-tight ${
+    pkg.activeDurations?.[idx]
+      ? "bg-primary text-white border-primary"
+      : "bg-gray-100 text-gray-600 border-gray-300"
+  }`}
+>
+        <div className="flex flex-col items-center">
+          <span>{duration.label}</span>
+          <span className="text-[11px] font-bold">
+            ${price}
+          </span>
+        </div>
+      </button>
+    );
+  })}
+</div>
+            </div>
+          ))
+        ) : (
+          <div className="text-sm text-gray-500">
+            No packages available for this instructor.
           </div>
-        </Modal>
-      )}
+        )}
+      </div>
+
+      <div className="flex justify-end pt-2 gap-2">
+          <PrimaryBtn className={`hover:scale-100!`} onClick={closePackagesModal} disabled={isUpdatingPackages}>
+            Cancel
+          </PrimaryBtn>
+          <PrimaryBtn className={`hover:scale-100!`} onClick={applyPackageChanges} disabled={isUpdatingPackages}>
+  {isUpdatingPackages ? "Updating..." : "Update"}
+</PrimaryBtn>
+        </div>
+    </div>
+  </div>
+  </Modal>
+)}
       {isAddOpen && (
         <Modal onClose={() => setIsAddOpen(false)}>
           <div className="space-y-4">
@@ -321,10 +563,10 @@ export default function Suburbs() {
             </div>
 
             <div className="flex justify-end gap-2">
-              <PrimaryBtn onClick={() => setIsAddOpen(false)}>
+              <PrimaryBtn className={`hover:scale-100!`} onClick={() => setIsAddOpen(false)}>
                 Cancel
               </PrimaryBtn>
-              <PrimaryBtn onClick={handleAddSuburb} disabled={isAdding}>
+              <PrimaryBtn  className={`hover:scale-100!`} onClick={handleAddSuburb} disabled={isAdding}>
                 {isAdding ? "Adding..." : "Add"}
               </PrimaryBtn>
             </div>

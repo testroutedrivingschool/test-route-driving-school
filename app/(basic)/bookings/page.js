@@ -341,6 +341,39 @@ export default function BookingsPage() {
     return slot.suburb === selectedLocations;
   };
 
+  const getMaxContinuousAvailableMinutes = ({
+  startDate,
+  startTime,
+}) => {
+  const dateKey = formatYMD(startDate);
+  const startIdx = timeIndexMap[normalizeTime(startTime)];
+
+  if (startIdx == null) return 0;
+
+  let totalMinutes = 0;
+
+  for (let i = startIdx; i < times.length; i++) {
+    const currentTime = times[i];
+    const currentKey = `${dateKey}__${normalizeTime(currentTime)}`;
+    const slot = slotsMap[currentKey];
+    const isBooked = bookedSlotsMap[currentKey];
+    const isBlockedByTime = isSlotBlockedByTime(startDate, currentTime);
+    const vis = slot ? getVisibility(slot) : "";
+
+    const isAvailable =
+      !isBlockedByTime &&
+      !isBooked &&
+      !!slot &&
+      slotMatchesLocation(slot) &&
+      vis === "public";
+
+    if (!isAvailable) break;
+
+    totalMinutes += STEP_MIN;
+  }
+
+  return totalMinutes;
+};
   const isSlotPast = (slotDate, slotTime) => {
   const slotDateTime = toBookingDateTime(slotDate, slotTime);  
   return slotDateTime && slotDateTime.getTime() < Date.now(); 
@@ -348,32 +381,37 @@ export default function BookingsPage() {
   const isHourStart = (time) => time?.includes(":00");
 
   // Handle booking
-  const handleBookNow = (time, dayIndex, slot) => {
-    if (!selectedInstructor) return;
+const handleBookNow = (time, dayIndex, slot) => {
+  if (!selectedInstructor) return;
 
-    if (!user) {
-      router.push(`/login?redirect=/bookings`);
-      return;
-    }
+  if (!user) {
+    router.push(`/login?redirect=/bookings`);
+    return;
+  }
 
-    const bookingInfo = {
-      instructorEmail: selectedInstructor.email,
-      instructorName: selectedInstructor.name,
-      instructorId: selectedInstructor._id,
+  const clickedDate = weekDates[dayIndex];
+  const maxAvailableMinutes = getMaxContinuousAvailableMinutes({
+    startDate: clickedDate,
+    startTime: time,
+  });
 
-      date: weekDates[dayIndex].toISOString(),
-      time,
-      location: selectedLocations,
-
-      slotId: slot?._id,
-      duration: slot?.duration,
-      bookingType: "website",
-    };
-
-    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-    router.push("/booking-confirm");
+  const bookingInfo = {
+    instructorEmail: selectedInstructor.email,
+    instructorName: selectedInstructor.name,
+    instructorId: selectedInstructor._id,
+    date: clickedDate.toISOString(),
+    time,
+    location: selectedLocations,
+    suburb: selectedLocations,
+    slotId: slot?._id,
+    duration: slot?.duration,
+    maxAvailableMinutes, // ✅ NEW
+    bookingType: "website",
   };
 
+  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+  router.push("/booking-confirm");
+};
   useEffect(() => {
     const table = tableRef.current;
     if (!table) return;

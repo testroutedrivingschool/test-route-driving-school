@@ -62,7 +62,7 @@ export default function BookingDetailsCard() {
   const [saving, setSaving] = useState(false);
   const clientId = booking?.clientId || booking?.userId;
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-
+  const [costModalOpen, setCostModalOpen] = useState(false);
   const [clientNoteModalOpen, setClientNoteModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
   const [payNowOpen, setPayNowOpen] = useState(false);
@@ -103,60 +103,60 @@ export default function BookingDetailsCard() {
     },
   });
 
-  const clientName = safe(booking.userName || booking.clientName, "Client");
-  const phone = safe(booking.userPhone || booking.clientPhone);
-  const instructor = safe(booking.instructorName);
-  const invoiceNo = safe(booking.invoiceNo);
-  const bookingDate = formatDate(booking.bookingDate);
-  const bookingTime = safe(booking.bookingTime);
-  const serviceName = safe(booking.serviceName);
-  const duration = safe(booking.duration);
-  const price = booking.price || 0;
+const clientName = safe(b?.userName || b?.clientName, "Client");
+const phone = safe(b?.userPhone || b?.clientPhone);
+const instructor = safe(b?.instructorName);
+const invoiceNo = safe(b?.invoiceNo);
+const bookingDate = formatDate(b?.bookingDate);
+const bookingTime = safe(b?.bookingTime);
+const serviceName = safe(b?.serviceName);
+const duration = safe(b?.duration);
+const price = b?.price || 0;
 
-  const avatarSrc = booking?.instructorPhoto
-    ? booking.instructorPhoto
-    : booking?.instructorPhotoKey
-      ? `/api/storage/proxy?key=${encodeURIComponent(booking.instructorPhotoKey)}`
-      : "/profile-avatar.png";
+  const avatarSrc = b?.instructorPhoto
+  ? b.instructorPhoto
+  : b?.instructorPhotoKey
+    ? `/api/storage/proxy?key=${encodeURIComponent(b.instructorPhotoKey)}`
+    : "/profile-avatar.png";
 
   const paymentRequired =
-    String(booking?.paymentStatus || "").toLowerCase() !== "paid";
+  String(b?.paymentStatus || "").toLowerCase() !== "paid";
 
-  const bookingNotes = (notes || []).filter((n) => {
-    const typeOk = String(n?.type || "").toLowerCase() === "booking";
-    const noteBookingId = oid(n?.bookingId);
-    const thisBookingId = oid(booking?._id);
-    return typeOk && noteBookingId === thisBookingId;
-  });
-  const paymentStatus = String(booking?.paymentStatus || "").toLowerCase();
-  const isPaid = paymentStatus === "paid";
+ const bookingNotes = (notes || []).filter((n) => {
+  const typeOk = String(n?.type || "").toLowerCase() === "booking";
+  const noteBookingId = oid(n?.bookingId);
+  const thisBookingId = oid(b?._id);
+  return typeOk && noteBookingId === thisBookingId;
+});
 
-  const paidAmount =
-    booking?.paidAmount ??
-    booking?.amountPaid ??
-    booking?.totalPaid ??
-    booking?.price ??
-    0;
+const paymentStatus = String(b?.paymentStatus || "").toLowerCase();
+const isPaid = paymentStatus === "paid";
 
-  const processingFee =
-    booking?.processingFee ??
-    booking?.cardProcessingFee ??
-    booking?.stripeFee ??
-    0;
+const paidAmount =
+  b?.paidAmount ??
+  b?.amountPaid ??
+  b?.totalPaid ??
+  b?.price ??
+  0;
 
-  const transactionId =
-    booking?.paymentIntentId || booking?.transactionId || "";
+const processingFee =
+  b?.processingFee ??
+  b?.cardProcessingFee ??
+  b?.stripeFee ??
+  0;
+
+const transactionId = b?.paymentIntentId || b?.transactionId || "";
 
   const openNoteModal = () => {
     const latest = bookingNotes?.[0]?.text || "";
     setNoteModal({open: true, initialText: latest});
   };
-  const method = String(booking?.paymentMethod || "").toLowerCase();
+ const method = String(b?.paymentMethod || "").toLowerCase();
   const isCard = method === "card";
   const isCash = method === "cash";
 
   // base cost (service cost)
-  const cost = Number(booking?.price || 0);
+  const cost = Number(b?.price || 0);
 
   // paid amount (card total can include fee if you stored it)
   const paidAmountNum = Number(paidAmount || 0);
@@ -192,8 +192,8 @@ export default function BookingDetailsCard() {
         await axios.post(`/api/clients/${clientId}/notes`, {
           type: "booking",
           text: trimmed,
-          bookingId: booking?._id,
-          bookingTitle: `${serviceName} • ${bookingTime}`,
+        bookingId: b?._id,
+bookingTitle: `${serviceName} • ${bookingTime}`,
           createdBy: {
             userId: user?._id || "",
             name: user?.name || "",
@@ -376,43 +376,64 @@ export default function BookingDetailsCard() {
         </Modal>
       )}
 
-      {/* Service Section */}
+            {/* Service Section */}
       <div className="p-4">
         <h3 className="text-xl font-bold text-gray-800 mb-3">Service</h3>
 
-        <div className="rounded-xl p-2 flex justify-between items-center">
-          <FaArrowRight />
-          <div>
-            <p className="text-lg font-semibold">
-              {serviceName} - {duration}
-            </p>
+        <div className="rounded-xl p-2 flex justify-between items-center gap-4">
+          <div className="flex items-center gap-3">
+            <FaArrowRight />
+            <div>
+              <p className="text-lg font-semibold">
+                {serviceName} - {duration}
+              </p>
+
+              {b?.isPriceOverridden && b?.originalPrice != null ? (
+                <div className="mt-1 text-sm text-gray-500">
+                  Previos:{" "}
+                  <span className="line-through">
+                    {formatMoney(b.originalPrice)}
+                  </span>
+                </div>
+              ) : null}
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-base font-semibold">{formatMoney(price)}</p>
+
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <p className="text-base font-semibold">{formatMoney(b?.price || 0)}</p>
+            </div>
+          {String(b?.paymentStatus || "").toLowerCase() !== "paid" && (
+  <button
+    type="button"
+    onClick={() => setCostModalOpen(true)}
+    className="border-2 border-primary text-primary font-semibold px-3 py-2 rounded-md hover:bg-primary hover:text-white transition"
+  >
+    Change Cost
+  </button>
+)}
+           
           </div>
         </div>
 
         {/* Total */}
         <div className="mt-6 border-t border-gray-200 pt-4 flex justify-between items-center">
           <p className="text-base font-semibold">Total:</p>
-          <p className="text-lg font-bold">{formatMoney(price)}</p>
+          <p className="text-lg font-bold">{formatMoney(b?.price || 0)}</p>
         </div>
 
-        {/* ✅ PAID UI (like screenshot) */}
+        {/* ✅ PAID UI */}
         {isPaid ? (
           <div className="mt-6 border-t border-gray-200 pt-4">
             <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-              {/* left label */}
               <div className="md:col-span-3">
                 <p className="text-lg font-bold">Paid:</p>
               </div>
 
-              {/* middle amount */}
               <div className="md:col-span-3">
                 <p className="text-lg font-bold">{formatMoney(paidAmount)}</p>
               </div>
 
-              {/* show detail button */}
               <div className="md:col-span-3 flex md:justify-center">
                 <button
                   type="button"
@@ -423,7 +444,6 @@ export default function BookingDetailsCard() {
                 </button>
               </div>
 
-              {/* right details */}
               <div className="md:col-span-3 md:text-right">
                 <div className="text-sm">
                   <p className="italic">
@@ -454,7 +474,17 @@ export default function BookingDetailsCard() {
           </div>
         ) : null}
       </div>
-
+      {costModalOpen && (
+        <ChangeCostModal
+          booking={b}
+          onClose={() => setCostModalOpen(false)}
+          onSaved={async () => {
+            await queryClient.invalidateQueries({ queryKey: ["booking", bookingId] });
+            await queryClient.invalidateQueries({ queryKey: ["bookings"] });
+            setCostModalOpen(false);
+          }}
+        />
+      )}
       {paymentModalOpen && (
         <PaymentDetailModal
           onClose={() => setPaymentModalOpen(false)}
@@ -467,20 +497,21 @@ export default function BookingDetailsCard() {
           isCard={isCard}
         />
       )}
-      {payNowOpen && (
-        <Elements stripe={stripePromise}>
-          <PayNowModal
-            booking={booking}
-            client={client}
-            onClose={() => setPayNowOpen(false)}
-            onSuccess={async () => {
-              toast.success("Payment saved");
-              // IMPORTANT: refetch booking list/details query here
-              setPayNowOpen(false);
-            }}
-          />
-        </Elements>
-      )}
+     {payNowOpen && (
+  <Elements stripe={stripePromise}>
+    <PayNowModal
+      booking={b}
+      client={client}
+      onClose={() => setPayNowOpen(false)}
+      onSuccess={async () => {
+        toast.success("Payment saved");
+        await queryClient.invalidateQueries({queryKey: ["booking", bookingId]});
+        await queryClient.invalidateQueries({queryKey: ["bookings"]});
+        setPayNowOpen(false);
+      }}
+    />
+  </Elements>
+)}
     </div>
   );
 }
@@ -716,7 +747,7 @@ function PaymentDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold px-10 py-3 rounded-md"
+              className="bg-primary  text-white font-bold px-10 py-3 rounded-md"
             >
               Close
             </button>
@@ -957,11 +988,146 @@ if (emailInvoice) {
         
                   onClick={handleSavePayment}
               disabled={loading}
-              className="bg-red-600 hover:bg-red-700 text-white font-bold px-10 py-3 rounded-md"
+              className="bg-primary  text-white font-bold px-10 py-3 rounded-md"
             >
              {loading ? "Saving..." : "Save Payment"}
             </button>
           </div>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function ChangeCostModal({booking, onClose, onSaved}) {
+  const [saving, setSaving] = useState(false);
+
+  const currentPrice = Number(booking?.price || 0);
+  const originalPrice = Number(
+    booking?.originalPrice != null ? booking.originalPrice : booking?.price || 0
+  );
+  const paidAmount = Number(booking?.paidAmount || 0);
+
+  const [newPrice, setNewPrice] = useState(
+    booking?.isPriceOverridden && booking?.overridePrice != null
+      ? String(booking.overridePrice)
+      : String(currentPrice || "")
+  );
+
+  const handleSave = async () => {
+    const parsed = Number(newPrice);
+
+    if (!newPrice || Number.isNaN(parsed) || parsed <= 0) {
+      return toast.error("Enter a valid cost");
+    }
+
+    if (parsed < paidAmount) {
+      return toast.error("New cost cannot be less than already paid amount");
+    }
+
+    try {
+      setSaving(true);
+
+      const hasOverride = Number(parsed) !== Number(originalPrice);
+      const newOutstanding = Math.max(0, parsed - paidAmount);
+
+      await axios.patch(`/api/bookings/${oid(booking?._id)}`, {
+        price: parsed,
+        originalPrice,
+        overridePrice: hasOverride ? parsed : null,
+        isPriceOverridden: hasOverride,
+        outstanding: newOutstanding,
+        paymentStatus:
+          paidAmount === 0
+            ? "unpaid"
+            : newOutstanding === 0
+              ? "paid"
+              : "partial",
+      });
+
+      toast.success("Cost updated");
+      await onSaved?.();
+    } catch (err) {
+      toast.error(err?.response?.data?.error || "Failed to update cost");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="p-3">
+        <h3 className="text-xl font-bold text-gray-900">Change Cost</h3>
+
+        <div className="mt-4 space-y-4">
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Original Price</span>
+              <span className="font-semibold">{formatMoney(originalPrice)}</span>
+            </div>
+
+            <div className="flex items-center justify-between text-sm mt-2">
+              <span className="text-gray-600">Current Price</span>
+              <span className="font-semibold text-primary">
+                {formatMoney(currentPrice)}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between text-sm mt-2">
+              <span className="text-gray-600">Already Paid</span>
+              <span className="font-semibold text-green-600">
+                {formatMoney(paidAmount)}
+              </span>
+            </div>
+
+            {booking?.isPriceOverridden ? (
+              <div className="mt-2 text-xs text-green-600 font-medium">
+                Override is active
+              </div>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              New Cost
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                $
+              </span>
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={newPrice}
+                onChange={(e) => setNewPrice(e.target.value)}
+                className="w-full border border-gray-300 rounded-md px-3 py-3 pl-8"
+                placeholder="0.00"
+              />
+            </div>
+            <p className="mt-2 text-xs text-gray-500">
+              New cost must be equal to or more than already paid amount.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-md border border-gray-300"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            disabled={saving}
+            onClick={handleSave}
+            className="px-5 py-2 rounded-md bg-primary text-white font-semibold disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Save Cost"}
+          </button>
         </div>
       </div>
     </Modal>
