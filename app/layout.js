@@ -3,6 +3,7 @@ import "./globals.css";
 import AuthProvider from "./context/AuthProvider";
 import QueryProvider from "./utils/QueryProvider";
 import ScrollToTop from "./utils/ScrollToTop";
+import Script from "next/script";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -396,6 +397,19 @@ export default function RootLayout({children}) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{__html: JSON.stringify(schema)}}
         />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-9DRXR8GKP4"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            window.gtag = gtag;
+            gtag('js', new Date());
+            gtag('config', 'G-9DRXR8GKP4');
+          `}
+        </Script>
       </head>
       <body
         suppressHydrationWarning
