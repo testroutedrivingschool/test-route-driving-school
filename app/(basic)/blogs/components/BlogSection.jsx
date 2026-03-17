@@ -48,10 +48,11 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
         {/* Blog Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {pathname !== "/blogs"
-            ? blogs.slice(0, 3).map((blog) => (
+            ? blogs.slice(-3).map((blog) => (
                 <div
+                onClick={()=>router.push(`/${blog.slug}`)}
                   key={blog.id}
-                  className="border border-border-color rounded-xl overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full"
+                  className="border border-border-color rounded-xl overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full cursor-pointer"
                 >
                   <Image
                     src={blog.image}
@@ -64,8 +65,8 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                     <h3 className="text-lg md:text-xl font-bold mb-2">{blog.title}</h3>
 
                     <p className="text-neutral mb-4 flex-1 ">
-                      {blog.excerpt.length > 60
-                        ? blog.excerpt.slice(0, 60) + "..."
+                          {blog.excerpt.length > 90
+                        ? blog.excerpt.slice(0, 90) + "..."
                         : blog.excerpt || ""}
                     </p>
 
@@ -79,10 +80,11 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                   </div>
                 </div>
               ))
-            : blogs.map((blog) => (
+            : blogs.slice().reverse().map((blog) => (
                 <div
                   key={blog.id}
-                  className="border border-border-color rounded-xl overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full"
+                     onClick={()=>router.push(`/${blog.slug}`)}
+                  className="border border-border-color rounded-xl overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full cursor-pointer"
                 >
                   <Image
                     src={blog.image}
@@ -95,8 +97,8 @@ export default function BlogSection({sectionTitle, sectionSubTitle}) {
                     <h3 className="text-lg md:text-xl font-bold mb-2">{blog.title}</h3>
 
                     <p className="text-neutral mb-2 flex-1 ">
-                      {blog.excerpt.length > 60
-                        ? blog.excerpt.slice(0, 60) + "..."
+                      {blog.excerpt.length > 110
+                        ? blog.excerpt.slice(0, 110) + "..."
                         : blog.excerpt || ""}
                     </p>
 

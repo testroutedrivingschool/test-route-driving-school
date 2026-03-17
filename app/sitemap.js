@@ -110,6 +110,7 @@ export default async function sitemap() {
       url: `${baseUrl}/services/parking-package`,
       lastModified,
     },
+   
     {
       url: `${baseUrl}/services/night-driving-lesson`,
       lastModified,
@@ -122,6 +123,7 @@ export default async function sitemap() {
       url: `${baseUrl}/services/car-hire-for-instructor`,
       lastModified,
     },
+
     {
       url: `${baseUrl}/services/highway-package`,
       lastModified,
