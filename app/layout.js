@@ -71,323 +71,483 @@ export const metadata = {
   },
 };
 
-const schema = {
+const schema ={
   "@context": "https://schema.org",
-  "@type": "LocalBusiness",
-  "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-  name: "Test Route Driving School",
-  url: "https://testroutedrivingschool.com.au",
-  description:
-    "Driving School in Sydney Suburbs | Learn to Drive Safely & Confidently\nJoin our expert instructors and gain confidence behind the wheel. At Test Route Driving School, we provide structured, safe, and friendly driving lessons in Sydney's suburbs. Whether you're a beginner or improving your skills, our lessons help you feel comfortable on the road. Our programs cover both automatic and manual cars, and we tailor every session to your pace. You’ll learn city driving, highway skills, parking techniques, and more—all designed to prepare you for your driving test.Book your lessons today and start your journey with a trusted driving school near you in Sydney Suburbs.",
-  slogan: "Learn to Drive Safely & Confidently",
-  image:
-    "https://testroutedrivingschool.com.au/_next/image?url=%2Ftest-route-driving-school-logo.png&w=828&q=75",
-  logo: "https://testroutedrivingschool.com.au/_next/image?url=%2Ftest-route-driving-school-logo.png&w=828&q=75",
-  email: "testroutedrivingschool@gmail.com",
-  telephone: ["+61 469 046 923", "+61 412 018 593"],
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: "67 Warialda St",
-    addressLocality: "Kogarah",
-    addressRegion: "NSW",
-    postalCode: "2217",
-    addressCountry: "AU",
-  },
-  legalAddress: {
-    "@type": "PostalAddress",
-    streetAddress: "67 Warialda St",
-    addressLocality: "Kogarah",
-    addressRegion: "NSW",
-    postalCode: "2217",
-    addressCountry: "AU",
-  },
-  geo: {
-    "@type": "GeoCoordinates",
-    latitude: -33.9835176,
-    longitude: 151.1348637,
-  },
-  openingHoursSpecification: [
+  "@graph": [
     {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: [
-        "https://schema.org/Monday",
-        "https://schema.org/Tuesday",
-        "https://schema.org/Wednesday",
-        "https://schema.org/Thursday",
-        "https://schema.org/Friday",
-        "https://schema.org/Saturday",
-        "https://schema.org/Sunday",
+      "@type": "LocalBusiness",
+      "@id": "https://testroutedrivingschool.com.au/#localbusiness",
+      "name": "Test Route Driving School",
+      "url": "https://testroutedrivingschool.com.au",
+      "description": "Driving School in Sydney Suburbs | Learn to Drive Safely & Confidently\nJoin our expert instructors and gain confidence behind the wheel. At Test Route Driving School, we provide structured, safe, and friendly driving lessons in Sydney's suburbs. Whether you're a beginner or improving your skills, our lessons help you feel comfortable on the road. Our programs cover both automatic and manual cars, and we tailor every session to your pace. You’ll learn city driving, highway skills, parking techniques, and more—all designed to prepare you for your driving test.Book your lessons today and start your journey with a trusted driving school near you in Sydney Suburbs.",
+      "slogan": "Learn to Drive Safely & Confidently",
+      "image": "https://testroutedrivingschool.com.au/_next/image?url=%2Ftest-route-driving-school-logo.png&w=828&q=75",
+      "logo": "https://testroutedrivingschool.com.au/_next/image?url=%2Ftest-route-driving-school-logo.png&w=828&q=75",
+      "email": "testroutedrivingschool@gmail.com",
+      "telephone": [
+        "+61 469 046 923",
+        "+61 412 018 593"
       ],
-      opens: "06:00",
-      closes: "20:00",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "67 Warialda St",
+        "addressLocality": "Kogarah",
+        "addressRegion": "NSW",
+        "postalCode": "2217",
+        "addressCountry": "AU"
+      },
+      "legalAddress": {
+        "@type": "PostalAddress",
+        "streetAddress": "67 Warialda St",
+        "addressLocality": "Kogarah",
+        "addressRegion": "NSW",
+        "postalCode": "2217",
+        "addressCountry": "AU"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": -33.9835176,
+        "longitude": 151.1348637
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": [
+            "https://schema.org/Monday",
+            "https://schema.org/Tuesday",
+            "https://schema.org/Wednesday",
+            "https://schema.org/Thursday",
+            "https://schema.org/Friday",
+            "https://schema.org/Saturday",
+            "https://schema.org/Sunday"
+          ],
+          "opens": "06:00",
+          "closes": "20:00"
+        }
+      ],
+      "hasMap": "https://maps.app.goo.gl/Gxx8E4KHaQhTFWjZ6",
+      "areaServed": [
+        "Roselands",
+        "Sandringham",
+        "Sutherland",
+        "Miranda",
+        "Monterey",
+        "Ramsgate",
+        "Bardwell Park",
+        "Eastgardens",
+        "Gymea Bay",
+        "Rockdale",
+        "Woolooware",
+        "Kyeemagh",
+        "Ramsgate Beach",
+        "Caringbah",
+        "Caringbah South",
+        "Carss Park",
+        "Clemton Park",
+        "Hurstville",
+        "Kangaroo Point",
+        "Kingsgrove",
+        "Kogarah",
+        "NSW",
+        "South Hurstville",
+        "Tempe",
+        "Mortdale",
+        "Peakhurst",
+        "Riverwood",
+        "Allawah",
+        "Dolls Point",
+        "Gymea",
+        "Hurstville Grove",
+        "Kareela",
+        "Sans Souci",
+        "Sylvania",
+        "Sylvania Waters",
+        "Taren Point",
+        "Turella",
+        "Kirrawee",
+        "Kogarah Bay",
+        "Penshurst",
+        "Arncliffe",
+        "Banksia",
+        "Bardwell Valley",
+        "Blakehurst",
+        "Brighton-Le-Sands",
+        "Carlton",
+        "Cronulla",
+        "Endgadline",
+        "Wolli Creek",
+        "Pagewood",
+        "Chatswood",
+        "Campbelltown",
+        "Baverly Hills",
+        "Baxley",
+        "Baxley North",
+        "Carlton Park",
+        "Jannali",
+        "Airds",
+        "Ambarvale",
+        "Belfield",
+        "Mascot",
+        "Abbotsford",
+        "Port Botany",
+        "Beverly Hills",
+        "Botany",
+        "Marrickville",
+        "Eastlakes",
+        "Bexley",
+        "Abercrombie",
+        "Acacia Garden",
+        "Alexandria",
+        "Ashbury",
+        "Ashfield",
+        "Auburn",
+        "Austral",
+        "Badgerys Creek",
+        "Banksmeadow",
+        "Bankstown",
+        "Bardia",
+        "Bass Hill",
+        "Baulkham Hills",
+        "Beaconsfield",
+        "Bella Vista",
+        "Bellevue Hill",
+        "Belmore",
+        "Berala",
+        "Baverley Park",
+        "Bexley North",
+        "Blair Athol",
+        "Blairmount",
+        "Bondi",
+        "Bondi Beach",
+        "Bondi Junction",
+        "Bonnyrigg",
+        "Bow",
+        "Bowing",
+        "Box Hill",
+        "Bradbury",
+        "Breakfast Point",
+        "Bringelly",
+        "Bronte",
+        "Burwood",
+        "Burwood Heights",
+        "Cabarita",
+        "Camden",
+        "Camperdown",
+        "Campsie",
+        "Canada Bay",
+        "Canterbury",
+        "Carlingford",
+        "Casula",
+        "Catherine Field",
+        "Cecil Hills",
+        "Cecil Park",
+        "Clovelly",
+        "Clyde",
+        "Cobbitty",
+        "Colebee",
+        "Concord",
+        "Concord West",
+        "Connells Point",
+        "Constitution Hill",
+        "Coogee",
+        "Zetland",
+        "Woolloomooloo",
+        "Woollahra",
+        "Woodpark",
+        "Woodbine",
+        "Willowdale Park",
+        "Wiley Park",
+        "Whalan",
+        "Westmead",
+        "West Ryde",
+        "West Hoxton",
+        "Wentworthville",
+        "Wentworth Point",
+        "Waverley",
+        "Wattle Grove",
+        "Watsons Bay",
+        "Waterloo",
+        "Villawood",
+        "Vaucluse",
+        "Varroville",
+        "Ultimo",
+        "Toongabbie",
+        "The Ponds",
+        "Telopea",
+        "Tamarama",
+        "Tallowong",
+        "Sydney Olympic Park",
+        "Sydney Airport",
+        "Surry Hill",
+        "Summer Hill",
+        "Strathfield South",
+        "Strathfield",
+        "Stanhope Gardens",
+        "St Peters",
+        "St Marys",
+        "St Helens Park",
+        "St Andrews",
+        "Spring Farm",
+        "South Wentworthville",
+        "South Granville",
+        "South Coogee",
+        "Smithfield",
+        "Smeaton Grange",
+        "Silverwater",
+        "Seven Hills",
+        "Schofields",
+        "Ryde",
+        "Rydalmere",
+        "Rushcutters Bay",
+        "Ruse",
+        "Rosemeadow",
+        "Rosehill"
+      ],
+      "keywords": [
+        "Automatic Driving Lessons",
+        "Driving Test Assessment",
+        "Driving Test Package",
+        "Car Hire for Instructor",
+        "Parking Package",
+        "Highway Package",
+        "Night Driving Lesson",
+        "City Driving Package"
+      ],
+      "knowsAbout": [
+        "New learner drivers in Sydney suburbs",
+        "overseas drivers needing NSW licence",
+        "nervous or anxious drivers needing confidence",
+        "students preparing for the NSW driving test",
+        "parents looking for a safe driving instructor for their teenagers",
+        "drivers who failed the test and want structured feedback",
+        "learners wanting real test route practice around Sydney suburbs",
+        "people searching for flexible driving lesson times",
+        "customers needing car hire for the driving test at RMS centres",
+        "local residents looking for an experienced, patient and friendly driving instructor near Kogarah and surrounding suburbs"
+      ],
+      "knowsLanguage": [
+        "en-AU"
+      ],
+      "skills": [
+        "Providing one-to-one automatic and manual driving lessons",
+        "Teaching NSW road rules clearly",
+        "Preparing students for NSW driving test",
+        "Coaching on real test routes in Sydney suburbs",
+        "Designing customised lesson plans for each learner",
+        "Conducting mock driving tests and detailed assessments",
+        "Giving structured feedback and improvement plans",
+        "Helping students build confidence behind the wheel",
+        "Training safe and defensive driving habits",
+        "Instructing complex parking manoeuvres (reverse park, kerbside stop, three point turn)",
+        "Managing dual control vehicles safely",
+        "Communicating calmly with nervous learners",
+        "Planning efficient pick up and drop off routes in Sydney suburbs",
+        "Handling lesson bookings and scheduling seven days a week",
+        "Supporting learners until they pass their driving test"
+      ],
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "telephone": "+61 469 046 923",
+          "email": "testroutedrivingschool@gmail.com",
+          "availableLanguage": [
+            "en-AU"
+          ]
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/share/1A148kMS7g/",
+        "https://testroutedrivingschool.tumblr.com/",
+        "https://community.hubspot.com/t5/user/viewprofilepage/user-id/1042130",
+        "https://instapaper.com/p/testroutedrivin"
+      ],
+      "subjectOf": [
+        {
+          "@type": "WebPage",
+          "url": "https://www.yplocal.com/kogarah/business-professional-services/test-route-driving-school"
+        },
+        {
+          "@type": "WebPage",
+          "url": "https://bizidex.com/en/test-route-driving-school-advertising-858454"
+        },
+        {
+          "@type": "WebPage",
+          "url": "https://www.bizcoupon.directory/kogarah/business-services/test-route-driving-school"
+        }
+      ],
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Driving lesson services",
+        "itemListElement": [
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Automatic Driving Lessons",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Driving Test Assessment",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Driving Test Package",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Car Hire for Instructor",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Parking Package",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Highway Package",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "Night Driving Lesson",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          },
+          {
+            "@type": "Offer",
+            "itemOffered": {
+              "@type": "Service",
+              "name": "City Driving Package",
+              "provider": {
+                "@id": "https://testroutedrivingschool.com.au/#localbusiness"
+              }
+            }
+          }
+        ]
+      },
+      "review": [
+        {
+          "@type": "Review",
+          "inLanguage": "en-AU",
+          "author": {
+            "@type": "Person",
+            "name": "Najeeb Zahid"
+          },
+          "reviewBody": "my nephew passed driving test on the first attempt thanks to Test Route Driving School. Instructor Firoj is extremely patient and explains everything clearly. Practicing real test routes made a huge difference."
+        },
+        {
+          "@type": "Review",
+          "inLanguage": "en-AU",
+          "author": {
+            "@type": "Person",
+            "name": "Adrita's World"
+          },
+          "reviewBody": "Best driving instructor I could ask for ,As a student learner, I was very scared at first, but Test Route Driving School made everything easy. The lessons were well-structured and focused on test routes around the Sydney suburbs. The instructor corrected my mistakes calmly and helped me build confidence. I’m very happy with the result!"
+        },
+        {
+          "@type": "Review",
+          "inLanguage": "en-AU",
+          "author": {
+            "@type": "Person",
+            "name": "porteboishobai"
+          },
+          "reviewBody": "My experience has been great ! Instructors were really patient with me and easygoing enough for me to communicate with them about my problems properly. Because of these lessons I am more confident than ever!"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": 5.0,
+        "bestRating": 5,
+        "worstRating": 1,
+        "reviewCount": 3
+      }
     },
-  ],
-  hasMap: "https://maps.app.goo.gl/Gxx8E4KHaQhTFWjZ6",
-  areaServed: [
-    "Roselands",
-    "Sandringham",
-    "Sutherland",
-    "Wolli Creek",
-    "Miranda",
-    "Monterey",
-    "Ramsgate",
-    "Bardwell Park",
-    "Eastgardens",
-    "Gymea Bay",
-    "Port Botany",
-    "Rockdale",
-    "Woolooware",
-    "Kyeemagh",
-    "Ramsgate Beach",
-    "Beverly Hills",
-    "Bexley North",
-    "Botany",
-    "Caringbah",
-    "Caringbah South",
-    "Carss Park",
-    "Clemton Park",
-    "Hurstville",
-    "Kangaroo Point",
-    "Kingsgrove",
-    "Kogarah",
-    "South Hurstville",
-    "Tempe",
-    "Marrickville",
-    "Mortdale",
-    "Peakhurst",
-    "Riverwood",
-    "Allawah",
-    "Dolls Point",
-    "Eastlakes",
-    "Gymea",
-    "Hurstville Grove",
-    "Kareela",
-    "Sans Souci",
-    "Sylvania",
-    "Sylvania Waters",
-    "Taren Point",
-    "Turella",
-    "Kirrawee",
-    "Kogarah Bay",
-    "Penshurst",
-    "Arncliffe",
-    "Banksia",
-    "Bardwell Valley",
-    "Bexley",
-    "Blakehurst",
-    "Brighton-Le-Sands",
-    "Carlton",
-    "Cronulla",
-    "Endgadline",
-    "Mascot",
-    "Pagewood",
-    "Abbotsford",
-    "Chatswood",
-    "Campbelltown",
-    "Baverly Hills",
-    "Baxley",
-    "Baxley North",
-    "Carlton Park",
-    "Jannali",
-    "Airds",
-    "Ambarvale",
-    "Belfield",
-  ],
-  keywords: [
-    "Automatic Driving Lessons",
-    "Driving Test Assessment",
-    "Driving Test Package",
-    "Car Hire for Instructor",
-    "Parking Package",
-    "Highway Package",
-    "Night Driving Lesson",
-    "City Driving Package",
-  ],
-  knowsAbout: [
-    "New learner drivers in Sydney suburbs",
-    "overseas drivers needing NSW licence",
-    "nervous or anxious drivers needing confidence",
-    "students preparing for the NSW driving test",
-    "parents looking for a safe driving instructor for their teenagers",
-    "drivers who failed the test and want structured feedback",
-    "learners wanting real test route practice around Sydney suburbs",
-    "people searching for flexible driving lesson times",
-    "customers needing car hire for the driving test at RMS centres",
-    "local residents looking for an experienced, patient and friendly driving instructor near Kogarah and surrounding suburbs",
-  ],
-  knowsLanguage: ["en-AU"],
-  skills: [
-    "Providing one-to-one automatic and manual driving lessons",
-    "Teaching NSW road rules clearly",
-    "Preparing students for NSW driving test",
-    "Coaching on real test routes in Sydney suburbs",
-    "Designing customised lesson plans for each learner",
-    "Conducting mock driving tests and detailed assessments",
-    "Giving structured feedback and improvement plans",
-    "Helping students build confidence behind the wheel",
-    "Training safe and defensive driving habits",
-    "Instructing complex parking manoeuvres (reverse park, kerbside stop, three point turn)",
-    "Managing dual control vehicles safely",
-    "Communicating calmly with nervous learners",
-    "Planning efficient pick up and drop off routes in Sydney suburbs",
-    "Handling lesson bookings and scheduling seven days a week",
-    "Supporting learners until they pass their driving test",
-  ],
-  contactPoint: [
     {
-      "@type": "ContactPoint",
-      contactType: "customer service",
-      telephone: "+61 469 046 923",
-      email: "testroutedrivingschool@gmail.com",
-      availableLanguage: ["en-AU"],
-    },
-  ],
-  sameAs: [
-    "https://www.facebook.com/share/1A148kMS7g/",
-    "https://testroutedrivingschool.tumblr.com/",
-    "https://community.hubspot.com/t5/user/viewprofilepage/user-id/1042130",
-    "https://instapaper.com/p/testroutedrivin",
-  ],
-  subjectOf: [
-    {
-      "@type": "WebPage",
-      url: "https://www.yplocal.com/kogarah/business-professional-services/test-route-driving-school",
-    },
-    {
-      "@type": "WebPage",
-      url: "https://bizidex.com/en/test-route-driving-school-advertising-858454",
-    },
-    {
-      "@type": "WebPage",
-      url: "https://www.bizcoupon.directory/kogarah/business-services/test-route-driving-school",
-    },
-  ],
-  hasOfferCatalog: {
-    "@type": "OfferCatalog",
-    name: "Driving lesson services",
-    itemListElement: [
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Automatic Driving Lessons",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
+      "@type": "FAQPage",
+      "@id": "https://testroutedrivingschool.com.au/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How does Test Route personalise driving lessons for each learner?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Lessons follow your skill level and learning speed. Instructors assess progress during every session. Training plans adjust as your confidence improves."
+          }
         },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Driving Test Assessment",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
+        {
+          "@type": "Question",
+          "name": "Do you teach both manual and automatic driving in Sydney suburbs?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Training is available for manual and automatic vehicles. Lessons cover clutch control, gear changes, and smooth handling. You learn according to your licence goals."
+          }
         },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Driving Test Package",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
+        {
+          "@type": "Question",
+          "name": "What makes your driving lessons different from other schools?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Training focuses on real Sydney driving conditions. Instructors use structured systems and proven techniques. Each lesson builds long-term driving habits."
+          }
         },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Car Hire for Instructor",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
+        {
+          "@type": "Question",
+          "name": "How does your learning process help students pass faster?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Lessons follow a step-by-step progression system. Skills develop from basic control to advanced driving. Test preparation starts early in training."
+          }
         },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Parking Package",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Highway Package",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "Night Driving Lesson",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
-        },
-      },
-      {
-        "@type": "Offer",
-        itemOffered: {
-          "@type": "Service",
-          name: "City Driving Package",
-          provider: {
-            "@id": "https://testroutedrivingschool.com.au/#localbusiness",
-          },
-        },
-      },
-    ],
-  },
-  review: [
-    {
-      "@type": "Review",
-      inLanguage: "en-AU",
-      author: {
-        "@type": "Person",
-        name: "Najeeb Zahid",
-      },
-      reviewBody:
-        "my nephew passed driving test on the first attempt thanks to Test Route Driving School. Instructor Firoj is extremely patient and explains everything clearly. Practicing real test routes made a huge difference.",
-    },
-    {
-      "@type": "Review",
-      inLanguage: "en-AU",
-      author: {
-        "@type": "Person",
-        name: "Adrita's World",
-      },
-      reviewBody:
-        "Best driving instructor I could ask for ,As a student learner, I was very scared at first, but Test Route Driving School made everything easy. The lessons were well-structured and focused on test routes around the Sydney suburbs. The instructor corrected my mistakes calmly and helped me build confidence. I’m very happy with the result!",
-    },
-    {
-      "@type": "Review",
-      inLanguage: "en-AU",
-      author: {
-        "@type": "Person",
-        name: "porteboishobai",
-      },
-      reviewBody:
-        "My experience has been great ! Instructors were really patient with me and easygoing enough for me to communicate with them about my problems properly. Because of these lessons I am more confident than ever!",
-    },
-  ],
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: 5.0,
-    bestRating: 5,
-    worstRating: 1,
-    reviewCount: 3,
-  },
-};
+        {
+          "@type": "Question",
+          "name": "Can you start driving lessons with no previous experience?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No prior experience is required. Lessons begin with vehicle basics and road awareness. Confidence builds gradually through guided practice."
+          }
+        }
+      ]
+    }
+  ]
+}
+
 
 export default function RootLayout({children}) {
   return (
