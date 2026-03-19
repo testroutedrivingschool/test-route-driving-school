@@ -15,6 +15,8 @@ import {FaArrowRotateLeft} from "react-icons/fa6";
 import SecondaryBtn from "@/app/shared/Buttons/SecondaryBtn";
 import OutlineBtn from "@/app/shared/Buttons/OutlineBtn";
 import {usePathname, useRouter} from "next/navigation";
+import GoogleReviewCard from "../../components/Home/Reviews/GoogleReviewCard";
+import Reviews from "../../components/Home/Reviews/Reviews";
 
 export default function LocationPageClient({locationData}) {
   const router = useRouter();
@@ -247,6 +249,8 @@ const formattedLocation = slug
           </div>
         </Container>
       </section>
+      <GoogleReviewCard/>
+      <Reviews />
       <Faq title={`FAQs About Driving Lessons in ${formattedLocation}`} faqs={locationData?.faqs} />
       {/* Map*/}
       <section className="py-16">
