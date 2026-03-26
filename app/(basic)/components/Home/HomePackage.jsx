@@ -246,16 +246,17 @@ export default function HomePackage() {
                         ))}
                       </ul>
                     </div>
-
-                    <PrimaryBtn
-                      onClick={handlePackageClick}
-                      className="mt-auto w-full py-2! md:py-3! group hover:scale-[1.02] transition-transform duration-200"
-                    >
-                      <span className="flex items-center justify-center gap-2 font-semibold">
-                        Get This Package
-                        <FiChevronRight className="group-hover:translate-x-1 transition-transform duration-300" />
-                      </span>
-                    </PrimaryBtn>
+<div className="flex gap-3 lg:justify-between">
+                      <PrimaryBtn
+                        onClick={handlePackageClick}
+                        className=" px-2! md:px-4 py-2 md:py-3  text-sm! md:text-base"
+                      >
+                        <span className="flex items-center justify-center gap-2 font-semibold">
+                          Get This Package
+                        </span>
+                      </PrimaryBtn>
+                      <OutlineBtn onClick={()=>router.push(pkg.slug)} className={`px-2! md:px-4 py-2 md:py-3  text-sm! md:text-base`}>View Details</OutlineBtn>
+                    </div>
                   </div>
                 </div>
               </div>

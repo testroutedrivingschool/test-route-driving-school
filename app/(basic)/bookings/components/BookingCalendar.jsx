@@ -120,10 +120,10 @@ const isPastDate = (date) => {
     return (
       <div className="border border-black bg-white ">
         {/* Month Header */}
-        <div className="flex justify-between items-center px-2 md:px-2 py-1.5 md:py-2 border-b border-border-color ">
+        <div className="flex justify-between items-center px-2 md:px-2 py-1 md:py-2 border-b border-border-color ">
           <button
             onClick={() => goToMonth(prevMonthDate)}
-            className="justify-self-start text-xs  text-gray-500 font-semibold border border-gray-400 px-1 py-1 leading-none hover:bg-gray-100 transition"
+            className="justify-self-start text-[10px] md:text-xs  text-gray-500 font-semibold border border-gray-400 px-1 py-1 leading-none hover:bg-gray-100 transition"
           >
             {months[prevMonthDate.getMonth()].slice(0, 3)}
           </button>
@@ -134,7 +134,7 @@ const isPastDate = (date) => {
 
           <button
             onClick={() => goToMonth(nextMonthDate)}
-            className="justify-self-end text-xs  text-gray-500 font-semibold border border-gray-400 px-2 py-1 leading-none hover:bg-gray-100 transition"
+            className="justify-self-end text-[10px] md:text-xs  text-gray-500 font-semibold border border-gray-400 px-2 py-1 leading-none hover:bg-gray-100 transition"
           >
             {months[nextMonthDate.getMonth()].slice(0, 3)}
           </button>
@@ -145,7 +145,7 @@ const isPastDate = (date) => {
           {weekdays.map((day) => (
             <div
               key={day}
-              className="text-center text-xs md:text-[15px] font-bold text-white py-1 "
+              className="text-center text-xs md:text-[15px] font-bold text-white py-0.5 "
             >
               {day}
             </div>
@@ -163,7 +163,7 @@ const isPastDate = (date) => {
       key={index}
       onClick={() => handleSelectDate(day.date)}
       disabled={isDisabled}
-      className={`py-1 flex items-center justify-center text-sm transition
+      className={`py-0 flex items-center justify-center text-[10px] md:text-sm transition
         ${day.isCurrentMonth ? "text-black" : "text-gray-400"}
         ${inWeek ? "bg-primary text-white" : "hover:bg-gray-100"}
         ${!inWeek && day.isToday ? "bg-secondary text-white " : ""}
@@ -189,14 +189,14 @@ const isPastDate = (date) => {
     <section className="px-[18%] md:px-0">
       <div className="overflow-hidden">
         {/* Header */}
-        <div className="bg-primary rounded-lg px-4 py-2 md:py-4 text-center">
-          <h2 className="text-xs md:text-lg font-bold text-white">
+        <div className="bg-primary rounded-lg px-4 py-1 md:py-2 text-center">
+          <h2 className="text-[11px] md:text-base font-bold text-white">
             Find Next Available Time
           </h2>
         </div>
 
         {/* gap below header */}
-        <div className="mt-2  md:mt-5 space-y-6">
+        <div className="mt-1.5  md:mt-5 space-y-0">
           {/* Mobile */}
           <div className="block md:hidden">
             {renderMonth(currentDate)}

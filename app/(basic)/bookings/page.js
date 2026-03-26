@@ -405,7 +405,7 @@ const handleBookNow = (time, dayIndex, slot) => {
     suburb: selectedLocations,
     slotId: slot?._id,
     duration: slot?.duration,
-    maxAvailableMinutes, // ✅ NEW
+    maxAvailableMinutes, 
     bookingType: "website",
   };
 
@@ -664,7 +664,7 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
 
   return (
     <>
-      <section className="py-4 md:py-10">
+      <section className="py-2 md:py-10">
         <Container>
           <div>
             {/* Header */}
@@ -717,7 +717,7 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
               filteredInstructors.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-9 gap-0 md:gap-6 ">
                   {/* Left Column - Calendar */}
-                  <div className="md:col-span-2">
+                  <div className="md:col-span-2 ">
                     <BookingCalendar
                       selectedDate={selectedDate}
                       setSelectedDate={setSelectedDate}
@@ -725,7 +725,7 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                     />
                   </div>
                   {!isReschedule && (
-                    <div className="md:hidden text-center">
+                    <div className="mt-2 md:mt-4 md:hidden text-center">
                       <h3 className="font-bold md:text-lg">
                         {selectedLocations}
                       </h3>
@@ -734,22 +734,22 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                           markModalSeenToday();
                           setShowLocationModal(true);
                         }}
-                        className="text-primary font-medium hover:font-bold transition"
+                        className="text-primary text-sm font-medium hover:font-bold transition"
                       >
                         Change
                       </button>
                     </div>
                   )}
                   {/* Right Column - Schedule Table */}
-                  <div className="mt-3 md:mt-0 md:col-span-7 ">
+                  <div className="mt-2 md:mt-0 md:col-span-7 ">
                     {/* Instructor Selection - Horizontal Scrollbar */}
-                    <div className="overflow-auto mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div className="overflow-auto mb-4 md:mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-2 md:p-4">
+                      <div className={`${selectedInstructor && "hidden"} flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 md:mb-5 `}>
                         <div>
-                          <h2 className="text-xl font-bold text-gray-900">
+                          <h2 className="text-base md:text-xl font-bold text-gray-900">
                             Select Your Instructor
                           </h2>
-                          <p className="text-neutral text-sm mt-1">
+                          <p className="text-neutral text-xs md:text-sm md:mt-1">
                             Click on an instructor to view their schedule
                           </p>
                         </div>
@@ -763,15 +763,15 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                         <div
                           className={
                             selectedInstructor
-                              ? "flex flex-col md:flex-row items-start gap-4 md:gap-6"
+                              ? "flex flex-col md:flex-row items-start gap-4  md:gap-6 "
                               : ""
                           }
                         >
                           {/* Selected Instructor Card */}
-                          <div className={`w-full max-w-[200px] mx-auto ${!selectedInstructor && "md:w-[260px]"} shrink-0`}>
+                          <div className={`w-full max-w-[200px] mx-auto ${!selectedInstructor && "md:w-[260px]"} shrink-0 `}>
                             {selectedInstructor && (
-                              <div className="flex flex-col items-center cursor-pointer p-3 md:p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md w-full">
-                                <div className="w-30 h-30 md:w-30 md:h-30   overflow-hidden flex items-center justify-center mb-2 md:mb-3">
+                              <div className="flex flex-col items-center cursor-pointer p-1  md:p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md w-full">
+                                <div className="w-15 h-15 md:w-30 md:h-30   overflow-hidden flex items-center justify-center mb-2 md:mb-3">
                                   <Image
                                     src={
                                       selectedInstructor?.photo
@@ -791,10 +791,10 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                                     }}
                                   />
                                 </div>
-                                <h3 className="font-bold text-gray-900 text-sm md:text-sm mb-1 text-center line-clamp-2">
+                                <h3 className="font-bold text-gray-900 text-xs md:text-sm mb-1 text-center line-clamp-2">
                                   {selectedInstructor.name}
                                 </h3>
-                                <span className="text-xs text-gray-500 mt-1">
+                                <span className="text-[10px] md:text-xs text-gray-500 md:mt-1">
                                   Selected
                                 </span>
                               </div>
@@ -802,7 +802,7 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                           </div>
 
                           {/* Other Instructors - Horizontal Scroll */}
-                          <div className={`${selectedInstructor && "hidden"} w-full flex-1 min-w-0 relative`}>
+                          <div className={`${selectedInstructor && "hidden"} w-full flex-1 min-w-0 relative `}>
                             <Swiper
                               className="w-full"
                               onSwiper={(swiper) =>
@@ -845,15 +845,15 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                                 return (
                                   <SwiperSlide
                                     key={instructor._id}
-                                    className="h-auto!"
+                                    className="h-auto! "
                                   >
                                     <div
                                       onClick={() =>
                                         setSelectedInstructor(instructor)
                                       }
-                                      className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-3 md:p-4 rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color min-h-[120px] md:min-h-40"
+                                      className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-1 md:p-3  rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color "
                                     >
-                                      <div className="w-12 h-12 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
+                                      <div className="w-11 h-11 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
                                         <Image
                                           src={avatarSrc}
                                           alt={instructor.name || ""}
@@ -904,8 +904,8 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                         {/* ✅ Schedule Table */}
                         <div className="rounded-xl shadow-sm border border-border-color overflow-hidden bg-white">
                           {/* Header */}
-                          <div className="sticky top-0 z-40 px-4 md:px-6 py-4 border-b border-border-color bg-white">
-                            <div className="flex items-center justify-between gap-3">
+                          <div className="sticky top-0 z-40 px-4 md:px-6 py-2 md:py-4 border-b border-border-color bg-white">
+                            <div className="flex items-center justify-between gap-1 md:gap-3">
                               <div>
                                 <h2 className="text-base sm:text-lg md:text-2xl font-bold text-gray-900">
                                   {selectedInstructor.name}&apos;s Schedule
@@ -947,7 +947,7 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                             </div>
 
                             {/* legend */}
-                            <div className="mt-3 flex items-center gap-4 text-xs text-neutral">
+                            <div className="mt-1 md:mt-3 flex items-center gap-4 text-xs text-neutral">
                               <div className="flex items-center gap-2">
                                 <div className="w-3 h-3 bg-[#B20606] rounded" />
                                 <span>Booked</span>

@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import Image from "next/image";
-import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.jpg";
+import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.png";
 import {FaCheckCircle} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";

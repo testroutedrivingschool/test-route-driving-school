@@ -1,6 +1,6 @@
 import Container from "@/app/shared/ui/Container";
 import Image from "next/image";
-import aboutImg from "@/app/assets/test-route-driving-school-cover.png";
+import aboutImg from "@/app/assets/Test Route Driving School Kogarah NSW.png";
 import Link from "next/link";
 
 export default function HomeAbout() {
@@ -52,11 +52,11 @@ export default function HomeAbout() {
           </div>
 
           {/* Right Image */}
-          <div className=" w-full md:w-auto md:flex-1">
+          <div className=" w-full md:w-auto md:flex-1 h-150">
             <Image
               src={aboutImg}
               alt="Test Route Driving School Cover"
-              className="rounded-xl shadow-lg object-cover w-full h-full"
+              className="rounded-xl shadow-lg object-cover w-full h-full object-bottom"
               width={1000}
               height={1000}
             />

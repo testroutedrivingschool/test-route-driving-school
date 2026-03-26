@@ -187,7 +187,7 @@ const finalNavLinks = dynamicFirstNavItem
   
   return (
     <nav
-      className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color py-2 shadow`}
+      className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color  py-1 md:py-2 shadow`}
     >
       <Container className={`px-1.5! sm:px-2!`}>
         <div className="flex items-center justify-between ">
@@ -328,6 +328,7 @@ const finalNavLinks = dynamicFirstNavItem
       dashHref={dashHref}
       user={userData}
       onLogout={handleLogout}
+      finalNavLinks={finalNavLinks}
     />
   </div>
 ) : (

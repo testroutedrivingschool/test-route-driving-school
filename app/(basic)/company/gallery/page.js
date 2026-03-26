@@ -1,12 +1,14 @@
 import galleryImg1 from "@/app/assets/service-lesson-test-route-driving-school.png";
 import galleryImg2 from "@/app/assets/test-lesson-test-route-driving-school.png";
-import galleryImg3 from "@/app/assets/highway-package-test-route-driving-school.jpg";
+import galleryImg3 from "@/app/assets/highway-package-test-route-driving-school.png";
 import galleryImg4 from "@/app/assets/about-img2.png";
 import Image from "next/image";
 import galleryImg5 from "@/app/assets/test-route-driving-school-cover.png";
 import galleryImg6 from "@/app/assets/car-hire.jpg";
 import galleryImg7 from "@/app/assets/test-packageimg2.png";
 import galleryImg8 from "@/app/assets/whychooseus-test-route-driving-school.jpg";
+import galleryImg9 from "@/app/assets/Test Route Driving School Campbelltown.png";
+import galleryImg10 from "@/app/assets/Test Route Driving School Pass Test.png";
 
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Container from "@/app/shared/ui/Container";
@@ -48,6 +50,14 @@ const galleryImages = [
   {
     id: 8,
     src: galleryImg8,
+  },
+  {
+    id: 9,
+    src: galleryImg9,
+  },
+  {
+    id: 10,
+    src: galleryImg10,
   },
 ];
 export const metadata = {
@@ -199,10 +209,10 @@ export default function Gallery() {
             {galleryImages.map((img) => (
               <div key={img.id} className="overflow-hidden rounded-lg">
                 <Image
-                  className="w-full h-50 object-cover hover:scale-110 transition border border-border-color"
+                  className="w-full h-70 object-cover object-top hover:scale-110 transition border border-border-color"
                   src={img.src}
-                  width={300}
-                  height={300}
+                  width={1000}
+                  height={1000}
                   alt="Gallery Img Test Route Driving School"
                 />
               </div>

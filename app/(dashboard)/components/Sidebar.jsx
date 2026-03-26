@@ -1,12 +1,12 @@
 "use client";
 
 import React, {useState, useEffect} from "react";
-import {FiLogOut, FiMenu, FiX} from "react-icons/fi";
+import {FiLogOut} from "react-icons/fi";
 import {GoSidebarCollapse, GoSidebarExpand} from "react-icons/go";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {useUserData} from "@/app/hooks/useUserData";
-import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
+import { LuPanelLeft, LuPanelRight } from "react-icons/lu";
 import Image from "next/image";
 import {
   adminSidebarLinks,
@@ -111,7 +111,7 @@ const isActiveLink = (currentPath, linkPath) => {
       onClick={toggleSidebar}
       className="rounded-xl shadow-lg border-white hover:bg-gray-50 hover:text-primary transition-all duration-300 p-3"
     >
-      {sidebarOpen ? <FiX size={24} /> : <FiMenu size={24} />}
+      {sidebarOpen ? <LuPanelRight  size={24} /> : <LuPanelLeft size={24} />}
     </button>
   </div>
 )}

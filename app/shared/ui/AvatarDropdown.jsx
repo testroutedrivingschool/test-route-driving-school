@@ -4,7 +4,7 @@
 import {useEffect, useLayoutEffect, useRef, useState} from "react";
 import Link from "next/link";
 import {MdDashboard} from "react-icons/md";
-import {FaSignOutAlt} from "react-icons/fa";
+import {FaAngleRight, FaSignOutAlt} from "react-icons/fa";
 import { createPortal } from "react-dom";
 
 export default function AvatarDropdown({
@@ -14,11 +14,11 @@ export default function AvatarDropdown({
   dashHref,
   user,
   onLogout,
+  finalNavLinks
 }) {
   const [mounted, setMounted] = useState(false);
   const [pos, setPos] = useState({top: 0, left: 0, width: 0});
   const menuRef = useRef(null);
-
   useEffect(() => setMounted(true), []);
 
   // Position under avatar
@@ -71,7 +71,27 @@ export default function AvatarDropdown({
       </div>
 
       <ul className="py-2">
-        <li>
+        {/* <li>
+          <Link
+            href={dashHref}
+            className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
+            onClick={onClose}
+          >
+            <MdDashboard className="text-primary" />
+            Dashboard
+          </Link>
+        </li> */}
+        {
+          user.role==="instructor" ? finalNavLinks.map((navLink)=> <li key={navLink.id}>
+          <Link
+            href={navLink.pathname || "/"}
+            className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
+            onClick={onClose}
+          >
+            {navLink.label || ""}
+            {/* <FaAngleRight  className="text-primary" /> */}
+          </Link>
+        </li>):<li>
           <Link
             href={dashHref}
             className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-primary/10 transition"
@@ -81,6 +101,7 @@ export default function AvatarDropdown({
             Dashboard
           </Link>
         </li>
+        }
       </ul>
 
       <div className="border-t border-border-color">

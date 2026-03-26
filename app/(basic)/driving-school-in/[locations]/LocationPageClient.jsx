@@ -6,7 +6,7 @@ import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Image from "next/image";
 import locationImg from "@/app/assets/test-route-driving-school-cover.png";
-import locationImg2 from "@/app/assets/test-lesson-test-route-driving-school.png";
+import locationImg2 from "@/app/assets/Test Route Driving School Kogarah NSW.png";
 import WhatWeOffer from "../../components/Home/WhatWeOffer";
 import SectionHeader from "@/app/shared/ui/SectionHeader";
 import {FaCar, FaEnvelope, FaPhoneAlt, FaTrafficLight} from "react-icons/fa";
@@ -79,13 +79,13 @@ const formattedLocation = slug
       <section className="pb-10 md:py-16">
         <Container>
           <div className="flex flex-col-reverse lg:flex-row items-center gap-10 ">
-            <div className="w-full lg:w-auto flex-1 ">
+            <div className="w-full lg:w-auto flex-1 h-155 ">
               <Image
                 src={locationImg2}
                 alt={`${locationData?.pageTitle}`}
                 width={600}
                 height={400}
-                className="rounded-xl shadow-lg object-cover w-full h-full"
+                className="rounded-xl shadow-lg object-cover w-full h-full object-bottom"
               />
             </div>
             <div className="flex-1 space-y-6">

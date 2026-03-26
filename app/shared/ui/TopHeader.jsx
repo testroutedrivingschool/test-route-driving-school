@@ -29,7 +29,7 @@ export default function TopHeader() {
 
  
   return (
-    <div className="bg-primary text-white py-2 w-full">
+    <div className="bg-primary text-white py-1 md:py-2 w-full">
       <Container className="flex items-center justify-between">
        <Link href="/packages" className="font-semibold text-xs md:text-base hover:underline">
               View Packages
