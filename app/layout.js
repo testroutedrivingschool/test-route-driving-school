@@ -499,52 +499,7 @@ const schema ={
         "reviewCount": 3
       }
     },
-    {
-      "@type": "FAQPage",
-      "@id": "https://testroutedrivingschool.com.au/#faq",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How does Test Route personalise driving lessons for each learner?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Lessons follow your skill level and learning speed. Instructors assess progress during every session. Training plans adjust as your confidence improves."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do you teach both manual and automatic driving in Sydney suburbs?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Training is available for manual and automatic vehicles. Lessons cover clutch control, gear changes, and smooth handling. You learn according to your licence goals."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What makes your driving lessons different from other schools?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Training focuses on real Sydney driving conditions. Instructors use structured systems and proven techniques. Each lesson builds long-term driving habits."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does your learning process help students pass faster?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Lessons follow a step-by-step progression system. Skills develop from basic control to advanced driving. Test preparation starts early in training."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Can you start driving lessons with no previous experience?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "No prior experience is required. Lessons begin with vehicle basics and road awareness. Confidence builds gradually through guided practice."
-          }
-        }
-      ]
-    }
+    
   ]
 }
 
