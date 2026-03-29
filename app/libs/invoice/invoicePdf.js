@@ -25,6 +25,7 @@ function invoiceHtml(data, logoUrl) {
   const paidLabel = isPaid ? "PAID IN FULL" : "UNPAID";
 
   const total = Number(String(data.price ?? 0).replace(/[^\d.-]/g, "")) || 0;
+  const gst = Number((total * 0.10).toFixed(2));
   // const isBooking = data?.type === "BOOKINGS_CONFIRM";
   // const isPurchase = data?.type === "PURCHASE_CONFIRM";  
 
@@ -73,7 +74,7 @@ const isBooking = !isPurchase;
     isPaid && method === "card"
       ? `Paid by Card (${brand || "CARD"} •••• ${last4 || "----"})`
       : "";
-
+ 
   // Handle package details only for purchases
   const packagesHtml = isPurchase
     ? (data.packages || [])
@@ -81,7 +82,7 @@ const isBooking = !isPurchase;
           (pkg) => `  
     <tr>
       <td>${pkg.packageName} x${pkg.quantity}</td>
-      <td class="t-center">—</td>
+     <td class="t-center">$${((pkg.unitPrice * pkg.quantity) * 0.10).toFixed(2)}</td>
       <td class="t-right">$${(pkg.unitPrice * pkg.quantity).toFixed(2)}</td>
     </tr>`
         )
@@ -157,7 +158,7 @@ const isBooking = !isPurchase;
       <tbody>
         <tr>
           <td>${safe(data.serviceName)} - ${safe(data.duration)}</td>
-          <td class="t-center">—</td>
+          <td class="t-center">$${gst.toFixed(2)}</td>
           <td class="t-right">$${total.toFixed(2)}</td>
         </tr>
       </tbody>
@@ -168,6 +169,8 @@ const isBooking = !isPurchase;
         ${paidByCardLine ? `<div class="section">${paidByCardLine}</div>` : ""}
       </div>
       <div class="box totals">
+
+        
         <div class="grand">TOTAL&nbsp;&nbsp;&nbsp;&nbsp;$${total.toFixed(2)}</div>
         <div class="paid">
           ${paidLabel} <br/>

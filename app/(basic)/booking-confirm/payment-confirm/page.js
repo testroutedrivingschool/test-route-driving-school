@@ -70,6 +70,10 @@ function PaymentForm() {
   }, []);
 
   if (!booking) return <LoadingSpinner />;
+
+const baseAmount = booking.price || 0;
+  const processingFee = Number((baseAmount * 0.02).toFixed(2));
+const totalAmount = Number((baseAmount + processingFee).toFixed(2));
   const handleConfirmPayment = async () => {
     if (!acceptedTerms) {
       toast.error("Please accept the terms and conditions");
@@ -93,9 +97,13 @@ function PaymentForm() {
           ...booking,
           address,
           suburb,
+            price: booking.price,
+  totalPaidAmount: totalAmount,
+  processingFee,
           status: "pending",
           paymentStatus: "unpaid",
           paymentIntentId: null,
+          
         });
 
         sessionStorage.removeItem("pendingBooking");
@@ -113,7 +121,7 @@ function PaymentForm() {
         }
 
         const {data} = await axios.post("/api/create-payment-intent", {
-          amount: booking.price,
+          amount: totalAmount,
         });
 
         const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -137,6 +145,10 @@ const clientId = String(booking?.clientId);
           phone,
           address,
           suburb,
+
+         price: booking.price,
+  totalPaidAmount: totalAmount,
+  processingFee,
           paymentIntentId: result.paymentIntent.id,
           status: "pending",
           paymentStatus: "paid",
@@ -179,7 +191,15 @@ const clientId = String(booking?.clientId);
             <p>
               <strong>Duration:</strong> {booking.duration}
             </p>
-            <p className="text-lg font-bold ">Total: <span className="text-primary">${booking.price.toFixed(2)}</span> </p>
+           <p>
+  <strong>Price:</strong> ${baseAmount.toFixed(2)}
+</p>
+<p>
+  <strong>Card Processing Fee:</strong> ${processingFee.toFixed(2)}
+</p>
+<p className="text-lg font-bold">
+  Total: <span className="text-primary">${totalAmount.toFixed(2)}</span>
+</p>
           </div>
 
           {/* Phone */}
@@ -260,7 +280,7 @@ const clientId = String(booking?.clientId);
                 disabled={loading}
                 className="w-full justify-center py-3 text-lg"
               >
-                {loading ? "Processing..." : `Pay $${booking.price}`}
+                {loading ? "Processing..." : `Pay $${totalAmount}`}
               </PrimaryBtn>
             </>
           ) : (

@@ -79,6 +79,13 @@ export default function BookingConfirmPage() {
   const [overridePrice, setOverridePrice] = useState("");
 
   useEffect(() => {
+  if (isUserLoading) return;
+
+  if (!userData) {
+    router.push("/login?redirect=/booking-confirm");
+  }
+}, [userData,isUserLoading,router]);
+  useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
 
     if (!data) {
@@ -472,8 +479,8 @@ function DesktopTable({ services, durations, selectedBooking, setSelectedBooking
 
 function MobileTable({ services, durations, selectedBooking, setSelectedBooking }) {
   return (
-    <div className="px-2 overflow-x-auto">
-      <table className="w-full min-w-[680px] border border-border-color text-[11px]">
+    <div className="px-2 overflow-x-auto ">
+      <table className="w-full  border border-border-color text-[11px]">
         <thead className="bg-secondary text-white">
           <tr>
             <th className="text-left px-2 py-2">Service</th>

@@ -38,7 +38,7 @@ function CheckoutPage() {
   const [discount, setDiscount] = useState(0);
   const [showCouponInput, setShowCouponInput] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null); // Store applied coupon
-
+const [processingFee, setProcessingFee] = useState(0);
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { user: authUser, loading: authLoading } = useAuth();
@@ -155,6 +155,10 @@ function CheckoutPage() {
     setTotal(calculatedTotal);
   }, []);
 
+  useEffect(() => {
+  const fee = total * 0.0175 + 0.3; // 1.75% + 30 cents
+  setProcessingFee(Number(fee.toFixed(2)));
+}, [total]);
   const handleBillingChange = (e) => {
     const { name, value, type, checked } = e.target;
     setBilling((prev) => ({
@@ -188,17 +192,17 @@ const handleProceed = async () => {
     }));
 
     // 3) Send the discount and total (after discount) to the backend
-    const finalAmount = total - discount; // Final amount after applying the discount
-    const { data } = await axios.post("/api/create-payment-intent", {
-      type: "purchase",
-      
-      userEmail: billing.email,
-      userName: billing.name,
-      couponCode: appliedCoupon,
-      items,
-      discount: discount,
-      totalAmount: finalAmount,
-    });
+  const finalAmount = total + processingFee; // Final amount after applying the discount
+const { data } = await axios.post("/api/create-payment-intent", {
+  type: "purchase",
+  userEmail: billing.email,
+  userName: billing.name,
+  couponCode: appliedCoupon,
+  items,
+  discount: discount,
+  processingFee,
+  totalAmount: finalAmount,
+});
 
     const clientSecret = data?.clientSecret;
     if (!clientSecret) throw new Error("No clientSecret returned");
@@ -417,12 +421,22 @@ const handleProceed = async () => {
       )}
     </div>
   </FormRow>
+<FormRow label="Card Fee:">
+  <p className="font-medium text-sm">
+    ${processingFee.toFixed(2)}
+  </p>
+</FormRow>
 
-  <FormRow label="Total Amount:">
+<FormRow label="Total Amount:">
+  <p className="font-bold text-lg text-primary">
+    ${(total + processingFee).toFixed(2)}
+  </p>
+</FormRow>
+  {/* <FormRow label="Total Amount:">
     <p className="font-bold text-lg">
       <span className="text-primary">${total.toFixed(2)}</span>
     </p>
-  </FormRow>
+  </FormRow> */}
 </div>
 
        <div className="mt-8">
@@ -442,7 +456,9 @@ const handleProceed = async () => {
         onClick={handleProceed}
         className="text-base! md:text-lg! py-2! md:py-3! px-4!"
       >
-        {loading ? "Processing..." : `Pay $${total.toFixed(2)}`}
+          {loading
+    ? "Processing..."
+    : `Pay $${(total + processingFee).toFixed(2)}`}
       </PrimaryBtn>
     </div>
   </div>

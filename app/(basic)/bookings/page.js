@@ -384,10 +384,10 @@ export default function BookingsPage() {
 const handleBookNow = (time, dayIndex, slot) => {
   if (!selectedInstructor) return;
 
-  if (!user) {
-    router.push(`/login?redirect=/bookings`);
-    return;
-  }
+  // if (!user) {
+  //   router.push(`/login?redirect=/bookings`);
+  //   return;
+  // }
 
   const clickedDate = weekDates[dayIndex];
   const maxAvailableMinutes = getMaxContinuousAvailableMinutes({

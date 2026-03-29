@@ -188,7 +188,11 @@ export async function POST(req) {
       });
 
       let totalAmount = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
+const processingFeeRate = 0.02; // 2%
+const processingFee = Number((totalAmount * processingFeeRate).toFixed(2));
 
+let totalPaidAmount = totalAmount + processingFee;
+// Add fee to total
       // Apply coupon if provided
       if (couponCode) {
         const couponCol = await couponsCollection();
@@ -198,8 +202,8 @@ export async function POST(req) {
           const expiryDate = new Date(coupon.expires);
 
           if (expiryDate >= currentDate) {
-            discountAmount = (totalAmount * Number(coupon.discount)) / 100;
-            totalAmount -= discountAmount; // Apply the discount to the total amount
+            discountAmount = (totalPaidAmount * Number(coupon.discount)) / 100;
+            totalPaidAmount -= discountAmount; // Apply the discount to the total amount
           } else {
             return new Response(
               JSON.stringify({ error: "Coupon has expired" }),
@@ -222,7 +226,7 @@ export async function POST(req) {
           type: "purchase",
           userEmail,
           userName,
-       
+        processingFee,
           discountAmount,
           ...metadata,
         },
@@ -232,6 +236,8 @@ export async function POST(req) {
         JSON.stringify({
           clientSecret: paymentIntent.client_secret,
           amount: totalAmount,
+          totalPaidAmount,
+          processingFee,
           discountAmount,
           currency,
           lineItems: items,
