@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import Image from "next/image";
-import parkingPackageImg from "@/app/assets/parking-package-img-test-route-driving-school.jpg";
+// import parkingPackageImg from "test-route-driving-school-kogarah-nsw.png";
 import {FaCheckCircle} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
@@ -193,7 +193,7 @@ export default function ParkingPackage() {
             <div className="lg:flex-1 w-full">
               <div className="relative rounded-xl overflow-hidden shadow-2xl">
                 <Image
-                  src={parkingPackageImg}
+                  src={"/test-route-driving-school-kogarah-nsw.png"}
                   className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
                   width={600}
                   height={500}

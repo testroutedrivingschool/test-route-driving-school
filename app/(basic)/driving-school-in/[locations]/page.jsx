@@ -9,7 +9,9 @@ import {
   FaGift,
   FaMapMarkerAlt,
 } from "react-icons/fa";
-import Head from "next/head";
+function getImageUrl() {
+  return "https://testroutedrivingschool.com.au/test-route-location.png";
+}
 function formatLocationFromSlug(slug = "") {
   return slug
     .split("-")
@@ -537,15 +539,12 @@ export async function generateMetadata({params}) {
     : resolvedParams.locations;
     const loc = formatLocationFromSlug(slug) || "Sydney";
   const data = locationData[slug];
-
+const imageUrl = getImageUrl();
   const canonicalUrl = `https://testroutedrivingschool.com.au/driving-school-in/${slug}`;
  
-
-  if (!data) {
-    return {
-      title: `Driving Lessons in ${loc} – Book Today`,
-      metaDescription: `Gain confidence behind the wheel with Driving Lessons in ${loc} – expert instructors, flexible timings. Book now and enjoy stress-free learning!`,
-      keywords: [
+ const title= `Driving Lessons in ${loc} – Book Today`;
+  const description= `Gain confidence behind the wheel with Driving Lessons in ${loc} – expert instructors, flexible timings. Book now and enjoy stress-free learning!`;
+  const keywords= [
         `Driving Lessons in ${loc}`,
         `driving lessons near me in ${loc}`,
         `driving lesson in ${loc}`,
@@ -567,17 +566,45 @@ export async function generateMetadata({params}) {
         "cheap driving lessons near me",
         "Teen driving lessons",
         `book driving lesson in ${loc}`,
-      ],
-       alternates: {
-        canonical: canonicalUrl,
-      },
-    };
-  }
+      ];
+ 
 
   return {
-    title: data.pageTitle,
-    description: data.metaDescription,
-    keywords: data.keywords,
+    title,
+    description,
+    keywords,
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      type: "website",
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: `Driving Lessons in ${loc}`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 

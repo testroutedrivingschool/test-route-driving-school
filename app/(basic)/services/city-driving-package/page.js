@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.jpg";
+// import highwayPackageImg from "@/app/assets/highway-package-test-route-driving-school.jpg";
 import {FaCheckCircle} from "react-icons/fa";
 import {FiArrowRight} from "react-icons/fi";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
@@ -194,8 +194,8 @@ export default function CityCarDrivingPackage() {
             <div className="lg:flex-1 w-full">
               <div className="relative rounded-xl overflow-hidden shadow-2xl">
                 <Image
-                  src={highwayPackageImg}
-                  className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
+                  src={"/test-route-location.png"}
+                  className="w-full h-180 object-cover transform hover:scale-105 transition-transform duration-700"
                   width={600}
                   height={500}
                   alt="Parking Package with Test Route Driving School"

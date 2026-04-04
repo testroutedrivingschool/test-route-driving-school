@@ -9,6 +9,7 @@ import {
   FaGoogle,
 } from "react-icons/fa";
 import ContactForm from "./ContactForm";
+import ContactMap from "./ContactMap";
 
 export const metadata = {
   title: "Contact Us Today – Book Your Driving Lessons",
@@ -119,16 +120,9 @@ export default function Contact() {
                 </div>
 
                 {/* Map */}
-                <div className="overflow-hidden rounded-lg ">
-                  <iframe
-                    className="w-full md:h-64 "
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3309.1921998148187!2d151.1289021!3d-33.9618991!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6b12b99c02de074f%3A0x95b44233fd6b6d18!2sTest%20Route%20Driving%20School!5e0!3m2!1sen!2sbd!4v1766326342009!5m2!1sen!2sbd"
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                      title="Google Map showing our office location"
-                  ></iframe>
-                </div>
+                
+
+                <ContactMap/>
               </div>
 
               {/* Social Links */}

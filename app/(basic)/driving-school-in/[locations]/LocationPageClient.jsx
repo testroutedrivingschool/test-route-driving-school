@@ -81,7 +81,7 @@ const formattedLocation = slug
           <div className="flex flex-col-reverse lg:flex-row items-center gap-10 ">
             <div className="w-full lg:w-auto flex-1 h-155 ">
               <Image
-                src={locationImg2}
+                src={"/test-route-driving-school-kogarah-nsw.png"}
                 alt={`${locationData?.pageTitle}`}
                 width={600}
                 height={400}

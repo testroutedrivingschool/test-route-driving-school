@@ -72,11 +72,14 @@ function getSuburbBasedServices(
 }
 export default function BookingConfirmPage() {
   const router = useRouter();
-  const { data: userData, isUserLoading } = useUserData();
-  const [booking, setBooking] = useState(null);
+  const { data: userData, isLoading:isUserLoading } = useUserData();
+  const [booking, setBooking] = useState(undefined);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [overridePrice, setOverridePrice] = useState("");
+
+
+
 
   useEffect(() => {
   if (isUserLoading) return;
@@ -261,54 +264,54 @@ const services = useMemo(() => {
   }
 
   return (
-    <section className="py-5">
+    <section className="py-1 md:py-5">
       <Container>
         <div className="border border-border-color rounded shadow bg-white">
-          <div className="bg-green-600 text-white text-center py-3 font-semibold text-lg">
+          <div className="bg-green-600 text-white text-center py-1 md:py-3 font-semibold text-sm md:text-lg">
             {booking.bookingType === "manual"
               ? "Booking User"
               : `Booking For ${userData?.name || "User"}`}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-5">
             <div className="col-span-1">
-              <div className="mt-5 flex justify-center">
+              <div className="mt-2 md:mt-5 flex justify-center ">
                 <Image
                   src={avatarSrc}
                   alt={instructor.name}
-                  width={180}
-                  height={180}
-                  className="border object-cover rounded-full w-30 md:w-40 h-30 md:h-40"
+                  width={1800}
+                  height={1800}
+                  className="border object-cover rounded-full w-18 h-18 md:w-40  md:h-40"
                 />
               </div>
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <div className="p-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div className="md:col-span-3 space-y-2">
-                  <div className="space-y-2">
+              <div className="p-2 md:p-4 grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-8 ">
+                <div className="md:col-span-3 ">
+                  <div className="space-y-1 md:space-y-2">
                     <div className="flex items-center gap-6">
-                      <p className="font-semibold w-45">Date:</p>
-                      <p>{new Date(booking.date).toDateString()}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Date:</p>
+                      <p className="flex-1 text-sm md:text-base">{new Date(booking.date).toDateString()}</p>
+                    </div>
+                    <div className="flex justify-start items-center  gap-6">
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45 ">Time:</p>
+                      <p className="flex-1 text-sm md:text-base">{booking.time}</p>
                     </div>
                     <div className="flex items-center gap-6">
-                      <p className="font-semibold w-45">Time:</p>
-                      <p>{booking.time}</p>
-                    </div>
-                    <div className="flex items-center gap-6">
-                      <p className="font-semibold w-45">Instructor:</p>
-                      <p>{instructor.name}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Instructor:</p>
+                      <p className="flex-1 text-sm md:text-base">{instructor.name}</p>
                     </div>
                     {
                       selectedSuburb && <div className="flex items-center gap-6">
-                      <p className="font-semibold w-45">Suburb:</p>
-                      <p>{selectedSuburb || "-"}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Suburb:</p>
+                      <p className="flex-1 text-sm md:text-base">{selectedSuburb || "-"}</p>
                     </div>
                     }
                     
                     <div className="flex items-center gap-6">
-                      <p className="font-semibold w-45">Booking Length:</p>
-                      <p>{selectedBooking ? selectedBooking.duration : "0 mins"}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Booking Length:</p>
+                      <p className="flex-1 text-sm md:text-base">{selectedBooking ? selectedBooking.duration : "0 mins"}</p>
                     </div>
                   </div>
                 </div>

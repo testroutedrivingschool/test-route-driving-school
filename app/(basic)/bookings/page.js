@@ -180,7 +180,7 @@ const isSlotBlockedByTime = (slotDate, slotTime) => {
   return slotDateTime.getTime() < minAllowedTime.getTime();
 };
 export default function BookingsPage() {
-  const {user} = useAuth();
+  // const {user} = useAuth();
   const searchParams = useSearchParams();
   const instructorId = searchParams.get("instructorId");
   const isReschedule = searchParams.get("reschedule") === "1";
@@ -235,6 +235,9 @@ export default function BookingsPage() {
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
 
+
+
+
   const formatYMD = (date) => {
     // Safe local YYYY-MM-DD (avoids timezone issues)
     const y = date.getFullYear();
@@ -245,6 +248,26 @@ export default function BookingsPage() {
 
   const normalizeTime = (t) => t?.replace(/\s+/g, ""); // "7:00AM" stays "7:00AM"
 
+  const getTimeRangeFromSlots = (slots = [], allTimes = []) => {
+  if (!slots.length) return allTimes;
+
+  const slotTimes = slots
+    .map((s) => normalizeTime(s.time))
+    .filter(Boolean);
+
+  if (!slotTimes.length) return allTimes;
+
+  const indexes = slotTimes
+    .map((t) => allTimes.findIndex((x) => normalizeTime(x) === t))
+    .filter((i) => i !== -1);
+
+  if (!indexes.length) return allTimes;
+
+  const minIdx = Math.min(...indexes);
+  const maxIdx = Math.max(...indexes);
+
+  return allTimes.slice(minIdx, maxIdx + 1);
+};
   // Get dates for the week of selectedDate
   const getWeekDates = (selectedDate) => {
     const dates = [];
@@ -341,77 +364,74 @@ export default function BookingsPage() {
     return slot.suburb === selectedLocations;
   };
 
-  const getMaxContinuousAvailableMinutes = ({
-  startDate,
-  startTime,
-}) => {
-  const dateKey = formatYMD(startDate);
-  const startIdx = timeIndexMap[normalizeTime(startTime)];
+  const getMaxContinuousAvailableMinutes = ({startDate, startTime}) => {
+    const dateKey = formatYMD(startDate);
+    const startIdx = timeIndexMap[normalizeTime(startTime)];
 
-  if (startIdx == null) return 0;
+    if (startIdx == null) return 0;
 
-  let totalMinutes = 0;
+    let totalMinutes = 0;
 
-  for (let i = startIdx; i < times.length; i++) {
-    const currentTime = times[i];
-    const currentKey = `${dateKey}__${normalizeTime(currentTime)}`;
-    const slot = slotsMap[currentKey];
-    const isBooked = bookedSlotsMap[currentKey];
-    const isBlockedByTime = isSlotBlockedByTime(startDate, currentTime);
-    const vis = slot ? getVisibility(slot) : "";
+    for (let i = startIdx; i < times.length; i++) {
+      const currentTime = times[i];
+      const currentKey = `${dateKey}__${normalizeTime(currentTime)}`;
+      const slot = slotsMap[currentKey];
+      const isBooked = bookedSlotsMap[currentKey];
+      const isBlockedByTime = isSlotBlockedByTime(startDate, currentTime);
+      const vis = slot ? getVisibility(slot) : "";
 
-    const isAvailable =
-      !isBlockedByTime &&
-      !isBooked &&
-      !!slot &&
-      slotMatchesLocation(slot) &&
-      vis === "public";
+      const isAvailable =
+        !isBlockedByTime &&
+        !isBooked &&
+        !!slot &&
+        slotMatchesLocation(slot) &&
+        vis === "public";
 
-    if (!isAvailable) break;
+      if (!isAvailable) break;
 
-    totalMinutes += STEP_MIN;
-  }
+      totalMinutes += STEP_MIN;
+    }
 
-  return totalMinutes;
-};
-  const isSlotPast = (slotDate, slotTime) => {
-  const slotDateTime = toBookingDateTime(slotDate, slotTime);  
-  return slotDateTime && slotDateTime.getTime() < Date.now(); 
-};
-  const isHourStart = (time) => time?.includes(":00");
-
-  // Handle booking
-const handleBookNow = (time, dayIndex, slot) => {
-  if (!selectedInstructor) return;
-
-  // if (!user) {
-  //   router.push(`/login?redirect=/bookings`);
-  //   return;
-  // }
-
-  const clickedDate = weekDates[dayIndex];
-  const maxAvailableMinutes = getMaxContinuousAvailableMinutes({
-    startDate: clickedDate,
-    startTime: time,
-  });
-
-  const bookingInfo = {
-    instructorEmail: selectedInstructor.email,
-    instructorName: selectedInstructor.name,
-    instructorId: selectedInstructor._id,
-    date: clickedDate.toISOString(),
-    time,
-    location: selectedLocations,
-    suburb: selectedLocations,
-    slotId: slot?._id,
-    duration: slot?.duration,
-    maxAvailableMinutes, 
-    bookingType: "website",
+    return totalMinutes;
   };
+  const isSlotPast = (slotDate, slotTime) => {
+    const slotDateTime = toBookingDateTime(slotDate, slotTime);
+    return slotDateTime && slotDateTime.getTime() < Date.now();
+  };
+  const isHourStart = (time) => time?.includes(":00");
+const visibleTimes = getTimeRangeFromSlots(slots, times);
+  // Handle booking
+  const handleBookNow = (time, dayIndex, slot) => {
+    if (!selectedInstructor) return;
 
-  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-  router.push("/booking-confirm");
-};
+    // if (!user) {
+    //   router.push(`/login?redirect=/bookings`);
+    //   return;
+    // }
+
+    const clickedDate = weekDates[dayIndex];
+    const maxAvailableMinutes = getMaxContinuousAvailableMinutes({
+      startDate: clickedDate,
+      startTime: time,
+    });
+
+    const bookingInfo = {
+      instructorEmail: selectedInstructor.email,
+      instructorName: selectedInstructor.name,
+      instructorId: selectedInstructor._id,
+      date: clickedDate.toISOString(),
+      time,
+      location: selectedLocations,
+      suburb: selectedLocations,
+      slotId: slot?._id,
+      duration: slot?.duration,
+      maxAvailableMinutes,
+      bookingType: "website",
+    };
+
+    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+    router.push("/booking-confirm");
+  };
   useEffect(() => {
     const table = tableRef.current;
     if (!table) return;
@@ -525,13 +545,13 @@ const handleBookNow = (time, dayIndex, slot) => {
       to.setHours(23, 59, 59, 999);
 
       return (res.data || []).filter((b) => {
-  const dateKey =
-    typeof b.bookingDate === "string"
-      ? b.bookingDate.slice(0, 10)
-      : formatYMD(new Date(b.bookingDate));
+        const dateKey =
+          typeof b.bookingDate === "string"
+            ? b.bookingDate.slice(0, 10)
+            : formatYMD(new Date(b.bookingDate));
 
-  return dateKey >= weekStart && dateKey <= weekEnd;
-});
+        return dateKey >= weekStart && dateKey <= weekEnd;
+      });
     },
   });
 
@@ -552,29 +572,34 @@ const handleBookNow = (time, dayIndex, slot) => {
     const mins = mn ? parseInt(mn[1], 10) : 0;
     return hours * 60 + mins;
   };
-const getBookingDateKey = (bookingDate) => {
-  if (!bookingDate) return "";
-  return formatYMD(new Date(bookingDate));
-};
+  const getBookingDateKey = (bookingDate) => {
+    if (!bookingDate) return "";
+    return formatYMD(new Date(bookingDate));
+  };
 
-const bookedSlotsMap = (bookings || []).reduce((acc, b) => {
-  const dateKey = getBookingDateKey(b.bookingDate);
-  const startTime = normalizeTime(b.bookingTime);
+  const bookedSlotsMap = (bookings || []).reduce((acc, b) => {
+    // ignore cancelled bookings
+    if ((b?.status || "").toLowerCase() === "cancelled") {
+      return acc;
+    }
 
-  const startIdx = timeIndexMap[startTime];
-  if (startIdx == null) return acc;
+    const dateKey = getBookingDateKey(b.bookingDate);
+    const startTime = normalizeTime(b.bookingTime);
 
-  const mins = toMinutes(b);
-  const span = Math.max(1, Math.ceil(mins / STEP_MIN));
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return acc;
 
-  for (let k = 0; k < span; k++) {
-    const t = normalizeTime(times[startIdx + k]);
-    if (!t) break;
-    acc[`${dateKey}__${t}`] = true;
-  }
+    const mins = toMinutes(b);
+    const span = Math.max(1, Math.ceil(mins / STEP_MIN));
 
-  return acc;
-}, {});
+    for (let k = 0; k < span; k++) {
+      const t = normalizeTime(times[startIdx + k]);
+      if (!t) break;
+      acc[`${dateKey}__${t}`] = true;
+    }
+
+    return acc;
+  }, {});
   useEffect(() => {
     if (instructorId) {
       const selectedInstructor = instructors.find(
@@ -589,7 +614,9 @@ const bookedSlotsMap = (bookings || []).reduce((acc, b) => {
       )
     : instructors;
 
-const displayedInstructors = selectedInstructor ? [selectedInstructor] : filteredInstructors;
+  const displayedInstructors = selectedInstructor
+    ? [selectedInstructor]
+    : filteredInstructors;
 
   const LS_KEY = "bookingLocationModalLastShown";
   const LS_SELECTED_LOC = "bookingSelectedLocation";
@@ -744,7 +771,9 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                   <div className="mt-2 md:mt-0 md:col-span-7 ">
                     {/* Instructor Selection - Horizontal Scrollbar */}
                     <div className="overflow-auto mb-4 md:mb-8 bg-white rounded-xl shadow-sm border border-border-color  p-2 md:p-4">
-                      <div className={`${selectedInstructor && "hidden"} flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 md:mb-5 `}>
+                      <div
+                        className={`${selectedInstructor && "hidden"} flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2 md:mb-5 `}
+                      >
                         <div>
                           <h2 className="text-base md:text-xl font-bold text-gray-900">
                             Select Your Instructor
@@ -768,7 +797,9 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                           }
                         >
                           {/* Selected Instructor Card */}
-                          <div className={`w-full max-w-[200px] mx-auto ${!selectedInstructor && "md:w-[260px]"} shrink-0 `}>
+                          <div
+                            className={`w-full max-w-[200px] mx-auto ${!selectedInstructor && "md:w-[260px]"} shrink-0 `}
+                          >
                             {selectedInstructor && (
                               <div className="flex flex-col items-center cursor-pointer p-1  md:p-4 rounded-xl border-2 transition-all duration-200 border-primary bg-primary/10 shadow-md w-full">
                                 <div className="w-15 h-15 md:w-30 md:h-30   overflow-hidden flex items-center justify-center mb-2 md:mb-3">
@@ -802,7 +833,9 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                           </div>
 
                           {/* Other Instructors - Horizontal Scroll */}
-                          <div className={`${selectedInstructor && "hidden"} w-full flex-1 min-w-0 relative `}>
+                          <div
+                            className={`${selectedInstructor && "hidden"} w-full flex-1 min-w-0 relative `}
+                          >
                             <Swiper
                               className="w-full"
                               onSwiper={(swiper) =>
@@ -972,14 +1005,20 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                               <table className="w-full border-separate border-spacing-0 table-fixed">
                                 <thead>
                                   <tr>
-                                    <th className="py-2 px-2 border border-border-color text-sm font-semibold sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
+                                    <th className="py-2 px-2 border-r  text-sm font-semibold sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center">
                                       Time
                                     </th>
 
                                     {weekDates.map((date, index) => (
                                       <th
                                         key={index}
-                                        className="py-2 px-1 border border-border-color text-center text-sm font-semibold sticky top-0 bg-white z-40"
+                                        className={`py-2 px-1 border-r  text-center text-sm font-semibold sticky top-0 z-40
+    ${
+      new Date(date).setHours(0, 0, 0, 0) < new Date().setHours(0, 0, 0, 0)
+        ? "bg-[#DCDCDC] "
+        : "bg-white"
+    }
+  `}
                                       >
                                         <div className="flex flex-col items-center">
                                           <div className="font-bold text-gray-900">
@@ -998,7 +1037,7 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                                 </thead>
 
                                 <tbody>
-                                  {times.map((time) => {
+                                 {visibleTimes.map((time) => {
                                     const hourLine =
                                       isHourStart(time) && time !== times[0];
                                     const topBorder = hourLine
@@ -1015,33 +1054,42 @@ const displayedInstructors = selectedInstructor ? [selectedInstructor] : filtere
                                         </td>
 
                                         {weekDates.map((date, dayIndex) => {
-  const dateKey = formatYMD(date);
-  const timeKey = normalizeTime(time);
-  const tdClass = `p-0 ${cellBorder}`;
+                                          const dateKey = formatYMD(date);
+                                          const timeKey = normalizeTime(time);
+                                          const tdClass = `p-0 ${cellBorder}`;
 
-  const isBooked = bookedSlotsMap[`${dateKey}__${timeKey}`];
-const slot = slotsMap[`${dateKey}__${timeKey}`];
+                                          const isBooked =
+                                            bookedSlotsMap[
+                                              `${dateKey}__${timeKey}`
+                                            ];
+                                          const slot =
+                                            slotsMap[`${dateKey}__${timeKey}`];
 
-const isBlockedByTime = isSlotBlockedByTime(date, time);
+                                          const isBlockedByTime =
+                                            isSlotBlockedByTime(date, time);
 
-if (isBlockedByTime) {
-  return (
-    <td key={dayIndex} className={tdClass}>
-      <div className="w-full h-full min-h-11 bg-[#eee]" />
-    </td>
-  );
-}
-if (isBooked) {
-  return (
-    <td key={dayIndex} className={tdClass}>
-      <div className="w-full h-full min-h-11 py-2 text-xs font-medium md:font-semibold bg-[#B20606] text-white flex items-center justify-center">
-        Booked
-      </div>
-    </td>
-  );
-}
-
-                                          
+                                          if (isBlockedByTime) {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                              </td>
+                                            );
+                                          }
+                                          if (isBooked) {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 py-2 text-xs font-medium md:font-semibold bg-[#B20606] text-white flex items-center justify-center">
+                                                  Booked
+                                                </div>
+                                              </td>
+                                            );
+                                          }
 
                                           if (
                                             !slot ||
@@ -1209,7 +1257,7 @@ if (isBooked) {
 
                                     <thead>
                                       <tr>
-                                        <th className="w-5 py-2 px-1 border border-border-color text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
+                                        <th className="w-5 py-2 px-1 border-r border-dashed  text-[10px] font-bold sticky top-0 left-0 bg-[#DCDCDC] z-40 text-center">
                                           <div className="leading-tight">
                                             <div>Time</div>
                                             <span className="font-semibold opacity-80">
@@ -1218,26 +1266,36 @@ if (isBooked) {
                                           </div>
                                         </th>
 
-                                        {visibleDayIdx.map((dayIndex) => (
-                                          <th
-                                            key={dayIndex}
-                                            className="py-2 px-0.5 border border-border-color text-center text-[10px] font-bold sticky top-0 bg-white z-30"
-                                          >
-                                            <div className="leading-tight">
-                                              <div className="text-gray-900">
-                                                {weekdays[dayIndex].slice(0, 3)}
-                                              </div>
-                                              <div className="text-gray-600 font-semibold">
-                                                {weekDates[
-                                                  dayIndex
-                                                ].toLocaleDateString("en-US", {
-                                                  day: "numeric",
-                                                  month: "short",
-                                                })}
-                                              </div>
-                                            </div>
-                                          </th>
-                                        ))}
+                                       {visibleDayIdx.map((dayIndex) => {
+  const currentDate = new Date(weekDates[dayIndex]);
+  currentDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const isPastColumn = currentDate < today;
+
+  return (
+    <th
+      key={dayIndex}
+      className={`py-2 px-0.5 border-r border-dashed text-center text-[10px] font-bold sticky top-0 z-30 ${
+        isPastColumn ? "bg-[#DCDCDC]" : "bg-white"
+      }`}
+    >
+      <div className="leading-tight">
+        <div className="text-gray-900">
+          {weekdays[dayIndex].slice(0, 3)}
+        </div>
+        <div className="text-gray-600 font-semibold">
+          {weekDates[dayIndex].toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+          })}
+        </div>
+      </div>
+    </th>
+  );
+})}
                                       </tr>
                                     </thead>
 
@@ -1274,45 +1332,52 @@ if (isBooked) {
                                               })()}
                                             </td>
 
-                                             {visibleDayIdx.map((dayIndex) => {
-                    const date = weekDates[dayIndex];
-                    const dateKey = formatYMD(date);
-                    const timeKey =
-                      normalizeTime(time);
+                                            {visibleDayIdx.map((dayIndex) => {
+                                              const date = weekDates[dayIndex];
+                                              const dateKey = formatYMD(date);
+                                              const timeKey =
+                                                normalizeTime(time);
 
-                    const isBooked =
-                      bookedSlotsMap[
-                        `${dateKey}__${timeKey}`
-                      ];
+                                              const isBooked =
+                                                bookedSlotsMap[
+                                                  `${dateKey}__${timeKey}`
+                                                ];
 
-                    const key = `${dateKey}__${normalizeTime(time)}`;
-                    const slot = slotsMap[key];
-                    const vis = slot
-                      ? getVisibility(slot)
-                      : "";
+                                              const key = `${dateKey}__${normalizeTime(time)}`;
+                                              const slot = slotsMap[key];
+                                              const vis = slot
+                                                ? getVisibility(slot)
+                                                : "";
 
-                    // cell container (tight like screenshot)
-                    const cellClass = `p-0 border border-border-color ${topBorder}`;
+                                              // cell container (tight like screenshot)
+                                              const cellClass = `p-0 border border-border-color ${topBorder}`;
 
-                    const isBlockedByTime = isSlotBlockedByTime(date, time);
+                                              const isBlockedByTime =
+                                                isSlotBlockedByTime(date, time);
 
-if (isBlockedByTime) {
-  return (
-    <td key={dayIndex} className={cellClass}>
-      <div className="w-full min-h-10 bg-[#eee]" />
-    </td>
-  );
-}
+                                              if (isBlockedByTime) {
+                                                return (
+                                                  <td
+                                                    key={dayIndex}
+                                                    className={cellClass}
+                                                  >
+                                                    <div className="w-full min-h-10 bg-[#eee]" />
+                                                  </td>
+                                                );
+                                              }
 
-if (isBooked) {
-  return (
-    <td key={dayIndex} className={cellClass}>
-      <div className="w-full min-h-10 flex items-center justify-center bg-[#B20606] text-white text-[8px] font-medium sm:font-bold">
-        Booked
-      </div>
-    </td>
-  );
-}
+                                              if (isBooked) {
+                                                return (
+                                                  <td
+                                                    key={dayIndex}
+                                                    className={cellClass}
+                                                  >
+                                                    <div className="w-full min-h-10 flex items-center justify-center bg-[#B20606] text-white text-[8px] font-medium sm:font-bold">
+                                                      Booked
+                                                    </div>
+                                                  </td>
+                                                );
+                                              }
 
                                               if (
                                                 !slot ||
