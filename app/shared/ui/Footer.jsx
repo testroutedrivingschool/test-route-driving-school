@@ -56,7 +56,6 @@ export default function Footer() {
               Kogarah. Our friendly instructors are ready to help you gain
               confidence, master driving skills, and pass your test.
             </p>
-
           </div>
 
           {/* Column 2: Quick Links */}
@@ -97,12 +96,12 @@ export default function Footer() {
             </ul>
             {(!userData || userData.role === "user") && (
               <div className="mt-6">
-              <Link
-  href="/become-instructor"
-  className="inline-block text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 bg-[hsl(262_60%_35%)] hover:bg-[hsl(262_60%_30%)]"
->
-  Join as an Instructor
-</Link>
+                <Link
+                  href="/become-instructor"
+                  className="inline-block text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 bg-[hsl(262_60%_35%)] hover:bg-[hsl(262_60%_30%)]"
+                >
+                  Join as an Instructor
+                </Link>
               </div>
             )}
           </div>
@@ -122,7 +121,6 @@ export default function Footer() {
                     {" "}
                     <FaPhoneAlt size={22} className="text-accent" />
                     <span> 0412 018 593</span>
-                    
                   </a>
                 </li>
                 <li className="flex items-center gap-2">
@@ -139,11 +137,11 @@ export default function Footer() {
                 <li className="flex items-center gap-2">
                   <a
                     className="flex items-center gap-2"
-                    href="mailto:testroutedrivingschool@gmail.com"
+                    href="mailto:info@testroutedrivingschool.com.au"
                   >
                     <FaEnvelope size={22} className="text-accent" />
                     <span className="break-all">
-                      testroutedrivingschool@gmail.com
+                      info@testroutedrivingschool.com.au
                     </span>
                   </a>
                 </li>
@@ -160,7 +158,7 @@ export default function Footer() {
                   <a
                     href="https://www.facebook.com/share/1A148kMS7g/"
                     target="_blank"
-                     aria-label="Visit Test Route Driving School on Facebook"
+                    aria-label="Visit Test Route Driving School on Facebook"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-accent text-white hover:scale-110 transition"
                   >
                     <FaFacebookF />
@@ -169,7 +167,7 @@ export default function Footer() {
                   <a
                     href="https://share.google/TEMTklcOBslyY7zBC"
                     target="_blank"
-                     aria-label="Visit Test Route Driving School on Google"
+                    aria-label="Visit Test Route Driving School on Google"
                     className="w-10 h-10 flex items-center justify-center rounded-full bg-accent text-white hover:scale-110 transition"
                   >
                     <FaGoogle />

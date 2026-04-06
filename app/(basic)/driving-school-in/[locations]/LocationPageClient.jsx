@@ -20,16 +20,17 @@ import Reviews from "../../components/Home/Reviews/Reviews";
 
 export default function LocationPageClient({locationData}) {
   const router = useRouter();
-const pathname = usePathname();
+  const pathname = usePathname();
 
-// Extract slug
-const slug = pathname.replace("/driving-school-in/", "");
+  // Extract slug
+  const slug = pathname.replace("/driving-school-in/", "");
 
-// Convert to proper case
-const formattedLocation = slug
-  .split("-")
-  .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-  .join(" ") || "";
+  // Convert to proper case
+  const formattedLocation =
+    slug
+      .split("-")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ") || "";
 
   return (
     <div>
@@ -146,7 +147,10 @@ const formattedLocation = slug
       </section>
 
       <MovingCar />
-      <WhatWeOffer sectionTitle={`What We Offer in ${formattedLocation}`} services={locationData?.services} />
+      <WhatWeOffer
+        sectionTitle={`What We Offer in ${formattedLocation}`}
+        services={locationData?.services}
+      />
       <section className="py-16 ">
         <Container>
           <div className="space-y-12 text-center">
@@ -213,14 +217,19 @@ const formattedLocation = slug
         <Container>
           {/* CTA Section */}
           <div className=" bg-primary rounded-xl p-4 md:p-8 text-white text-center">
-            <h3 className="text-xl md:text-2xl font-bold mb-3">Start Your Driving Journey Today</h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-3">
+              Start Your Driving Journey Today
+            </h3>
             <p className="text-blue-100 mb-4 md:max-w-2xl mx-auto text-sm md:text-base">
               {locationData.ctaDescription
                 ? locationData.ctaDescription
                 : "Start your driving journey today with Test Route Driving School. Expert instructors, flexible schedules, and safe vehicles make learning fun and easy."}
             </p>
             <div className="flex gap-2 justify-center">
-              <SecondaryBtn className={`text-sm! md:text-lg! px-2! md:px-4!`} onClick={() => router.push("/bookings")}>
+              <SecondaryBtn
+                className={`text-sm! md:text-lg! px-2! md:px-4!`}
+                onClick={() => router.push("/bookings")}
+              >
                 Book Now
               </SecondaryBtn>
               <OutlineBtn
@@ -238,7 +247,7 @@ const formattedLocation = slug
                 className={`hidden md:block border-white! text-white hover:bg-secondary hover:border-secondary! text-xs! md:text-lg! px-2! md:px-4!`}
               >
                 <a
-                  href="mailto:testroutedrivingschool@gmail.com"
+                  href="mailto:info@testroutedrivingschool.com.au"
                   className="flex items-center gap-2 rounded-lg  text-white font-bold   transition "
                 >
                   <FaEnvelope className="text-lg" />
@@ -249,9 +258,12 @@ const formattedLocation = slug
           </div>
         </Container>
       </section>
-      <GoogleReviewCard/>
+      <GoogleReviewCard />
       <Reviews />
-      <Faq title={`FAQs About Driving Lessons in ${formattedLocation}`} faqs={locationData?.faqs} />
+      <Faq
+        title={`FAQs About Driving Lessons in ${formattedLocation}`}
+        faqs={locationData?.faqs}
+      />
       {/* Map*/}
       <section className="py-16">
         <Container>
@@ -264,7 +276,7 @@ const formattedLocation = slug
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-                title="Google Map showing our suburbs area"
+              title="Google Map showing our suburbs area"
             />
           </div>
         </Container>

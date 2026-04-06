@@ -1,6 +1,6 @@
 // app/api/contact/route.js
-import { sendMail } from "@/app/libs/mail/mailer";
-import { NextResponse } from "next/server";
+import {sendMail} from "@/app/libs/mail/mailer";
+import {NextResponse} from "next/server";
 
 export async function POST(req) {
   try {
@@ -17,8 +17,6 @@ export async function POST(req) {
       source,
       consent,
     } = body;
-
-
 
     const subject = `New Contact Form Submission - ${firstName} ${lastName}`;
 
@@ -37,7 +35,7 @@ export async function POST(req) {
     `;
 
     await sendMail({
-      to: "testroutedrivingschool@gmail.com",
+      to: "info@testroutedrivingschool.com.au",
       subject,
       html,
       text: `
@@ -56,12 +54,12 @@ ${message}
       `,
     });
 
-    return NextResponse.json({ ok: true, message: "Sent successfully" });
+    return NextResponse.json({ok: true, message: "Sent successfully"});
   } catch (err) {
     console.error("CONTACT API ERROR:", err);
     return NextResponse.json(
-      { ok: false, message: "Server error sending email." },
-      { status: 500 }
+      {ok: false, message: "Server error sending email."},
+      {status: 500},
     );
   }
 }

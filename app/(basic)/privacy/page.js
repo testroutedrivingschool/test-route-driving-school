@@ -104,12 +104,12 @@ export default function PrivacyPolicy() {
           </h3>
           <p className="mt-2 text-neutral md:text-lg">
             Your privacy is taken seriously. You can contact Test Route Driving
-            School anytime at 
+            School anytime at
             <a
-              href="mailto:testroutedrivingschool@gmail.com"
+              href="mailto:info@testroutedrivingschool.com.au"
               className="text-primary pl-1"
             >
-               testroutedrivingschool@gmail.com
+              info@testroutedrivingschool.com.au
             </a>
             with any questions or complaints regarding how your personal
             information is handled.

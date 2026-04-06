@@ -2,14 +2,15 @@ import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Image from "next/image";
 import Link from "next/link";
-import { FaEnvelope, FaHandPointer } from "react-icons/fa";
-import { IoCallSharp } from "react-icons/io5";
+import {FaEnvelope, FaHandPointer} from "react-icons/fa";
+import {IoCallSharp} from "react-icons/io5";
 import blog4Img from "@/app/assets/blog/blog4.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
 
 export const metadata = {
-  title: "Why Practicing Local Test Routes Improves Pass Rates – Proven Results",
+  title:
+    "Why Practicing Local Test Routes Improves Pass Rates – Proven Results",
   description:
     "See why practicing local test routes improves pass rates by 40% with familiar streets and expert guidance. Master Kogarah routes with instructors who know every turn. Enquire now.",
   keywords: [
@@ -27,23 +28,32 @@ export const metadata = {
 };
 
 const toc = [
-  { id: "power", label: "The Power of Local Driving Test Routes" },
-  { id: "sydney-advantage", label: "NSW Driving Test Routes: The Sydney Advantage" },
+  {id: "power", label: "The Power of Local Driving Test Routes"},
+  {
+    id: "sydney-advantage",
+    label: "NSW Driving Test Routes: The Sydney Advantage",
+  },
   {
     id: "near-centre",
     label: "Practice Near the Driving Test Centre: Location Matters",
   },
-  { id: "mock-test", label: "Mock Driving Test Practice: Simulating Real Pressure" },
-  { id: "situations", label: "Common Test Route Situations: What to Expect" },
+  {
+    id: "mock-test",
+    label: "Mock Driving Test Practice: Simulating Real Pressure",
+  },
+  {id: "situations", label: "Common Test Route Situations: What to Expect"},
   {
     id: "intersections",
     label: "Difficult Intersections Driving Test: Mastering Complexity",
   },
-  { id: "school-zones", label: "School Zone Driving Test: Timing Is Critical" },
-  { id: "roundabouts", label: "Roundabout Practice for the Test: Navigating Confidently" },
-  { id: "pre-test", label: "Pre-Test Route Training: The Final Preparation" },
-  { id: "science", label: "The Science Behind Route Familiarity" },
-  { id: "faqs", label: "Frequently Asked Questions" },
+  {id: "school-zones", label: "School Zone Driving Test: Timing Is Critical"},
+  {
+    id: "roundabouts",
+    label: "Roundabout Practice for the Test: Navigating Confidently",
+  },
+  {id: "pre-test", label: "Pre-Test Route Training: The Final Preparation"},
+  {id: "science", label: "The Science Behind Route Familiarity"},
+  {id: "faqs", label: "Frequently Asked Questions"},
 ];
 
 const faqs = [
@@ -53,7 +63,8 @@ const faqs = [
       "Practice the full route at least three to five times. Drive it at different times of day. Experience varying traffic conditions. Build comprehensive familiarity.",
   },
   {
-    question: "Can I just memorize the test route instead of learning to drive?",
+    question:
+      "Can I just memorize the test route instead of learning to drive?",
     answer:
       "Memorizing helps, but it is not enough. You need real driving skills. You need hazard perception. You need decision-making ability. Route knowledge complements these skills. It does not replace them.",
   },
@@ -159,10 +170,15 @@ export default function Blog4() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      <Link href="/services/driving-test-assessment" className="location-link">NSW driving test
-            </Link>routes vary by location. Kogarah tests
-                      differ from Bondi tests. Liverpool routes differ from
-                      Penrith routes. Each center has unique challenges.
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        NSW driving test
+                      </Link>
+                      routes vary by location. Kogarah tests differ from Bondi
+                      tests. Liverpool routes differ from Penrith routes. Each
+                      center has unique challenges.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -191,10 +207,16 @@ export default function Blog4() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Practice near the <Link href="/services/driving-test-assessment" className="location-link">driving test
-            </Link>driving test centre makes a huge
-                      difference. You absorb the environment. You notice
-                      landmarks. You feel comfortable parking nearby.
+                      Practice near the{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        driving test
+                      </Link>
+                      driving test centre makes a huge difference. You absorb
+                      the environment. You notice landmarks. You feel
+                      comfortable parking nearby.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -223,9 +245,15 @@ export default function Blog4() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Mock<Link href="/services/driving-test-assessment" className="location-link">driving test practice
-            </Link>reveals hidden weaknesses. It
-                      mimics exam conditions. It builds mental toughness.
+                      Mock
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        driving test practice
+                      </Link>
+                      reveals hidden weaknesses. It mimics exam conditions. It
+                      builds mental toughness.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -254,8 +282,8 @@ export default function Blog4() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Common test route situations appear repeatedly. Recognizing
-                      them helps you respond better.
+                      Common test route situations appear repeatedly.
+                      Recognizing them helps you respond better.
                     </p>
 
                     <div className="mt-6 grid grid-cols-1 gap-4">
@@ -265,8 +293,8 @@ export default function Blog4() {
                         </p>
                         <p className="mt-2 text-sm md:text-base leading-7">
                           Examiners test merging before turns. You must signal
-                          early. You must check blind spots. You must choose safe
-                          gaps.
+                          early. You must check blind spots. You must choose
+                          safe gaps.
                         </p>
                       </div>
 
@@ -329,8 +357,9 @@ export default function Blog4() {
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Knowing these spots beforehand saves you. You study them in
-                      advance. You plan your approach. You execute confidently.
+                      Knowing these spots beforehand saves you. You study them
+                      in advance. You plan your approach. You execute
+                      confidently.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -347,29 +376,35 @@ export default function Blog4() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      School zone <Link href="/services/driving-test-assessment" className="location-link">driving test
-            </Link>sections appear often. They test
-                      your observation. They test your speed control. They test
-                      your timing.
+                      School zone{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        driving test
+                      </Link>
+                      sections appear often. They test your observation. They
+                      test your speed control. They test your timing.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      School zones have strict speed limits. They vary by time of
-                      day. They vary by school type. Signs indicate active hours.
+                      School zones have strict speed limits. They vary by time
+                      of day. They vary by school type. Signs indicate active
+                      hours.
                     </p>
 
                     <div className="mt-6 rounded-2xl border border-border-color bg-base-300 p-6">
                       <p className="text-sm md:text-base leading-7 font-semibold">
                         Missing a school zone fails you instantly. Speeding
-                        through one ends your test. You must spot them early. You
-                        must slow smoothly.
+                        through one ends your test. You must spot them early.
+                        You must slow smoothly.
                       </p>
                     </div>
 
                     <p className="mt-4 text-sm md:text-base leading-7">
                       We practice school zone timing. We know local school
-                      locations. We know their operating hours. You learn to spot
-                      them automatically.
+                      locations. We know their operating hours. You learn to
+                      spot them automatically.
                     </p>
                   </section>
 
@@ -388,12 +423,18 @@ export default function Blog4() {
                     <p className="mt-3 text-sm md:text-base leading-7">
                       You must judge approaching traffic. You must select the
                       correct lanes. You must signal properly. You must exit
-                      <Link href="https://www.nhtsa.gov/ten-tips-for-safe-driving" className="location-link" target="_blank">safely.</Link>
+                      <Link
+                        href="https://www.nhtsa.gov/ten-tips-for-safe-driving"
+                        className="location-link"
+                        target="_blank"
+                      >
+                        safely.
+                      </Link>
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Multi-lane roundabouts challenge most. Lane choices matter.
-                      Positioning matters. Timing matters.
+                      Multi-lane roundabouts challenge most. Lane choices
+                      matter. Positioning matters. Timing matters.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -422,8 +463,8 @@ export default function Blog4() {
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      This training removes last-minute doubts. You sleep better.
-                      You arrive calmer. You perform stronger.
+                      This training removes last-minute doubts. You sleep
+                      better. You arrive calmer. You perform stronger.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -445,9 +486,16 @@ export default function Blog4() {
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Anxiety impairs<Link href="https://www.britannica.com/technology/driving-vehicle-operation" className="location-link" target="_blank">driving</Link>performance. Unknown routes
-                      increase anxiety. Known routes decrease it. Comfort
-                      improves control.
+                      Anxiety impairs
+                      <Link
+                        href="https://www.britannica.com/technology/driving-vehicle-operation"
+                        className="location-link"
+                        target="_blank"
+                      >
+                        driving
+                      </Link>
+                      performance. Unknown routes increase anxiety. Known routes
+                      decrease it. Comfort improves control.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -470,8 +518,6 @@ export default function Blog4() {
                       className={"bg-white! py-0!"}
                     />
                   </section>
-
-                
                 </div>
               </div>
             </article>
@@ -487,12 +533,13 @@ export default function Blog4() {
                   </h3>
 
                   <p className="mt-2 text-sm leading-7 text-neutral">
-                    Practicing local test routes transforms your test performance.
-                    It builds confidence. It eliminates surprises. It maximizes
-                    your pass chances. <br />
-                    At Test Route Driving School, we specialize in this approach.
-                    Our name reflects our method. We know Kogarah streets. We know
-                    Greater Sydney routes. We know how to prepare you. <br />
+                    Practicing local test routes transforms your test
+                    performance. It builds confidence. It eliminates surprises.
+                    It maximizes your pass chances. <br />
+                    At Test Route Driving School, we specialize in this
+                    approach. Our name reflects our method. We know Kogarah
+                    streets. We know Greater Sydney routes. We know how to
+                    prepare you. <br />
                     Drive the routes before you test on them. Know every corner
                     before you turn it. Pass with confidence on the streets you
                     own.
@@ -516,7 +563,7 @@ export default function Blog4() {
                     </Link>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

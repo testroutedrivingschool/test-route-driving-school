@@ -137,12 +137,14 @@ export default function Blog2() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Why do people fail the<Link
+                      Why do people fail the
+                      <Link
                         href="/services/driving-test-package"
                         className="location-link"
                       >
                         driving test?
-                      </Link>The answer is simple. They overlook small details. They
+                      </Link>
+                      The answer is simple. They overlook small details. They
                       panic under pressure. They forget basic habits.
                     </p>
 
@@ -204,13 +206,14 @@ export default function Blog2() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      The major and minor faults<Link
+                      The major and minor faults
+                      <Link
                         href="/services/driving-test-assessment"
                         className="location-link"
                       >
-                      driving test system 
-                      </Link>confuse
-                      many learners. Let us clarify it.
+                        driving test system
+                      </Link>
+                      confuse many learners. Let us clarify it.
                     </p>
 
                     <div className="mt-6 grid grid-cols-1 gap-4">
@@ -248,12 +251,14 @@ export default function Blog2() {
                   {/* Mirror check */}
                   <section id="mirror-check" className="scroll-mt-24">
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
-                      Mirror Check <Link
+                      Mirror Check{" "}
+                      <Link
                         href="/services/driving-test-package"
                         className="location-link"
                       >
                         Driving Test:
-                      </Link>The Most Overlooked Skill
+                      </Link>
+                      The Most Overlooked Skill
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -321,14 +326,15 @@ export default function Blog2() {
                     </div>
 
                     <p className="mt-4 text-sm md:text-base leading-7">
-                      These errors confuse other <Link
+                      These errors confuse other{" "}
+                      <Link
                         href="https://en.wikipedia.org/wiki/Driver%27s_education"
                         className="location-link"
                         target="_blank"
                       >
                         drivers.
-                      </Link>They create danger.
-                      Examiners notice immediately.
+                      </Link>
+                      They create danger. Examiners notice immediately.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -461,7 +467,7 @@ export default function Blog2() {
                         className="location-link"
                         target="_blank"
                       >
-                      safely.
+                        safely.
                       </Link>
                     </p>
 
@@ -506,13 +512,11 @@ export default function Blog2() {
 
                     <p className="mt-3 text-sm md:text-base leading-7">
                       We specialize in Greater Sydney test routes. We know
-                      Kogarah and <Link
-                        href="/area-covered"
-                        className="location-link"
-                      >
-                      the surrounding suburbs intimately.
-                      </Link>We prepare
-                      you for the exact conditions you will face.
+                      Kogarah and{" "}
+                      <Link href="/area-covered" className="location-link">
+                        the surrounding suburbs intimately.
+                      </Link>
+                      We prepare you for the exact conditions you will face.
                     </p>
                   </section>
 
@@ -567,7 +571,7 @@ export default function Blog2() {
                     </a>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-md px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

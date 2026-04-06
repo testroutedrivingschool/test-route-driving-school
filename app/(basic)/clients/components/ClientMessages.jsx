@@ -67,140 +67,145 @@ export default function ClientMessages({clientId}) {
   return (
     <div className="bg-white  overflow-hidden">
       <div className="md:hidden">
-      <div className="bg-secondary text-white px-4 py-3 font-semibold">
-        Messages
-      </div>
-
-      {isFetching && (
-        <div className="px-4 py-2 text-xs text-gray-500 border-b">
-          Updating...
+        <div className="bg-secondary text-white px-4 py-3 font-semibold">
+          Messages
         </div>
-      )}
 
-      <div className="divide-y divide-border-color">
-        {rows.map((m) => (
-          <button
-            key={m._id}
-            type="button"
-            onClick={() => setSelected(m)}
-            className="w-full text-left px-4 py-3 hover:bg-gray-50 transition"
-          >
-            <div className="flex items-start gap-3">
-              <FiMail className="text-2xl text-gray-400 mt-1 shrink-0" />
+        {isFetching && (
+          <div className="px-4 py-2 text-xs text-gray-500 border-b">
+            Updating...
+          </div>
+        )}
 
-              <div className="min-w-0 flex-1">
-                {/* subject + chevron */}
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="font-semibold text-gray-900 leading-snug wrap-break-word">
-                      {m.subject || "(No subject)"}
-                      {m.hasAttachment ? (
-                        <span className="ml-2 text-xs font-semibold text-neutral">
-                          📎 {m.attachmentName || "Attachment"}
-                        </span>
-                      ) : null}
+        <div className="divide-y divide-border-color">
+          {rows.map((m) => (
+            <button
+              key={m._id}
+              type="button"
+              onClick={() => setSelected(m)}
+              className="w-full text-left px-4 py-3 hover:bg-gray-50 transition"
+            >
+              <div className="flex items-start gap-3">
+                <FiMail className="text-2xl text-gray-400 mt-1 shrink-0" />
+
+                <div className="min-w-0 flex-1">
+                  {/* subject + chevron */}
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="font-semibold text-gray-900 leading-snug wrap-break-word">
+                        {m.subject || "(No subject)"}
+                        {m.hasAttachment ? (
+                          <span className="ml-2 text-xs font-semibold text-neutral">
+                            📎 {m.attachmentName || "Attachment"}
+                          </span>
+                        ) : null}
+                      </div>
+                      <div className="text-xs text-gray-600 mt-1">
+                        {formatAU(m.sentAt || m.createdAt)}
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-600 mt-1">
-                      {formatAU(m.sentAt || m.createdAt)}
-                    </div>
+
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 shrink-0">
+                      <HiChevronDown className="text-gray-700" />
+                    </span>
                   </div>
 
-                  <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-200 shrink-0">
-                    <HiChevronDown className="text-gray-700" />
-                  </span>
-                </div>
-
-                {/* to/from */}
-                <div className="mt-2 text-xs text-gray-700 space-y-1">
-                  <div className="break-all">
-                    <span className="font-semibold">To:</span>{" "}
-                    {m.to || "—"}
-                  </div>
-                  <div className="break-all">
-                    <span className="font-semibold">From:</span>{" "}
-                    {m.from || "testroutedrivingschool@gmail.com"}
+                  {/* to/from */}
+                  <div className="mt-2 text-xs text-gray-700 space-y-1">
+                    <div className="break-all">
+                      <span className="font-semibold">To:</span> {m.to || "—"}
+                    </div>
+                    <div className="break-all">
+                      <span className="font-semibold">From:</span>{" "}
+                      {m.from || "info@testroutedrivingschool.com.au"}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
 
-    {/* ================= DESKTOP TABLE (no horizontal scroll needed) ================= */}
-    <div className="hidden md:block">
-      <table className="w-full text-sm text-left border-collapse table-fixed">
-        <thead className="bg-secondary text-white">
-          <tr>
-            <th className="px-4 py-3 w-[70px] font-semibold">Type</th>
-            <th className="px-4 py-3 w-[260px] font-semibold">Sent</th>
-            <th className="px-4 py-3 font-semibold">Message</th>
-            <th className="px-4 py-3 w-[60px]" />
-          </tr>
-        </thead>
-
-        <tbody>
-          {isFetching && (
+      {/* ================= DESKTOP TABLE (no horizontal scroll needed) ================= */}
+      <div className="hidden md:block">
+        <table className="w-full text-sm text-left border-collapse table-fixed">
+          <thead className="bg-secondary text-white">
             <tr>
-              <td colSpan={4} className="px-4 py-2 text-xs text-gray-500 border-b">
-                Updating...
-              </td>
+              <th className="px-4 py-3 w-[70px] font-semibold">Type</th>
+              <th className="px-4 py-3 w-[260px] font-semibold">Sent</th>
+              <th className="px-4 py-3 font-semibold">Message</th>
+              <th className="px-4 py-3 w-[60px]" />
             </tr>
-          )}
+          </thead>
 
-          {rows.map((m, idx) => {
-            const bg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
-            return (
-              <tr key={m._id} className={`${bg} border-b border-border-color`}>
-                {/* Type */}
-                <td className="px-4 py-4 align-top">
-                  <FiMail className="text-2xl text-gray-400" />
-                </td>
-
-                {/* Sent */}
-                <td className="px-4 py-4 align-top text-gray-800">
-                  <div className="font-medium">
-                    {formatAU(m.sentAt || m.createdAt)}
-                  </div>
-                  <div className="text-xs mt-1 break-all">
-                    <span className="font-semibold">To:</span> {m.to || "—"}
-                  </div>
-                  <div className="text-xs break-all">
-                    <span className="font-semibold">From:</span>{" "}
-                    {m.from || "testroutedrivingschool@gmail.com"}
-                  </div>
-                </td>
-
-                {/* Message */}
-                <td className="px-4 py-4 align-top">
-                  <div className="font-semibold text-gray-900 wrap-break-word">
-                    {m.subject || "(No subject)"}
-                  </div>
-                  {m.hasAttachment && (
-                    <div className="text-xs text-neutral mt-1 wrap-break-word">
-                      📎 {m.attachmentName || "Attachment"}
-                    </div>
-                  )}
-                </td>
-
-                {/* Action */}
-                <td className="px-4 py-4 align-top text-right">
-                  <button
-                    type="button"
-                    onClick={() => setSelected(m)}
-                    className="h-8 w-8 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center transition"
-                    aria-label="Open message"
-                  >
-                    <HiChevronDown className="text-gray-700" />
-                  </button>
+          <tbody>
+            {isFetching && (
+              <tr>
+                <td
+                  colSpan={4}
+                  className="px-4 py-2 text-xs text-gray-500 border-b"
+                >
+                  Updating...
                 </td>
               </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+            )}
+
+            {rows.map((m, idx) => {
+              const bg = idx % 2 === 0 ? "bg-white" : "bg-[#f3f3f3]";
+              return (
+                <tr
+                  key={m._id}
+                  className={`${bg} border-b border-border-color`}
+                >
+                  {/* Type */}
+                  <td className="px-4 py-4 align-top">
+                    <FiMail className="text-2xl text-gray-400" />
+                  </td>
+
+                  {/* Sent */}
+                  <td className="px-4 py-4 align-top text-gray-800">
+                    <div className="font-medium">
+                      {formatAU(m.sentAt || m.createdAt)}
+                    </div>
+                    <div className="text-xs mt-1 break-all">
+                      <span className="font-semibold">To:</span> {m.to || "—"}
+                    </div>
+                    <div className="text-xs break-all">
+                      <span className="font-semibold">From:</span>{" "}
+                      {m.from || "info@testroutedrivingschool.com.au"}
+                    </div>
+                  </td>
+
+                  {/* Message */}
+                  <td className="px-4 py-4 align-top">
+                    <div className="font-semibold text-gray-900 wrap-break-word">
+                      {m.subject || "(No subject)"}
+                    </div>
+                    {m.hasAttachment && (
+                      <div className="text-xs text-neutral mt-1 wrap-break-word">
+                        📎 {m.attachmentName || "Attachment"}
+                      </div>
+                    )}
+                  </td>
+
+                  {/* Action */}
+                  <td className="px-4 py-4 align-top text-right">
+                    <button
+                      type="button"
+                      onClick={() => setSelected(m)}
+                      className="h-8 w-8 rounded-full bg-gray-300 hover:bg-gray-400 flex items-center justify-center transition"
+                      aria-label="Open message"
+                    >
+                      <HiChevronDown className="text-gray-700" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       {/* Modal */}
       {selected && (
@@ -223,7 +228,7 @@ export default function ClientMessages({clientId}) {
             </div>
             <div>
               <span className="font-semibold">From:</span>{" "}
-              {selected.from || "testroutedrivingschool@gmail.com"}
+              {selected.from || "info@testroutedrivingschool.com.au"}
             </div>
           </div>
 
@@ -254,7 +259,7 @@ export default function ClientMessages({clientId}) {
 
           {/* Actions */}
           <div className="mt-6 flex items-center justify-end gap-3">
-            {!selected.checklistId && selected.type==="BOOKINGS_CONFIRM" && (
+            {!selected.checklistId && selected.type === "BOOKINGS_CONFIRM" && (
               <PrimaryBtn
                 onClick={() =>
                   router.push(

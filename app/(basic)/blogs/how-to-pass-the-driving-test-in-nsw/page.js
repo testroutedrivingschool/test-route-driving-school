@@ -553,7 +553,7 @@ export default function Blog1() {
                     </Link>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

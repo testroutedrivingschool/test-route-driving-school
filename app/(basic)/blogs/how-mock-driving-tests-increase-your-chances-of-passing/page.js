@@ -3,8 +3,8 @@ import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Image from "next/image";
 import Link from "next/link";
-import {  FaCheckCircle, FaEnvelope, FaHandPointer } from "react-icons/fa";
-import { IoCallSharp } from "react-icons/io5";
+import {FaCheckCircle, FaEnvelope, FaHandPointer} from "react-icons/fa";
+import {IoCallSharp} from "react-icons/io5";
 import blog9Img from "@/app/assets/blog/blog9.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
@@ -15,19 +15,19 @@ export const metadata = {
     "Don't risk a fail. Our mock driving tests identify your weak spots and fix common 2026 fail items before your big day. Get the bonus confidence boost you need to succeed.",
   keywords: [
     "Mock Driving Tests",
-"Practice driving test in Sydney",
-"Pre-driving test assessment",
-"driving test simulation",
-"Driving assessment before the test",
-"driving instructor test preparation",
-"parallel parking practice",
-"3-point turn assessment",
-"Are mock driving tests worth it?",
-"How many mock tests should I take?",
-"Do driving instructors know the test routes?",
-"book mock driving test in Sydney",
-"driving school test preparation package",
-"driving test warm-up lesson",
+    "Practice driving test in Sydney",
+    "Pre-driving test assessment",
+    "driving test simulation",
+    "Driving assessment before the test",
+    "driving instructor test preparation",
+    "parallel parking practice",
+    "3-point turn assessment",
+    "Are mock driving tests worth it?",
+    "How many mock tests should I take?",
+    "Do driving instructors know the test routes?",
+    "book mock driving test in Sydney",
+    "driving school test preparation package",
+    "driving test warm-up lesson",
   ],
 };
 
@@ -64,7 +64,7 @@ const toc = [
     id: "professional-vs-private-practice",
     label: "Professional Assessment vs. Private Practice",
   },
-  { id: "faqs", label: "Frequently Asked Questions" },
+  {id: "faqs", label: "Frequently Asked Questions"},
 ];
 
 const faqs = [
@@ -74,7 +74,8 @@ const faqs = [
       "Yes. I give you a detailed breakdown. We look at your speed management and road positioning. You will see exactly where you stand.",
   },
   {
-    question: "Can I book a mock driving test in Sydney if I am not a regular student?",
+    question:
+      "Can I book a mock driving test in Sydney if I am not a regular student?",
     answer:
       "Absolutely. We offer 'one-off' assessments for anyone. It is a great way to get a second opinion before your big day.",
   },
@@ -102,9 +103,19 @@ export default function Blog9() {
         title={"How Mock Driving Tests Increase Your Chances of Passing"}
         subtitle={
           <>
-             <Link href="/packages/2-hours-driving-test-assessment" className="location-link">
-          Mock Driving Tests
-            </Link> are the best way to bridge the gap between learning and passing. These simulations replicate real exam conditions to highlight your hidden mistakes. By taking a practice test, you lower your anxiety and learn exactly what examiners want. Research shows that students who complete a mock assessment are 40% more likely to pass their actual test. This guide explains how these sessions work and why they are essential for your success.
+            <Link
+              href="/packages/2-hours-driving-test-assessment"
+              className="location-link"
+            >
+              Mock Driving Tests
+            </Link>{" "}
+            are the best way to bridge the gap between learning and passing.
+            These simulations replicate real exam conditions to highlight your
+            hidden mistakes. By taking a practice test, you lower your anxiety
+            and learn exactly what examiners want. Research shows that students
+            who complete a mock assessment are 40% more likely to pass their
+            actual test. This guide explains how these sessions work and why
+            they are essential for your success.
           </>
         }
       />
@@ -141,10 +152,14 @@ export default function Blog9() {
                       I have spent over 10 years helping Sydney learners get
                       their P-plates. In my experience, most students fail not
                       because they can't drive. They fail because of nerves and
-                      the pressure of being watched. A  <Link href="/services/driving-test-assessment" className="location-link">
-             practice driving test in
-                      Sydney
-            </Link> changes that dynamic. It turns the "unknown" into a
+                      the pressure of being watched. A{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        practice driving test in Sydney
+                      </Link>{" "}
+                      changes that dynamic. It turns the "unknown" into a
                       familiar routine. It builds the mental toughness you need
                       for the real exam.
                     </p>
@@ -153,9 +168,13 @@ export default function Blog9() {
                       When you take a driving test simulation, I step out of
                       "teacher mode." I become the examiner. I stop giving you
                       hints. I stop helping with the pedals. This pre-driving
-                      test assessment shows us the "real" you. <Link href="/packages/2-hours-driving-test-assessment" className="location-link">
-            Mock Driving Tests
-            </Link> 
+                      test assessment shows us the "real" you.{" "}
+                      <Link
+                        href="/packages/2-hours-driving-test-assessment"
+                        className="location-link"
+                      >
+                        Mock Driving Tests
+                      </Link>
                       reveal what you do when the safety net is gone. You learn
                       how to manage your own decisions without an instructor's
                       voice guiding you.
@@ -163,22 +182,30 @@ export default function Blog9() {
                   </section>
 
                   {/* What Happens During a Mock Driving Test? */}
-                  <section id="what-happens-during-mock-test" className="scroll-mt-24">
+                  <section
+                    id="what-happens-during-mock-test"
+                    className="scroll-mt-24"
+                  >
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
                       What Happens During a Mock Driving Test?
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      A professional <Link href="/services/driving-test-assessment" className="location-link">
-             driving assessment before the test
-            </Link>  should
-                      feel exactly like the real thing. At <Link href="/" className="location-link">
-          Test Route Driving
-                      School,
-            </Link>  we follow the Transport for NSW score sheet. We
-                      mark every minor and major error just like a real testing
-                      officer would. We treat the start and end of the session
-                      with total formality.
+                      A professional{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        driving assessment before the test
+                      </Link>{" "}
+                      should feel exactly like the real thing. At{" "}
+                      <Link href="/" className="location-link">
+                        Test Route Driving School,
+                      </Link>{" "}
+                      we follow the Transport for NSW score sheet. We mark every
+                      minor and major error just like a real testing officer
+                      would. We treat the start and end of the session with
+                      total formality.
                     </p>
                     <p className="mt-3 text-sm md:text-base leading-7">
                       The Realistic Simulation Process
@@ -200,7 +227,10 @@ export default function Blog9() {
                   </section>
 
                   {/* The Psychological Advantage of a Trial Run */}
-                  <section id="psychological-advantage" className="scroll-mt-24">
+                  <section
+                    id="psychological-advantage"
+                    className="scroll-mt-24"
+                  >
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
                       The Psychological Advantage of a Trial Run
                     </h2>
@@ -222,51 +252,56 @@ export default function Blog9() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      When you repeat a <strong>3-point turn assessment</strong> in a test
-                      environment, your body learns the rhythm. You stop
-                      overthinking the steering. You focus on the observation.
-                      This is why driving instructor test preparation is so
-                      effective.<strong> Mock Driving Tests</strong> turn complex manoeuvres into
-                      automatic habits. You become a "low-risk" driver in the
-                      eyes of the examiner.
+                      When you repeat a <strong>3-point turn assessment</strong>{" "}
+                      in a test environment, your body learns the rhythm. You
+                      stop overthinking the steering. You focus on the
+                      observation. This is why driving instructor test
+                      preparation is so effective.
+                      <strong> Mock Driving Tests</strong> turn complex
+                      manoeuvres into automatic habits. You become a "low-risk"
+                      driver in the eyes of the examiner.
                     </p>
                   </section>
 
                   {/* Are Mock Driving Tests Worth It? */}
-                  <section id="are-mock-driving-tests-worth-it" className="scroll-mt-24">
+                  <section
+                    id="are-mock-driving-tests-worth-it"
+                    className="scroll-mt-24"
+                  >
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
                       Are Mock Driving Tests Worth It?
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
                       Many learners ask, "Are mock driving tests worth it?" I
-                      always say yes. Think of it as an investment. The cost of a
-                      mock test is much lower than the cost of failing the real
-                      one. If you fail the actual test, you pay for a new booking.
-                      You also pay for another car hire fee and wait weeks for a
-                      spot.
+                      always say yes. Think of it as an investment. The cost of
+                      a mock test is much lower than the cost of failing the
+                      real one. If you fail the actual test, you pay for a new
+                      booking. You also pay for another car hire fee and wait
+                      weeks for a spot.
                     </p>
                     <h2 className="mt-2 text-xl md:text-2xl font-bold text-secondary">
-                     Benefits of a Warm-up
-
+                      Benefits of a Warm-up
                     </h2>
 
                     <p className="mt-2 text-sm md:text-base leading-7">
-                     Most students benefit from a driving test warm-up lesson right before their test. However, a full mock test a week prior is better. It gives you time to fix errors.
+                      Most students benefit from a driving test warm-up lesson
+                      right before their test. However, a full mock test a week
+                      prior is better. It gives you time to fix errors.
                     </p>
- <div className="mt-2 rounded-2xl border border-border-color bg-base-300 p-6">
+                    <div className="mt-2 rounded-2xl border border-border-color bg-base-300 p-6">
                       <ul className="space-y-2 text-sm md:text-base leading-7">
                         <li className="flex gap-2">
                           <FaCheckCircle className="mt-1 shrink-0" />
                           <span>
                             <strong>Passenger and Speed Limits:</strong> The
                             passenger restrictions P1 drivers face are often
-                            misunderstood. If you are under 25, you can only carry
-                            one passenger under 21 between 11 pm and 5 am. I have
-                            seen many students get caught simply driving their
-                            friends home from a late movie. Immediate family
-                            members are exempt from this, but you should always
-                            carry proof if needed.
+                            misunderstood. If you are under 25, you can only
+                            carry one passenger under 21 between 11 pm and 5 am.
+                            I have seen many students get caught simply driving
+                            their friends home from a late movie. Immediate
+                            family members are exempt from this, but you should
+                            always carry proof if needed.
                           </span>
                         </li>
                         <li className="flex gap-2">
@@ -274,9 +309,10 @@ export default function Blog9() {
                           <span>
                             <strong>Speed Limit:</strong> The speed limit for P
                             platers in NSW on red Ps is a hard 90 km/h. It does
-                            not matter if the highway sign says 110 km/h. You must
-                            stick to 90. Going even slightly over can result in 4
-                            demerit points, which is your entire limit.
+                            not matter if the highway sign says 110 km/h. You
+                            must stick to 90. Going even slightly over can
+                            result in 4 demerit points, which is your entire
+                            limit.
                           </span>
                         </li>
                       </ul>
@@ -332,7 +368,10 @@ export default function Blog9() {
                               "Improved hazard perception",
                             ],
                           ].map((row, idx) => (
-                            <tr key={idx} className="border-t border-border-color">
+                            <tr
+                              key={idx}
+                              className="border-t border-border-color"
+                            >
                               {row.map((cell, i) => (
                                 <td key={i} className="p-4 align-top">
                                   {cell}
@@ -352,16 +391,20 @@ export default function Blog9() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      The answer to <strong>"How many mock tests should I take?"</strong> varies.
-                      Most of my students find that two tests are perfect. The
-                      first one finds the problems. The second one proves you
-                      have fixed them. It gives you a "pass" result that boosts
-                      your confidence to the sky.
+                      The answer to{" "}
+                      <strong>"How many mock tests should I take?"</strong>{" "}
+                      varies. Most of my students find that two tests are
+                      perfect. The first one finds the problems. The second one
+                      proves you have fixed them. It gives you a "pass" result
+                      that boosts your confidence to the sky.
                     </p>
                   </section>
 
                   {/* Driving Instructor Test Routes */}
-                  <section id="driving-instructor-test-routes" className="scroll-mt-24">
+                  <section
+                    id="driving-instructor-test-routes"
+                    className="scroll-mt-24"
+                  >
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
                       Do Driving Instructors Know the Test Routes?
                     </h2>
@@ -378,23 +421,29 @@ export default function Blog9() {
                   </section>
 
                   {/* Professional Assessment vs Private Practice */}
-                  <section id="professional-vs-private-practice" className="scroll-mt-24">
+                  <section
+                    id="professional-vs-private-practice"
+                    className="scroll-mt-24"
+                  >
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
                       Professional Assessment vs Private Practice
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Parents are great for getting your 120 hours. However, they
-                      often teach "driving," not "testing." A parent might not
-                      notice you are failing to check your left blind spot when
-                      turning left. An instructor doing a pre-driving test
-                      assessment will catch that every single time. <br/> <br/>We use the
-                      official marking criteria. We know that in NSW, you need a
-                      score of 90% or higher and zero failed items. Private
-                      practice often ignores these technicalities. A <Link href="/company/contact" className="location-link">book mock
-                      driving test in Sydney
-            </Link>  ensures you meet the professional
-                      standard, not just a casual one.
+                      Parents are great for getting your 120 hours. However,
+                      they often teach "driving," not "testing." A parent might
+                      not notice you are failing to check your left blind spot
+                      when turning left. An instructor doing a pre-driving test
+                      assessment will catch that every single time. <br />{" "}
+                      <br />
+                      We use the official marking criteria. We know that in NSW,
+                      you need a score of 90% or higher and zero failed items.
+                      Private practice often ignores these technicalities. A{" "}
+                      <Link href="/company/contact" className="location-link">
+                        book mock driving test in Sydney
+                      </Link>{" "}
+                      ensures you meet the professional standard, not just a
+                      casual one.
                     </p>
                   </section>
 
@@ -421,14 +470,20 @@ export default function Blog9() {
                   </h3>
                   <p className="mt-2 text-sm leading-7 text-neutral">
                     Don’t leave your license to chance. Mock Driving Tests are
-                    the ultimate tool for success. At <Link href="/" className="location-link">Test Route Driving School,
-            </Link> 
+                    the ultimate tool for success. At{" "}
+                    <Link href="/" className="location-link">
+                      Test Route Driving School,
+                    </Link>
                     we focus on the Kogarah and Greater Sydney regions. We know
-                    what it takes to impress the examiners. Our driving instructor
-                    test preparation will give you the skills and the calm mind
-                    you need. <br/> Ready to see if you are truly ready? Book your session now and pass with confidence. We help you turn those Ls into Ps <Link href="/" className="location-link" target="_blank">safely
-            </Link>  and quickly.
-
+                    what it takes to impress the examiners. Our driving
+                    instructor test preparation will give you the skills and the
+                    calm mind you need. <br /> Ready to see if you are truly
+                    ready? Book your session now and pass with confidence. We
+                    help you turn those Ls into Ps{" "}
+                    <Link href="/" className="location-link" target="_blank">
+                      safely
+                    </Link>{" "}
+                    and quickly.
                   </p>
 
                   <div className="mt-4 space-y-3">
@@ -449,7 +504,7 @@ export default function Blog9() {
                     </Link>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

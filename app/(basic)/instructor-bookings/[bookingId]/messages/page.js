@@ -9,12 +9,12 @@ import {FiMail} from "react-icons/fi";
 import {HiChevronDown} from "react-icons/hi";
 import {useRouter} from "next/navigation";
 import Modal from "@/app/shared/ui/Modal";
-import { useBooking } from "../BookingContext";
+import {useBooking} from "../BookingContext";
 
 export default function MessagesTabs() {
   const router = useRouter();
   const booking = useBooking();
-  const clientId = booking?.clientId || booking?.userId
+  const clientId = booking?.clientId || booking?.userId;
   const [selected, setSelected] = useState(null);
 
   const {data: client = []} = useQuery({
@@ -106,7 +106,7 @@ export default function MessagesTabs() {
                 <div className="text-xs">
                   <span className="font-semibold">From:</span>{" "}
                   <span className="text-gray-700">
-                    {m.from || "testroutedrivingschool@gmail.com"}
+                    {m.from || "info@testroutedrivingschool.com.au"}
                   </span>
                 </div>
               </div>
@@ -160,7 +160,7 @@ export default function MessagesTabs() {
             </div>
             <div>
               <span className="font-semibold">From:</span>{" "}
-              {selected.from || "testroutedrivingschool@gmail.com"}
+              {selected.from || "info@testroutedrivingschool.com.au"}
             </div>
           </div>
 

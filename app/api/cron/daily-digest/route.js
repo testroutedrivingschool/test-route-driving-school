@@ -277,7 +277,7 @@ function buildUserDigestHtml(name, bookings) {
 function buildAdminDigestHtml(bookings) {
   const map = new Map();
   for (const b of bookings) {
-    const key = b.instructorEmail || "testroutedrivingschool@gmail.com";
+    const key = b.instructorEmail || "info@testroutedrivingschool.com.au";
     if (!map.has(key))
       map.set(key, {name: b.instructorName || "Instructor", items: []});
     map.get(key).items.push(b);
@@ -337,45 +337,49 @@ export async function GET(req) {
       .toArray();
 
     // Normalize + de-duplicate receivers
-const receiverMap = new Map();
+    const receiverMap = new Map();
 
-// users/admin/instructors
-for (const u of userReceivers) {
-  const email = String(u.email || "").trim().toLowerCase();
-  if (!email) continue;
+    // users/admin/instructors
+    for (const u of userReceivers) {
+      const email = String(u.email || "")
+        .trim()
+        .toLowerCase();
+      if (!email) continue;
 
-  const key = `${email}__${u.role}`;
-  if (!receiverMap.has(key)) {
-    receiverMap.set(key, {
-      email,
-      name: u.name,
-      role: u.role, // user | instructor | admin
-    });
-  }
-}
+      const key = `${email}__${u.role}`;
+      if (!receiverMap.has(key)) {
+        receiverMap.set(key, {
+          email,
+          name: u.name,
+          role: u.role, // user | instructor | admin
+        });
+      }
+    }
 
-// clients
-for (const c of clientReceivers) {
-  const email = String(c.email || "").trim().toLowerCase();
-  if (!email) continue;
+    // clients
+    for (const c of clientReceivers) {
+      const email = String(c.email || "")
+        .trim()
+        .toLowerCase();
+      if (!email) continue;
 
-  // if same email already exists in users collection, don't add as client again
-  const alreadyExistsAsUserLike = [...receiverMap.keys()].some((k) =>
-    k.startsWith(`${email}__`),
-  );
-  if (alreadyExistsAsUserLike) continue;
+      // if same email already exists in users collection, don't add as client again
+      const alreadyExistsAsUserLike = [...receiverMap.keys()].some((k) =>
+        k.startsWith(`${email}__`),
+      );
+      if (alreadyExistsAsUserLike) continue;
 
-  const key = `${email}__client`;
-  if (!receiverMap.has(key)) {
-    receiverMap.set(key, {
-      email,
-      name: c.name,
-      role: "client",
-    });
-  }
-}
+      const key = `${email}__client`;
+      if (!receiverMap.has(key)) {
+        receiverMap.set(key, {
+          email,
+          name: c.name,
+          role: "client",
+        });
+      }
+    }
 
-const receivers = [...receiverMap.values()];
+    const receivers = [...receiverMap.values()];
 
     if (!receivers.length) {
       return NextResponse.json({
@@ -393,53 +397,50 @@ const receivers = [...receiverMap.values()];
         .toLowerCase();
       if (!to) continue;
 
-  
-     // prevent duplicate same day using DB lock row
-  try {
-    await emailCol.insertOne({
-      type: "DAILY_DIGEST",
-      actorType: null,
-      to,
-      subject: "",
-      html: "",
-      text: "",
-      status: "PROCESSING",
-      error: null,
-      hasAttachment: false,
-      sentAt: null,
-      createdAt: new Date(),
-      digestDay: dayKey,
-      digestRole: u.role,
-    });
-  } catch (e) {
-    if (e?.code === 11000) {
-   
-      continue;
-    }
-    throw e;
-  }
+      // prevent duplicate same day using DB lock row
+      try {
+        await emailCol.insertOne({
+          type: "DAILY_DIGEST",
+          actorType: null,
+          to,
+          subject: "",
+          html: "",
+          text: "",
+          status: "PROCESSING",
+          error: null,
+          hasAttachment: false,
+          sentAt: null,
+          createdAt: new Date(),
+          digestDay: dayKey,
+          digestRole: u.role,
+        });
+      } catch (e) {
+        if (e?.code === 11000) {
+          continue;
+        }
+        throw e;
+      }
 
-  let subject = `Today's Bookings - ${dayKey}`;
-  let html = "";
-  let text = "";
-  let actorType = "";
-     
+      let subject = `Today's Bookings - ${dayKey}`;
+      let html = "";
+      let text = "";
+      let actorType = "";
+
       if (u.role === "instructor") {
         const bookings = await getTodaysBookingsByInstructor(to);
         html = buildInstructorDigestHtml(u.name, bookings);
-        actorType="INSTRUCTOR";
+        actorType = "INSTRUCTOR";
         text = `Hi ${u.name || "Instructor"}, you have ${bookings.length} booking(s) today.`;
       } else if (u.role === "user" || u.role === "client") {
         // ✅ clients use the same logic as user (bookings by userEmail)
         const bookings = await getTodaysBookingsByUser(to);
-            actorType="USER";
+        actorType = "USER";
         html = buildUserDigestHtml(u.name, bookings);
         text = `Hi ${u.name || "there"}, you have ${bookings.length} booking(s) today.`;
       } else if (u.role === "admin") {
-        
         const bookings = await getTodaysBookingsAll();
         html = buildAdminDigestHtml(bookings);
-            actorType="ADMIN";
+        actorType = "ADMIN";
         text = `Admin digest: ${bookings.length} booking(s) today.`;
       }
 
@@ -453,7 +454,7 @@ const receivers = [...receiverMap.values()];
         errorMsg = String(e?.message || e);
       }
 
-         await emailCol.updateOne(
+      await emailCol.updateOne(
         {
           type: "DAILY_DIGEST",
           to,

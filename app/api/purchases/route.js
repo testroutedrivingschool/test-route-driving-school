@@ -74,7 +74,7 @@ export async function runPurchaseInvoiceAndEmails({
 
   // Prepare email contents
 
-  const adminEmail = "testroutedrivingschool@gmail.com";
+  const adminEmail = "info@testroutedrivingschool.com.au";
 
   const userSubject = `Package Purchase Confirmed - Invoice #${invoiceNo}`;
   const adminSubject = `New Package Purchase - Invoice #${invoiceNo}`;
@@ -262,12 +262,11 @@ export async function GET(req) {
 
     let filter = {};
 
-  if (id) {
-  if (!ObjectId.isValid(id)) {
-    return NextResponse.json({ error: "Invalid purchase id" }, { status: 400 });
-  }
-  filter = { _id: new ObjectId(id) };
-
+    if (id) {
+      if (!ObjectId.isValid(id)) {
+        return NextResponse.json({error: "Invalid purchase id"}, {status: 400});
+      }
+      filter = {_id: new ObjectId(id)};
     } else if (email) {
       filter = {$or: [{userEmail: email}, {instructorEmail: email}]};
     } else if (userEmail) {
@@ -313,10 +312,10 @@ export async function PATCH(req) {
 
     const col = await purchasesCollection();
     if (!ObjectId.isValid(id)) {
-  return NextResponse.json({ error: "Invalid purchase id" }, { status: 400 });
-}
+      return NextResponse.json({error: "Invalid purchase id"}, {status: 400});
+    }
 
-const purchaseId = new ObjectId(id);
+    const purchaseId = new ObjectId(id);
 
     const purchase = await col.findOne({_id: purchaseId});
     if (!purchase) {
@@ -381,12 +380,12 @@ export async function POST(req) {
     // prevent duplicates
     const existing = await purchaseCol.findOne({paymentIntentId});
     if (existing) {
-  return NextResponse.json({
-    ok: true,
-    purchaseId: String(existing._id),
-    invoiceNo: existing.invoiceNo || null,
-  });
-}
+      return NextResponse.json({
+        ok: true,
+        purchaseId: String(existing._id),
+        invoiceNo: existing.invoiceNo || null,
+      });
+    }
 
     // fetch user/instructor docs
     const userCol = await usersCollection();
@@ -396,10 +395,10 @@ export async function POST(req) {
     const userDoc = await userCol.findOne({email: userEmail});
 
     // ✅ build packages from DB
- const pkgIds = items
-  .map((i) => i?.packageId)
-  .filter((id) => id && ObjectId.isValid(String(id)))
-  .map((id) => new ObjectId(String(id)));
+    const pkgIds = items
+      .map((i) => i?.packageId)
+      .filter((id) => id && ObjectId.isValid(String(id)))
+      .map((id) => new ObjectId(String(id)));
 
     const pkgDocs = await pkgCol.find({_id: {$in: pkgIds}}).toArray();
     const pkgMap = new Map(pkgDocs.map((p) => [p._id.toString(), p]));
@@ -483,10 +482,10 @@ export async function POST(req) {
       {status: 201},
     );
   } catch (e) {
-  console.error("POST /api/purchases error:", e);
-return NextResponse.json(
-  { error: e?.message || "Something went wrong" },
-  { status: 500 }
-);
+    console.error("POST /api/purchases error:", e);
+    return NextResponse.json(
+      {error: e?.message || "Something went wrong"},
+      {status: 500},
+    );
   }
 }

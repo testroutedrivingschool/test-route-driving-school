@@ -60,10 +60,15 @@ const faqs = [
   },
   {
     question: "Does Test Route Driving School offer both?",
-    answer:
+    answer: (
       <>
-       Yes. We provide tailored lessons for both types. Our instructors use modern dual-controlled vehicles for your <Link href={``} className="location-link" target="_blank">safety.</Link>
-      </>,
+        Yes. We provide tailored lessons for both types. Our instructors use
+        modern dual-controlled vehicles for your{" "}
+        <Link href={``} className="location-link" target="_blank">
+          safety.
+        </Link>
+      </>
+    ),
   },
   {
     question: "How many hours do I need to master the manual?",
@@ -182,26 +187,27 @@ export default function Blog7() {
                       to travel overseas or drive delivery vans, the answer is
                       often yes.
                     </p>
-                     <div className="mt-5 rounded-2xl border border-border-color bg-base-300 p-6">
+                    <div className="mt-5 rounded-2xl border border-border-color bg-base-300 p-6">
                       <ul className="space-y-2 text-sm md:text-base leading-7">
                         <li className="flex gap-2">
                           <FaCheckCircle className="mt-1 shrink-0" />
                           <span>
-                            <strong>Automatic:</strong> No clutch pedal. The car shifts gears for you.
-
+                            <strong>Automatic:</strong> No clutch pedal. The car
+                            shifts gears for you.
                           </span>
                         </li>
                         <li className="flex gap-2">
                           <FaCheckCircle className="mt-1 shrink-0" />
                           <span>
-                            <strong>Manual:</strong> You use a clutch and gear stick. It requires more coordination.
+                            <strong>Manual:</strong> You use a clutch and gear
+                            stick. It requires more coordination.
                           </span>
                         </li>
                         <li className="flex gap-2">
                           <FaCheckCircle className="mt-1 shrink-0" />
                           <span>
-                            <strong>Licensing:</strong> An automatic test limits your P1 phase to auto-only vehicles.
-
+                            <strong>Licensing:</strong> An automatic test limits
+                            your P1 phase to auto-only vehicles.
                           </span>
                         </li>
                       </ul>
@@ -223,12 +229,17 @@ export default function Blog7() {
                       Kogarah traffic, stalling at a green light is stressful.
                     </p>
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      <Link href={`/services/automatic-driving-lessons`} className="location-link" >Automatic driving lessons in Sydney</Link> remove that stress.
-                      You simply &quot;D&quot; for Drive and &quot;P&quot; for
-                      Park. This lets you focus on NSW Driving Test Routes and
-                      hazard perception. I have seen students pass their test
-                      much faster automatically. They spend less time learning
-                      gears and more time learning safety.
+                      <Link
+                        href={`/services/automatic-driving-lessons`}
+                        className="location-link"
+                      >
+                        Automatic driving lessons in Sydney
+                      </Link>{" "}
+                      remove that stress. You simply &quot;D&quot; for Drive and
+                      &quot;P&quot; for Park. This lets you focus on NSW Driving
+                      Test Routes and hazard perception. I have seen students
+                      pass their test much faster automatically. They spend less
+                      time learning gears and more time learning safety.
                     </p>
                     <div className="mt-6 overflow-x-auto rounded-2xl border border-border-color">
                       <table className="w-full text-left text-sm md:text-base">
@@ -238,10 +249,10 @@ export default function Blog7() {
                               Feature
                             </th>
                             <th className="p-4 font-semibold text-secondary">
-                             Automatic Lessons
+                              Automatic Lessons
                             </th>
                             <th className="p-4 font-semibold text-secondary">
-                             Manual Lessons
+                              Manual Lessons
                             </th>
                           </tr>
                         </thead>
@@ -289,8 +300,6 @@ export default function Blog7() {
                     </div>
                   </section>
 
-                 
-
                   {/* Upgrading Your License in Sydney */}
                   <section id="upgrading-license" className="scroll-mt-24">
                     <h2 className="text-2xl md:text-3xl font-bold text-secondary">
@@ -298,8 +307,22 @@ export default function Blog7() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                     Don&apos;t feel stuck if you start with an auto. You can upgrade from an auto to a manual licence in NSW later. You generally need to pass a fresh practical test in a manual vehicle. Many drivers do this once they realise they need a manual for work. <br/>
-If you are looking for an <Link href={`/services/automatic-driving-lessons`} className="location-link">automatic driving instructor near me,</Link> consider your long-term needs. Do you want to get on the road quickly? Go automatic. Do you want a career in transport or love vintage cars? Choose a manual driving school in Sydney.
+                      Don&apos;t feel stuck if you start with an auto. You can
+                      upgrade from an auto to a manual licence in NSW later. You
+                      generally need to pass a fresh practical test in a manual
+                      vehicle. Many drivers do this once they realise they need
+                      a manual for work. <br />
+                      If you are looking for an{" "}
+                      <Link
+                        href={`/services/automatic-driving-lessons`}
+                        className="location-link"
+                      >
+                        automatic driving instructor near me,
+                      </Link>{" "}
+                      consider your long-term needs. Do you want to get on the
+                      road quickly? Go automatic. Do you want a career in
+                      transport or love vintage cars? Choose a manual driving
+                      school in Sydney.
                     </p>
                   </section>
 
@@ -341,14 +364,20 @@ If you are looking for an <Link href={`/services/automatic-driving-lessons`} cla
                     Start Your Driving Journey Today
                   </h3>
                   <p className="mt-2 text-sm leading-7 text-neutral">
-                    Whether you want <Link href={`/services/automatic-driving-lessons`} className="location-link" >automatic driving lessons in Sydney</Link> or want
-                    to master the clutch, we can help. Test Route Driving School
-                    focuses on making you a safe, confident driver. We know the
-                    Kogarah area and Sydney test routes inside and out. Our
-                    patient instructors will guide you through every gear change
-                    or intersection. Don&apos;t let the choice overwhelm you.
-                    Call us to discuss your goals. We will find the best path
-                    for your NSW license.
+                    Whether you want{" "}
+                    <Link
+                      href={`/services/automatic-driving-lessons`}
+                      className="location-link"
+                    >
+                      automatic driving lessons in Sydney
+                    </Link>{" "}
+                    or want to master the clutch, we can help. Test Route
+                    Driving School focuses on making you a safe, confident
+                    driver. We know the Kogarah area and Sydney test routes
+                    inside and out. Our patient instructors will guide you
+                    through every gear change or intersection. Don&apos;t let
+                    the choice overwhelm you. Call us to discuss your goals. We
+                    will find the best path for your NSW license.
                   </p>
 
                   <div className="mt-4 space-y-3">
@@ -369,7 +398,7 @@ If you are looking for an <Link href={`/services/automatic-driving-lessons`} cla
                     </Link>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

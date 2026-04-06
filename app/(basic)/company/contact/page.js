@@ -25,8 +25,6 @@ export const metadata = {
 };
 
 export default function Contact() {
-
-  
   return (
     <>
       <PageHeroSection
@@ -69,7 +67,10 @@ export default function Contact() {
                   enrol in <strong>driving classes for adults? </strong>Reach
                   out to us anytime. Our friendly instructors are here to answer
                   your questions and help you schedule your
-                  <Link className="font-semibold underline px-1" href={`/services/automatic-driving-lessons`}>
+                  <Link
+                    className="font-semibold underline px-1"
+                    href={`/services/automatic-driving-lessons`}
+                  >
                     driving lessons
                   </Link>
                   around your busy life.
@@ -94,11 +95,11 @@ export default function Contact() {
                 </a>
 
                 <a
-                  href="mailto:testroutedrivingschool@gmail.com"
+                  href="mailto:info@testroutedrivingschool.com.au"
                   className="flex items-center gap-4 px-4 rounded-lg  text-primary font-bold text-sm sm:text-base md:text-xl transition hover:underline"
                 >
                   <FaEnvelope className="text-lg md:text-xl" />
-                  <span>testroutedrivingschool@gmail.com</span>
+                  <span>info@testroutedrivingschool.com.au</span>
                 </a>
               </div>
 
@@ -120,9 +121,8 @@ export default function Contact() {
                 </div>
 
                 {/* Map */}
-                
 
-                <ContactMap/>
+                <ContactMap />
               </div>
 
               {/* Social Links */}
@@ -150,7 +150,7 @@ export default function Contact() {
             </div>
 
             {/* RIGHT FORM */}
-            <ContactForm/>
+            <ContactForm />
           </div>
         </Container>
       </section>

@@ -65,10 +65,20 @@ const faqs = [
   },
   {
     question: "How do I handle merging safely in heavy Sydney traffic?",
-    answer:
+    answer: (
       <>
-   Wait for a safe gap. If you are unsure, do not go. Hesitation can be a minor fault, but forcing a merge is an instant fail. Practice merging  <Link href="https://www.nhtsa.gov/ten-tips-for-safe-driving" className="location-link" target="_blank">safely</Link> on busy roads like those near Kogarah to build your timing.
-      </>,
+        Wait for a safe gap. If you are unsure, do not go. Hesitation can be a
+        minor fault, but forcing a merge is an instant fail. Practice merging{" "}
+        <Link
+          href="https://www.nhtsa.gov/ten-tips-for-safe-driving"
+          className="location-link"
+          target="_blank"
+        >
+          safely
+        </Link>{" "}
+        on busy roads like those near Kogarah to build your timing.
+      </>
+    ),
   },
   {
     question: "Are school zones in NSW active on pupil-free days?",
@@ -89,12 +99,14 @@ export default function Blog6() {
         title={"NSW Driving Test Routes Explained – What Examiners Look For"}
         subtitle={
           <>
-            Navigating  <Link href="/" className="location-link">NSW driving test routes
-            </Link> requires more than basic steering
-            skills. Examiners assess your hazard perception and decision-making
-            under real traffic pressure. This guide breaks down common routes,
-            assessment criteria, and critical safety zones to help you pass on
-            the first go. 
+            Navigating{" "}
+            <Link href="/" className="location-link">
+              NSW driving test routes
+            </Link>{" "}
+            requires more than basic steering skills. Examiners assess your
+            hazard perception and decision-making under real traffic pressure.
+            This guide breaks down common routes, assessment criteria, and
+            critical safety zones to help you pass on the first go.
           </>
         }
       />
@@ -129,17 +141,28 @@ export default function Blog6() {
 
                     <p className="mt-3 text-sm md:text-base leading-7">
                       As an instructor with over 10 years of experience, I have
-                      seen thousands of students tackle <strong>NSW driving test routes.</strong>
+                      seen thousands of students tackle{" "}
+                      <strong>NSW driving test routes.</strong>
                       Many learners think the route is a secret. In reality,
                       examiners follow set zones near your local test centre.
-                      Whether you are at<strong>Kogarah,</strong> Botany, or Silverwater, the
-                      goal is the same: they want to see if you can share the
-                      road safely.
+                      Whether you are at<strong>Kogarah,</strong> Botany, or
+                      Silverwater, the goal is the same: they want to see if you
+                      can share the road safely.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                     In my years of training, I have noticed that nerves often lead to simple mistakes. Understanding the <Link href="/blogs/nsw-driving-test-routes-explained-what-examiners-look-for" className="location-link">common driving test routes in NSW
-            </Link> helps you visualize the drive before you even turn the key. Most routes include a mix of quiet suburban streets and busy main roads. You will face varying speed limits and complex intersections.
+                      In my years of training, I have noticed that nerves often
+                      lead to simple mistakes. Understanding the{" "}
+                      <Link
+                        href="/blogs/nsw-driving-test-routes-explained-what-examiners-look-for"
+                        className="location-link"
+                      >
+                        common driving test routes in NSW
+                      </Link>{" "}
+                      helps you visualize the drive before you even turn the
+                      key. Most routes include a mix of quiet suburban streets
+                      and busy main roads. You will face varying speed limits
+                      and complex intersections.
                     </p>
                   </section>
 
@@ -208,9 +231,13 @@ export default function Blog6() {
 
                     <p className="mt-3 text-sm md:text-base leading-7">
                       If you are testing at the Kogarah centre, you must know
-                      the local layout. The  <Link href="/" className="location-link">Kogarah driving test route</Link> often weaves through
-                      residential streets near Warialda Street. Expect tight
-                      turns, parked cars, and quick decision points.
+                      the local layout. The{" "}
+                      <Link href="/" className="location-link">
+                        Kogarah driving test route
+                      </Link>{" "}
+                      often weaves through residential streets near Warialda
+                      Street. Expect tight turns, parked cars, and quick
+                      decision points.
                     </p>
                   </section>
 
@@ -274,7 +301,13 @@ export default function Blog6() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                     The <strong>roundabout assessment</strong> is a major fail point for many. You must signal correctly when entering and exiting. I often see learners forget the &quot;left exit signal.&quot; This is a critical error. Similarly, merging safely onto a main road requires a clear gap. If you force another driver to brake, you will fail instantly.
+                      The <strong>roundabout assessment</strong> is a major fail
+                      point for many. You must signal correctly when entering
+                      and exiting. I often see learners forget the &quot;left
+                      exit signal.&quot; This is a critical error. Similarly,
+                      merging safely onto a main road requires a clear gap. If
+                      you force another driver to brake, you will fail
+                      instantly.
                     </p>
                   </section>
 
@@ -372,10 +405,14 @@ export default function Blog6() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                     Most blogs tell you to &quot;stay calm.&quot; I tell you to &quot;be prepared.&quot; In my decade of teaching at  <Link href="/" className="location-link">
-              Test Route Driving School,
-            </Link> I’ve found that route familiarity changes everything. When you know where the tricky test centre locations in NSW are, your anxiety drops.
-
+                      Most blogs tell you to &quot;stay calm.&quot; I tell you
+                      to &quot;be prepared.&quot; In my decade of teaching at{" "}
+                      <Link href="/" className="location-link">
+                        Test Route Driving School,
+                      </Link>{" "}
+                      I’ve found that route familiarity changes everything. When
+                      you know where the tricky test centre locations in NSW
+                      are, your anxiety drops.
                     </p>
                   </section>
 
@@ -386,10 +423,12 @@ export default function Blog6() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Don’t rely only on a <strong>practical driving test route map</strong> you found online—routes can
-                      change. Professional instructors notice patterns from
-                      recent tests. Around Kogarah, we know which roundabouts
-                      and lane-change zones examiners often use.
+                      Don’t rely only on a{" "}
+                      <strong>practical driving test route map</strong> you
+                      found online—routes can change. Professional instructors
+                      notice patterns from recent tests. Around Kogarah, we know
+                      which roundabouts and lane-change zones examiners often
+                      use.
                     </p>
                   </section>
 
@@ -417,8 +456,16 @@ export default function Blog6() {
                     Don’t Leave Your License to Chance
                   </h3>
                   <p className="mt-2 text-sm leading-7 text-neutral">
-                    Passing your test requires more than just knowing how to drive. It requires knowing the <strong>NSW Driving Test Routes</strong> and exactly what the examiner wants to see. At Test Route Driving School, we specialize in helping you master the  <Link href="/" className="location-link">Kogarah driving test route 
-            </Link>and the surrounding Sydney areas. Our instructors provide patient, test-focused training that builds your confidence.
+                    Passing your test requires more than just knowing how to
+                    drive. It requires knowing the{" "}
+                    <strong>NSW Driving Test Routes</strong> and exactly what
+                    the examiner wants to see. At Test Route Driving School, we
+                    specialize in helping you master the{" "}
+                    <Link href="/" className="location-link">
+                      Kogarah driving test route
+                    </Link>
+                    and the surrounding Sydney areas. Our instructors provide
+                    patient, test-focused training that builds your confidence.
                   </p>
 
                   <div className="mt-4 space-y-3">
@@ -439,7 +486,7 @@ export default function Blog6() {
                     </Link>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

@@ -24,7 +24,7 @@ export default function ClientDetails({client, onBack}) {
       return res.data;
     },
   });
- 
+
   const initial = useMemo(
     () => ({
       firstName: safeStr(client.firstName),
@@ -151,8 +151,6 @@ export default function ClientDetails({client, onBack}) {
       if (status === 409)
         toast.error(msg); // duplicate email/mobile
       else toast.error(msg);
-
-      
     } finally {
       setSaving(false);
     }
@@ -329,12 +327,11 @@ export default function ClientDetails({client, onBack}) {
                       className="text-primary text-sm font-semibold hover:underline"
                     >
                       <a
-                        href="mailto:testroutedrivingschool@gmail.com"
+                        href="mailto:info@testroutedrivingschool.com.au"
                         className=""
                       >
                         Email
                       </a>
-                      
                     </button>
                   </div>
 

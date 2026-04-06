@@ -2,8 +2,8 @@ import Container from "@/app/shared/ui/Container";
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import Image from "next/image";
 import Link from "next/link";
-import { FaEnvelope, FaHandPointer } from "react-icons/fa";
-import { IoCallSharp } from "react-icons/io5";
+import {FaEnvelope, FaHandPointer} from "react-icons/fa";
+import {IoCallSharp} from "react-icons/io5";
 import blog3Img from "@/app/assets/blog/blog3.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
@@ -28,26 +28,39 @@ export const metadata = {
 };
 
 const toc = [
-  { id: "booking", label: "Booking the Driving Test: Your First Step" },
-  { id: "requirements", label: "Test Day Requirements NSW: What You Must Bring" },
-  { id: "arriving", label: "Arriving at the Driving Test Centre" },
-  { id: "how-long", label: "How Long Is the NSW Driving Test?" },
-  { id: "steps", label: "NSW Practical Driving Test Steps: The Full Journey" },
-  { id: "manoeuvres", label: "Driving Test Manoeuvres: What You Must Perform" },
-  { id: "skills", label: "Driving Skills Assessed: The Five Key Areas" },
-  { id: "process", label: "NSW Driving Test Process: Behind the Scenes" },
-  { id: "checklist", label: "Driving Test NSW Checklist: Your Preparation Guide" },
-  { id: "faqs", label: "Frequently Asked Questions" },
+  {id: "booking", label: "Booking the Driving Test: Your First Step"},
+  {id: "requirements", label: "Test Day Requirements NSW: What You Must Bring"},
+  {id: "arriving", label: "Arriving at the Driving Test Centre"},
+  {id: "how-long", label: "How Long Is the NSW Driving Test?"},
+  {id: "steps", label: "NSW Practical Driving Test Steps: The Full Journey"},
+  {id: "manoeuvres", label: "Driving Test Manoeuvres: What You Must Perform"},
+  {id: "skills", label: "Driving Skills Assessed: The Five Key Areas"},
+  {id: "process", label: "NSW Driving Test Process: Behind the Scenes"},
+  {
+    id: "checklist",
+    label: "Driving Test NSW Checklist: Your Preparation Guide",
+  },
+  {id: "faqs", label: "Frequently Asked Questions"},
 ];
 
 const faqs = [
   {
     question: "Can I use my own car for the driving test?",
-    answer:
-    <>
-    Yes, if it meets<Link href="https://www.britannica.com/search?query=driving+safety" className="location-link" target="_blank">safety
-            </Link>standards. It must have working lights, tires, brakes, and a horn. It must be clean and roadworthy. Many learners prefer hiring our dual-control vehicles for peace of mind.
-    </>,
+    answer: (
+      <>
+        Yes, if it meets
+        <Link
+          href="https://www.britannica.com/search?query=driving+safety"
+          className="location-link"
+          target="_blank"
+        >
+          safety
+        </Link>
+        standards. It must have working lights, tires, brakes, and a horn. It
+        must be clean and roadworthy. Many learners prefer hiring our
+        dual-control vehicles for peace of mind.
+      </>
+    ),
   },
   {
     question: "What happens if I fail the driving test?",
@@ -81,9 +94,11 @@ export default function Blog3() {
             Your heart races. Your palms sweat. You sit in the waiting room. You
             wonder what comes next. This guide walks you through every moment.
             It removes surprises. It builds your confidence. <br />
-            At<Link href="/" className="location-link">
+            At
+            <Link href="/" className="location-link">
               Test Route Driving School,
-            </Link>we prepare learners daily. We know the NSW driving test inside out.
+            </Link>
+            we prepare learners daily. We know the NSW driving test inside out.
             We know what examiners want. We know how to help you succeed.
           </>
         }
@@ -118,10 +133,16 @@ export default function Blog3() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Booking the <Link href="/services/driving-test-package" className="location-link">driving test
-            </Link>happens online through Service
-                      NSW. You need your learner&apos;s license details. You
-                      need to pick a location. You need to choose a date.
+                      Booking the{" "}
+                      <Link
+                        href="/services/driving-test-package"
+                        className="location-link"
+                      >
+                        driving test
+                      </Link>
+                      happens online through Service NSW. You need your
+                      learner&apos;s license details. You need to pick a
+                      location. You need to choose a date.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -210,10 +231,15 @@ export default function Blog3() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      How long is the <Link href="/services/driving-test-package" className="location-link">NSW driving test? 
-            </Link>It lasts 30 to 45
-                      minutes. It varies by traffic. It varies by route
-                      complexity.
+                      How long is the{" "}
+                      <Link
+                        href="/services/driving-test-package"
+                        className="location-link"
+                      >
+                        NSW driving test?
+                      </Link>
+                      It lasts 30 to 45 minutes. It varies by traffic. It varies
+                      by route complexity.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -235,9 +261,15 @@ export default function Blog3() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      The NSW practical <Link href="/services/driving-test-assessment" className="location-link">driving test steps  
-            </Link>follow a clear
-                      pattern. Know them. Expect them. Master them.
+                      The NSW practical{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        driving test steps
+                      </Link>
+                      follow a clear pattern. Know them. Expect them. Master
+                      them.
                     </p>
 
                     <div className="mt-6 grid grid-cols-1 gap-4">
@@ -412,10 +444,15 @@ export default function Blog3() {
                     </h2>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      The NSW <Link href="/services/driving-test-assessment" className="location-link">driving test process
-            </Link> involves more than driving.
-                      Examiners follow strict protocols. They ensure fairness.
-                      They ensure safety.
+                      The NSW{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        driving test process
+                      </Link>{" "}
+                      involves more than driving. Examiners follow strict
+                      protocols. They ensure fairness. They ensure safety.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -425,8 +462,15 @@ export default function Blog3() {
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
-                      Instant fail items end the test. They stop the car. They<Link href="https://www.tourcompass.co.uk/blog/driving-in-australia.htm" className="location-link" target="_blank">drive
-            </Link>you back. You receive immediate feedback.
+                      Instant fail items end the test. They stop the car. They
+                      <Link
+                        href="https://www.tourcompass.co.uk/blog/driving-in-australia.htm"
+                        className="location-link"
+                        target="_blank"
+                      >
+                        drive
+                      </Link>
+                      you back. You receive immediate feedback.
                     </p>
 
                     <p className="mt-3 text-sm md:text-base leading-7">
@@ -494,9 +538,15 @@ export default function Blog3() {
                     </div>
 
                     <p className="mt-4 text-sm md:text-base leading-7">
-                      We run <Link href="/services/driving-test-assessment" className="location-link">pre-test assessments.
-            </Link> We check your readiness. We
-                      fix last-minute issues. You enter the test fully prepared.
+                      We run{" "}
+                      <Link
+                        href="/services/driving-test-assessment"
+                        className="location-link"
+                      >
+                        pre-test assessments.
+                      </Link>{" "}
+                      We check your readiness. We fix last-minute issues. You
+                      enter the test fully prepared.
                     </p>
                   </section>
 
@@ -508,8 +558,6 @@ export default function Blog3() {
                       className={"bg-white! py-0!"}
                     />
                   </section>
-
-                 
                 </div>
               </div>
             </article>
@@ -521,12 +569,15 @@ export default function Blog3() {
 
                 <div className="rounded-2xl border border-border-color bg-white shadow-sm p-5">
                   <h3 className="text-lg font-bold text-secondary">
-                  Your Test Day Success Starts Here
+                    Your Test Day Success Starts Here
                   </h3>
                   <p className="mt-2 text-sm leading-7 text-neutral">
-                   Understanding what happens during the NSW driving test removes fear. It builds confidence. It helps you perform at your best. <br/>
-At Test Route Driving School, we simulate the full test experience. We know the Kogarah routes. We know examiner expectations. We know how to prepare you.
-
+                    Understanding what happens during the NSW driving test
+                    removes fear. It builds confidence. It helps you perform at
+                    your best. <br />
+                    At Test Route Driving School, we simulate the full test
+                    experience. We know the Kogarah routes. We know examiner
+                    expectations. We know how to prepare you.
                   </p>
 
                   <div className="mt-4 space-y-3">
@@ -547,7 +598,7 @@ At Test Route Driving School, we simulate the full test experience. We know the 
                     </Link>
 
                     <a
-                      href="mailto:testroutedrivingschool@gmail.com"
+                      href="mailto:info@testroutedrivingschool.com.au"
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-semibold hover:bg-gray-50 transition border border-border-color"
                     >
                       <FaEnvelope />

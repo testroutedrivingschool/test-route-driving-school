@@ -235,9 +235,6 @@ export default function BookingsPage() {
   const [selectedLocations, setSelectedLocations] = useState("");
   const [showLocationModal, setShowLocationModal] = useState(false);
 
-
-
-
   const formatYMD = (date) => {
     // Safe local YYYY-MM-DD (avoids timezone issues)
     const y = date.getFullYear();
@@ -249,25 +246,23 @@ export default function BookingsPage() {
   const normalizeTime = (t) => t?.replace(/\s+/g, ""); // "7:00AM" stays "7:00AM"
 
   const getTimeRangeFromSlots = (slots = [], allTimes = []) => {
-  if (!slots.length) return allTimes;
+    if (!slots.length) return allTimes;
 
-  const slotTimes = slots
-    .map((s) => normalizeTime(s.time))
-    .filter(Boolean);
+    const slotTimes = slots.map((s) => normalizeTime(s.time)).filter(Boolean);
 
-  if (!slotTimes.length) return allTimes;
+    if (!slotTimes.length) return allTimes;
 
-  const indexes = slotTimes
-    .map((t) => allTimes.findIndex((x) => normalizeTime(x) === t))
-    .filter((i) => i !== -1);
+    const indexes = slotTimes
+      .map((t) => allTimes.findIndex((x) => normalizeTime(x) === t))
+      .filter((i) => i !== -1);
 
-  if (!indexes.length) return allTimes;
+    if (!indexes.length) return allTimes;
 
-  const minIdx = Math.min(...indexes);
-  const maxIdx = Math.max(...indexes);
+    const minIdx = Math.min(...indexes);
+    const maxIdx = Math.max(...indexes);
 
-  return allTimes.slice(minIdx, maxIdx + 1);
-};
+    return allTimes.slice(minIdx, maxIdx + 1);
+  };
   // Get dates for the week of selectedDate
   const getWeekDates = (selectedDate) => {
     const dates = [];
@@ -399,7 +394,7 @@ export default function BookingsPage() {
     return slotDateTime && slotDateTime.getTime() < Date.now();
   };
   const isHourStart = (time) => time?.includes(":00");
-const visibleTimes = getTimeRangeFromSlots(slots, times);
+  const visibleTimes = getTimeRangeFromSlots(slots, times);
   // Handle booking
   const handleBookNow = (time, dayIndex, slot) => {
     if (!selectedInstructor) return;
@@ -1037,7 +1032,7 @@ const visibleTimes = getTimeRangeFromSlots(slots, times);
                                 </thead>
 
                                 <tbody>
-                                 {visibleTimes.map((time) => {
+                                  {visibleTimes.map((time) => {
                                     const hourLine =
                                       isHourStart(time) && time !== times[0];
                                     const topBorder = hourLine
@@ -1266,36 +1261,49 @@ const visibleTimes = getTimeRangeFromSlots(slots, times);
                                           </div>
                                         </th>
 
-                                       {visibleDayIdx.map((dayIndex) => {
-  const currentDate = new Date(weekDates[dayIndex]);
-  currentDate.setHours(0, 0, 0, 0);
+                                        {visibleDayIdx.map((dayIndex) => {
+                                          const currentDate = new Date(
+                                            weekDates[dayIndex],
+                                          );
+                                          currentDate.setHours(0, 0, 0, 0);
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+                                          const today = new Date();
+                                          today.setHours(0, 0, 0, 0);
 
-  const isPastColumn = currentDate < today;
+                                          const isPastColumn =
+                                            currentDate < today;
 
-  return (
-    <th
-      key={dayIndex}
-      className={`py-2 px-0.5 border-r border-dashed text-center text-[10px] font-bold sticky top-0 z-30 ${
-        isPastColumn ? "bg-[#DCDCDC]" : "bg-white"
-      }`}
-    >
-      <div className="leading-tight">
-        <div className="text-gray-900">
-          {weekdays[dayIndex].slice(0, 3)}
-        </div>
-        <div className="text-gray-600 font-semibold">
-          {weekDates[dayIndex].toLocaleDateString("en-US", {
-            day: "numeric",
-            month: "short",
-          })}
-        </div>
-      </div>
-    </th>
-  );
-})}
+                                          return (
+                                            <th
+                                              key={dayIndex}
+                                              className={`py-2 px-0.5 border-r border-dashed text-center text-[10px] font-bold sticky top-0 z-30 ${
+                                                isPastColumn
+                                                  ? "bg-[#DCDCDC]"
+                                                  : "bg-white"
+                                              }`}
+                                            >
+                                              <div className="leading-tight">
+                                                <div className="text-gray-900">
+                                                  {weekdays[dayIndex].slice(
+                                                    0,
+                                                    3,
+                                                  )}
+                                                </div>
+                                                <div className="text-gray-600 font-semibold">
+                                                  {weekDates[
+                                                    dayIndex
+                                                  ].toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                      day: "numeric",
+                                                      month: "short",
+                                                    },
+                                                  )}
+                                                </div>
+                                              </div>
+                                            </th>
+                                          );
+                                        })}
                                       </tr>
                                     </thead>
 
@@ -1522,7 +1530,7 @@ const visibleTimes = getTimeRangeFromSlots(slots, times);
                 You&apos;ll receive a confirmation email within 24 hours.
               </p>
               <p className="mt-2">
-                Need help? Contact us at testroutedrivingschool@gmail.com or
+                Need help? Contact us at info@testroutedrivingschool.com.au or
                 call
                 <a
                   href="tel:61412018593"

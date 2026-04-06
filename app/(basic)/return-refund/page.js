@@ -53,9 +53,7 @@ export default function ReturnAndRefundPolicy() {
               Lessons can be rescheduled up to 24 hours before the scheduled
               time.
             </li>
-            <li>
-              Rescheduling is subject to instructor availability.
-            </li>
+            <li>Rescheduling is subject to instructor availability.</li>
             <li>
               Rescheduled lessons must be completed within the validity period
               of the purchased package.
@@ -65,15 +63,32 @@ export default function ReturnAndRefundPolicy() {
 
         {/* How to Request a Refund */}
         <section>
-          <h3 className="text-xl md:text-3xl font-bold">How to Request a Refund</h3>
+          <h3 className="text-xl md:text-3xl font-bold">
+            How to Request a Refund
+          </h3>
           <p className="mt-2 text-neutral md:text-lg">
             To request a refund, please follow these steps:
           </p>
           <ol className="list-decimal ml-5 mt-3 space-y-2 text-neutral md:text-lg">
-            <li>Contact our support team at <a href="mailto:testroutedrivingschool@gmail.com" className="text-accent underline">testroutedrivingschool@gmail.com</a> or call +61 412 018 593.</li>
-            <li>Provide your booking details, including your name, email, and scheduled lesson.</li>
+            <li>
+              Contact our support team at{" "}
+              <a
+                href="mailto:info@testroutedrivingschool.com.au"
+                className="text-accent underline"
+              >
+                info@testroutedrivingschool.com.au
+              </a>{" "}
+              or call +61 412 018 593.
+            </li>
+            <li>
+              Provide your booking details, including your name, email, and
+              scheduled lesson.
+            </li>
             <li>Explain the reason for your refund request.</li>
-            <li>Our team will review your request and notify you of the outcome within 3 business days.</li>
+            <li>
+              Our team will review your request and notify you of the outcome
+              within 3 business days.
+            </li>
           </ol>
         </section>
 
@@ -81,9 +96,17 @@ export default function ReturnAndRefundPolicy() {
         <section>
           <h3 className="text-xl md:text-3xl font-bold">Important Notes</h3>
           <ul className="list-disc ml-5 mt-3 space-y-2 text-neutral md:text-lg">
-            <li>All refunds will be processed using the original payment method.</li>
-            <li>We reserve the right to deny refund requests that do not meet our policy guidelines.</li>
-            <li>This policy applies to all students and all packages offered by Test Route Driving School.</li>
+            <li>
+              All refunds will be processed using the original payment method.
+            </li>
+            <li>
+              We reserve the right to deny refund requests that do not meet our
+              policy guidelines.
+            </li>
+            <li>
+              This policy applies to all students and all packages offered by
+              Test Route Driving School.
+            </li>
           </ul>
         </section>
       </Container>

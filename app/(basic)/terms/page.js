@@ -139,10 +139,9 @@ export default function TermsAndConditions() {
 
           <ul className="mt-2 space-y-3 list-disc pl-5 text-neutral md:text-lg">
             <li>
-              Test Route Driving School reserves the right at any time and
-              from time to time to modify or discontinue, temporarily or
-              permanently, the Service (or any part thereof) with or without
-              notice.
+              Test Route Driving School reserves the right at any time and from
+              time to time to modify or discontinue, temporarily or permanently,
+              the Service (or any part thereof) with or without notice.
             </li>
             <li>
               Prices of all Services are subject to change with or without
@@ -218,13 +217,13 @@ export default function TermsAndConditions() {
               errors in the website will be corrected.
             </li>
             <li>
-              You expressly understand and agree that Test Route Driving
-              School shall not be liable for any direct, indirect, incidental,
-              special, consequential or exemplary damages, including but not
-              limited to, damages for loss of profits, goodwill, use, data or
-              other intangible losses (even if Test Route Driving School has
-              been advised of the possibility of such damages), resulting from:
-              (i) the use or the inability to use the website; (ii) the cost of
+              You expressly understand and agree that Test Route Driving School
+              shall not be liable for any direct, indirect, incidental, special,
+              consequential or exemplary damages, including but not limited to,
+              damages for loss of profits, goodwill, use, data or other
+              intangible losses (even if Test Route Driving School has been
+              advised of the possibility of such damages), resulting from: (i)
+              the use or the inability to use the website; (ii) the cost of
               procurement of substitute goods and services resulting from any
               goods, data, information or services purchased or obtained or
               messages received or transactions entered into through or from the
@@ -246,10 +245,10 @@ export default function TermsAndConditions() {
             Please send any questions or comments about these Terms of Service
             to{" "}
             <a
-              href="mailto:testroutedrivingschool@gmail.com"
+              href="mailto:info@testroutedrivingschool.com.au"
               className="text-primary pl-1"
             >
-              testroutedrivingschool@gmail.com
+              info@testroutedrivingschool.com.au
             </a>
           </p>
         </section>
