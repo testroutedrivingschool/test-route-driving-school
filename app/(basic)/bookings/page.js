@@ -1308,7 +1308,7 @@ export default function BookingsPage() {
                                     </thead>
 
                                     <tbody>
-                                      {times.map((time) => {
+                                     {visibleTimes.map((time) => {
                                         const hourLine =
                                           isHourStart(time) &&
                                           time !== times[0];
