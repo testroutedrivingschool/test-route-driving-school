@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
 import { packagesCollection } from "@/app/libs/mongodb/db";
-import { redis } from "../../libs/redis/redis";
+import { redis } from "@/app/libs/redis/redis";
 
 /* =========================
    Helpers
