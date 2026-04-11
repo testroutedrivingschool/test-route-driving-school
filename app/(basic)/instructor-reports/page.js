@@ -116,38 +116,38 @@ export default function InstructorReportPage() {
     {
       title: "Instructor",
       items: [
-        { label: "Booking Activity", href: "/reports/instructor/booking-activity" },
-        { label: "Booked Services", href: "/reports/instructor/booked-services" },
-        { label: "Cancellations", href: "/reports/instructor/cancellations" },
+        { label: "Booking Activity", href: "/instructor-reports/staff/booking-activity" },
+        { label: "Booked Services", href: "/instructor-reports/staff/booked-services" },
+        { label: "Cancellations", href: "/instructor-reports/staff/cancellations" },
       ],
     },
     {
       title: "Clients",
       items: [
-        { label: "New Clients", href: "/reports/clients/new-clients" },
-        { label: "Client Bookings", href: "/reports/clients/client-bookings" },
+        { label: "New Clients", href: "/instructor-reports/clients/new-clients" },
+        { label: "Client Bookings", href: "/instructor-reports/clients/client-bookings" },
        
-        { label: "All Organisations", href: "/reports/clients/all-organisations" },
+        { label: "All Organisations", href: "/instructor-reports/clients/all-organisations" },
       ],
     },
     {
       title: "Services",
       items: [
-        { label: "Service Trends", href: "/reports/services/service-trends" },
+        { label: "Service Trends", href: "/instructor-reports/services/service-trends" },
       ],
     },
     {
       title: "Products",
       items: [
-        { label: "Web Sales", href: "/reports/products/web-sales" },
-        { label: "Sales", href: "/reports/products/sales" },
+        { label: "Web Sales", href: "/instructor/sales/search" },
+        { label: "Sales", href: "/instructor/sales/search" },
       ],
     },
     {
       title: "Logs",
       items: [
        
-        { label: "Sent Emails", href: "/reports/logs/sent-emails" },
+        { label: "Sent Emails", href: "/instructor-reports/logs/sent-emails" },
       ],
     },
   ];

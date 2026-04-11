@@ -39,6 +39,8 @@ export default function FinancesIncomePage() {
   const [reportRows, setReportRows] = useState([]);
   const [summary, setSummary] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  
   const staffName = user?.name || user?.fullName || "";
   const staffEmail = user?.email || "";
 const primaryDateLabel =
@@ -62,7 +64,7 @@ const primaryDateLabel =
   const handleRunReport = async () => {
     try {
       setIsRunning(true);
-
+  setHasSearched(true);
       const res = await axios.get("/api/reports/income", {
         params: {
           saleType: filters.saleType,
@@ -350,8 +352,11 @@ const downloadAttachment = async (key) => {
       </table>
     </div>
   </div>
-):<div className="mt-10">
-        <h3 className="text-lg font-bold ">No Report Found</h3></div>}
+):hasSearched ? (
+  <div className="mt-10">
+    <h3 className="text-lg font-bold">No Report Found</h3>
+  </div>
+) : null}
         </ReportShell>
       </Container>
     </section>
