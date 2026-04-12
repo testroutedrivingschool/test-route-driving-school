@@ -1,16 +1,17 @@
 "use client";
 
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import {useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import {toast} from "react-toastify";
-import useAuth from "@/app/hooks/useAuth";
-import {useQuery} from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import {FaEye, FaEyeSlash} from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useUserData } from "@/app/hooks/useUserData";
 
 export default function FinancialPage() {
-  const {user} = useAuth();
+  const { data: userData, isLoading: isUserLoading } = useUserData();
+
   const [formData, setFormData] = useState({
     accountName: "",
     bsbNumber: "",
@@ -18,55 +19,70 @@ export default function FinancialPage() {
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const {data: instructorData = {}, isLoading} = useQuery({
-    queryKey: ["instructor"],
+
+  const { data: financialData, isLoading } = useQuery({
+    queryKey: ["instructor-financial", userData?.instructorId],
+    enabled: !!userData?.instructorId,
     queryFn: async () => {
-      const res = await axios.get(`/api/instructors?email=${user.email}`);
+      const res = await axios.get(
+        `/api/instructors/financial?instructorId=${userData.instructorId}`
+      );
       return res.data;
     },
   });
 
   useEffect(() => {
+    if (!financialData) return;
+
     setFormData({
-      accountName: instructorData.financial?.accountName || "",
-      bsbNumber: instructorData.financial?.bsbNumber || "",
-      accountNumber: instructorData.financial?.accountNumber || "",
+      accountName: financialData.accountName || "",
+      bsbNumber: financialData.bsbNumber || "",
+      accountNumber: financialData.accountNumber || "",
     });
-  }, [instructorData]);
+  }, [
+    financialData?.accountName,
+    financialData?.bsbNumber,
+    financialData?.accountNumber,
+  ]);
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
-    setFormData({...formData, [name]: value});
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!user?.email) return alert("User not logged in");
+    if (!userData?.email || !userData?._id || !userData?.instructorId) {
+      toast.error("User data not ready");
+      return;
+    }
 
     setLoading(true);
 
     try {
-      const res = await axios.patch("/api/instructors/financial", {
-        email: user.email,
+      await axios.patch("/api/instructors/financial", {
+        email: userData.email,
+        userId: userData._id,
+        instructorId: userData.instructorId,
         ...formData,
       });
-      if (res) {
-        toast.success("Submitted Successfully");
-      }
-    } catch (err) {
 
-      alert(err.response?.data?.error || "Failed to save financial info");
+      toast.success("Submitted Successfully");
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Failed to save financial info");
     } finally {
       setLoading(false);
     }
   };
-  if (isLoading) return <LoadingSpinner />;
+
+  if (isUserLoading || isLoading) return <LoadingSpinner />;
+
   return (
-    <div className=" max-w-xl">
+    <div className="max-w-xl">
       <h1 className="text-2xl font-bold mb-4">Financial Information</h1>
+
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Bank Account Name */}
         <div>
           <label className="block font-semibold mb-1">Bank Account Name</label>
           <input
@@ -80,7 +96,6 @@ export default function FinancialPage() {
           />
         </div>
 
-        {/* BSB Number */}
         <div>
           <label className="block font-semibold mb-1">BSB Number</label>
           <input
@@ -88,13 +103,12 @@ export default function FinancialPage() {
             name="bsbNumber"
             value={formData.bsbNumber}
             onChange={handleChange}
-            placeholder="123-456"
+            placeholder="123456"
             required
             className="input-class"
           />
         </div>
 
-        {/* Account Number */}
         <div className="relative">
           <label className="block font-semibold mb-1">Account Number</label>
           <input

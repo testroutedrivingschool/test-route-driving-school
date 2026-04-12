@@ -289,7 +289,7 @@ export default function NewClientsPage() {
                           )}
                         </td>
                         <td className="px-4 py-2">{row.locationName}</td>
-                        <td className="px-4 py-2 whitespace-normal min-w-[160px]">
+                        <td className="px-4 py-2 whitespace-normal min-w-40">
                           {row.services}
                         </td>
                       </tr>

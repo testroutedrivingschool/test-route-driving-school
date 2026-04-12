@@ -43,52 +43,10 @@ export default function LocationPageClient({locationData}) {
       />
       <section className="py-16">
         <Container>
-          <div className="flex flex-col lg:flex-row items-center gap-10">
-            {/* Left Content */}
-            <div className="flex-1 space-y-4">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
-                {locationData.section1Title
-                  ? locationData.section1Title
-                  : "Learn to Drive with Confidence at Test Route Driving School"}
-              </h2>
-              <p className="text-gray-700 text-base md:text-lg">
-                {locationData.section1SubTitle
-                  ? locationData.section1SubTitle
-                  : "You deserve an affordable driving school that truly cares about your success. Many learners feel nervous during their first few lessons, which is completely normal. We create a calm, patient, and supportive learning environment to help you build confidence step by step. Our experienced instructors focus on real-world driving skills and proper test preparation, so you feel ready for any traffic situation."}
-              </p>
-              <ul className="list-disc list-inside text-gray-700 space-y-2">
-                {locationData?.section1Features?.map((feature, idx) => (
-                  <li key={`s1Feature-${idx}`}>{feature}</li>
-                ))}
-              </ul>
-            </div>
+          <div className="flex flex-col lg:flex-row items-center gap-10 ">
+            
 
-            {/* Right Image */}
-            <div className="w-full lg:w-auto flex-1">
-              <Image
-                src={locationImg}
-                alt={`${locationData?.pageTitle}`}
-                width={600}
-                height={400}
-                className="rounded-xl shadow-lg object-cover w-full h-full"
-              />
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section className="pb-10 md:py-16">
-        <Container>
-          <div className="flex flex-col-reverse lg:flex-row items-center gap-10 ">
-            <div className="w-full lg:w-auto flex-1 h-155 ">
-              <Image
-                src={"/test-route-driving-school-kogarah-nsw.png"}
-                alt={`${locationData?.pageTitle}`}
-                width={600}
-                height={400}
-                className="rounded-xl shadow-lg object-cover w-full h-full object-bottom"
-              />
-            </div>
+            
             <div className="flex-1 space-y-6">
               <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                 {locationData.section2Title
@@ -108,6 +66,54 @@ export default function LocationPageClient({locationData}) {
                 ))}
               </ul>
             </div>
+
+            <div className="w-full lg:w-auto flex-1 h-150 ">
+              <Image
+                src={"/test-route-driving-school-kogarah-nsw.png"}
+                alt={`${locationData?.pageTitle}`}
+                width={1000}
+                height={1000}
+                className="rounded-xl shadow-lg object-cover w-full h-full object-center"
+              />
+            </div>
+          </div>
+        </Container>
+       
+      </section>
+
+      <section className="pb-10 md:py-16">
+         <Container>
+          <div className="flex flex-col-reverse lg:flex-row items-center gap-10">
+            {/* Left Image */}
+            <div className="w-full lg:w-auto flex-1">
+              <Image
+                src={locationImg}
+                alt={`${locationData?.pageTitle}`}
+                width={600}
+                height={400}
+                className="rounded-xl shadow-lg object-cover w-full h-full"
+              />
+            </div>
+            {/* Right Content */}
+            <div className="flex-1 space-y-4">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
+                {locationData.section1Title
+                  ? locationData.section1Title
+                  : "Learn to Drive with Confidence at Test Route Driving School"}
+              </h2>
+              <p className="text-gray-700 text-base md:text-lg">
+                {locationData.section1SubTitle
+                  ? locationData.section1SubTitle
+                  : "You deserve an affordable driving school that truly cares about your success. Many learners feel nervous during their first few lessons, which is completely normal. We create a calm, patient, and supportive learning environment to help you build confidence step by step. Our experienced instructors focus on real-world driving skills and proper test preparation, so you feel ready for any traffic situation."}
+              </p>
+              <ul className="list-disc list-inside text-gray-700 space-y-2">
+                {locationData?.section1Features?.map((feature, idx) => (
+                  <li key={`s1Feature-${idx}`}>{feature}</li>
+                ))}
+              </ul>
+            </div>
+
+            
           </div>
         </Container>
       </section>

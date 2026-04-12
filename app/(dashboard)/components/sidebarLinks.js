@@ -13,6 +13,7 @@ import {
 } from "react-icons/fi";
 import {GoMegaphone, GoPackage} from "react-icons/go";
 import {FaBarsProgress, FaGear} from "react-icons/fa6";
+import { MdOutlinePayment } from "react-icons/md";
 /* ================= USER ================= */
 export const userSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard/user"},
@@ -83,12 +84,19 @@ export const adminSidebarLinks = [
     icon: <FiUsers />,
     path: "/dashboard/admin/manage-instructors",
   },
+   {
+    id: 11,
+    label: "Instructor Payouts",
+    icon: <MdOutlinePayment />,
+    path: "/dashboard/admin/instructor-payouts",
+  },
   {
     id: 5,
     label: "Manage Users",
     icon: <FiShield />,
     path: "/dashboard/admin/manage-users",
   },
+ 
   {
     id: 6,
     label: "Manage Suburbs",
