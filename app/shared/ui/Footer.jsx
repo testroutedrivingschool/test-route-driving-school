@@ -112,7 +112,7 @@ export default function Footer() {
                 Contact Info
               </h4>
 
-              <ul className="flex flex-col gap-2 text-white text-base font-medium">
+              <ul className="flex flex-col gap-2 text-white text-sm font-medium">
                 <li className="flex items-center gap-2">
                   <a
                     className="flex items-center gap-2"
