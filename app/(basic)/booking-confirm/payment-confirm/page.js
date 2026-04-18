@@ -106,9 +106,14 @@ const totalAmount = Number((baseAmount + processingFee).toFixed(2));
           
         });
 
+        const returnPath =
+  booking?.returnPath ||
+  (booking?.flowSource === "admin"
+    ? "/dashboard/admin/manage-instructors-slots"
+    : "/instructor-bookings");
         sessionStorage.removeItem("pendingBooking");
         toast.success("Booking created (Unpaid) ✅");
-        router.push("/instructor-bookings");
+      router.push(returnPath);
         return;
       } else {
         // ✅ WEBSITE booking => Stripe payment required

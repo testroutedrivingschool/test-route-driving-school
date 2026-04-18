@@ -1,5 +1,5 @@
 "use client";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useMemo, useRef, useState} from "react";
 
 import Container from "@/app/shared/ui/Container";
 import {useQuery, useQueryClient} from "@tanstack/react-query";
@@ -8,7 +8,6 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import axios from "axios";
 import Modal from "@/app/shared/ui/Modal";
 import {IoMdAdd} from "react-icons/io";
-import BookingCalendar from "../bookings/components/BookingCalendar";
 import {useUserData} from "@/app/hooks/useUserData";
 import {toast} from "react-toastify";
 import {
@@ -21,6 +20,7 @@ import {
 import {useRouter, useSearchParams} from "next/navigation";
 import Swal from "sweetalert2";
 import {TbCopyPlusFilled} from "react-icons/tb";
+import BookingCalendar from "@/app/(basic)/bookings/components/BookingCalendar";
 
 const weekdays = [
   "Monday",
@@ -117,14 +117,22 @@ export default function InstructorBookings() {
     copyBookingsIfFree: false,
     deleteBookingsWhenClearing: false,
   });
-  const {data: instructor} = useQuery({
-    queryKey: ["instructor", user?.email],
-    enabled: !!user?.email,
-    queryFn: async () => {
-      const res = await axios.get(`/api/instructors?email=${user.email}`);
-      return res.data;
-    },
-  });
+    const [selectedInstructorId, setSelectedInstructorId] = useState(null);
+
+const { data: instructors = [] } = useQuery({
+  queryKey: ["instructors", "approved"],
+  queryFn: async () => {
+    const res = await axios.get("/api/instructors", {
+      params: { status: "approved" }, 
+    });
+    return res.data;
+  },
+});
+
+const instructor = useMemo(
+  () => instructors.find((i) => i._id === selectedInstructorId) || null,
+  [instructors, selectedInstructorId]
+);
   const searchParams = useSearchParams();
   const moveBookingId = searchParams.get("moveBookingId"); // string | null
   const moveMode = !!moveBookingId;
@@ -174,6 +182,7 @@ export default function InstructorBookings() {
     "2 hours 15 mins",
   ];
   const isHourStart = (time) => time?.includes(":00");
+
 
   const {data: movingBooking} = useQuery({
     queryKey: ["booking", moveBookingId],
@@ -410,26 +419,20 @@ export default function InstructorBookings() {
     },
   });
 
-  const {data: bookings = [], isLoading: bookingsLoading} = useQuery({
-    queryKey: ["bookings", user?.email, weekFrom, weekTo],
-    enabled: !!user?.email,
-    queryFn: async () => {
-      const res = await axios.get("/api/bookings", {
-        params: {
-          email: user.email,
-          from: weekFrom,
-          to: weekTo,
-        },
-      });
-
-      // ✅ only bookings of this instructor
-      return (res.data || []).filter(
-        (b) =>
-          (b.instructorEmail || "").toLowerCase() ===
-          (user.email || "").toLowerCase(),
-      );
-    },
-  });
+ const { data: bookings = [], isLoading: bookingsLoading } = useQuery({
+  queryKey: ["bookings", instructor?.email, weekFrom, weekTo],
+  enabled: !!instructor?.email,
+  queryFn: async () => {
+    const res = await axios.get("/api/bookings", {
+      params: {
+        instructorEmail: instructor.email,
+        from: weekFrom,
+        to: weekTo,
+      },
+    });
+    return res.data || [];
+  },
+});
 
   // quick lookup map: key = "YYYY-MM-DD__7:15AM"
   const slotMap = slots.reduce((acc, s) => {
@@ -1079,7 +1082,7 @@ export default function InstructorBookings() {
       await queryClient.invalidateQueries({
         queryKey: ["booking", moveBookingId],
       });
-      router.push("/instructor-bookings");
+      router.push("/dashboard/admin/manage-instructors-slots");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Failed to move booking");
     } finally {
@@ -1120,7 +1123,7 @@ export default function InstructorBookings() {
       await queryClient.invalidateQueries({
         queryKey: ["booking", moveBookingId],
       });
-      router.push("/instructor-bookings");
+      router.push("/dashboard/admin/manage-instructors-slots");
     } catch (err) {
       toast.error(err?.response?.data?.error || "Failed to swap bookings");
     } finally {
@@ -1146,8 +1149,8 @@ export default function InstructorBookings() {
       duration: slot.duration,
       maxAvailableMinutes,
       bookingType: "manual",
-  flowSource: "instructor",
-  returnPath: "/instructor-bookings",
+  flowSource: "admin",
+  returnPath: "/dashboard/admin/manage-instructors-slots",
       ...(rebookMode
         ? {
             clientId: rebookClientId,
@@ -1167,16 +1170,91 @@ export default function InstructorBookings() {
     router.push("/booking-confirm");
   };
 
-  if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
+//   if (!selectedInstructorId) return <InstructorEmptyState />;
+if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
 
   return (
     <>
-      <section className="py-5 md:py-10">
-        <Container>
-          <div>
-            {/* Main Content Area */}
+      <section className=" ">
+ 
+         <div className="space-y-5">
+        {/* Top Header */}
+        <div className="rounded-2xl border border-border-color bg-white shadow-sm overflow-hidden">
+          <div className="px-4 md:px-6 py-5 border-b border-border-color bg-linear-to-r from-white to-slate-50">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+              <div>
+                <h1 className="text-xl md:text-3xl font-bold text-gray-900">
+                  Manage Instructor Slots
+                </h1>
+                <p className="text-sm md:text-base text-gray-500 mt-1">
+                  Select an instructor to manage availability and create bookings.
+                </p>
+              </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-9 gap-2 md:gap-6">
+              {selectedInstructorId && instructor && (
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                    {instructor?.name}
+                  </div>
+                  <div className="px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 text-sm">
+                    {instructor?.email}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Instructor Select Area */}
+          <div className="px-4 md:px-6 py-5 ">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end ">
+              <div className="md:col-span-3">
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Select Instructor
+                </label>
+                <select
+                  value={selectedInstructorId || ""}
+                  onChange={(e) => setSelectedInstructorId(e.target.value)}
+                  className="w-full h-12 rounded-xl border border-border-color bg-white px-4 text-sm md:text-base text-gray-800 outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
+                >
+                  <option value="">Choose an instructor</option>
+                  {instructors.map((ins) => (
+                    <option key={ins._id} value={ins._id}>
+                      {ins.name} ({ins.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-1">
+                <div className="  h-12 rounded-xl border border-dashed border-border-color  px-4 flex items-center text-sm text-gray-500">
+                  {selectedInstructorId && instructor
+                    ? `Now managing ${instructor.name}'s schedule`
+                    : "Please choose an instructor to continue"}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Empty State */}
+        {!selectedInstructorId ? (
+          <div className="rounded-2xl border border-border-color bg-white shadow-sm p-8 md:p-12">
+            <div className="max-w-xl mx-auto text-center">
+              <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-primary text-2xl font-bold">+</span>
+              </div>
+
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                Select an instructor
+              </h2>
+
+              <p className="text-sm md:text-base text-gray-500 mt-3 leading-7">
+                Choose an instructor from the dropdown above to view and manage
+                their weekly availability, bookings, move mode, and rebooking options.
+              </p>
+            </div>
+          </div>
+  ):<div className="grid grid-cols-1 lg:grid-cols-9 gap-2 md:gap-6 ">
               {/* Left Column - Calendar */}
               <div className="lg:col-span-2">
                 <BookingCalendar
@@ -1190,13 +1268,13 @@ export default function InstructorBookings() {
                 <div className="rounded-xl shadow-sm border border-border-color overflow-hidden ">
                   <div className="">
                     {/* Schedule Header */}
-                    <div className="sticky top-0 z-50 px-2 md:px-6 py-4 border-b border-border-color bg-white">
+                    <div className=" z-50 px-2 md:px-6 py-4 border-b border-border-color bg-white">
                       <div className="flex items-center justify-between gap-4">
                         {/* left: title + range */}
                         <div className="">
                           <div className="flex gap-2">
                             <h2 className="text-sm sm:text-lg md:text-2xl font-bold text-gray-900">
-                              {user?.name}&apos;s Schedule
+                            {instructor?.name ? `${instructor.name}'s Schedule` : "Select Instructor"}
                             </h2>
                             <button
                               onClick={() => setShowCopyModal(true)}
@@ -1257,7 +1335,7 @@ export default function InstructorBookings() {
 
                           <button
                             type="button"
-                            onClick={() => router.push("/instructor-bookings")}
+                            onClick={() => router.push("/dashboard/admin/manage-instructors-slots")}
                             className="shrink-0 rounded-md p-2 transition"
                             title="Cancel move mode"
                             aria-label="Cancel move mode"
@@ -1277,7 +1355,7 @@ export default function InstructorBookings() {
                         </span>
                         <button
                           className="underline font-semibold"
-                          onClick={() => router.push("/instructor-bookings")}
+                          onClick={() => router.push("/dashboard/admin/manage-instructors-slots")}
                         >
                           Cancel
                         </button>
@@ -1298,14 +1376,14 @@ export default function InstructorBookings() {
                         <table className="w-full min-w-150 md:min-w-[700px] border-separate border-spacing-0 table-fixed h-full">
                           <thead className="bg-white">
                             <tr>
-                              <th className="py-2 px-1 border border-border-color text-xs md:text-sm font-medium uppercase tracking-wider sticky top-0 left-0 bg-[#DCDCDC] z-50 text-center w-[55px] max-w-[55px] min-w-[55px] md:w-[65px] md:max-w-[65px] md:min-w-[65px]">
+                              <th className="py-2 px-1 border border-border-color text-xs md:text-sm font-medium uppercase tracking-wider  top-0 left-0 bg-[#DCDCDC] z-50 text-center w-[55px] max-w-[55px] min-w-[55px] md:w-[65px] md:max-w-[65px] md:min-w-[65px]">
                                 Time
                               </th>
 
                               {weekDates.map((date, index) => (
                                 <th
                                   key={index}
-                                  className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider sticky top-0 z-20 bg-white"
+                                  className="py-2 px-1 border border-border-color text-center text-xs md:text-sm font-medium text-gray-500 md:uppercase md:tracking-wider  top-0 z-20 bg-white"
                                 >
                                   <div className="flex flex-col items-center">
                                     <div className="font-bold text-gray-900">
@@ -1331,7 +1409,7 @@ export default function InstructorBookings() {
                                 key={time}
                                 className="hover:bg-gray-50/50 align-stretch"
                               >
-                                <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900 sticky left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500 max-w-[30px]">
+                                <td className="py-2 px-1 whitespace-nowrap text-xs md:text-sm font-medium text-gray-900  left-0 bg-[#DCDCDC] z-10 text-center border-b border-dashed border-gray-500 max-w-[30px]">
                                   {time}
                                 </td>
 
@@ -1399,7 +1477,7 @@ export default function InstructorBookings() {
                                           onClick={() => {
                                             if (!moveMode) {
                                               router.push(
-                                                `/instructor-bookings/${b._id}`,
+                                                `/dashboard/admin/manage-instructors-slots/${b._id}`,
                                               );
                                               return;
                                             }
@@ -1705,8 +1783,10 @@ export default function InstructorBookings() {
                 </div>
               </div>
             </div>
+}
+
           </div>
-        </Container>
+     
       </section>
       {showSlotModal && selectedSlot && (
         <Modal onClose={closeSlotModal}>

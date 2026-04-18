@@ -46,7 +46,6 @@ export async function GET(req) {
     );
   }
 }
-
 export async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
   // 1) Generate PDF
   const pdfBuffer = await generateInvoicePdfBuffer(

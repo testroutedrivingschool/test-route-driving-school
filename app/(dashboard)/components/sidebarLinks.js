@@ -14,6 +14,7 @@ import {
 import {GoMegaphone, GoPackage} from "react-icons/go";
 import {FaBarsProgress, FaGear} from "react-icons/fa6";
 import { MdOutlinePayment } from "react-icons/md";
+import { GrSchedule } from "react-icons/gr";
 /* ================= USER ================= */
 export const userSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard/user"},
@@ -67,56 +68,62 @@ export const adminSidebarLinks = [
   {id: 1, label: "Dashboard", icon: <FiHome />, path: "/dashboard/admin"},
   {id: 2, label: "Profile", icon: <FiUser />, path: "/dashboard/admin/profile"},
    {
-    id: 10,
+    id: 3,
     label: "Purchases",
     icon: <FiCreditCard />,
     path: "/dashboard/admin/purchases",
   },
   {
-    id: 3,
+    id: 4,
     label: "Manage Packages",
     icon: <GoPackage />,
     path: "/dashboard/admin/manage-packages",
   },
   {
-    id: 4,
+    id: 5,
     label: "Manage Instructors",
     icon: <FiUsers />,
     path: "/dashboard/admin/manage-instructors",
   },
+  {
+    id: 12,
+    label: "Manage Instructors Slots",
+    icon: <GrSchedule  />,
+    path: "/dashboard/admin/manage-instructors-slots",
+  },
    {
-    id: 11,
+    id: 6,
     label: "Instructor Payouts",
     icon: <MdOutlinePayment />,
     path: "/dashboard/admin/instructor-payouts",
   },
   {
-    id: 5,
+    id: 7,
     label: "Manage Users",
     icon: <FiShield />,
     path: "/dashboard/admin/manage-users",
   },
  
   {
-    id: 6,
+    id: 8,
     label: "Manage Suburbs",
     icon: <FiMapPin />,
     path: "/dashboard/admin/manage-suburbs",
   },
   {
-    id: 7,
+    id: 9,
     label: "Add Announcements",
     icon: <GoMegaphone />,
     path: "/dashboard/admin/add-announcements",
   },
   {
-    id: 8,
+    id: 10,
     label: "Coupon & Vouchers",
     icon: <FiGift />,
     path: "/dashboard/admin/add-coupon-vouchers",
   },
   {
-    id: 9,
+    id: 11,
     label: "Manage Files",
     icon: <FaFileAlt />,
     path: "/dashboard/admin/manage-files",

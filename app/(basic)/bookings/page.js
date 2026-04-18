@@ -193,6 +193,9 @@ export default function BookingsPage() {
     if (userData?.role === "instructor") {
       router.replace("/instructor-bookings");
     }
+    if (userData?.role === "admin") {
+      router.replace("/dashboard/admin/manage-instructors-slots");
+    }
   }, [userData, userDataLoading, router]);
   const [rescheduleBooking, setRescheduleBooking] = useState(null);
   const {data: instructors = [], isLoading} = useQuery({
@@ -422,6 +425,8 @@ export default function BookingsPage() {
       duration: slot?.duration,
       maxAvailableMinutes,
       bookingType: "website",
+      flowSource: "user",
+returnPath: "/dashboard/user/my-bookings"
     };
 
     sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));

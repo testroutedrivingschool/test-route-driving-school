@@ -70,6 +70,8 @@ function getSuburbBasedServices(
     })
     .filter((service) => service.activeDurations.some(Boolean));
 }
+
+
 export default function BookingConfirmPage() {
   const router = useRouter();
   const { data: userData, isLoading:isUserLoading } = useUserData();
@@ -172,6 +174,9 @@ const services = useMemo(() => {
         instructorName: instructor.name,
         instructorId: instructor._id,
 
+  flowSource: booking.flowSource || "user",
+  returnPath: booking.returnPath || "/bookings",
+
         serviceName: selectedBooking.service,
         duration: selectedBooking.duration,
         minutes: selectedBooking.minutes,
@@ -201,6 +206,8 @@ const services = useMemo(() => {
         instructorName: instructor.name,
         instructorId: instructor._id,
 
+    flowSource: booking.flowSource || "instructor",
+  returnPath: booking.returnPath || "/bookings",
         serviceName: selectedBooking.service,
         duration: selectedBooking.duration,
         minutes: selectedBooking.minutes,
@@ -240,7 +247,8 @@ const services = useMemo(() => {
       originalPrice: selectedBooking.price,
       overridePrice: hasOverride ? finalPrice : null,
       isPriceOverridden: !!hasOverride,
-
+  flowSource: booking.flowSource || "instructor",
+  returnPath: booking.returnPath || "/bookings",
       bookingDate: booking.date,
       bookingTime: booking.time,
       location: booking.location,
