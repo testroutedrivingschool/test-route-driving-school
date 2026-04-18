@@ -156,22 +156,32 @@ export async function POST(req) {
       );
     }
 
+    const safePrice = Number(price || 0);
+    const safeOriginalPrice = Number(originalPrice || 0);
+
+    // base: $65 = 1 credit
+    const rawCreditValue = safePrice / 65;
+
+    // round to nearest 0.5
+    const creditValue = Math.round(rawCreditValue * 2) / 2;
+
     const slug = generateSlug(name);
 
     const result = await (await packagesCollection()).insertOne({
       name,
       slug,
       packageThumbline,
-      lessons,
+      lessons: Number(lessons),
       duration,
-      durationNum,
-      price,
-      originalPrice,
-      savings: (originalPrice || 0) - price,
+      durationNum: Number(durationNum),
+      price: safePrice,
+      originalPrice: safeOriginalPrice,
+      savings: safeOriginalPrice - safePrice,
       description,
       features,
       popular: !!popular,
       category,
+      creditValue,
       createdAt: new Date(),
     });
 
@@ -180,7 +190,11 @@ export async function POST(req) {
     await redis.del(`package:${slug}`);
 
     return NextResponse.json(
-      { message: "Package added", id: result.insertedId },
+      {
+        message: "Package added",
+        id: result.insertedId,
+        creditValue,
+      },
       { status: 201 }
     );
   } catch (error) {
