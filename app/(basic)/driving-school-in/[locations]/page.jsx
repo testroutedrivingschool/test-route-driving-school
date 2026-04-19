@@ -9,6 +9,7 @@ import {
   FaGift,
   FaMapMarkerAlt,
 } from "react-icons/fa";
+import { locationSchemas } from "../schemaData/locationSchema";
 function getImageUrl() {
   return "https://testroutedrivingschool.com.au/test-route-location.png";
 }
@@ -537,37 +538,36 @@ export async function generateMetadata({params}) {
   const slug = Array.isArray(resolvedParams.locations)
     ? resolvedParams.locations[0]
     : resolvedParams.locations;
-    const loc = formatLocationFromSlug(slug) || "Sydney";
+  const loc = formatLocationFromSlug(slug) || "Sydney";
   const data = locationData[slug];
-const imageUrl = getImageUrl();
+  const imageUrl = getImageUrl();
   const canonicalUrl = `https://testroutedrivingschool.com.au/driving-school-in/${slug}`;
- 
- const title= `Driving Lessons in ${loc} – Book Today`;
-  const description= `Gain confidence behind the wheel with Driving Lessons in ${loc} – expert instructors, flexible timings. Book now and enjoy stress-free learning!`;
-  const keywords= [
-        `Driving Lessons in ${loc}`,
-        `driving lessons near me in ${loc}`,
-        `driving lesson in ${loc}`,
-        "driving lessons schools",
-        "manual driving lessons",
-        "learners driving lessons",
-        ` car driving lessons near me in ${loc}`,
-        "cheap driving lessons",
-        `driving school in ${loc}`,
-        "driving lessons schools",
-        "driving training school near me",
-        `affordable driving school in ${loc}`,
-        "drivers education school near me",
-        `driver education course in ${loc}`,
-        "drivers education",
-        "driver education",
-        "learn to drive schools",
-        "manual driving lessons near me",
-        "cheap driving lessons near me",
-        "Teen driving lessons",
-        `book driving lesson in ${loc}`,
-      ];
- 
+
+  const title = `Driving Lessons in ${loc} – Book Today`;
+  const description = `Gain confidence behind the wheel with Driving Lessons in ${loc} – expert instructors, flexible timings. Book now and enjoy stress-free learning!`;
+  const keywords = [
+    `Driving Lessons in ${loc}`,
+    `driving lessons near me in ${loc}`,
+    `driving lesson in ${loc}`,
+    "driving lessons schools",
+    "manual driving lessons",
+    "learners driving lessons",
+    ` car driving lessons near me in ${loc}`,
+    "cheap driving lessons",
+    `driving school in ${loc}`,
+    "driving lessons schools",
+    "driving training school near me",
+    `affordable driving school in ${loc}`,
+    "drivers education school near me",
+    `driver education course in ${loc}`,
+    "drivers education",
+    "driver education",
+    "learn to drive schools",
+    "manual driving lessons near me",
+    "cheap driving lessons near me",
+    "Teen driving lessons",
+    `book driving lesson in ${loc}`,
+  ];
 
   return {
     title,
@@ -615,6 +615,17 @@ export default async function LocationDetailsPage({params}) {
     ? resolvedParams.locations[0]
     : resolvedParams.locations;
   const data = locationData[slug] || buildFallback(slug);
+  const schema = locationSchemas[slug];
 
-  return <LocationPageClient locationData={data} />;;
+  return (
+    <>
+      {schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{__html: JSON.stringify(schema)}}
+        />
+      )}
+      <LocationPageClient locationData={data} />
+    </>
+  );
 }
