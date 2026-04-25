@@ -31,14 +31,39 @@ export default function CheckoutWrapper() {
     </Elements>
   );
 }
+function calculateStripeTotal(baseAmount) {
+  const STRIPE_PERCENT = 0.017;
+  const STRIPE_FIXED = 0.20;
+  const GST_RATE = 0.10;
 
+  let totalCents = Math.round(baseAmount * 100);
+
+  while (true) {
+    const total = totalCents / 100;
+
+    const stripeFee = total * STRIPE_PERCENT + STRIPE_FIXED;
+    const tax = stripeFee * GST_RATE;
+    const totalFee = stripeFee + tax;
+
+    const net = total - totalFee;
+
+    if (net >= baseAmount + 0.02) {
+      return {
+        totalAmount: Number(total.toFixed(2)),
+        processingFee: Number((total - baseAmount).toFixed(2)),
+      };
+    }
+
+    totalCents += 1;
+  }
+}
 function CheckoutPage() {
   const [total, setTotal] = useState(0);
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
   const [showCouponInput, setShowCouponInput] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState(null); // Store applied coupon
-const [processingFee, setProcessingFee] = useState(0);
+
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { user: authUser, loading: authLoading } = useAuth();
@@ -155,10 +180,6 @@ const [processingFee, setProcessingFee] = useState(0);
     setTotal(calculatedTotal);
   }, []);
 
-  useEffect(() => {
-  const fee = total * 0.0175 + 0.3; // 1.75% + 30 cents
-  setProcessingFee(Number(fee.toFixed(2)));
-}, [total]);
   const handleBillingChange = (e) => {
     const { name, value, type, checked } = e.target;
     setBilling((prev) => ({
@@ -167,6 +188,11 @@ const [processingFee, setProcessingFee] = useState(0);
     }));
   };
 
+
+  const feeData = calculateStripeTotal(total);
+
+const processingFee = feeData.processingFee;
+const finalAmount = feeData.totalAmount;
 const handleProceed = async () => {
   if (!billing.state) return toast.error("Select your State");
 
@@ -192,7 +218,8 @@ const handleProceed = async () => {
     }));
 
     // 3) Send the discount and total (after discount) to the backend
-  const finalAmount = total + processingFee; // Final amount after applying the discount
+
+  
 const { data } = await axios.post("/api/create-payment-intent", {
   type: "purchase",
   userEmail: billing.email,
@@ -200,8 +227,8 @@ const { data } = await axios.post("/api/create-payment-intent", {
   couponCode: appliedCoupon,
   items,
   discount: discount,
-  processingFee,
-  totalAmount: finalAmount,
+  // processingFee,
+  // totalAmount: finalAmount,
 });
 
     const clientSecret = data?.clientSecret;
@@ -429,7 +456,7 @@ const { data } = await axios.post("/api/create-payment-intent", {
 
 <FormRow label="Total Amount:">
   <p className="font-bold text-lg text-primary">
-    ${(total + processingFee).toFixed(2)}
+    ${finalAmount.toFixed(2)}
   </p>
 </FormRow>
   {/* <FormRow label="Total Amount:">
@@ -458,7 +485,7 @@ const { data } = await axios.post("/api/create-payment-intent", {
       >
           {loading
     ? "Processing..."
-    : `Pay $${(total + processingFee).toFixed(2)}`}
+    : `Pay $${finalAmount.toFixed(2)}`}
       </PrimaryBtn>
     </div>
   </div>

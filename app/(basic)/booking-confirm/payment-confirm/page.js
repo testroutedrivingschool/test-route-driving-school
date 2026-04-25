@@ -28,6 +28,33 @@ export default function PaymentConfirmPage() {
   );
 }
 
+function calculateStripeTotal(baseAmount) {
+  const STRIPE_PERCENT = 0.017;
+  const STRIPE_FIXED = 0.20;
+  const GST_RATE = 0.10;
+
+  let totalCents = Math.round(baseAmount * 100);
+
+  while (true) {
+    const total = totalCents / 100;
+
+    const stripeFee = total * STRIPE_PERCENT + STRIPE_FIXED;
+    const tax = stripeFee * GST_RATE;
+    const totalFee = stripeFee + tax;
+
+    const net = total - totalFee;
+
+    // ✅ add buffer to match Stripe rounding
+    if (net >= baseAmount + 0.02) {
+      return {
+        totalAmount: Number(total.toFixed(2)),
+        processingFee: Number((total - baseAmount).toFixed(2)),
+      };
+    }
+
+    totalCents += 1;
+  }
+}
 function PaymentForm() {
   const router = useRouter();
   const stripe = useStripe();
@@ -71,9 +98,25 @@ function PaymentForm() {
 
   if (!booking) return <LoadingSpinner />;
 
-const baseAmount = booking.price || 0;
-  const processingFee = Number((baseAmount * 0.02).toFixed(2));
-const totalAmount = Number((baseAmount + processingFee).toFixed(2));
+const baseAmount = Number(booking.price || 0);
+
+const feeData =
+  booking.bookingType === "website"
+    ? calculateStripeTotal(baseAmount)
+    : {
+        totalAmount: baseAmount,
+        processingFee: 0,
+        stripeFee: 0,
+        tax: 0,
+        netAmount: baseAmount,
+      };
+
+const totalAmount = feeData.totalAmount;
+const processingFee = feeData.processingFee;
+
+
+
+
   const handleConfirmPayment = async () => {
     if (!acceptedTerms) {
       toast.error("Please accept the terms and conditions");
@@ -97,9 +140,11 @@ const totalAmount = Number((baseAmount + processingFee).toFixed(2));
           ...booking,
           address,
           suburb,
-            price: booking.price,
-  totalPaidAmount: totalAmount,
-  processingFee,
+         
+
+  price: booking.price,
+totalPaidAmount: booking.price,
+processingFee: 0,
           status: "pending",
           paymentStatus: "unpaid",
           paymentIntentId: null,
@@ -126,7 +171,7 @@ const totalAmount = Number((baseAmount + processingFee).toFixed(2));
         }
 
         const {data} = await axios.post("/api/create-payment-intent", {
-          amount: totalAmount,
+          amount: baseAmount,
         });
 
         const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -151,12 +196,17 @@ const clientId = String(booking?.clientId);
           address,
           suburb,
 
-         price: booking.price,
-  totalPaidAmount: totalAmount,
-  processingFee,
-          paymentIntentId: result.paymentIntent.id,
-          status: "pending",
-          paymentStatus: "paid",
+         
+          
+
+totalPaidAmount: data.totalAmount,
+processingFee: data.processingFee,
+  
+  price: baseAmount,          
+             
+  paymentIntentId: result.paymentIntent.id,
+  status: "pending",
+  paymentStatus: "paid",
         });
         await axios.patch(`/api/users`, {
           email: booking.userEmail,
@@ -285,7 +335,7 @@ const clientId = String(booking?.clientId);
                 disabled={loading}
                 className="w-full justify-center py-3 text-lg"
               >
-                {loading ? "Processing..." : `Pay $${totalAmount}`}
+              {loading ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
               </PrimaryBtn>
             </>
           ) : (

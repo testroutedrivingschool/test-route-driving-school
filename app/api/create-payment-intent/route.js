@@ -8,6 +8,34 @@ import {
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
 
+
+function calculateStripeTotal(baseAmount) {
+  const STRIPE_PERCENT = 0.017;
+  const STRIPE_FIXED = 0.20;
+  const GST_RATE = 0.10;
+
+  let totalCents = Math.round(baseAmount * 100);
+
+  while (true) {
+    const total = totalCents / 100;
+
+    const stripeFee = total * STRIPE_PERCENT + STRIPE_FIXED;
+    const tax = stripeFee * GST_RATE;
+    const totalFee = stripeFee + tax;
+
+    const net = total - totalFee;
+
+    // ✅ add buffer to match Stripe rounding
+    if (net >= baseAmount + 0.02) {
+      return {
+        totalAmount: Number(total.toFixed(2)),
+        processingFee: Number((total - baseAmount).toFixed(2)),
+      };
+    }
+
+    totalCents += 1;
+  }
+}
 export async function POST(req) {
   try {
     const body = await req.json();
@@ -32,93 +60,110 @@ export async function POST(req) {
     // 1) EXISTING BOOKING PAYMENT
     // --------------------------
     if (type === "booking-existing") {
-      const cardAmount = Number(amount || 0);
-      if (cardAmount <= 0) {
-        return new Response(
-          JSON.stringify({ error: "Amount must be > 0" }),
-          { status: 400 }
-        );
-      }
-      if (!bookingId) {
-        return new Response(
-          JSON.stringify({ error: "bookingId required for booking-existing" }),
-          { status: 400 }
-        );
-      }
+  const cardAmount = Number(amount || 0);
 
-      const col = await bookingsCollection();
-      const booking = await col.findOne({ _id: new ObjectId(bookingId) });
-      if (!booking)
-        return new Response(JSON.stringify({ error: "Booking not found" }), {
-          status: 404,
-        });
+  if (cardAmount <= 0) {
+    return new Response(JSON.stringify({ error: "Amount must be > 0" }), { status: 400 });
+  }
 
-      const outstanding = Number(
-        booking.outstanding ??
-          Math.max(0, Number(booking.price || 0) - Number(booking.paidAmount || 0))
-      );
+  if (!bookingId) {
+    return new Response(JSON.stringify({ error: "bookingId required" }), { status: 400 });
+  }
 
-      if (cardAmount > outstanding) {
-        return new Response(
-          JSON.stringify({ error: "Amount exceeds outstanding" }),
-          { status: 400 }
-        );
-      }
+  const col = await bookingsCollection();
+  const booking = await col.findOne({ _id: new ObjectId(bookingId) });
 
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(cardAmount * 100),
-        currency,
-        payment_method_types: ["card"],
-        metadata: {
-          type: "booking-existing",
-          bookingId: String(bookingId),
-          userEmail: booking.userEmail || booking.clientEmail || "",
-          userName: booking.userName || booking.clientName || "",
-          instructorId: booking.instructorId || "",
-          serviceName: booking.serviceName || "",
-          ...metadata,
-        },
-      });
+  if (!booking) {
+    return new Response(JSON.stringify({ error: "Booking not found" }), { status: 404 });
+  }
 
-      return new Response(
-        JSON.stringify({ clientSecret: paymentIntent.client_secret }),
-        { status: 200 }
-      );
-    }
+  const outstanding = Number(
+    booking.outstanding ??
+    Math.max(0, Number(booking.price || 0) - Number(booking.paidAmount || 0))
+  );
+
+  if (cardAmount > outstanding) {
+    return new Response(JSON.stringify({ error: "Amount exceeds outstanding" }), { status: 400 });
+  }
+
+  // ✅ APPLY STRIPE FEE HERE
+  const feeData = calculateStripeTotal(cardAmount);
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: Math.round(feeData.totalAmount * 100),
+    currency,
+    payment_method_types: ["card"],
+    metadata: {
+      type: "booking-existing",
+      bookingId: String(bookingId),
+      baseAmount: cardAmount,
+      processingFee: feeData.processingFee,
+      totalAmount: feeData.totalAmount,
+    },
+  });
+
+  return new Response(
+    JSON.stringify({
+      clientSecret: paymentIntent.client_secret,
+      processingFee: feeData.processingFee,
+      totalAmount: feeData.totalAmount,
+    }),
+    { status: 200 }
+  );
+}
 
     // --------------------------
     // 2) NEW BOOKING PAYMENT (No Coupon)
     // --------------------------
     if (type === "booking-new") {
-      let cardAmount = Number(amount || 0);
-      if (cardAmount <= 0) {
-        return new Response(
-          JSON.stringify({ error: "Amount must be > 0" }),
-          { status: 400 }
-        );
-      }
 
-      // No coupon logic here for "booking-new"
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(cardAmount * 100),
-        currency,
-        payment_method_types: ["card"],
-        metadata: {
-          type: "booking-new",
-          userEmail,
-          userName: userName || "",
-          instructorId,
-          ...metadata,
-        },
-      });
+    const baseAmount = Number(amount || 0);
 
-      return new Response(
-        JSON.stringify({
-          clientSecret: paymentIntent.client_secret,
-          discountAmount, // Always 0 for "booking-new"
-        }),
-        { status: 200 }
-      );
+if (baseAmount <= 0) {
+  return new Response(
+    JSON.stringify({ error: "Amount must be > 0" }),
+    { status: 400 }
+  );
+}
+
+const feeData = calculateStripeTotal(baseAmount);
+
+const paymentIntent = await stripe.paymentIntents.create({
+  amount: Math.round(feeData.totalAmount * 100),
+  currency,
+  payment_method_types: ["card"],
+  metadata: {
+    type: "booking-new",
+    userEmail,
+    userName: userName || "",
+    instructorId,
+    baseAmount,
+    processingFee: feeData.processingFee,
+    stripeFee: feeData.stripeFee,
+    stripeTax: feeData.tax,
+    totalAmount: feeData.totalAmount,
+    netAmount: feeData.netAmount,
+    ...metadata,
+  },
+});
+
+return new Response(
+  JSON.stringify({
+    clientSecret: paymentIntent.client_secret,
+    baseAmount,
+    processingFee: feeData.processingFee,
+    stripeFee: feeData.stripeFee,
+    stripeTax: feeData.tax,
+    totalAmount: feeData.totalAmount,
+    netAmount: feeData.netAmount,
+  }),
+  { status: 200 }
+);
+
+      
+     
+
+    
     }
 
     // --------------------------
@@ -187,63 +232,55 @@ export async function POST(req) {
         };
       });
 
-      let totalAmount = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
-const processingFeeRate = 0.02; // 2%
-const processingFee = Number((totalAmount * processingFeeRate).toFixed(2));
-
-let totalPaidAmount = totalAmount + processingFee;
+      
+let totalAmount = lineItems.reduce((sum, li) => sum + li.lineTotal, 0);
 // Add fee to total
-      // Apply coupon if provided
+    
       if (couponCode) {
-        const couponCol = await couponsCollection();
-        const coupon = await couponCol.findOne({ code: couponCode });
-        if (coupon) {
-          const currentDate = new Date();
-          const expiryDate = new Date(coupon.expires);
+  const couponCol = await couponsCollection();
+  const coupon = await couponCol.findOne({ code: couponCode });
 
-          if (expiryDate >= currentDate) {
-            discountAmount = (totalPaidAmount * Number(coupon.discount)) / 100;
-            totalPaidAmount -= discountAmount; // Apply the discount to the total amount
-          } else {
-            return new Response(
-              JSON.stringify({ error: "Coupon has expired" }),
-              { status: 400 }
-            );
-          }
-        } else {
-          return new Response(
-            JSON.stringify({ error: "Invalid coupon code" }),
-            { status: 400 }
-          );
-        }
-      }
+  if (!coupon) {
+    return new Response(JSON.stringify({ error: "Invalid coupon code" }), { status: 400 });
+  }
 
+  const currentDate = new Date();
+  const expiryDate = new Date(coupon.expires);
+
+  if (expiryDate < currentDate) {
+    return new Response(JSON.stringify({ error: "Coupon expired" }), { status: 400 });
+  }
+
+  const discountAmount = (totalAmount * Number(coupon.discount)) / 100;
+  totalAmount -= discountAmount;
+}
+const feeData = calculateStripeTotal(totalAmount);
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(totalAmount * 100),
-        currency,
-        payment_method_types: ["card"],
-        metadata: {
-          type: "purchase",
-          userEmail,
-          userName,
-        processingFee,
-          discountAmount,
-          ...metadata,
-        },
-      });
+  amount: Math.round(feeData.totalAmount * 100),
+  currency,
+  payment_method_types: ["card"],
+  metadata: {
+    type: "purchase",
+    userEmail,
+    userName,
+    baseAmount: totalAmount,
+    processingFee: feeData.processingFee,
+    totalAmount: feeData.totalAmount,
+    ...metadata,
+  },
+});
 
-      return new Response(
-        JSON.stringify({
-          clientSecret: paymentIntent.client_secret,
-          amount: totalAmount,
-          totalPaidAmount,
-          processingFee,
-          discountAmount,
-          currency,
-          lineItems: items,
-        }),
-        { status: 200 }
-      );
+    return new Response(
+  JSON.stringify({
+    clientSecret: paymentIntent.client_secret,
+    amount: totalAmount,
+    totalPaidAmount: feeData.totalAmount,
+    processingFee: feeData.processingFee,
+    currency,
+    lineItems: items,
+  }),
+  { status: 200 }
+);
     }
 
     return new Response(JSON.stringify({ error: "Invalid type" }), { status: 400 });

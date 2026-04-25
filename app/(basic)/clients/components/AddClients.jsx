@@ -209,15 +209,23 @@ const instructorOptions = [
               />
             </Row>
 
-            <Row label="Email:">
-              <Input name="email" required value={form.email} onChange={onChange} />
+            <Row label="Email:" >
+              <Input
+  type="email"
+  name="email"
+  required
+  value={form.email}
+  onChange={onChange}
+/>
             </Row>
 
             <Row label="Another Email:">
               <Input
+              type="email"
                 name="anotherEmail"
                 value={form.anotherEmail}
                 onChange={onChange}
+
               />
             </Row>
 

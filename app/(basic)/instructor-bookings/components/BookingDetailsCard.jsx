@@ -776,8 +776,9 @@ const [emailInvoice, setEmailInvoice] = useState(true);
 
   const cashNum = Number(enteredCash || 0);
   const cardNum = Number(enteredCard || 0);
+  const [processingFee, setProcessingFee] = useState(0);
+  const [totalCardCharge, setTotalCardCharge] = useState(0);
   const enteredTotal = cashNum + cardNum;
-
 const outstandingAfter = Math.max(0, outstanding - enteredTotal);
   const showCardSection = cardNum > 0;
 
@@ -789,35 +790,42 @@ const outstandingAfter = Math.max(0, outstanding - enteredTotal);
     try {
       let paymentIntentId = null;
 
-      // ✅ Card payment ONLY for cardNum
-      if (cardNum > 0) {
-        if (!stripe || !elements) throw new Error("Stripe not ready");
+      
+      let processingFeeLocal = 0;
+let totalCardChargeLocal = 0;
 
-        const cardElement = elements.getElement(CardNumberElement);
-        if (!cardElement) throw new Error("Card input not ready");
+if (cardNum > 0) {
+  if (!stripe || !elements) throw new Error("Stripe not ready");
 
-        const { data } = await axios.post("/api/create-payment-intent", {
-          bookingId,
-          type:"booking-existing",
-          amount: cardNum, 
-        });
+  const cardElement = elements.getElement(CardNumberElement);
+  if (!cardElement) throw new Error("Card input not ready");
 
-        const result = await stripe.confirmCardPayment(data.clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name:
-                booking?.userName ||
-                booking?.clientName ||
-                `${client?.firstName || ""} ${client?.lastName || ""}`.trim(),
-              email: booking?.userEmail || client?.email || "",
-            },
-          },
-        });
+  // ✅ CALL API AGAIN (REQUIRED)
+  const { data } = await axios.post("/api/create-payment-intent", {
+    bookingId,
+    type: "booking-existing",
+    amount: Number(cardNum),
+  });
 
-        if (result.error) throw new Error(result.error.message);
-        paymentIntentId = result.paymentIntent?.id || null;
-      }
+  processingFeeLocal = data.processingFee || 0;
+  totalCardChargeLocal = data.totalAmount || cardNum;
+
+  const result = await stripe.confirmCardPayment(data.clientSecret, {
+    payment_method: {
+      card: cardElement,
+      billing_details: {
+        name:
+          booking?.userName ||
+          booking?.clientName ||
+          `${client?.firstName || ""} ${client?.lastName || ""}`.trim(),
+        email: booking?.userEmail || client?.email || "",
+      },
+    },
+  });
+
+  if (result.error) throw new Error(result.error.message);
+  paymentIntentId = result.paymentIntent?.id || null;
+}
 
       // ✅ compute new totals (accumulate)
       const newCashAmount = Number(booking?.cashAmount || 0) + cashNum;
@@ -838,6 +846,7 @@ const outstandingAfter = Math.max(0, outstanding - enteredTotal);
   paymentStatus,
   paymentMethod: method,
   paymentIntentId,
+  processingFee,
   cashAmount: newCashAmount,
   cardAmount: newCardAmount,
   paidAmount: newPaidAmount,
@@ -892,7 +901,29 @@ if (emailInvoice) {
 
             <p className="col-span-4 text-lg font-bold">Credit:</p>
             <input
-              value={enteredCard} onChange={(e)=>setEnteredCard(e.target.value)}
+              value={enteredCard} onChange={async (e) => {
+  const value = e.target.value;
+  setEnteredCard(value);
+
+  if (!value || Number(value) <= 0) {
+    setProcessingFee(0);
+    setTotalCardCharge(0);
+    return;
+  }
+
+  try {
+    const { data } = await axios.post("/api/create-payment-intent", {
+      bookingId,
+      type: "booking-existing",
+      amount: Number(value),
+    });
+
+    setProcessingFee(data.processingFee || 0);
+    setTotalCardCharge(data.totalAmount || value);
+  } catch (err) {
+    console.error(err);
+  }
+}}
               className="col-span-8 border border-gray-300 rounded-md px-3 py-2 text-right"
               placeholder="0.00"
             />
@@ -953,11 +984,11 @@ if (emailInvoice) {
 
                 <div className="mt-4 flex justify-between text-sm">
                   <span>Processing Fee:</span>
-                  <span>$0.00</span>
+                  <span>{formatMoney(processingFee)}</span>
                 </div>
                 <div className="mt-1 flex justify-between text-sm">
                   <span>Total Card Charge:</span>
-                  <span>{formatMoney(cardNum)}</span>
+                  <span>{formatMoney(totalCardCharge)}</span>
                 </div>
               </div>
             </div>

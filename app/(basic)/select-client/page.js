@@ -33,13 +33,14 @@ export default function SelectClientForBooking() {
     phone: false,
     email: false,
   });
-
-  const requiredErrors = {
-    firstName: !form.firstName.trim(),
-    lastName: !form.lastName.trim(),
-    phone: !form.phone.trim(),
-    email: !form.email.trim(),
-  };
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const requiredErrors = {
+  firstName: !form.firstName.trim(),
+  lastName: !form.lastName.trim(),
+  phone: !form.phone.trim(),
+  email:
+    !form.email.trim() || !emailRegex.test(form.email),
+};
 
   const showErr = (name) => touched[name] && requiredErrors[name];
 
@@ -159,7 +160,12 @@ export default function SelectClientForBooking() {
     setTouched({firstName: true, lastName: true, phone: true, email: true});
 
     const hasError = Object.values(requiredErrors).some(Boolean);
-    if (hasError) return;
+  if (hasError) {
+  if (form.email && !emailRegex.test(form.email)) {
+    toast.error("Please enter a valid email");
+  }
+  return;
+}
 
     const payload = {
       firstName: form.firstName,
@@ -224,11 +230,13 @@ export default function SelectClientForBooking() {
             <Field
               label="Email:"
               name="email"
+              
               value={form.email}
               onChange={onChange}
               required
               error={showErr("email")}
               onBlur={() => setTouched((p) => ({...p, email: true}))}
+              form={form}
             />
 
             <Field
@@ -293,7 +301,7 @@ export default function SelectClientForBooking() {
   );
 }
 
-function Field({label, name, value, onChange, required, error, onBlur}) {
+function Field({label, name, value, onChange, required, error, onBlur, form}) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-12 items-center gap-1 md:gap-3">
       <label className="sm:col-span-3 text-xs md:text-sm font-medium text-gray-900">
@@ -313,7 +321,11 @@ function Field({label, name, value, onChange, required, error, onBlur}) {
       </div>
 
       <div className="sm:col-span-2 text-sm text-red-600 font-semibold">
-        {required && error ? "Required" : ""}
+        {required && error
+          ? name === "email" && form?.email
+            ? "Invalid email"
+            : "Required"
+          : ""}
       </div>
     </div>
   );
