@@ -1477,7 +1477,7 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
                                           onClick={() => {
                                             if (!moveMode) {
                                               router.push(
-                                                `/dashboard/admin/manage-instructors-slots/${b._id}`,
+                                                `/instructor-bookings/${b._id}`,
                                               );
                                               return;
                                             }
