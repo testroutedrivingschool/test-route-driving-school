@@ -118,7 +118,18 @@ export default function Blog14() {
       />
 
       <Container>
-        {/* ARTICLE + SIDEBAR */}
+           <section className="mt-8 md:mt-12">
+                  <figure className="overflow-hidden rounded-2xl bg-white shadow-sm">
+                    <Image
+                      src={"/images/blog/blog14.png"}
+                      alt="Professional Driving Lessons"
+                      className="w-full object-cover"
+                      width={1200}
+                      height={800}
+                      priority
+                    />
+                  </figure>
+                </section>
         <section className="mt-10 mb-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* ARTICLE */}
