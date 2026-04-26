@@ -6,9 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {FaEnvelope, FaHandPointer} from "react-icons/fa";
 import {IoCallSharp} from "react-icons/io5";
-import blog17Img from "@/app/assets/blog/blog17.png";
-import blog17InfographicImg1 from "@/app/assets/blog/infographics/blog17-the-road.png";
-import blog17InfographicImg2 from "@/app/assets/blog/infographics/blog17-driving.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
 
@@ -134,7 +131,7 @@ export default function BlogDetails17() {
         {/* IMAGE */}
         <section className="mt-8 md:mt-12">
           <Image
-            src={blog17Img}
+            src={"/images/blog/blog17.png"}
             alt="Average Driving Lessons"
             width={1200}
             height={800}
@@ -220,7 +217,7 @@ export default function BlogDetails17() {
                       Factors That Influence Your Total Lesson Count
                     </h2>
                     <Image
-                      src={blog17InfographicImg1}
+                      src={"/images/blog/infographics/blog17-the-road.png"}
                       alt=" Factors That Influence Your Total Lesson Count"
                       width={1200}
                       height={800}
@@ -258,6 +255,13 @@ export default function BlogDetails17() {
                     <h2 className="text-2xl font-bold">
                       How Many Driving Hours Before the Test Are Enough?
                     </h2>
+                     <Image
+                      src={"/images/blog/infographics/blog17-driving.png"}
+                      alt=" Factors That Influence Your Total Lesson Count"
+                      width={1200}
+                      height={800}
+                      className="w-full object-cover rounded-xl my-4"
+                    />
                     <p className="mt-3 text-sm md:text-base leading-7">
                       Knowing{" "}
                       <strong>how many driving hours before the test</strong>{" "}
@@ -381,7 +385,7 @@ export default function BlogDetails17() {
                     </h2>
 
                     <Image
-                      src={blog17InfographicImg1}
+                      src={"/images/blog/infographics/blog17-the-road.png"}
                       alt="Why Beginners Thrive in Automatic Vehicles Infographic"
                       width={1200}
                       height={800}

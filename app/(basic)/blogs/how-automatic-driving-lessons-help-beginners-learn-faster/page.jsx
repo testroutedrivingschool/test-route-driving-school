@@ -6,9 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {FaEnvelope, FaHandPointer} from "react-icons/fa";
 import {IoCallSharp} from "react-icons/io5";
-import blog16Img from "@/app/assets/blog/blog16.png";
-import blog16InfographicImg1 from "@/app/assets/blog/infographics/blog16-proactive-habits.png";
-import blog16InfographicImg2 from "@/app/assets/blog/infographics/blog16-why-beginners.png";
 
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
@@ -120,7 +117,7 @@ export default function BlogDetails16() {
         {/* IMAGE */}
         <section className="mt-8 md:mt-12">
           <Image
-            src={blog16Img}
+              src={"/images/blog/blog16.png"}
             alt="Automatic Driving Lessons"
             width={1200}
             height={800}
@@ -211,7 +208,7 @@ export default function BlogDetails16() {
                     </h2>
 
                     <Image
-                      src={blog16InfographicImg2}
+                      src={"/images/blog/infographics/blog16-why-beginners.png"}
                       alt="Why Beginners Thrive in Automatic Vehicles Infographic"
                       width={1200}
                       height={800}
@@ -373,7 +370,7 @@ export default function BlogDetails16() {
                     </h2>
 
                     <Image
-                      src={blog16InfographicImg1}
+                      src={"/images/blog/infographics/blog16-why-beginners.png"}
                       alt="Proactive Habits for Learner Driver Success Infographic"
                       width={1200}
                       height={800}

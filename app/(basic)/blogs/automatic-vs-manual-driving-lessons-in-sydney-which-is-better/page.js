@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {FaCheckCircle, FaEnvelope, FaHandPointer} from "react-icons/fa";
 import {IoCallSharp} from "react-icons/io5";
-import blog7Img from "@/app/assets/blog/blog7.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
 
@@ -108,7 +107,7 @@ export default function Blog7() {
         <section className="mt-8 md:mt-12">
           <figure className="overflow-hidden rounded-2xl bg-white shadow-sm">
             <Image
-              src={blog7Img}
+              src={"/images/blog/blog7.png"}
               alt="Automatic vs Manual Driving Lessons in Sydney – Test Route Driving School"
               className="w-full object-cover"
               width={1200}

@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {FaEnvelope, FaHandPointer} from "react-icons/fa";
 import {IoCallSharp} from "react-icons/io5";
-import blog4Img from "@/app/assets/blog/blog4.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
 
@@ -114,7 +113,7 @@ export default function Blog4() {
         <section className="mt-8 md:mt-12">
           <figure className="overflow-hidden rounded-2xl bg-white shadow-sm">
             <Image
-              src={blog4Img}
+              src={"/images/blog/blog4.png"}
               alt="Why Practicing Local Test Routes Improves Pass Rates Test Route Driving School"
               className="w-full object-cover"
               width={1200}

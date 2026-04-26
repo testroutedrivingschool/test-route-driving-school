@@ -1,6 +1,5 @@
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import React from "react";
-import blogImg16 from "@/app/assets/car-hire.jpg";
 import Image from "next/image";
 import Container from "@/app/shared/ui/Container";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
@@ -49,7 +48,7 @@ export default function Blog16() {
             {/* Blog Image */}
             <div className="relative w-full h-80 md:h-[700px]">
               <Image
-                src={blogImg16}
+                src={"/images/blog/car-hire.jpg"}
                 alt={"5 Essential Driving Tips for Beginners"}
                 fill
                 className="object-cover w-full h-full object-center"

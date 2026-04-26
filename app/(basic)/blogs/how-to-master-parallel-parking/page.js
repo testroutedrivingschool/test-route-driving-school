@@ -1,7 +1,7 @@
 import PageHeroSection from "@/app/shared/ui/PageHeroSection";
 import React from "react";
 
-import blogImg17 from "@/app/assets/blog/blog17.jpg";
+
 import Image from "next/image";
 import Container from "@/app/shared/ui/Container";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
@@ -49,7 +49,7 @@ export default function Blog17() {
             {/* Blog Image */}
             <div className="relative w-full h-80 md:h-[500px]">
               <Image
-                src={blogImg17}
+                src={"/images/blog/blog17.jpg"}
                 alt={"How to Master Parallel Parking"}
                 fill
                 className="object-cover w-full h-full object-center"

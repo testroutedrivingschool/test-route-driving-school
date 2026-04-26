@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {FaEnvelope, FaHandPointer} from "react-icons/fa";
 import {IoCallSharp} from "react-icons/io5";
-import blog15Img from "@/app/assets/blog/blog15.png"; // Add your Blog15 image
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
 
@@ -117,7 +116,7 @@ export default function Blog15() {
         <section className="mt-8 md:mt-12">
           <figure className="overflow-hidden rounded-2xl bg-white shadow-sm">
             <Image
-              src={blog15Img}
+              src={"/images/blog/blog15.png"}
               alt="Sydney Traffic Patterns for Learner Drivers"
               className="w-full object-cover"
               width={1200}

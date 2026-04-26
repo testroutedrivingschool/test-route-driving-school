@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {FaEnvelope, FaHandPointer} from "react-icons/fa";
 import {IoCallSharp} from "react-icons/io5";
-import blog2Img from "@/app/assets/blog/blog2.png";
 import BlogToc from "@/app/shared/shared/blog/BlogToc";
 import FaqSection from "@/app/shared/FaqSection";
 
@@ -113,7 +112,7 @@ export default function Blog2() {
         <section className="mt-8 md:mt-12">
           <figure className="overflow-hidden rounded-2xl bg-white shadow-sm">
             <Image
-              src={blog2Img}
+              src={"/images/blog/blog2.png"}
               alt="Most Common Driving Test Mistakes Learners Make Test Route Driving School"
               className="w-full object-cover"
               width={1200}
