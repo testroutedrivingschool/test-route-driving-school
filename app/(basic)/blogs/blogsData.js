@@ -209,5 +209,140 @@ export  const blogsData = [
     image: "/images/blog/blog20.png",
     link: "#",
   },
+  {
+    id:21,
+    title: "What's Included in a Driving Test Package in Roselands?",
+    slug: "blogs/whats-included-in-a-driving-test-package-in-roselands",
+    excerpt:
+      "A driving test package in Roselands gives you everything you need to pass your driving test in one structured plan. It includes a car, instructor guidance, and real test route practice. You focus on test-specific skills instead of general driving. This approach reduces mistakes and builds confidence quickly. It is one of the fastest ways to become fully test-ready.",
+    image: "/images/blog/blog21.png",
+    link: "#",
+  },
+  {
+    id:22,
+    title: "Automatic Driving Lessons Roselands: Complete Beginner Guide (2026)",
+    slug: "blogs/automatic-driving-lessons-roselands-complete-beginner-guide-2026",
+    excerpt:
+      "Learning to drive in Roselands is much easier when you choose an automatic vehicle to bypass the stress of manual gear changes. At Test Route Driving School, we focus on helping you master the specific Roselands driving test route through patient, expert-led coaching. Our structured lessons reduce your learning time by focusing on road safety and observation rather than mechanical complexity. Whether you are a nervous beginner or preparing for your final assessment, our dual-controlled fleet ensures a safe and confident experience. We provide the local expertise you need to secure your full licence with ease and efficiency.",
+    image: "/images/blog/blog22.png",
+    link: "#",
+  },
+  {
+    id:23,
+    title: "Best Driving Test Assessment Sandringham: Pass Your Test on First Attempt",
+    slug: "blogs/best-driving-test-assessment-sandringham-pass-your-test-on-first-attempt",
+    excerpt:
+      "Preparing for your driving test in Sandringham requires more than just basic vehicle control; it demands a deep understanding of local traffic flow and testing expectations. At Test Route Driving School, we provide a structured assessment that mirrors the actual exam environment to identify and fix your driving weaknesses. Best Driving Test Assessment Sandringham. By practicing on real test routes, you gain the technical skills and mental edge needed to pass your NSW driving test on the very first try. Our certified instructors focus on defensive driving habits that ensure you remain a safe driver long after you earn your P-plates. This professional guidance reduces exam anxiety and saves you time and money by avoiding repeated attempts.",
+    image: "/images/blog/blog23.png",
+    link: "#",
+  },
+  {
+    id:24,
+    title: "Best Dual Brake Car Hire in Sutherland for Driving Instructors",
+    slug: "blogs/best-dual-brake-car-hire-in-sutherland-for-driving-instructors",
+    excerpt:
+      "Our premium dual control vehicles offer a safe and stress-free solution for your next driving lesson or exam. We provide late-model cars that meet all NSW safety standards, ensuring you have total control from the passenger seat. Whether you are an independent instructor or a student needing a test-ready vehicle, our Dual Brake Car Hire in Sutherland services bridge the gap between preparation and passing. We focus on reliability and affordability to support the Sutherland Shire community. Experience the difference that a professional-grade training vehicle makes for your driving goals.",
+    image: "/images/blog/blog24.png",
+    link: "#",
+  },
+  {
+    id:25,
+    title: "Parking Driving Lesson Packages in Blakehurst: Prices, Instructors, Test Preparation & Complete Learner Guide",
+    slug: "blogs/parking-driving-lesson-packages-in-blakehurst-prices-instructors-test-preparation-complete-learner-guide",
+    excerpt:
+      "Mastering the art of parking is often the biggest hurdle for learners in Blakehurst. Our specialized lesson packages focus on high-intent skills like reverse parallel and angle parking to ensure you pass your NSW driving test. We combine dual-control safety with local road expertise to turn nervous beginners into precise, confident drivers. Whether you choose manual or automatic, our structured training builds the muscle memory needed for a lifetime of safe driving. Get started with the best local instructors today.",
+    image: "/images/blog/blog25.png",
+    link: "#",
+  },
+  {
+    id:26,
+    title: "Best Highway Driving Lessons in Botany: Advanced Skills, Safety Tips & Instructor-Led Training",
+    slug: "blogs/best-highway-driving-lessons-in-botany-advanced-skills-safety-tips-instructor-led-training",
+    excerpt:
+      "Transitioning from suburban streets to high-speed motorways is a major milestone for any learner. Our specialized training focuses on merging, lane positioning, and hazard perception at high speeds to ensure your safety. We provide a controlled environment with dual-control vehicles to help you overcome the fear of highway traffic. By learning from experienced professionals, you develop the reflexes needed for the M5 and other major Sydney roads. Master the highway today with our structured, instructor-led lessons.",
+    image: "/images/blog/blog26.png",
+    link: "#",
+  },
+  {
+    id:27,
+    title: "Best Night Driving Lessons in Brighton-Le-Sands: Expert Guidance for Safer Night Driving",
+    slug: "blogs/best-night-driving-lessons-in-brighton-le-sands-expert-guidance-for-safer-night-driving",
+    excerpt:
+      "Driving after sunset introduces unique challenges like reduced visibility and glare from oncoming headlights. Our specialized training helps you master these conditions in the safe, coastal environment of Brighton-Le-Sands. We focus on high-intent skills such as distance judgment, correct high-beam usage, and defensive scanning techniques. By training with professional instructors in dual-controlled vehicles, you transform from a hesitant night driver into a confident road user. Ensure your safety and complete your logbook hours with our expert-led sessions.",
+    image: "/images/blog/blog27.png",
+    link: "#",
+  },
+  {
+    id:28,
+    title: "City Driving Course in Caringbah: From Beginner to Confident Urban Driver",
+    slug: "blogs/city-driving-course-in-caringbah-from-beginner-to-confident-urban-driver",
+    excerpt:
+      "Navigating the bustling streets of the Sutherland Shire requires more than just basic car control. Our specialized training transforms you from a quiet-street beginner into a savvy urban navigator ready for any traffic scenario. We focus on high-intent skills like complex intersection management, lane filtering, and precise maneuvering in tight spaces. By training with professional mentors in dual-controlled vehicles, you eliminate the stress of city commuting. Gain the tactical road awareness you need to handle the busiest Sydney roads with total composure.",
+    image: "/images/blog/blog28.png",
+    link: "#",
+  },
+  {
+    id:29,
+    title: "Complete Driving Lessons Services in Caringbah South: From Learner to Licensed Driver",
+    slug: "blogs/complete-driving-lessons-services-in-caringbah-south-from-learner-to-licensed-driver",
+    excerpt:
+      "Finding the right path from a nervous beginner to a fully licensed driver requires a structured and supportive environment. Our professional training focuses on building essential car control skills, hazard perception, and road safety awareness in the quiet streets of Caringbah South. We offer flexible packages for both manual and automatic vehicles, ensuring you learn at a pace that suits your individual needs. By choosing expert-led instruction, you gain the technical precision and mental resilience needed to pass your NSW driving test. Start your journey with our certified team today and experience the freedom of the road.",
+    image: "/images/blog/blog29.png",
+    link: "#",
+  },
+  {
+    id:30,
+    title: "Best Driving Instructors in Carlton: Learn with Certified & Experienced Trainers",
+    slug: "blogs/best-driving-instructors-in-carlton-learn-with-certified-experienced-trainers",
+    excerpt:
+      "Finding professional driving instructors in Carlton is the first step toward gaining your road independence and safety. Our certified trainers specialize in building confidence through patient, structured lessons tailored to your specific skill level and learning speed. We utilize modern, dual-controlled vehicles to provide a stress-free environment where you can master vehicle control and complex traffic management. By focusing on local test routes and defensive driving techniques, we ensure you are fully prepared for the NSW driving exam. Join our community of successful drivers and start your journey toward a lifetime of safe driving today.",
+    image: "/images/blog/blog30.png",
+    link: "#",
+  },
+  {
+    id:31,
+    title: "Driving Lessons Packages in Cronulla: Prices, Courses & Learner Training Explained",
+    slug: "blogs/driving-lessons-packages-in-cronulla-prices-courses-learner-training-explained",
+    excerpt:
+      "Finding the right driving lessons packages in Cronulla is the most efficient way to transition from a learner to a fully licensed driver. We offer a variety of structured courses that focus on car control, hazard awareness, and local test route familiarity. Our professional instructors use dual-controlled vehicles to ensure your safety while you build the confidence needed for Sydney’s coastal roads. Whether you prefer automatic or manual training, our packages provide the repetition and expert feedback required for success. Start your journey today with a training plan designed to help you pass the NSW driving test on your first attempt.",
+    image: "/images/blog/blog31.png",
+    link: "#",
+  },
+  {
+    id:32,
+    title: "Learn to Drive in Dolls Point: Beginner to Advanced Lessons with Expert Instructors",
+    slug: "blogs/learn-to-drive-in-dolls-point-beginner-to-advanced-lessons-with-expert-instructors",
+    excerpt:
+      "Starting your driving journey in the scenic area of Dolls Point requires a mix of technical skill and local road awareness. Our expert-led training focuses on building foundational car control, mastering smooth transitions, and understanding complex traffic flow. We provide a safe environment with modern dual-controlled vehicles so you can learn without stress or fear. Whether you prefer automatic or manual training, our structured lessons prepare you for real-world scenarios and the NSW driving test. Join our community of successful, licensed drivers and gain the independence you deserve today.",
+    image: "/images/blog/blog32.png",
+    link: "#",
+  },
+  {
+    id:33,
+    title: "Eastgardens Driving School Guide: Packages, Road Practice & Test Success",
+    slug: "blogs/eastgardens-driving-school-guide-packages-road-practice-test-success",
+    excerpt:
+      "Finding a reliable Eastgardens driving school is the first step toward securing your independence on Sydney's busy roads. We provide a structured learning environment that focuses on technical car control, defensive driving, and deep familiarity with local test routes. Our certified instructors use modern, dual-controlled vehicles to ensure your safety while you build the confidence needed for high-traffic scenarios. Whether you need manual or automatic training, our personalized lesson packages are designed to help you pass the NSW driving test on your very first try. Join our community of successful drivers and start your journey toward a lifetime of safe road usage today.",
+    image: "/images/blog/blog33.png",
+    link: "#",
+  },
+  {
+    id:34,
+    title: "Driving Test Preparation in Engadine: Tips, Mock Tests & Pass Faster Strategy",
+    slug: "blogs/driving-test-preparation-in-engadine-tips-mock-tests-pass-faster-strategy",
+    excerpt:
+      "Securing your driver's license at the Engadine Service NSW center requires a deep understanding of the local hilly terrain and numerous roundabouts. Our professional preparation strategy focuses on eliminating common mistakes through rigorous mock testing and real-world route practice. We guide you through the 13 specific roundabouts often found on test routes, ensuring your signaling and lane positioning are flawless. By training with our expert instructors, you master the high-speed merges of the Princes Highway and the steep hill starts of Yarrawarra. Start your journey with a proven pass strategy today and gain the confidence to succeed on your first attempt.",
+    image: "/images/blog/blog34.png",
+    link: "#",
+  },
+  {
+    id:35,
+    title: "Defensive Driving Lessons in Eastlakes: Stay Safe in Busy Traffic Conditions",
+    slug: "blogs/defensive-driving-lessons-in-eastlakes-stay-safe-in-busy-traffic-conditions",
+    excerpt:
+      "Navigating the dense traffic of Eastlakes requires advanced awareness and proactive vehicle control to avoid potential collisions. Our specialized defensive training focuses on scanning techniques, maintaining safe buffer zones, and predicting the unpredictable moves of other drivers. We provide a calm environment with dual-controlled cars to help you master hazard perception in high-pressure urban settings. By learning from seasoned professionals, you develop the reflexes needed for safe city commuting and long-term accident prevention. Join our safety-first program today and gain the skills to protect yourself and your passengers on every journey.",
+    image: "/images/blog/blog35.png",
+    link: "#",
+  },
  
 ];
