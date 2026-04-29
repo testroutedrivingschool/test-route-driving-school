@@ -467,6 +467,8 @@ const handleConfirmPaid = async () => {
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Instructor</th>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Month</th>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Total Revenue</th>
+                <th className="py-3 px-6 text-left text-xs font-medium uppercase">Cash</th>
+                <th className="py-3 px-6 text-left text-xs font-medium uppercase">Card</th>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Instructor Payout</th>
                
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Status</th>
@@ -511,6 +513,12 @@ const handleConfirmPaid = async () => {
 
                       <td className="py-4 px-6 font-medium">
                         {formatCurrency(row.totalRevenue)}
+                      </td>
+                      <td className="py-4 px-6 font-medium">
+                        {formatCurrency(row.cashTotal)}
+                      </td>
+                      <td className="py-4 px-6 font-medium">
+                        {formatCurrency(row.cardTotal)}
                       </td>
 
                       <td className="py-4 px-6 font-medium text-green-700">
@@ -612,6 +620,16 @@ const handleConfirmPaid = async () => {
                     <div className="text-gray-500 text-xs">Total Revenue</div>
                     <div className="font-semibold">{formatCurrency(row.totalRevenue)}</div>
                   </div>
+
+                  <div className="rounded-lg bg-gray-50 p-3">
+  <div className="text-gray-500 text-xs">Cash</div>
+  <div className="font-semibold">{formatCurrency(row.cashTotal)}</div>
+</div>
+
+<div className="rounded-lg bg-gray-50 p-3">
+  <div className="text-gray-500 text-xs">Card</div>
+  <div className="font-semibold">{formatCurrency(row.cardTotal)}</div>
+</div>
                   <div className="rounded-lg bg-green-50 p-3">
                     <div className="text-green-700 text-xs">Instructor Payout</div>
                     <div className="font-semibold text-green-700">

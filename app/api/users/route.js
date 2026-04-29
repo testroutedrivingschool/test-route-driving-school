@@ -132,19 +132,38 @@ export async function PATCH(req) {
   }
 }
 
+
 export async function DELETE(req) {
   try {
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
-    if (!email)
-      return NextResponse.json({error: "Email required"}, {status: 400});
 
-    // Delete from MongoDB
-    const result = await (await usersCollection()).deleteOne({email});
-    if (result.deletedCount === 0)
-      return NextResponse.json({error: "User not found"}, {status: 404});
+    if (!email) {
+      return NextResponse.json({ error: "Email required" }, { status: 400 });
+    }
 
-    // Delete from Firebase Auth
+    const usersCol = await usersCollection();
+
+    // 🔥 STEP 1: find user first (IMPORTANT)
+    const user = await usersCol.findOne({ email });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // 🔥 STEP 2: delete linked client (if exists)
+    if (user.clientId && ObjectId.isValid(user.clientId)) {
+      const clientsCol = await clientsCollection();
+
+      await clientsCol.deleteOne({
+        _id: new ObjectId(user.clientId),
+      });
+    }
+
+    // 🔥 STEP 3: delete user from DB
+    await usersCol.deleteOne({ email });
+
+    // 🔥 STEP 4: delete from Firebase
     try {
       const userRecord = await admin.auth().getUserByEmail(email);
       await admin.auth().deleteUser(userRecord.uid);
@@ -152,9 +171,38 @@ export async function DELETE(req) {
       console.warn("User not found in Firebase, skipping deletion");
     }
 
-    return NextResponse.json({message: "User deleted from DB and Firebase"});
+    return NextResponse.json({
+      message: "User + client deleted successfully",
+    });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({error: "Something went wrong"}, {status: 500});
+    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
   }
 }
+
+// export async function DELETE(req) {
+//   try {
+//     const url = new URL(req.url);
+//     const email = url.searchParams.get("email");
+//     if (!email)
+//       return NextResponse.json({error: "Email required"}, {status: 400});
+
+//     // Delete from MongoDB
+//     const result = await (await usersCollection()).deleteOne({email});
+//     if (result.deletedCount === 0)
+//       return NextResponse.json({error: "User not found"}, {status: 404});
+
+//     // Delete from Firebase Auth
+//     try {
+//       const userRecord = await admin.auth().getUserByEmail(email);
+//       await admin.auth().deleteUser(userRecord.uid);
+//     } catch (err) {
+//       console.warn("User not found in Firebase, skipping deletion");
+//     }
+
+//     return NextResponse.json({message: "User deleted from DB and Firebase"});
+//   } catch (err) {
+//     console.error(err);
+//     return NextResponse.json({error: "Something went wrong"}, {status: 500});
+//   }
+// }

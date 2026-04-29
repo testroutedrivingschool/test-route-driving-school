@@ -142,6 +142,14 @@ export default function Blog34() {
                     <h3 className="mt-2 text-lg font-bold">
                       The Most Effective Strategies for a Faster Pass
                     </h3>
+
+                        <Image
+                                          src={"/images/blog/infographics/blog-34-infographic.png"}
+                                          alt="The Most Effective Strategies for a Faster Pass"
+                                          width={1200}
+                                          height={800}
+                                          className="w-full object-cover rounded-xl my-4"
+                                        />
                     <ul className="list-disc pl-6 mt-3">
                       <li>Mock Driving Test Engadine: We conduct full-scale practice exams that mimic the actual test environment, including the silence and specific scoring methods used by Service NSW.</li>
                       <li>Test Routes Practice Engadine: We don't guess; we practice on the real routes used by examiners, focusing on the tricky sections like the Stephen Road roundabout.</li>

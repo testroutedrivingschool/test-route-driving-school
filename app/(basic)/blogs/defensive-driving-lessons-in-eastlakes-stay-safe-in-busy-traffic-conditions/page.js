@@ -185,20 +185,20 @@ export default function Blog35() {
                     <h2 className="text-2xl font-bold">
                       A Structured Roadmap to Defensive Mastery
                     </h2>
-                    <table className="mt-4 w-full text-sm border rounded-lg">
+                    <table className="mt-4 w-full text-sm border border-border-color rounded-lg">
                       <thead className="bg-base-200">
                         <tr>
-                          <th className="p-3">Phase</th>
-                          <th className="p-3">Focus</th>
-                          <th className="p-3">Execution</th>
+                          <th className="p-3 border-b">Phase</th>
+                          <th className="p-3 border-b">Focus</th>
+                          <th className="p-3 border-b">Execution</th>
                         </tr>
                       </thead>
                       <tbody>
-                        <tr><td className="p-3">Observation</td><td className="p-3">Scanning</td><td className="p-3">Eye movement training</td></tr>
-                        <tr><td className="p-3">Space</td><td className="p-3">Buffer Zones</td><td className="p-3">3-sec gap</td></tr>
-                        <tr><td className="p-3">Prediction</td><td className="p-3">Hazard Detection</td><td className="p-3">Spot hidden risks</td></tr>
-                        <tr><td className="p-3">Action</td><td className="p-3">Smooth Control</td><td className="p-3">Brake & steer</td></tr>
-                        <tr><td className="p-3">Strategy</td><td className="p-3">Risk Assessment</td><td className="p-3">Long-term planning</td></tr>
+                        <tr><td className="p-3 border-b">Observation</td><td className="p-3 border-b">Scanning</td><td className="p-3 border-b">Eye movement training</td></tr>
+                        <tr><td className="p-3 border-b">Space</td><td className="p-3 border-b">Buffer Zones</td><td className="p-3 border-b">3-sec gap</td></tr>
+                        <tr><td className="p-3 border-b">Prediction</td><td className="p-3 border-b">Hazard Detection</td><td className="p-3 border-b">Spot hidden risks</td></tr>
+                        <tr><td className="p-3 border-b">Action</td><td className="p-3 border-b">Smooth Control</td><td className="p-3 border-b">Brake & steer</td></tr>
+                        <tr><td className="p-3 border-b">Strategy</td><td className="p-3 border-b">Risk Assessment</td><td className="p-3 border-b">Long-term planning</td></tr>
                       </tbody>
                     </table>
                   </section>

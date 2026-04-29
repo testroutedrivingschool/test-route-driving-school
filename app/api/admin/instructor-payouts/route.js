@@ -4,13 +4,13 @@ import {
   payoutsCollection,
   bookingsCollection,
 } from "@/app/libs/mongodb/db";
-import { NextResponse } from "next/server";
+import {NextResponse} from "next/server";
 
 function getMonthRange(monthKey) {
   const [year, month] = monthKey.split("-").map(Number);
   const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
   const end = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
-  return { start, end };
+  return {start, end};
 }
 
 function formatMonthLabel(monthKey) {
@@ -32,40 +32,46 @@ function isEligibleBooking(booking) {
 
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
+    const {searchParams} = new URL(req.url);
     const month = searchParams.get("month");
     const search = (searchParams.get("search") || "").trim().toLowerCase();
 
     if (!month) {
       return NextResponse.json(
-        { error: "month is required. Example: 2026-04" },
-        { status: 400 }
+        {error: "month is required. Example: 2026-04"},
+        {status: 400},
       );
     }
 
-    const { start, end } = getMonthRange(month);
+    const {start, end} = getMonthRange(month);
 
     const [instructors, financials, payouts, allBookings] = await Promise.all([
-  (await instructorsCollection()).find({}).sort({ name: 1 }).toArray(),
-  (await instructorFinancialsCollection()).find({}).toArray(),
-  (await payoutsCollection()).find({ monthKey: month }).toArray(),
-  (await bookingsCollection()).find({}).toArray(),
-]);
-const bookings = allBookings.filter((booking) => {
-  if (!isEligibleBooking(booking)) return false;
+      (await instructorsCollection())
+        .find({status: "approved"})
+        .sort({name: 1})
+        .toArray(),
+      (await instructorFinancialsCollection()).find({}).toArray(),
+      (await payoutsCollection()).find({monthKey: month}).toArray(),
+      (await bookingsCollection()).find({}).toArray(),
+    ]);
+    const bookings = allBookings.filter((booking) => {
+      if (!isEligibleBooking(booking)) return false;
 
-  const bookingDate = new Date(booking.bookingDate);
-  if (Number.isNaN(bookingDate.getTime())) return false;
+      const bookingDate = new Date(booking.bookingDate);
+      if (Number.isNaN(bookingDate.getTime())) return false;
 
-  return bookingDate >= start && bookingDate < end;
-});
+      return bookingDate >= start && bookingDate < end;
+    });
 
     const financialMap = new Map(
-      financials.map((item) => [String(item.instructorId), item])
+      financials.map((item) => [String(item.instructorId), item]),
     );
 
     const payoutMap = new Map(
-      payouts.map((item) => [`${String(item.instructorId)}-${item.monthKey}`, item])
+      payouts.map((item) => [
+        `${String(item.instructorId)}-${item.monthKey}`,
+        item,
+      ]),
     );
 
     const bookingMap = new Map();
@@ -96,11 +102,27 @@ const bookings = allBookings.filter((booking) => {
         let instructorPayout = 0;
         let companyCut = 0;
 
+        let cashTotal = 0;
+        let cardTotal = 0;
+        let processingFees = 0;
+
         for (const booking of instructorBookings) {
-          const price = Number(booking.price || 0);
-          totalRevenue += price;
-          instructorPayout += price * 0.9;
-          companyCut += price * 0.1;
+          const paidAmount = Number(booking.paidAmount || booking.price || 0);
+          const cash = Number(booking.cashAmount || 0);
+          const card = Number(booking.cardAmount || 0);
+          const fee = Number(booking.processingFee || 0);
+
+          totalRevenue += paidAmount;
+
+          cashTotal += cash;
+          cardTotal += card;
+          processingFees += fee;
+
+          // Instructor gets 90% of actual paid (excluding fees if you want)
+          instructorPayout += (paidAmount - fee) * 0.9;
+
+          // Company earns 10% + fee
+          companyCut += (paidAmount - fee) * 0.1 + fee;
         }
 
         const payout = payoutMap.get(`${instructorId}-${month}`);
@@ -115,6 +137,10 @@ const bookings = allBookings.filter((booking) => {
           totalRevenue,
           instructorPayout,
           companyCut,
+
+          cashTotal,
+          cardTotal,
+          processingFees,
           hasBookings: instructorBookings.length > 0,
           isPaid: payout?.isPaid || false,
           paidAt: payout?.paidAt || null,
@@ -125,7 +151,7 @@ const bookings = allBookings.filter((booking) => {
           paymentProofUploadedAt: payout?.paymentProofUploadedAt || null,
           financial: financialMap.get(instructorId) || null,
           bookings: instructorBookings.sort(
-            (a, b) => new Date(b.bookingDate) - new Date(a.bookingDate)
+            (a, b) => new Date(b.bookingDate) - new Date(a.bookingDate),
           ),
         };
       });
@@ -151,7 +177,7 @@ const bookings = allBookings.filter((booking) => {
         paidCount: 0,
         unpaidCount: 0,
         noBookingCount: 0,
-      }
+      },
     );
 
     return NextResponse.json({
@@ -163,8 +189,8 @@ const bookings = allBookings.filter((booking) => {
   } catch (error) {
     console.error("GET /api/admin/instructor-payouts error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch instructor payouts" },
-      { status: 500 }
+      {error: "Failed to fetch instructor payouts"},
+      {status: 500},
     );
   }
 }

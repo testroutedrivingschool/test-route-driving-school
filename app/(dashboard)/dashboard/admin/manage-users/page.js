@@ -227,11 +227,22 @@ const handleRoleChange = async (email, currentRole, newRole) => {
                     <td className="py-4 px-6">
                       <div className="">
                         <PrimaryBtn
-                          className={`bg-red-500 text-sm py-2! px-2!`}
-                          onClick={() => handleDeleteUser(user)}
-                        >
-                          Remove User
-                        </PrimaryBtn>
+  className={`text-sm py-2! px-2! ${
+    user.role === "instructor"
+      ? "bg-gray-300! cursor-not-allowed!"
+      : "bg-red-500"
+  }`}
+  onClick={() => {
+    if (user.role === "instructor") {
+      toast.error("Instructor cannot be deleted");
+      return;
+    }
+    handleDeleteUser(user);
+  }}
+  disabled={user.role === "instructor"}
+>
+  Remove User
+</PrimaryBtn>
                       </div>
                     </td>
                   </tr>
@@ -284,11 +295,22 @@ const handleRoleChange = async (email, currentRole, newRole) => {
 
   {/* Remove button (top-right) */}
   <PrimaryBtn
-    className="bg-red-500 text-xs px-1! md:px-3! py-2! whitespace-nowrap"
-    onClick={() => handleDeleteUser(user)}
-  >
-    Remove user
-  </PrimaryBtn>
+  className={`text-xs px-1! md:px-3! py-2! ${
+    user.role === "instructor"
+      ? "bg-gray-300 cursor-not-allowed"
+      : "bg-red-500"
+  }`}
+  onClick={() => {
+    if (user.role === "instructor") {
+      toast.error("Instructor cannot be deleted");
+      return;
+    }
+    handleDeleteUser(user);
+  }}
+  disabled={user.role === "instructor"}
+>
+  Remove user
+</PrimaryBtn>
 </div>
 
      
