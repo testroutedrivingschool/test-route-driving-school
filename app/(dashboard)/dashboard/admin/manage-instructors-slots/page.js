@@ -430,7 +430,9 @@ const instructor = useMemo(
         to: weekTo,
       },
     });
-    return res.data || [];
+   return (res.data || []).filter(
+    (b) => String(b.status || "").toLowerCase() !== "cancelled"
+  );
   },
 });
 

@@ -423,11 +423,13 @@ export default function InstructorBookings() {
       });
 
       // ✅ only bookings of this instructor
-      return (res.data || []).filter(
-        (b) =>
-          (b.instructorEmail || "").toLowerCase() ===
-          (user.email || "").toLowerCase(),
-      );
+     return (res.data || [])
+  .filter(
+    (b) =>
+      (b.instructorEmail || "").toLowerCase() ===
+      (user.email || "").toLowerCase()
+  )
+  .filter((b) => b.status !== "cancelled");
     },
   });
 
