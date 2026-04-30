@@ -75,11 +75,20 @@ return NextResponse.redirect(loginUrl);
   }
 
   /* ================= ADMIN ================= */
-  if (role === "admin") {
-    if (!pathname.startsWith("/dashboard/admin")) {
-      return NextResponse.redirect(new URL("/unauthorized", req.url));
-    }
+ if (role === "admin") {
+  const allowedAdminPaths = [
+    "/dashboard/admin",
+    "/clients", 
+  ];
+
+  const allowed = allowedAdminPaths.some((p) =>
+    pathname.startsWith(p)
+  );
+
+  if (!allowed) {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
+}
 
   return NextResponse.next();
 }

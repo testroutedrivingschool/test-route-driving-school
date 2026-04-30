@@ -13,7 +13,7 @@ import {
 } from "react-icons/fi";
 import {GoMegaphone, GoPackage} from "react-icons/go";
 import {FaBarsProgress, FaGear} from "react-icons/fa6";
-import { MdOutlinePayment } from "react-icons/md";
+import { MdEditCalendar, MdOutlinePayment } from "react-icons/md";
 import { GrSchedule } from "react-icons/gr";
 /* ================= USER ================= */
 export const userSidebarLinks = [
@@ -72,6 +72,12 @@ export const adminSidebarLinks = [
     label: "Purchases",
     icon: <FiCreditCard />,
     path: "/dashboard/admin/purchases",
+  },
+   {
+    id: 13,
+    label: "All Bookings",
+    icon: <MdEditCalendar />,
+    path: "/dashboard/admin/all-bookings",
   },
   {
     id: 4,
