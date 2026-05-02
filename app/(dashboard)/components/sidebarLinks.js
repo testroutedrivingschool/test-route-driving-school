@@ -156,12 +156,12 @@ export const instructorSidebarLinks = [
     icon: <FiCalendar />,
     path: "/dashboard/instructor/bookings",
   },
-  {
-    id: 11,
-    label: "Purchases",
-    icon: <FiCreditCard />,
-    path: "/dashboard/instructor/purchases",
-  },
+  // {
+  //   id: 11,
+  //   label: "Purchases",
+  //   icon: <FiCreditCard />,
+  //   path: "/dashboard/instructor/purchases",
+  // },
   {
     id: 4,
     label: "Messages",

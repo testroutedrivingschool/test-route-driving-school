@@ -17,6 +17,8 @@ export async function GET(req) {
     const licence = searchParams.get("licence") || "";
     const clientId = searchParams.get("clientId") || "";
     const activeOnly = searchParams.get("activeOnly") === "true";
+
+    const exactEmail = searchParams.get("exactEmail") === "true";
     const q = (searchParams.get("q") || "").trim();
     const hasSearch =
   !!firstName.trim() ||
@@ -50,7 +52,27 @@ if (activeOnly && !hasSearch) {
     if (firstName.trim()) and.push({firstName: rx(firstName)});
     if (lastName.trim()) and.push({lastName: rx(lastName)});
     if (mobile.trim()) and.push({mobile: rx(mobile)});
-    if (email.trim()) and.push({email: rx(email)});
+    if (email.trim()) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (exactEmail) {
+    and.push({
+      $or: [
+        {email: normalizedEmail},
+        {linkedUserEmail: normalizedEmail},
+      ],
+    });
+  } else {
+    const emailRegex = rx(email);
+
+    and.push({
+      $or: [
+        {email: emailRegex},
+        {linkedUserEmail: emailRegex},
+      ],
+    });
+  }
+}
     if (address.trim()) and.push({address: rx(address)});
     if (clientNote.trim()) and.push({clientNote: rx(clientNote)});
     if (licence.trim()) and.push({licence: rx(licence)});

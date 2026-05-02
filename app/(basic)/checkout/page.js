@@ -150,7 +150,7 @@ function CheckoutPage() {
     mobile: "",
     address: "",
     suburb: "",
-    state: "",
+    state: "NSW",
     postCode: "",
     instructorId: "",
   });
@@ -163,7 +163,7 @@ function CheckoutPage() {
         mobile: user.phone || "",
         address: user.address || "",
         suburb: user.suburb || "",
-        state: user.state || "",
+        state: user.state || "NSW",
         postCode: user.postCode || "",
       });
     }
@@ -269,7 +269,7 @@ const { data } = await axios.post("/api/create-payment-intent", {
     await axios.post("/api/purchases", {
       userId: user?._id || "",
       userEmail: user?.email || billing.email,
-
+clientId:user?.clientId || "",
       items,
       discountAmount: serverDiscountAmount,
       amount: serverAmount,  // Use the discounted amount here
@@ -377,7 +377,7 @@ const { data } = await axios.post("/api/create-payment-intent", {
       className="input-class w-full"
     >
       <option value="">Choose State</option>
-      <option value="NSW">New South Wales</option>
+      <option  value="NSW">New South Wales</option>
     </select>
   </FormRow>
 
@@ -392,21 +392,7 @@ const { data } = await axios.post("/api/create-payment-intent", {
     />
   </FormRow>
 
-  {/* <FormRow label="Instructor:">
-    <select
-      name="instructorId"
-      value={billing.instructorId}
-      onChange={handleBillingChange}
-      className="input-class w-full"
-    >
-      <option value="">Choose Instructor</option>
-      {instructors.map((inst) => (
-        <option key={inst._id} value={inst._id}>
-          {inst.name}
-        </option>
-      ))}
-    </select>
-  </FormRow> */}
+
 
   <FormRow label="Coupon:">
     <div>

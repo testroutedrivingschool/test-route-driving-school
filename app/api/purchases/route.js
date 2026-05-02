@@ -15,6 +15,7 @@ import {
   emailsCollection,
   packagesCollection,
   jobsCollection,
+  clientsCollection,
 } from "@/app/libs/mongodb/db";
 import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
 
@@ -302,44 +303,158 @@ export async function PATCH(req) {
       return NextResponse.json({error: "id required"}, {status: 400});
     }
 
-    const body = await req.json();
-    const {status} = body || {};
-
-    const allowed = ["pending", "confirmed", "completed"];
-    if (!allowed.includes(status)) {
-      return NextResponse.json({error: "Invalid status"}, {status: 400});
-    }
-
-    const col = await purchasesCollection();
     if (!ObjectId.isValid(id)) {
       return NextResponse.json({error: "Invalid purchase id"}, {status: 400});
     }
 
+    const body = await req.json();
+
+    const {
+      status,
+      instructorId,
+      instructorName,
+      instructorEmail,
+    } = body || {};
+
+    const allowedStatuses = ["pending", "confirmed", "cancelled"];
+
+    const purchaseCol = await purchasesCollection();
+    const clientCol = await clientsCollection();
+
     const purchaseId = new ObjectId(id);
 
-    const purchase = await col.findOne({_id: purchaseId});
+    const purchase = await purchaseCol.findOne({_id: purchaseId});
+
     if (!purchase) {
       return NextResponse.json({error: "Purchase not found"}, {status: 404});
     }
 
-    // simple rule: pending -> confirmed
-    if (purchase.status !== "pending" && status === "confirmed") {
+    const currentStatus = String(purchase.status || "pending").toLowerCase();
+
+    // Do not allow instructor changes after cancellation
+    if (
+      currentStatus === "cancelled" &&
+      instructorId !== undefined
+    ) {
       return NextResponse.json(
-        {error: `Cannot confirm when status=${purchase.status}`},
+        {error: "Cancelled purchase cannot be assigned to an instructor"},
         {status: 400},
       );
     }
 
-    await col.updateOne(
+    const updateDoc = {
+      updatedAt: new Date(),
+    };
+
+    // Instructor update
+    if (instructorId !== undefined) {
+      updateDoc.instructorId = instructorId || "";
+      updateDoc.instructorName = instructorId ? instructorName || "" : "";
+      updateDoc.instructorEmail = instructorId ? instructorEmail || "" : "";
+
+      // If instructor selected, auto-confirm.
+      // If instructor cleared, return to pending unless already cancelled.
+      if (instructorId) {
+        updateDoc.status = "confirmed";
+        updateDoc.confirmedAt = new Date();
+      } else {
+        updateDoc.status = "pending";
+      }
+    }
+
+    // Manual status update
+    if (status !== undefined) {
+      if (!allowedStatuses.includes(status)) {
+        return NextResponse.json({error: "Invalid status"}, {status: 400});
+      }
+
+      updateDoc.status = status;
+
+      if (status === "confirmed") {
+        updateDoc.confirmedAt = new Date();
+      }
+
+      if (status === "cancelled") {
+        updateDoc.cancelledAt = new Date();
+      }
+    }
+
+    /**
+     * Balance handling:
+     * - If purchase becomes confirmed, apply balance once.
+     * - If purchase becomes cancelled and balance was applied, remove it if still available.
+     */
+    const nextStatus = updateDoc.status || currentStatus;
+    const amount = Number(purchase.amount || 0);
+
+    if (nextStatus === "confirmed" && !purchase.balanceApplied && amount > 0) {
+      const client = await clientCol.findOne({
+        email: String(purchase.userEmail || "").toLowerCase(),
+      });
+
+      if (client) {
+        await clientCol.updateOne(
+          {_id: client._id},
+          {
+            $inc: {
+              accountBalance: amount,
+            },
+            $set: {
+              updatedAt: new Date(),
+            },
+          },
+        );
+
+        updateDoc.balanceApplied = true;
+        updateDoc.balanceAppliedAt = new Date();
+      }
+    }
+
+    if (nextStatus === "cancelled" && purchase.balanceApplied && amount > 0) {
+      const client = await clientCol.findOne({
+        email: String(purchase.userEmail || "").toLowerCase(),
+      });
+
+      if (client) {
+        const currentBalance = Number(client.accountBalance || 0);
+
+        if (currentBalance < amount) {
+          return NextResponse.json(
+            {
+              error:
+                "Cannot cancel because this purchase balance appears to be already used",
+            },
+            {status: 400},
+          );
+        }
+
+        await clientCol.updateOne(
+          {_id: client._id},
+          {
+            $inc: {
+              accountBalance: -amount,
+            },
+            $set: {
+              updatedAt: new Date(),
+            },
+          },
+        );
+
+        updateDoc.balanceApplied = false;
+        updateDoc.balanceRemovedAt = new Date();
+      }
+    }
+
+    await purchaseCol.updateOne(
       {_id: purchaseId},
-      {$set: {status, updatedAt: new Date()}},
+      {$set: updateDoc},
     );
 
     return NextResponse.json({ok: true});
   } catch (e) {
-    console.error(e);
+    console.error("PATCH /api/purchases error:", e);
     return NextResponse.json(
-      {error: "Failed to update purchase"},
+      {error: "Failed to update purchase", details: e?.message},
       {status: 500},
     );
   }
@@ -353,7 +468,7 @@ export async function POST(req) {
     const {
       userId,
       userEmail,
-
+      clientId,
       items,
       currency = "aud",
       paymentIntentId,
@@ -425,17 +540,20 @@ export async function POST(req) {
 
     // invoiceNo now
     const invoiceNo = await getNextInvoiceNo();
-
+  const balanceAmount = Number(amount || 0);
     const doc = {
       userId: userId || userDoc?._id?.toString() || "",
       userName: userDoc?.name || billing?.name || "",
       userEmail,
-
+clientId,
       packages,
       amount,
       discountAmount,
       currency,
       paymentIntentId,
+
+
+
 
       paymentStatus: "paid",
       status: "pending",
@@ -464,7 +582,53 @@ export async function POST(req) {
 
     const insertRes = await purchaseCol.insertOne(doc);
     const purchaseId = insertRes.insertedId;
+const clientCol = await clientsCollection();
 
+const emailLower = String(userEmail || "").toLowerCase();
+
+// find client
+const client = await clientCol.findOne({
+  $or: [
+    { email: emailLower },
+    { linkedUserEmail: emailLower },
+  ],
+});
+
+if (client && balanceAmount > 0) {
+  await clientCol.updateOne(
+    { _id: client._id },
+    {
+      $inc: {
+        accountBalance: balanceAmount,
+      },
+      $set: {
+        updatedAt: new Date(),
+      },
+      $push: {
+        balanceLedger: {
+          type: "purchase-credit",
+          purchaseId: String(purchaseId),
+          amount: balanceAmount,
+          note: "Package purchased (auto credit)",
+          createdAt: new Date(),
+        },
+      },
+    }
+  );
+
+  // IMPORTANT: mark as already applied
+  await purchaseCol.updateOne(
+    { _id: purchaseId },
+    {
+      $set: {
+        clientId: client._id.toString(),
+        balanceApplied: true,
+        balanceAppliedAt: new Date(),
+        balanceStatus: "available",
+      },
+    }
+  );
+}
     await (
       await jobsCollection()
     ).insertOne({

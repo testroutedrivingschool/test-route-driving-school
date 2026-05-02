@@ -79,7 +79,7 @@ export default function BookingConfirmPage() {
   const [isMobile, setIsMobile] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [overridePrice, setOverridePrice] = useState("");
-
+const [submitting, setSubmitting] = useState(false);
 
 
 
@@ -123,7 +123,45 @@ export default function BookingConfirmPage() {
 
   const selectedSuburb = booking?.suburb || booking?.location || "";
   const isManualBooking = booking?.bookingType === "manual";
+const isPackageBalanceBooking =
+  !!booking?.useClientBalance && !!booking?.purchaseId;
+  const { data: balanceClient, isLoading: isBalanceClientLoading } = useQuery({
+  queryKey: ["balance-client", booking?.clientId, booking?.clientEmail],
+  enabled:
+    !!booking?.useClientBalance &&
+    (!!booking?.clientId || !!booking?.clientEmail),
+  queryFn: async () => {
+    if (booking?.clientId) {
+      const res = await axios.get(`/api/clients/${booking.clientId}`);
+      return res.data;
+    }
 
+    const res = await axios.get("/api/clients", {
+      params: {
+        email: booking.clientEmail,
+        exactEmail: "true",
+      },
+    });
+
+    const list = Array.isArray(res.data) ? res.data : [];
+
+    return (
+      list.find(
+        (client) =>
+          String(client.email || "").toLowerCase() ===
+            String(booking.clientEmail || "").toLowerCase() ||
+          String(client.linkedUserEmail || "").toLowerCase() ===
+            String(booking.clientEmail || "").toLowerCase()
+      ) ||
+      list[0] ||
+      null
+    );
+  },
+});
+
+const latestClientBalance = Number(
+  balanceClient?.accountBalance ?? booking?.clientAccountBalance ?? 0
+);
 const services = useMemo(() => {
   return getSuburbBasedServices(
     instructor || {},
@@ -137,17 +175,20 @@ const services = useMemo(() => {
       ? Number(overridePrice)
       : null;
 
-  const finalPrice =
-    isManualBooking && parsedOverridePrice != null && parsedOverridePrice > 0
+const finalPrice =
+  isPackageBalanceBooking
+    ? selectedBooking?.price ?? 0
+    : isManualBooking && parsedOverridePrice != null && parsedOverridePrice > 0
       ? parsedOverridePrice
       : selectedBooking?.price ?? 0;
 
-  const hasOverride =
-    isManualBooking &&
-    parsedOverridePrice != null &&
-    parsedOverridePrice > 0 &&
-    selectedBooking &&
-    Number(parsedOverridePrice) !== Number(selectedBooking.price);
+ const hasOverride =
+  !isPackageBalanceBooking &&
+  isManualBooking &&
+  parsedOverridePrice != null &&
+  parsedOverridePrice > 0 &&
+  selectedBooking &&
+  Number(parsedOverridePrice) !== Number(selectedBooking.price);
 
   const handleConfirmBooking = async () => {
     if (parsedOverridePrice != null && !selectedBooking) {
@@ -161,7 +202,93 @@ const services = useMemo(() => {
     if (parsedOverridePrice != null && parsedOverridePrice <= 0) {
       return toast.error("Override price must be greater than 0");
     }
+if (isPackageBalanceBooking) {
+  if (!booking.clientId) {
+    return toast.error("Client is missing for package booking");
+  }
 
+  if (!booking.purchaseId) {
+    return toast.error("Purchase is missing for package booking");
+  }
+
+  if (latestClientBalance < finalPrice) {
+    return toast.error(
+      `Client balance is not enough. Balance: $${latestClientBalance.toFixed(
+        2
+      )}, Required: $${Number(finalPrice || 0).toFixed(2)}`
+    );
+  }
+
+  const bookingData = {
+    instructorEmail: instructor.email,
+    instructorName: instructor.name,
+    instructorId: instructor._id,
+
+    flowSource: "admin-purchase",
+    returnPath: booking.returnPath || "/dashboard/admin/purchases",
+
+    purchaseId: booking.purchaseId,
+    useClientBalance: true,
+
+    serviceName: selectedBooking.service,
+    duration: selectedBooking.duration,
+    minutes: selectedBooking.minutes,
+
+    price: finalPrice,
+    originalPrice: selectedBooking.price,
+    overridePrice: null,
+    isPriceOverridden: false,
+
+    bookingDate: booking.date,
+    bookingTime: booking.time,
+    location: booking.location || "",
+    suburb: booking.suburb || booking.location || "",
+
+    status: "confirmed",
+    bookingType: "manual",
+
+    paymentStatus: "paid",
+    paymentMethod: "accountBalance",
+    paidAmount: finalPrice,
+    totalPaidAmount: finalPrice,
+    outstanding: 0,
+    processingFee: 0,
+
+    clientId: booking.clientId,
+    clientName: booking.clientName,
+    clientEmail: booking.clientEmail,
+    clientPhone: booking.clientPhone,
+    clientAddress: booking.clientAddress,
+
+    userName: booking.clientName,
+    userEmail: booking.clientEmail,
+    userPhone: booking.clientPhone,
+    address: booking.clientAddress,
+  };
+
+  try {
+    setSubmitting(true);
+
+    const res = await axios.post("/api/bookings", bookingData);
+
+    toast.success("Booking confirmed using client balance");
+
+    sessionStorage.removeItem("pendingBooking");
+    sessionStorage.removeItem("packageBookingContext");
+
+    router.push(booking.returnPath || "/dashboard/admin/purchases");
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.error ||
+        err?.response?.data?.details ||
+        "Failed to create balance booking"
+    );
+  } finally {
+    setSubmitting(false);
+  }
+
+  return;
+}
     if (booking.bookingType === "website") {
       const bookingData = {
         userId: userData._id,
@@ -267,7 +394,13 @@ const services = useMemo(() => {
       ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
       : "/profile-avatar.png";
 
-  if (isLoading || isUserLoading || !instructor || !booking) {
+if (
+  isLoading ||
+  isUserLoading ||
+  isBalanceClientLoading ||
+  !instructor ||
+  !booking
+) {
     return <LoadingSpinner />;
   }
 
@@ -324,7 +457,56 @@ const services = useMemo(() => {
                   </div>
                 </div>
               </div>
+{isPackageBalanceBooking && (
+  <div className="mx-2 md:mx-4 mb-5 rounded-xl border border-primary/20 bg-primary/5 p-4">
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+          Package Balance Payment
+        </div>
 
+        <h3 className="mt-2 text-lg font-bold text-gray-900">
+          This booking will be paid from client account balance
+        </h3>
+
+        <p className="text-sm text-gray-600 mt-1">
+          Client: {booking.clientName || "Client"} • Purchase:{" "}
+          {booking.purchaseId}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-lg bg-white border border-border-color px-4 py-3">
+          <p className="text-xs text-gray-500">Available Balance</p>
+          <p className="text-xl font-bold text-green-700">
+            ${latestClientBalance.toFixed(2)}
+          </p>
+        </div>
+
+        <div className="rounded-lg bg-white border border-border-color px-4 py-3">
+          <p className="text-xs text-gray-500">Selected Price</p>
+          <p className="text-xl font-bold text-gray-900">
+            ${Number(finalPrice || 0).toFixed(2)}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    {!!booking.packagePackages?.length && (
+      <div className="mt-4 flex flex-wrap gap-2">
+        {booking.packagePackages.map((pkg, idx) => (
+          <span
+            key={`${pkg.packageId || idx}`}
+            className="rounded-full bg-white border border-border-color px-3 py-1 text-xs font-semibold text-gray-700"
+          >
+            {pkg.packageName || "Package"} • {pkg.duration || "N/A"} • $
+            {Number(pkg.lineTotal || 0).toFixed(2)}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+)}
               {services.length === 0 ? (
                 <div className="w-full py-10 flex flex-col items-center justify-center text-center gap-3 bg-base-100 border border-dashed border-border-color rounded">
                   <p className="w-full text-lg font-semibold text-gray-700">
@@ -355,7 +537,7 @@ const services = useMemo(() => {
                     />
                   )}
 
-                  {isManualBooking && (
+                {isManualBooking && !isPackageBalanceBooking && (
                     <div className="px-4 md:px-4 mt-6">
                       <div className=" space-y-4">
                         <div className="flex flex-col md:flex-row md:items-end gap-4">
@@ -393,12 +575,17 @@ const services = useMemo(() => {
               )}
 
               <div className="mt-6 mb-6 md:px-8 px-2">
-                <PrimaryBtn
-                  className="w-full md:w-auto text-center! justify-center!"
-                  onClick={handleConfirmBooking}
-                >
-                  Proceed
-                </PrimaryBtn>
+              <PrimaryBtn
+  className="w-full md:w-auto text-center! justify-center!"
+  onClick={handleConfirmBooking}
+  disabled={submitting}
+>
+  {submitting
+    ? "Confirming..."
+    : isPackageBalanceBooking
+      ? `Confirm & Deduct $${Number(finalPrice || 0).toFixed(2)}`
+      : "Proceed"}
+</PrimaryBtn>
               </div>
             </div>
           </div>

@@ -113,6 +113,12 @@ export default function InstructorBookings() {
   const [sendingSummary, setSendingSummary] = useState(false);
   const [clearWeekLoading, setClearWeekLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+const searchParams = useSearchParams();
+  const packageInstructorId = searchParams.get("instructorId");
+const packagePurchaseId = searchParams.get("purchaseId");
+const packageClientId = searchParams.get("clientId");
+const packageClientEmail = searchParams.get("clientEmail");
+const packageBookingMode = !!packagePurchaseId;
   const [copyOptions, setCopyOptions] = useState({
     copyBookingsIfFree: false,
     deleteBookingsWhenClearing: false,
@@ -133,11 +139,13 @@ const instructor = useMemo(
   () => instructors.find((i) => i._id === selectedInstructorId) || null,
   [instructors, selectedInstructorId]
 );
-  const searchParams = useSearchParams();
+  
   const moveBookingId = searchParams.get("moveBookingId"); // string | null
   const moveMode = !!moveBookingId;
   const rebookClientId = searchParams.get("rebookClientId");
   const rebookMode = !!rebookClientId;
+
+  // Purchases Packages
 
   const {data: rebookClient} = useQuery({
     queryKey: ["client", rebookClientId],
@@ -182,8 +190,84 @@ const instructor = useMemo(
     "2 hours 15 mins",
   ];
   const isHourStart = (time) => time?.includes(":00");
+const [packageContext, setPackageContext] = useState(null);
 
+useEffect(() => {
+  if (!packageBookingMode) {
+    setPackageContext(null);
+    return;
+  }
 
+  try {
+    const raw = sessionStorage.getItem("packageBookingContext");
+    if (!raw) return;
+
+    const parsed = JSON.parse(raw);
+
+    if (String(parsed?.purchaseId || "") === String(packagePurchaseId || "")) {
+      setPackageContext(parsed);
+    }
+  } catch {
+    setPackageContext(null);
+  }
+}, [packageBookingMode, packagePurchaseId]);
+
+const resolvedPackageClientId =
+  packageClientId || packageContext?.clientId || "";
+
+const resolvedPackageClientEmail =
+  packageClientEmail || packageContext?.clientEmail || "";
+useEffect(() => {
+  if (!packageInstructorId) return;
+  if (!instructors.length) return;
+
+  const exists = instructors.some(
+    (ins) => String(ins._id) === String(packageInstructorId),
+  );
+
+  if (exists) {
+    setSelectedInstructorId(packageInstructorId);
+  }
+}, [packageInstructorId, instructors]);
+
+// ✅ PACKAGE BOOKING CHANGE START
+const {data: packageClient, isLoading: packageClientLoading} = useQuery({
+  queryKey: [
+    "package-booking-client",
+    resolvedPackageClientId,
+    resolvedPackageClientEmail,
+  ],
+  enabled:
+    packageBookingMode &&
+    (!!resolvedPackageClientId || !!resolvedPackageClientEmail),
+  queryFn: async () => {
+    if (resolvedPackageClientId) {
+      const res = await axios.get(`/api/clients/${resolvedPackageClientId}`);
+      return res.data;
+    }
+
+    const res = await axios.get("/api/clients", {
+      params: {
+        email: resolvedPackageClientEmail,
+        exactEmail: "true", // ✅ add this
+      },
+    });
+
+    const list = Array.isArray(res.data) ? res.data : [];
+
+    return (
+      list.find(
+        (client) =>
+          String(client.email || "").toLowerCase() ===
+            String(resolvedPackageClientEmail || "").toLowerCase() ||
+          String(client.linkedUserEmail || "").toLowerCase() ===
+            String(resolvedPackageClientEmail || "").toLowerCase(),
+      ) ||
+      list[0] ||
+      null
+    );
+  },
+});
   const {data: movingBooking} = useQuery({
     queryKey: ["booking", moveBookingId],
     enabled: !!moveBookingId,
@@ -1132,28 +1216,68 @@ const instructor = useMemo(
       setSaving(false);
     }
   };
-  const handleBooking = (date, slot, time) => {
-    if (!slot?._id) return toast.error("Slot not found!");
+const handleBooking = (date, slot, time) => {
+  if (!slot?._id) return toast.error("Slot not found!");
 
-    const dateStr = formatDate(date);
-    const maxAvailableMinutes = getMaxContinuousAvailableMinutes(dateStr, time);
+  if (packageBookingMode && !packageClient) {
+    return toast.error("Client not found for this package booking");
+  }
 
-    const bookingInfo = {
-      instructorEmail: instructor?.email,
-      instructorName: instructor?.name,
-      instructorId: instructor?._id,
+  const dateStr = formatDate(date);
+  const maxAvailableMinutes = getMaxContinuousAvailableMinutes(dateStr, time);
 
-      date: new Date(date).toISOString(),
-      time,
-      location: "",
-      suburb: "",
-      slotId: slot._id,
-      duration: slot.duration,
-      maxAvailableMinutes,
-      bookingType: "manual",
-  flowSource: "admin",
-  returnPath: "/dashboard/admin/manage-instructors-slots",
-      ...(rebookMode
+  const packageClientName = packageClient
+    ? `${packageClient.firstName || ""} ${packageClient.lastName || ""}`.trim()
+    : packageContext?.clientName || "";
+
+  const bookingInfo = {
+    instructorEmail: instructor?.email,
+    instructorName: instructor?.name,
+    instructorId: instructor?._id,
+
+    date: new Date(date).toISOString(),
+    time,
+    location: "",
+    suburb: packageBookingMode
+      ? packageClient?.suburb || packageContext?.clientSuburb || ""
+      : "",
+    slotId: slot._id,
+    duration: slot.duration,
+    maxAvailableMinutes,
+    bookingType: "manual",
+
+    flowSource: packageBookingMode ? "admin-purchase" : "admin",
+    returnPath: packageBookingMode
+      ? "/dashboard/admin/purchases"
+      : "/dashboard/admin/manage-instructors-slots",
+
+    ...(packageBookingMode
+      ? {
+          purchaseId: packagePurchaseId,
+          useClientBalance: true,
+          skipClientSelect: true,
+
+          clientId: String(packageClient?._id || packageContext?.clientId || ""),
+          clientName: packageClientName,
+          clientEmail:
+            packageClient?.email ||
+            packageContext?.clientEmail ||
+            resolvedPackageClientEmail ||
+            "",
+          clientPhone:
+            packageClient?.mobile ||
+            packageClient?.phone ||
+            packageContext?.clientPhone ||
+            "",
+          clientAddress:
+            packageClient?.address || packageContext?.clientAddress || "",
+          suburb: packageClient?.suburb || packageContext?.clientSuburb || "",
+
+          clientAccountBalance: Number(packageClient?.accountBalance || 0),
+          packageAmount: Number(packageContext?.amount || 0),
+          packagePackages: packageContext?.packages || [],
+        }
+      : rebookMode
         ? {
             clientId: rebookClientId,
             clientName: rebookClient
@@ -1166,14 +1290,20 @@ const instructor = useMemo(
             skipClientSelect: true,
           }
         : {}),
-    };
-
-    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
-    router.push("/booking-confirm");
   };
 
+  sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
+  router.push("/booking-confirm");
+};
+
 //   if (!selectedInstructorId) return <InstructorEmptyState />;
-if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
+if (
+  slotsLoading ||
+  bookingsLoading ||
+  (packageBookingMode && packageClientLoading)
+) {
+  return <LoadingSpinner />;
+};
 
   return (
     <>
@@ -1237,9 +1367,111 @@ if (slotsLoading || bookingsLoading) return <LoadingSpinner />;
             </div>
           </div>
         </div>
+{packageBookingMode && (
+  <div className="rounded-2xl border border-border-color bg-white shadow-sm overflow-hidden">
+    {/* Top accent */}
+    <div className="h-1.5 bg-primary" />
 
+    <div className="p-4 md:p-5">
+      <div className="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-5">
+        {/* Left content */}
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+              Package Booking Mode
+            </span>
+
+            {packageContext?.invoiceNo && (
+              <span className="inline-flex items-center rounded-full border border-border-color bg-white px-3 py-1 text-xs font-semibold text-gray-700">
+                Invoice #{packageContext.invoiceNo}
+              </span>
+            )}
+          </div>
+
+          <h2 className="mt-3 text-xl md:text-2xl font-bold text-gray-900">
+            Booking for{" "}
+            <span className="text-primary">
+              {packageClient
+                ? `${packageClient.firstName || ""} ${packageClient.lastName || ""}`.trim()
+                : packageContext?.clientName || "Client"}
+            </span>
+          </h2>
+
+          <p className="mt-2 max-w-2xl text-sm md:text-base text-gray-600 leading-6">
+            Select an available slot below. After choosing a slot, you can pick
+            the lesson package and complete the booking from this client&apos;s
+            account balance.
+          </p>
+        </div>
+
+        {/* Right summary */}
+        <div className="w-full xl:w-[560px]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="rounded-xl border border-border-color bg-slate-50 px-4 py-3">
+              <div className="text-xs font-medium text-gray-500">
+                Client Balance
+              </div>
+              <div className="mt-1 text-xl font-bold text-green-700">
+                ${Number(packageClient?.accountBalance || 0).toFixed(2)}
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-border-color bg-slate-50 px-4 py-3">
+              <div className="text-xs font-medium text-gray-500">
+                Purchase Amount
+              </div>
+              <div className="mt-1 text-xl font-bold text-gray-900">
+                ${Number(packageContext?.amount || 0).toFixed(2)}
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              sessionStorage.removeItem("packageBookingContext");
+              router.push("/dashboard/admin/purchases");
+            }}
+            className="mt-3 w-full rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-100 transition"
+          >
+            Cancel Package Booking
+          </button>
+        </div>
+      </div>
+    </div>
+
+    {!!packageContext?.packages?.length && (
+      <div className="border-t border-border-color bg-slate-50 px-4 md:px-5 py-3">
+        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+          <div className="shrink-0 text-xs font-bold uppercase tracking-wide text-gray-500">
+            Purchased
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            {packageContext.packages.map((pkg, idx) => (
+              <span
+                key={`${pkg.packageId || idx}`}
+                className="inline-flex items-center rounded-full border border-border-color bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm"
+              >
+                {pkg.packageName || "Package"}
+                <span className="mx-1 text-gray-300">•</span>
+                {pkg.duration || "N/A"}
+                <span className="mx-1 text-gray-300">•</span>
+                ${Number(pkg.lineTotal || 0).toFixed(2)}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+)}
         {/* Empty State */}
         {!selectedInstructorId ? (
+
+        
+
+
           <div className="rounded-2xl border border-border-color bg-white shadow-sm p-8 md:p-12">
             <div className="max-w-xl mx-auto text-center">
               <div className="mx-auto mb-4 h-14 w-14 rounded-full bg-primary/10 flex items-center justify-center">
