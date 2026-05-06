@@ -704,20 +704,21 @@ returnPath: "/dashboard/user/my-bookings"
                   Book your driving lessons with certified instructors
                 </p>
               </div>
-              {!isReschedule && (
-                <div className="text-center">
-                  <h3 className="font-bold md:text-lg">{selectedLocations}</h3>
-                  <button
-                    onClick={() => {
-                      markModalSeenToday();
-                      setShowLocationModal(true);
-                    }}
-                    className="text-primary font-medium hover:font-bold transition"
-                  >
-                    Change
-                  </button>
-                </div>
-              )}
+             {!isReschedule && selectedLocations && (
+  <div className="text-center">
+    <h3 className="font-bold md:text-lg">{selectedLocations}</h3>
+
+    <button
+      onClick={() => {
+        markModalSeenToday();
+        setShowLocationModal(true);
+      }}
+      className="text-primary font-medium hover:font-bold transition"
+    >
+      Change
+    </button>
+  </div>
+)}
             </div>
 
             {/* Main Content Area */}
@@ -751,8 +752,8 @@ returnPath: "/dashboard/user/my-bookings"
                       disablePastDates={true}
                     />
                   </div>
-                  {!isReschedule && (
-                    <div className="mt-2 md:mt-4 md:hidden text-center">
+              {!isReschedule && selectedLocations && (
+  <div className="mt-2 md:mt-4 md:hidden text-center">
                       <h3 className="font-bold md:text-lg">
                         {selectedLocations}
                       </h3>
@@ -881,9 +882,16 @@ returnPath: "/dashboard/user/my-bookings"
                                     className="h-auto! "
                                   >
                                     <div
-                                      onClick={() =>
-                                        setSelectedInstructor(instructor)
-                                      }
+                                      onClick={() => {
+  
+  if (!selectedLocations) {
+    setShowLocationModal(true);
+    toast.error("Please select a location first");
+    return;
+  }
+
+  setSelectedInstructor(instructor);
+}}
                                       className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-1 md:p-3  rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color "
                                     >
                                       <div className="w-11 h-11 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">

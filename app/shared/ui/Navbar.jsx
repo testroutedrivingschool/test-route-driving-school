@@ -120,15 +120,23 @@ export default function Navbar({className}) {
   const toggleDropdown = (id) => {
     setActiveDropdown(activeDropdown === id ? null : id);
   };
-  const handleLogout = () => {
-    logoutUser()
-      .then(() => {
-        toast.success("Logged out successfully");
-      })
-      .catch(() => {
-        toast.error("Failed to log out");
-      });
-  };
+const handleLogout = async () => {
+  try {
+    await logoutUser();
+
+    toast.success("Logged out successfully");
+
+    // close menus
+    setAvatarOpen(false);
+    setOpen(false);
+
+    // force redirect to homepage
+    router.replace("/");
+    router.refresh();
+  } catch {
+    toast.error("Failed to log out");
+  }
+};
 
 
 useEffect(() => {
