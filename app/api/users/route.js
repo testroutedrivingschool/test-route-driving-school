@@ -1,4 +1,5 @@
 import {admin} from "@/app/libs/firebase/firebase.admin";
+import { sendMail } from "@/app/libs/mail/mailer";
 import {clientsCollection, usersCollection} from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 import {NextResponse} from "next/server";
@@ -51,7 +52,7 @@ export async function POST(req) {
 
   if (result.acknowledged) {
     // Send email notification to the admin after a new user is registered
-    const adminEmail = "testroutedrivingschool@gmail.com"; // Replace with the admin email address
+    const adminEmail = "testroutedrivingschool@gmail.com";
     const subject = "New User Registration Notification";
     const text = `A new user has registered with the following details:
       Name: ${body.name}
