@@ -1,7 +1,7 @@
 import {admin} from "@/app/libs/firebase/firebase.admin";
-import { sendMail } from "@/app/libs/mail/mailer";
+import {sendMail} from "@/app/libs/mail/mailer";
 import {clientsCollection, usersCollection} from "@/app/libs/mongodb/db";
-import { ObjectId } from "mongodb";
+import {ObjectId} from "mongodb";
 import {NextResponse} from "next/server";
 
 export async function GET(req) {
@@ -17,7 +17,7 @@ export async function GET(req) {
     }
 
     if (role) {
-      query.role = role; // filter by role
+      query.role = role; 
     }
 
     const collection = await usersCollection();
@@ -37,17 +37,9 @@ export async function GET(req) {
   }
 }
 
-// export async function POST(req) {
-//   const body = await req.json();
-//   body.emailScheduleTime = "00:00";
-//   const result = await (await usersCollection()).insertOne(body);
-
-//   return NextResponse.json(result, {status: 201});
-// }
-
 export async function POST(req) {
   const body = await req.json();
-  body.emailScheduleTime = "00:00"; // Set default email schedule time
+  body.emailScheduleTime = "00:00";
   const result = await (await usersCollection()).insertOne(body);
 
   if (result.acknowledged) {
@@ -56,15 +48,16 @@ export async function POST(req) {
     const subject = "New User Registration Notification";
     const text = `A new user has registered with the following details:
       Name: ${body.name}
-      Email: ${body.email}
-      Role: ${body.role}`;
-
+      Email: ${body.email}`;
+    {
+      body.phone && `Email: ${body.email}`;
+    }
     const html = `
       <p>A new user has registered with the following details:</p>
       <ul>
         <li><strong>Name:</strong> ${body.name}</li>
         <li><strong>Email:</strong> ${body.email}</li>
-        <li><strong>Role:</strong> ${body.role}</li>
+  ${body.phone && `<li><strong>Email:</strong> ${body.phone}</li>`}
       </ul>
     `;
 
@@ -80,13 +73,11 @@ export async function POST(req) {
     }
   }
 
-  return NextResponse.json(result, { status: 201 });
+  return NextResponse.json(result, {status: 201});
 }
-
 
 export async function PATCH(req) {
   try {
-   
     const body = await req.json();
     const {
       email,
@@ -143,28 +134,27 @@ export async function PATCH(req) {
       return NextResponse.json({error: "User not found"}, {status: 404});
     }
 
-
     if (clientId && ObjectId.isValid(clientId)) {
-  const clientsCol = await clientsCollection();
+      const clientsCol = await clientsCollection();
 
-  const clientUpdateResult = await clientsCol.updateOne(
-    { _id: new ObjectId(clientId) },
-    {
-      $set: {
-        mobile: phone || "",
-        address: address || "",
-        suburb: suburb || "",
-        state: state || "",
-        postCode: postCode || "",
-        updatedAt: new Date(),
-      },
+      const clientUpdateResult = await clientsCol.updateOne(
+        {_id: new ObjectId(clientId)},
+        {
+          $set: {
+            mobile: phone || "",
+            address: address || "",
+            suburb: suburb || "",
+            state: state || "",
+            postCode: postCode || "",
+            updatedAt: new Date(),
+          },
+        },
+      );
+
+      if (clientUpdateResult.matchedCount === 0) {
+        console.warn(`No client found with the clientId: ${clientId}`);
+      }
     }
-  );
-
-  if (clientUpdateResult.matchedCount === 0) {
-    console.warn(`No client found with the clientId: ${clientId}`);
-  }
-}
 
     return NextResponse.json({message: "User updated successfully"});
   } catch (error) {
@@ -172,23 +162,22 @@ export async function PATCH(req) {
   }
 }
 
-
 export async function DELETE(req) {
   try {
     const url = new URL(req.url);
     const email = url.searchParams.get("email");
 
     if (!email) {
-      return NextResponse.json({ error: "Email required" }, { status: 400 });
+      return NextResponse.json({error: "Email required"}, {status: 400});
     }
 
     const usersCol = await usersCollection();
 
     // 🔥 STEP 1: find user first (IMPORTANT)
-    const user = await usersCol.findOne({ email });
+    const user = await usersCol.findOne({email});
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({error: "User not found"}, {status: 404});
     }
 
     // 🔥 STEP 2: delete linked client (if exists)
@@ -201,7 +190,7 @@ export async function DELETE(req) {
     }
 
     // 🔥 STEP 3: delete user from DB
-    await usersCol.deleteOne({ email });
+    await usersCol.deleteOne({email});
 
     // 🔥 STEP 4: delete from Firebase
     try {
@@ -216,7 +205,7 @@ export async function DELETE(req) {
     });
   } catch (err) {
     console.error(err);
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+    return NextResponse.json({error: "Something went wrong"}, {status: 500});
   }
 }
 

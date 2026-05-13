@@ -1,7 +1,52 @@
+import {sendMail} from "@/app/libs/mail/mailer";
 import {bookingsCollection, instructorsCollection} from "@/app/libs/mongodb/db";
 import {ObjectId} from "mongodb";
 import {NextResponse} from "next/server";
 
+async function sendStatusChangeEmail({booking, oldStatus, newStatus}) {
+  const to = booking.userEmail || booking.clientEmail || booking.email || "";
+
+  if (!to) {
+    return {ok: false, skipped: true, error: "Client email not found"};
+  }
+
+  const subject = `Booking Status Changed: ${newStatus}`;
+  const text = `Your booking has been updated to ${newStatus}.`;
+  const html = `
+    <p>Your booking has been updated to <strong>${newStatus}</strong>.</p>
+    <p><b>Booking details:</b></p>
+    <p>Service: ${booking.serviceName || "—"}</p>
+    <p>Date: ${
+      new Date(booking.bookingDate).toLocaleDateString("en-AU", {
+        weekday: "long",
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+      }) || "—"
+    }</p>
+    <p>Time: ${booking.bookingTime || "—"}</p>
+    <p>Instructor: ${booking.instructorName || "—"}</p>
+    <p>Status: ${newStatus}</p>
+    <p>Thank you for booking with us!</p>
+  `;
+
+  let status = "SENT";
+  let errorMsg = null;
+
+  try {
+    await sendMail({
+      to,
+      subject,
+      html,
+      text,
+    });
+  } catch (e) {
+    status = "FAILED";
+    errorMsg = String(e?.message || e);
+  }
+
+  return {ok: status === "SENT", skipped: false, error: errorMsg};
+}
 export async function GET(req, {params}) {
   try {
     const {bookingId} = await params;
@@ -52,7 +97,6 @@ export async function GET(req, {params}) {
     return NextResponse.json({error: "Failed"}, {status: 500});
   }
 }
-
 export async function PATCH(req, {params}) {
   try {
     const {bookingId} = await params;
@@ -80,8 +124,6 @@ export async function PATCH(req, {params}) {
       "suburb",
       "bookingDate",
       "bookingTime",
-
-      // ✅ cost override fields
       "price",
       "originalPrice",
       "overridePrice",
@@ -110,7 +152,10 @@ export async function PATCH(req, {params}) {
       const v = String($set.paymentStatus).toLowerCase();
       const ok = ["paid", "partial", "unpaid"].includes(v);
       if (!ok) {
-        return NextResponse.json({error: "Invalid paymentStatus"}, {status: 400});
+        return NextResponse.json(
+          {error: "Invalid paymentStatus"},
+          {status: 400},
+        );
       }
       $set.paymentStatus = v;
     }
@@ -121,44 +166,28 @@ export async function PATCH(req, {params}) {
 
     if ($set.status !== undefined) {
       const v = String($set.status).toLowerCase();
-      const ok = ["pending", "confirmed", "cancelled", "completed", "unattended"].includes(v);
+      const ok = [
+        "pending",
+        "confirmed",
+        "cancelled",
+        "completed",
+        "unattended",
+      ].includes(v);
       if (!ok) {
         return NextResponse.json({error: "Invalid status"}, {status: 400});
       }
       $set.status = v;
     }
 
-    // ✅ normalize numbers
-    if ($set.price !== undefined) {
-      $set.price = Number($set.price);
-      if (Number.isNaN($set.price) || $set.price < 0) {
-        return NextResponse.json({error: "Invalid price"}, {status: 400});
-      }
-    }
-
-    if ($set.originalPrice !== undefined) {
-      $set.originalPrice = Number($set.originalPrice);
-      if (Number.isNaN($set.originalPrice) || $set.originalPrice < 0) {
-        return NextResponse.json({error: "Invalid originalPrice"}, {status: 400});
-      }
-    }
-
-    if ($set.overridePrice !== undefined) {
-      if ($set.overridePrice === null || $set.overridePrice === "") {
-        $set.overridePrice = null;
-      } else {
-        $set.overridePrice = Number($set.overridePrice);
-        if (Number.isNaN($set.overridePrice) || $set.overridePrice < 0) {
-          return NextResponse.json({error: "Invalid overridePrice"}, {status: 400});
-        }
-      }
-    }
-
-    if ($set.isPriceOverridden !== undefined) {
-      $set.isPriceOverridden = !!$set.isPriceOverridden;
-    }
-
     const bookingsCol = await bookingsCollection();
+
+    const oldBooking = await bookingsCol.findOne({
+      _id: new ObjectId(bookingId),
+    });
+
+    if (!oldBooking) {
+      return NextResponse.json({error: "Booking not found"}, {status: 404});
+    }
 
     const update = await bookingsCol.updateOne(
       {_id: new ObjectId(bookingId)},
@@ -169,7 +198,22 @@ export async function PATCH(req, {params}) {
       return NextResponse.json({error: "Not found"}, {status: 404});
     }
 
-    const updatedDoc = await bookingsCol.findOne({_id: new ObjectId(bookingId)});
+    const updatedDoc = await bookingsCol.findOne({
+      _id: new ObjectId(bookingId),
+    });
+
+    // Send email when status changes
+    const oldStatus = oldBooking.status;
+    const newStatus = $set.status;
+
+    if (oldStatus !== newStatus) {
+      const emailResult = await sendStatusChangeEmail({
+        booking: updatedDoc,
+        oldStatus,
+        newStatus,
+      });
+    }
+
     return NextResponse.json(updatedDoc);
   } catch (e) {
     console.error(e);
@@ -179,3 +223,129 @@ export async function PATCH(req, {params}) {
     );
   }
 }
+// export async function PATCH(req, {params}) {
+//   try {
+//     const {bookingId} = await params;
+
+//     if (!ObjectId.isValid(bookingId)) {
+//       return NextResponse.json({error: "Invalid booking id"}, {status: 400});
+//     }
+
+//     const body = await req.json();
+
+//     const allowed = [
+//       "status",
+//       "paymentStatus",
+//       "paymentMethod",
+//       "paymentIntentId",
+//       "paidAmount",
+//       "cashAmount",
+//       "cardAmount",
+//       "outstanding",
+//       "processingFee",
+//       "cardBrand",
+//       "cardLast4",
+//       "userPhone",
+//       "address",
+//       "suburb",
+//       "bookingDate",
+//       "bookingTime",
+
+//       // ✅ cost override fields
+//       "price",
+//       "originalPrice",
+//       "overridePrice",
+//       "isPriceOverridden",
+//     ];
+
+//     const $set = {updatedAt: new Date()};
+
+//     for (const k of allowed) {
+//       if (body[k] !== undefined) $set[k] = body[k];
+//     }
+
+//     if ($set.bookingDate !== undefined) {
+//       const d = new Date($set.bookingDate);
+//       if (Number.isNaN(d.getTime())) {
+//         return NextResponse.json({error: "Invalid bookingDate"}, {status: 400});
+//       }
+//       $set.bookingDate = d;
+//     }
+
+//     if ($set.bookingTime !== undefined) {
+//       $set.bookingTime = String($set.bookingTime).trim();
+//     }
+
+//     if ($set.paymentStatus !== undefined) {
+//       const v = String($set.paymentStatus).toLowerCase();
+//       const ok = ["paid", "partial", "unpaid"].includes(v);
+//       if (!ok) {
+//         return NextResponse.json({error: "Invalid paymentStatus"}, {status: 400});
+//       }
+//       $set.paymentStatus = v;
+//     }
+
+//     if ($set.paymentMethod !== undefined) {
+//       $set.paymentMethod = String($set.paymentMethod).toLowerCase();
+//     }
+
+//     if ($set.status !== undefined) {
+//       const v = String($set.status).toLowerCase();
+//       const ok = ["pending", "confirmed", "cancelled", "completed", "unattended"].includes(v);
+//       if (!ok) {
+//         return NextResponse.json({error: "Invalid status"}, {status: 400});
+//       }
+//       $set.status = v;
+//     }
+
+//     // ✅ normalize numbers
+//     if ($set.price !== undefined) {
+//       $set.price = Number($set.price);
+//       if (Number.isNaN($set.price) || $set.price < 0) {
+//         return NextResponse.json({error: "Invalid price"}, {status: 400});
+//       }
+//     }
+
+//     if ($set.originalPrice !== undefined) {
+//       $set.originalPrice = Number($set.originalPrice);
+//       if (Number.isNaN($set.originalPrice) || $set.originalPrice < 0) {
+//         return NextResponse.json({error: "Invalid originalPrice"}, {status: 400});
+//       }
+//     }
+
+//     if ($set.overridePrice !== undefined) {
+//       if ($set.overridePrice === null || $set.overridePrice === "") {
+//         $set.overridePrice = null;
+//       } else {
+//         $set.overridePrice = Number($set.overridePrice);
+//         if (Number.isNaN($set.overridePrice) || $set.overridePrice < 0) {
+//           return NextResponse.json({error: "Invalid overridePrice"}, {status: 400});
+//         }
+//       }
+//     }
+
+//     if ($set.isPriceOverridden !== undefined) {
+//       $set.isPriceOverridden = !!$set.isPriceOverridden;
+//     }
+
+//     const bookingsCol = await bookingsCollection();
+
+//     const update = await bookingsCol.updateOne(
+//       {_id: new ObjectId(bookingId)},
+//       {$set},
+//     );
+
+//     if (update.matchedCount === 0) {
+//       return NextResponse.json({error: "Not found"}, {status: 404});
+//     }
+
+//     const updatedDoc = await bookingsCol.findOne({_id: new ObjectId(bookingId)});
+//     return NextResponse.json(updatedDoc);
+//   } catch (e) {
+//     console.error(e);
+//     return NextResponse.json(
+//       {error: "Failed to update booking"},
+//       {status: 500},
+//     );
+//   }
+// }
