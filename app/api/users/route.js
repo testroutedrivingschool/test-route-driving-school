@@ -36,13 +36,52 @@ export async function GET(req) {
   }
 }
 
+// export async function POST(req) {
+//   const body = await req.json();
+//   body.emailScheduleTime = "00:00";
+//   const result = await (await usersCollection()).insertOne(body);
+
+//   return NextResponse.json(result, {status: 201});
+// }
+
 export async function POST(req) {
   const body = await req.json();
-  body.emailScheduleTime = "00:00";
+  body.emailScheduleTime = "00:00"; // Set default email schedule time
   const result = await (await usersCollection()).insertOne(body);
 
-  return NextResponse.json(result, {status: 201});
+  if (result.acknowledged) {
+    // Send email notification to the admin after a new user is registered
+    const adminEmail = "testroutedrivingschool@gmail.com"; // Replace with the admin email address
+    const subject = "New User Registration Notification";
+    const text = `A new user has registered with the following details:
+      Name: ${body.name}
+      Email: ${body.email}
+      Role: ${body.role}`;
+
+    const html = `
+      <p>A new user has registered with the following details:</p>
+      <ul>
+        <li><strong>Name:</strong> ${body.name}</li>
+        <li><strong>Email:</strong> ${body.email}</li>
+        <li><strong>Role:</strong> ${body.role}</li>
+      </ul>
+    `;
+
+    try {
+      await sendMail({
+        to: adminEmail,
+        subject,
+        html,
+        text,
+      });
+    } catch (error) {
+      console.error("Failed to send email to admin:", error);
+    }
+  }
+
+  return NextResponse.json(result, { status: 201 });
 }
+
 
 export async function PATCH(req) {
   try {

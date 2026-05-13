@@ -375,12 +375,13 @@ export default function BookingsPage() {
       const currentKey = `${dateKey}__${normalizeTime(currentTime)}`;
       const slot = slotsMap[currentKey];
       const isBooked = bookedSlotsMap[currentKey];
+      const isBuffer = bufferSlotsMap[currentKey];
       const isBlockedByTime = isSlotBlockedByTime(startDate, currentTime);
       const vis = slot ? getVisibility(slot) : "";
-
       const isAvailable =
         !isBlockedByTime &&
         !isBooked &&
+        !isBuffer &&
         !!slot &&
         slotMatchesLocation(slot) &&
         vis === "public";
@@ -426,9 +427,9 @@ export default function BookingsPage() {
       maxAvailableMinutes,
       bookingType: "website",
       flowSource: "user",
-returnPath: "/dashboard/user/my-bookings"
+      returnPath: "/dashboard/user/my-bookings",
     };
-
+    
     sessionStorage.setItem("pendingBooking", JSON.stringify(bookingInfo));
     router.push("/booking-confirm");
   };
@@ -577,29 +578,57 @@ returnPath: "/dashboard/user/my-bookings"
     return formatYMD(new Date(bookingDate));
   };
 
-  const bookedSlotsMap = (bookings || []).reduce((acc, b) => {
-    // ignore cancelled bookings
-    if ((b?.status || "").toLowerCase() === "cancelled") {
+  const BOOKING_BUFFER_MIN = 15;
+
+  const bookingAvailabilityMaps = (bookings || []).reduce(
+    (acc, b) => {
+      // ignore cancelled bookings
+      if ((b?.status || "").toLowerCase() === "cancelled") {
+        return acc;
+      }
+
+      const dateKey = getBookingDateKey(b.bookingDate);
+      const startTime = normalizeTime(b.bookingTime);
+
+      const startIdx = timeIndexMap[startTime];
+      if (startIdx == null) return acc;
+
+      const mins = toMinutes(b);
+      const bookingSpan = Math.max(1, Math.ceil(mins / STEP_MIN));
+
+      // actual booked time
+      for (let k = 0; k < bookingSpan; k++) {
+        const t = normalizeTime(times[startIdx + k]);
+        if (!t) break;
+
+        acc.bookedSlotsMap[`${dateKey}__${t}`] = true;
+      }
+
+      // 15 minute unavailable buffer after booking
+      const bufferSpan = Math.ceil(BOOKING_BUFFER_MIN / STEP_MIN);
+
+      for (let k = 0; k < bufferSpan; k++) {
+        const t = normalizeTime(times[startIdx + bookingSpan + k]);
+        if (!t) break;
+
+        const key = `${dateKey}__${t}`;
+
+        // don't overwrite real booked slot
+        if (!acc.bookedSlotsMap[key]) {
+          acc.bufferSlotsMap[key] = true;
+        }
+      }
+
       return acc;
-    }
+    },
+    {
+      bookedSlotsMap: {},
+      bufferSlotsMap: {},
+    },
+  );
 
-    const dateKey = getBookingDateKey(b.bookingDate);
-    const startTime = normalizeTime(b.bookingTime);
-
-    const startIdx = timeIndexMap[startTime];
-    if (startIdx == null) return acc;
-
-    const mins = toMinutes(b);
-    const span = Math.max(1, Math.ceil(mins / STEP_MIN));
-
-    for (let k = 0; k < span; k++) {
-      const t = normalizeTime(times[startIdx + k]);
-      if (!t) break;
-      acc[`${dateKey}__${t}`] = true;
-    }
-
-    return acc;
-  }, {});
+  const bookedSlotsMap = bookingAvailabilityMaps.bookedSlotsMap;
+  const bufferSlotsMap = bookingAvailabilityMaps.bufferSlotsMap;
   useEffect(() => {
     if (instructorId) {
       const selectedInstructor = instructors.find(
@@ -704,21 +733,21 @@ returnPath: "/dashboard/user/my-bookings"
                   Book your driving lessons with certified instructors
                 </p>
               </div>
-             {!isReschedule && selectedLocations && (
-  <div className="text-center">
-    <h3 className="font-bold md:text-lg">{selectedLocations}</h3>
+              {!isReschedule && selectedLocations && (
+                <div className="text-center">
+                  <h3 className="font-bold md:text-lg">{selectedLocations}</h3>
 
-    <button
-      onClick={() => {
-        markModalSeenToday();
-        setShowLocationModal(true);
-      }}
-      className="text-primary font-medium hover:font-bold transition"
-    >
-      Change
-    </button>
-  </div>
-)}
+                  <button
+                    onClick={() => {
+                      markModalSeenToday();
+                      setShowLocationModal(true);
+                    }}
+                    className="text-primary font-medium hover:font-bold transition"
+                  >
+                    Change
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Main Content Area */}
@@ -752,8 +781,8 @@ returnPath: "/dashboard/user/my-bookings"
                       disablePastDates={true}
                     />
                   </div>
-              {!isReschedule && selectedLocations && (
-  <div className="mt-2 md:mt-4 md:hidden text-center">
+                  {!isReschedule && selectedLocations && (
+                    <div className="mt-2 md:mt-4 md:hidden text-center">
                       <h3 className="font-bold md:text-lg">
                         {selectedLocations}
                       </h3>
@@ -883,15 +912,16 @@ returnPath: "/dashboard/user/my-bookings"
                                   >
                                     <div
                                       onClick={() => {
-  
-  if (!selectedLocations) {
-    setShowLocationModal(true);
-    toast.error("Please select a location first");
-    return;
-  }
+                                        if (!selectedLocations) {
+                                          setShowLocationModal(true);
+                                          toast.error(
+                                            "Please select a location first",
+                                          );
+                                          return;
+                                        }
 
-  setSelectedInstructor(instructor);
-}}
+                                        setSelectedInstructor(instructor);
+                                      }}
                                       className="w-full h-full flex flex-col items-center justify-center cursor-pointer p-1 md:p-3  rounded-xl border-2 transition-all duration-200 hover:border-primary/20 hover:shadow-sm border-border-color "
                                     >
                                       <div className="w-11 h-11 md:w-16 md:h-16 rounded-full overflow-hidden flex items-center justify-center mb-3">
@@ -1070,6 +1100,10 @@ returnPath: "/dashboard/user/my-bookings"
                                             bookedSlotsMap[
                                               `${dateKey}__${timeKey}`
                                             ];
+                                          const isBuffer =
+                                            bufferSlotsMap[
+                                              `${dateKey}__${timeKey}`
+                                            ];
                                           const slot =
                                             slotsMap[`${dateKey}__${timeKey}`];
 
@@ -1077,6 +1111,16 @@ returnPath: "/dashboard/user/my-bookings"
                                             isSlotBlockedByTime(date, time);
 
                                           if (isBlockedByTime) {
+                                            return (
+                                              <td
+                                                key={dayIndex}
+                                                className={tdClass}
+                                              >
+                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
+                                              </td>
+                                            );
+                                          }
+                                          if (isBuffer) {
                                             return (
                                               <td
                                                 key={dayIndex}
@@ -1321,7 +1365,7 @@ returnPath: "/dashboard/user/my-bookings"
                                     </thead>
 
                                     <tbody>
-                                     {visibleTimes.map((time) => {
+                                      {visibleTimes.map((time) => {
                                         const hourLine =
                                           isHourStart(time) &&
                                           time !== times[0];
@@ -1363,7 +1407,10 @@ returnPath: "/dashboard/user/my-bookings"
                                                 bookedSlotsMap[
                                                   `${dateKey}__${timeKey}`
                                                 ];
-
+                                              const isBuffer =
+                                                bufferSlotsMap[
+                                                  `${dateKey}__${timeKey}`
+                                                ];
                                               const key = `${dateKey}__${normalizeTime(time)}`;
                                               const slot = slotsMap[key];
                                               const vis = slot
@@ -1386,7 +1433,16 @@ returnPath: "/dashboard/user/my-bookings"
                                                   </td>
                                                 );
                                               }
-
+                                              if (isBuffer) {
+                                                return (
+                                                  <td
+                                                    key={dayIndex}
+                                                    className={cellClass}
+                                                  >
+                                                    <div className="w-full min-h-10 bg-[#eee]" />
+                                                  </td>
+                                                );
+                                              }
                                               if (isBooked) {
                                                 return (
                                                   <td

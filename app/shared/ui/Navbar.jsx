@@ -163,7 +163,28 @@ const instructorDashboardRoutes = [
   "/instructor-reports",
   "/dashboard/instructor/suburbs",
 ];
-
+const avatarDropdownLinks =
+  userData?.role === "user"
+    ? [
+        {id: "dashboard", label: "Dashboard", pathname: "/dashboard/user"},
+        {id: "profile", label: "Profile", pathname: "/dashboard/user/profile"},
+        {id: "booking", label: "My Bookings", pathname: "/dashboard/user/my-bookings"},
+        {id: "messages", label: "Messages", pathname: "/dashboard/user/messages"},
+        {id: "purchases", label: "Purchases", pathname: "/dashboard/user/purchases"},
+        {id: "progress", label: "My Progress", pathname: "/dashboard/user/my-progress"},
+        {id: "Feedback", label: "Leave Feedback", pathname: "/dashboard/user/feedback"},
+      ]:
+    userData?.role==="admin"?[
+        {id: "dashboard", label: "Dashboard", pathname: "/dashboard/admin"},
+        {id: "profile", label: "Profile", pathname: "/dashboard/admin/profile"},
+        {id: "admin-purchases", label: "Purchases", pathname: "/dashboard/admin/purchases"},
+        {id: "all-bookings", label: "All Bookings", pathname: "/dashboard/admin/all-bookings"},
+        {id: "manage-packages", label: "Manage Packages", pathname: "/dashboard/admin/manage-packages"},
+        {id: "manage-instructor", label: "Manage Instructors", pathname: "/dashboard/admin/manage-instructors"},
+        {id: "manage-instructor-slots", label: "Manage Instructor Slots", pathname: "/dashboard/admin/manage-instructors-slots"},
+        {id: "manage-instructor-payouts", label: "Manage Instructor Payouts", pathname: "/dashboard/admin/instructor-payouts"},
+        {id: "manage-users", label: "Manage Users", pathname: "/dashboard/admin/manage-users"},
+      ]: [];
 const isInDashboard =
   pathname?.startsWith("/dashboard") ||
   instructorDashboardRoutes.includes(pathname);
@@ -329,15 +350,16 @@ const finalNavLinks = dynamicFirstNavItem
       </div>
     </button>
 
-    <AvatarDropdown
-      open={avatarOpen}
-      onClose={() => setAvatarOpen(false)}
-      anchorRef={avatarBtnRef}
-      dashHref={dashHref}
-      user={userData}
-      onLogout={handleLogout}
-      finalNavLinks={finalNavLinks}
-    />
+   <AvatarDropdown
+  open={avatarOpen}
+  onClose={() => setAvatarOpen(false)}
+  anchorRef={avatarBtnRef}
+  dashHref={dashHref}
+  user={userData}
+  onLogout={handleLogout}
+  finalNavLinks={finalNavLinks}
+  dropdownLinks={avatarDropdownLinks}
+/>
   </div>
 ) : (
   <div className="hidden md:block">

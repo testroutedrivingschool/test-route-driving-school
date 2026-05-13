@@ -1,45 +1,45 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
+import {useRouter} from "next/navigation";
+import {useQuery} from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
-import { useUserData } from "@/app/hooks/useUserData";
+import {useUserData} from "@/app/hooks/useUserData";
 import Container from "@/app/shared/ui/Container";
-import { useEffect, useMemo, useState } from "react";
+import {useEffect, useMemo, useState} from "react";
 import PrimaryBtn from "@/app/shared/Buttons/PrimaryBtn";
-import { toast } from "react-toastify";
+import {toast} from "react-toastify";
 
 const DURATIONS = [
-  { label: "1 Hour", minutes: 60 },
-  { label: "1hr 30m", minutes: 90 },
-  { label: "2 Hours", minutes: 120 },
-  { label: "2hr 30m", minutes: 150 },
-  { label: "3 Hours", minutes: 180 },
-  { label: "3hr 30m", minutes: 210 },
-  { label: "4 Hours", minutes: 240 },
+  {label: "1 Hour", minutes: 60},
+  {label: "1hr 30m", minutes: 90},
+  {label: "2 Hours", minutes: 120},
+  {label: "2hr 30m", minutes: 150},
+  {label: "3 Hours", minutes: 180},
+  {label: "3hr 30m", minutes: 210},
+  {label: "4 Hours", minutes: 240},
 ];
 
 function getSuburbBasedServices(
   instructor = {},
   selectedSuburb = "",
-  maxAvailableMinutes = Infinity
+  maxAvailableMinutes = Infinity,
 ) {
   const instructorServices = instructor?.services || [];
   const suburbConfig = instructor?.suburbs?.find(
-    (s) => s.name === selectedSuburb
+    (s) => s.name === selectedSuburb,
   );
 
   return instructorServices
     .filter(
       (service) =>
         Array.isArray(service.prices) &&
-        service.prices.some((price) => price != null)
+        service.prices.some((price) => price != null),
     )
     .map((service) => {
       const suburbPkg = suburbConfig?.packages?.find(
-        (p) => p.serviceName === service.name
+        (p) => p.serviceName === service.name,
       );
 
       const prices = DURATIONS.map((_, i) => service.prices?.[i] ?? null);
@@ -48,7 +48,7 @@ function getSuburbBasedServices(
         (_, i) =>
           !!service.activeDurations?.[i] &&
           prices[i] != null &&
-          DURATIONS[i].minutes <= maxAvailableMinutes
+          DURATIONS[i].minutes <= maxAvailableMinutes,
       );
 
       // If no suburb package found, fall back to global availability
@@ -71,25 +71,23 @@ function getSuburbBasedServices(
     .filter((service) => service.activeDurations.some(Boolean));
 }
 
-
 export default function BookingConfirmPage() {
   const router = useRouter();
-  const { data: userData, isLoading:isUserLoading } = useUserData();
+  const {data: userData, isLoading: isUserLoading} = useUserData();
   const [booking, setBooking] = useState(undefined);
   const [isMobile, setIsMobile] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [overridePrice, setOverridePrice] = useState("");
-const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-
-
+  
   useEffect(() => {
-  if (isUserLoading) return;
+    if (isUserLoading) return;
 
-  if (!userData) {
-    router.push("/login?redirect=/booking-confirm");
-  }
-}, [userData,isUserLoading,router]);
+    if (!userData) {
+      router.push("/login?redirect=/booking-confirm");
+    }
+  }, [userData, isUserLoading, router]);
   useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
 
@@ -112,10 +110,12 @@ const [submitting, setSubmitting] = useState(false);
     return () => window.removeEventListener("resize", checkScreen);
   }, []);
 
-  const { data: instructor, isLoading } = useQuery({
+  const {data: instructor, isLoading} = useQuery({
     queryKey: ["instructor", booking?.instructorEmail],
     queryFn: async () => {
-      const res = await axios.get(`/api/instructors?email=${booking.instructorEmail}`);
+      const res = await axios.get(
+        `/api/instructors?email=${booking.instructorEmail}`,
+      );
       return res.data;
     },
     enabled: !!booking,
@@ -123,72 +123,71 @@ const [submitting, setSubmitting] = useState(false);
 
   const selectedSuburb = booking?.suburb || booking?.location || "";
   const isManualBooking = booking?.bookingType === "manual";
-const isPackageBalanceBooking =
-  !!booking?.useClientBalance && !!booking?.purchaseId;
-  const { data: balanceClient, isLoading: isBalanceClientLoading } = useQuery({
-  queryKey: ["balance-client", booking?.clientId, booking?.clientEmail],
-  enabled:
-    !!booking?.useClientBalance &&
-    (!!booking?.clientId || !!booking?.clientEmail),
-  queryFn: async () => {
-    if (booking?.clientId) {
-      const res = await axios.get(`/api/clients/${booking.clientId}`);
-      return res.data;
-    }
+  const isPackageBalanceBooking =
+    !!booking?.useClientBalance && !!booking?.purchaseId;
+  const {data: balanceClient, isLoading: isBalanceClientLoading} = useQuery({
+    queryKey: ["balance-client", booking?.clientId, booking?.clientEmail],
+    enabled:
+      !!booking?.useClientBalance &&
+      (!!booking?.clientId || !!booking?.clientEmail),
+    queryFn: async () => {
+      if (booking?.clientId) {
+        const res = await axios.get(`/api/clients/${booking.clientId}`);
+        return res.data;
+      }
 
-    const res = await axios.get("/api/clients", {
-      params: {
-        email: booking.clientEmail,
-        exactEmail: "true",
-      },
-    });
+      const res = await axios.get("/api/clients", {
+        params: {
+          email: booking.clientEmail,
+          exactEmail: "true",
+        },
+      });
 
-    const list = Array.isArray(res.data) ? res.data : [];
+      const list = Array.isArray(res.data) ? res.data : [];
 
-    return (
-      list.find(
-        (client) =>
-          String(client.email || "").toLowerCase() ===
-            String(booking.clientEmail || "").toLowerCase() ||
-          String(client.linkedUserEmail || "").toLowerCase() ===
-            String(booking.clientEmail || "").toLowerCase()
-      ) ||
-      list[0] ||
-      null
-    );
-  },
-});
+      return (
+        list.find(
+          (client) =>
+            String(client.email || "").toLowerCase() ===
+              String(booking.clientEmail || "").toLowerCase() ||
+            String(client.linkedUserEmail || "").toLowerCase() ===
+              String(booking.clientEmail || "").toLowerCase(),
+        ) ||
+        list[0] ||
+        null
+      );
+    },
+  });
 
-const latestClientBalance = Number(
-  balanceClient?.accountBalance ?? booking?.clientAccountBalance ?? 0
-);
-const services = useMemo(() => {
-  return getSuburbBasedServices(
-    instructor || {},
-    selectedSuburb,
-    booking?.maxAvailableMinutes ?? Infinity
+  const latestClientBalance = Number(
+    balanceClient?.accountBalance ?? booking?.clientAccountBalance ?? 0,
   );
-}, [instructor, selectedSuburb, booking?.maxAvailableMinutes]);
+  const services = useMemo(() => {
+    return getSuburbBasedServices(
+      instructor || {},
+      selectedSuburb,
+      booking?.maxAvailableMinutes ?? Infinity,
+    );
+  }, [instructor, selectedSuburb, booking?.maxAvailableMinutes]);
 
   const parsedOverridePrice =
     overridePrice !== "" && !Number.isNaN(Number(overridePrice))
       ? Number(overridePrice)
       : null;
 
-const finalPrice =
-  isPackageBalanceBooking
-    ? selectedBooking?.price ?? 0
+  const finalPrice = isPackageBalanceBooking
+    ? (selectedBooking?.price ?? 0)
     : isManualBooking && parsedOverridePrice != null && parsedOverridePrice > 0
       ? parsedOverridePrice
-      : selectedBooking?.price ?? 0;
+      : (selectedBooking?.price ?? 0);
 
- const hasOverride =
-  !isPackageBalanceBooking &&
-  isManualBooking &&
-  parsedOverridePrice != null &&
-  parsedOverridePrice > 0 &&
-  selectedBooking &&
-  Number(parsedOverridePrice) !== Number(selectedBooking.price);
+  const hasOverride =
+    !isPackageBalanceBooking &&
+    isManualBooking &&
+    parsedOverridePrice != null &&
+    parsedOverridePrice > 0 &&
+    selectedBooking &&
+    Number(parsedOverridePrice) !== Number(selectedBooking.price);
 
   const handleConfirmBooking = async () => {
     if (parsedOverridePrice != null && !selectedBooking) {
@@ -202,93 +201,101 @@ const finalPrice =
     if (parsedOverridePrice != null && parsedOverridePrice <= 0) {
       return toast.error("Override price must be greater than 0");
     }
-if (isPackageBalanceBooking) {
-  if (!booking.clientId) {
-    return toast.error("Client is missing for package booking");
-  }
+    if (isPackageBalanceBooking) {
+      if (!booking.clientId) {
+        return toast.error("Client is missing for package booking");
+      }
 
-  if (!booking.purchaseId) {
-    return toast.error("Purchase is missing for package booking");
-  }
+      if (!booking.purchaseId) {
+        return toast.error("Purchase is missing for package booking");
+      }
 
-  if (latestClientBalance < finalPrice) {
-    return toast.error(
-      `Client balance is not enough. Balance: $${latestClientBalance.toFixed(
-        2
-      )}, Required: $${Number(finalPrice || 0).toFixed(2)}`
-    );
-  }
+      if (latestClientBalance < finalPrice) {
+        return toast.error(
+          `Client balance is not enough. Balance: $${latestClientBalance.toFixed(
+            2,
+          )}, Required: $${Number(finalPrice || 0).toFixed(2)}`,
+        );
+      }
 
-  const bookingData = {
-    instructorEmail: instructor.email,
-    instructorName: instructor.name,
-    instructorId: instructor._id,
+      const bookingData = {
+        instructorEmail: instructor.email,
+        instructorName: instructor.name,
+        instructorId: instructor._id,
 
-    flowSource: "admin-purchase",
-    returnPath: booking.returnPath || "/dashboard/admin/purchases",
+        flowSource: "admin-purchase",
+        returnPath: booking.returnPath || "/dashboard/admin/purchases",
 
-    purchaseId: booking.purchaseId,
-    useClientBalance: true,
+        purchaseId: booking.purchaseId,
+        useClientBalance: true,
 
-    serviceName: selectedBooking.service,
-    duration: selectedBooking.duration,
-    minutes: selectedBooking.minutes,
+        serviceName: selectedBooking.service,
+        duration: selectedBooking.duration,
+        minutes: selectedBooking.minutes,
 
-    price: finalPrice,
-    originalPrice: selectedBooking.price,
-    overridePrice: null,
-    isPriceOverridden: false,
+        price: finalPrice,
+        originalPrice: selectedBooking.price,
+        overridePrice: null,
+        isPriceOverridden: false,
 
-    bookingDate: booking.date,
-    bookingTime: booking.time,
-    location: booking.location || "",
-    suburb: booking.suburb || booking.location || "",
+        bookingDate: booking.date,
+        bookingTime: booking.time,
+        location: booking.location || "",
+        suburb: booking.suburb || booking.location || "",
 
-    status: "confirmed",
-    bookingType: "manual",
+        status: "confirmed",
+        bookingType: "manual",
 
-    paymentStatus: "paid",
-    paymentMethod: "accountBalance",
-    paidAmount: finalPrice,
-    totalPaidAmount: finalPrice,
-    outstanding: 0,
-    processingFee: 0,
+        paymentStatus: "paid",
+        paymentMethod: "accountBalance",
+        paidAmount: finalPrice,
+        totalPaidAmount: finalPrice,
+        outstanding: 0,
+        processingFee: 0,
 
-    clientId: booking.clientId,
-    clientName: booking.clientName,
-    clientEmail: booking.clientEmail,
-    clientPhone: booking.clientPhone,
-    clientAddress: booking.clientAddress,
+        clientId: booking.clientId,
+        clientName: booking.clientName,
+        clientEmail: booking.clientEmail,
+        clientPhone: booking.clientPhone
+          ? booking.clientPhone
+          : booking.userPhone || "",
+        clientAddress: booking.clientAddress,
 
-    userName: booking.clientName,
-    userEmail: booking.clientEmail,
-    userPhone: booking.clientPhone,
-    address: booking.clientAddress,
-  };
+        userName: booking.clientName
+          ? booking.clientName
+          : booking.userName || "",
+        userEmail: booking.clientEmail
+          ? booking.clientEmail
+          : booking.clientEmail || "",
+        userPhone: booking.clientPhone
+          ? booking.clientPhone
+          : booking.userPhone || "",
+        address: booking.clientAddress?booking.clientAddress:booking.clientAddress || "",
+      };
 
-  try {
-    setSubmitting(true);
+      try {
+        setSubmitting(true);
 
-    const res = await axios.post("/api/bookings", bookingData);
+        const res = await axios.post("/api/bookings", bookingData);
 
-    toast.success("Booking confirmed using client balance");
+        toast.success("Booking confirmed using client balance");
 
-    sessionStorage.removeItem("pendingBooking");
-    sessionStorage.removeItem("packageBookingContext");
+        sessionStorage.removeItem("pendingBooking");
+        sessionStorage.removeItem("packageBookingContext");
 
-    router.push(booking.returnPath || "/dashboard/admin/purchases");
-  } catch (err) {
-    toast.error(
-      err?.response?.data?.error ||
-        err?.response?.data?.details ||
-        "Failed to create balance booking"
-    );
-  } finally {
-    setSubmitting(false);
-  }
+        router.push(booking.returnPath || "/dashboard/admin/purchases");
+      } catch (err) {
+        toast.error(
+          err?.response?.data?.error ||
+            err?.response?.data?.details ||
+            "Failed to create balance booking",
+        );
+      } finally {
+        setSubmitting(false);
+      }
 
-  return;
-}
+      return;
+    }
     if (booking.bookingType === "website") {
       const bookingData = {
         userId: userData._id,
@@ -301,8 +308,8 @@ if (isPackageBalanceBooking) {
         instructorName: instructor.name,
         instructorId: instructor._id,
 
-  flowSource: booking.flowSource || "user",
-  returnPath: booking.returnPath || "/bookings",
+        flowSource: booking.flowSource || "user",
+        returnPath: booking.returnPath || "/bookings",
 
         serviceName: selectedBooking.service,
         duration: selectedBooking.duration,
@@ -333,8 +340,8 @@ if (isPackageBalanceBooking) {
         instructorName: instructor.name,
         instructorId: instructor._id,
 
-    flowSource: booking.flowSource || "instructor",
-  returnPath: booking.returnPath || "/bookings",
+        flowSource: booking.flowSource || "instructor",
+        returnPath: booking.returnPath || "/bookings",
         serviceName: selectedBooking.service,
         duration: selectedBooking.duration,
         minutes: selectedBooking.minutes,
@@ -374,8 +381,8 @@ if (isPackageBalanceBooking) {
       originalPrice: selectedBooking.price,
       overridePrice: hasOverride ? finalPrice : null,
       isPriceOverridden: !!hasOverride,
-  flowSource: booking.flowSource || "instructor",
-  returnPath: booking.returnPath || "/bookings",
+      flowSource: booking.flowSource || "instructor",
+      returnPath: booking.returnPath || "/bookings",
       bookingDate: booking.date,
       bookingTime: booking.time,
       location: booking.location,
@@ -394,13 +401,13 @@ if (isPackageBalanceBooking) {
       ? `/api/storage/proxy?key=${encodeURIComponent(instructor.photoKey)}`
       : "/profile-avatar.png";
 
-if (
-  isLoading ||
-  isUserLoading ||
-  isBalanceClientLoading ||
-  !instructor ||
-  !booking
-) {
+  if (
+    isLoading ||
+    isUserLoading ||
+    isBalanceClientLoading ||
+    !instructor ||
+    !booking
+  ) {
     return <LoadingSpinner />;
   }
 
@@ -432,92 +439,117 @@ if (
                 <div className="md:col-span-3 ">
                   <div className="space-y-1 md:space-y-2">
                     <div className="flex items-center gap-6">
-                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Date:</p>
-                      <p className="flex-1 text-sm md:text-base">{new Date(booking.date).toDateString()}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">
+                        Date:
+                      </p>
+                      <p className="flex-1 text-sm md:text-base">
+                        {new Date(booking.date).toDateString()}
+                      </p>
                     </div>
                     <div className="flex justify-start items-center  gap-6">
-                      <p className="flex-1 text-sm md:text-base font-semibold w-45 ">Time:</p>
-                      <p className="flex-1 text-sm md:text-base">{booking.time}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45 ">
+                        Time:
+                      </p>
+                      <p className="flex-1 text-sm md:text-base">
+                        {booking.time}
+                      </p>
                     </div>
                     <div className="flex items-center gap-6">
-                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Instructor:</p>
-                      <p className="flex-1 text-sm md:text-base">{instructor.name}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">
+                        Instructor:
+                      </p>
+                      <p className="flex-1 text-sm md:text-base">
+                        {instructor.name}
+                      </p>
                     </div>
-                    {
-                      selectedSuburb && <div className="flex items-center gap-6">
-                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Suburb:</p>
-                      <p className="flex-1 text-sm md:text-base">{selectedSuburb || "-"}</p>
-                    </div>
-                    }
-                    
+                    {selectedSuburb && (
+                      <div className="flex items-center gap-6">
+                        <p className="flex-1 text-sm md:text-base font-semibold w-45">
+                          Suburb:
+                        </p>
+                        <p className="flex-1 text-sm md:text-base">
+                          {selectedSuburb || "-"}
+                        </p>
+                      </div>
+                    )}
+
                     <div className="flex items-center gap-6">
-                      <p className="flex-1 text-sm md:text-base font-semibold w-45">Booking Length:</p>
-                      <p className="flex-1 text-sm md:text-base">{selectedBooking ? selectedBooking.duration : "0 mins"}</p>
+                      <p className="flex-1 text-sm md:text-base font-semibold w-45">
+                        Booking Length:
+                      </p>
+                      <p className="flex-1 text-sm md:text-base">
+                        {selectedBooking ? selectedBooking.duration : "0 mins"}
+                      </p>
                     </div>
                   </div>
                 </div>
               </div>
-{isPackageBalanceBooking && (
-  <div className="mx-2 md:mx-4 mb-5 rounded-xl border border-primary/20 bg-primary/5 p-4">
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div>
-        <div className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
-          Package Balance Payment
-        </div>
+              {isPackageBalanceBooking && (
+                <div className="mx-2 md:mx-4 mb-5 rounded-xl border border-primary/20 bg-primary/5 p-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <div className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-bold text-white">
+                        Package Balance Payment
+                      </div>
 
-        <h3 className="mt-2 text-lg font-bold text-gray-900">
-          This booking will be paid from client account balance
-        </h3>
+                      <h3 className="mt-2 text-lg font-bold text-gray-900">
+                        This booking will be paid from client account balance
+                      </h3>
 
-        <p className="text-sm text-gray-600 mt-1">
-          Client: {booking.clientName || "Client"} • Purchase:{" "}
-          {booking.purchaseId}
-        </p>
-      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Client: {booking.clientName || "Client"} • Purchase:{" "}
+                        {booking.purchaseId}
+                      </p>
+                    </div>
 
-      <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-lg bg-white border border-border-color px-4 py-3">
-          <p className="text-xs text-gray-500">Available Balance</p>
-          <p className="text-xl font-bold text-green-700">
-            ${latestClientBalance.toFixed(2)}
-          </p>
-        </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="rounded-lg bg-white border border-border-color px-4 py-3">
+                        <p className="text-xs text-gray-500">
+                          Available Balance
+                        </p>
+                        <p className="text-xl font-bold text-green-700">
+                          ${latestClientBalance.toFixed(2)}
+                        </p>
+                      </div>
 
-        <div className="rounded-lg bg-white border border-border-color px-4 py-3">
-          <p className="text-xs text-gray-500">Selected Price</p>
-          <p className="text-xl font-bold text-gray-900">
-            ${Number(finalPrice || 0).toFixed(2)}
-          </p>
-        </div>
-      </div>
-    </div>
+                      <div className="rounded-lg bg-white border border-border-color px-4 py-3">
+                        <p className="text-xs text-gray-500">Selected Price</p>
+                        <p className="text-xl font-bold text-gray-900">
+                          ${Number(finalPrice || 0).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
 
-    {!!booking.packagePackages?.length && (
-      <div className="mt-4 flex flex-wrap gap-2">
-        {booking.packagePackages.map((pkg, idx) => (
-          <span
-            key={`${pkg.packageId || idx}`}
-            className="rounded-full bg-white border border-border-color px-3 py-1 text-xs font-semibold text-gray-700"
-          >
-            {pkg.packageName || "Package"} • {pkg.duration || "N/A"} • $
-            {Number(pkg.lineTotal || 0).toFixed(2)}
-          </span>
-        ))}
-      </div>
-    )}
-  </div>
-)}
+                  {!!booking.packagePackages?.length && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {booking.packagePackages.map((pkg, idx) => (
+                        <span
+                          key={`${pkg.packageId || idx}`}
+                          className="rounded-full bg-white border border-border-color px-3 py-1 text-xs font-semibold text-gray-700"
+                        >
+                          {pkg.packageName || "Package"} •{" "}
+                          {pkg.duration || "N/A"} • $
+                          {Number(pkg.lineTotal || 0).toFixed(2)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               {services.length === 0 ? (
                 <div className="w-full py-10 flex flex-col items-center justify-center text-center gap-3 bg-base-100 border border-dashed border-border-color rounded">
                   <p className="w-full text-lg font-semibold text-gray-700">
                     No Services Available
                   </p>
                   <p className="text-sm text-gray-500">
-                    This instructor does not have any services available for the selected Slots/Suburbs.
+                    This instructor does not have any services available for the
+                    selected Slots/Suburbs.
                   </p>
 
                   <PrimaryBtn className="mt-3" onClick={() => router.back()}>
-                    Go Back                  </PrimaryBtn>
+                    Go Back{" "}
+                  </PrimaryBtn>
                 </div>
               ) : (
                 <>
@@ -537,7 +569,7 @@ if (
                     />
                   )}
 
-                {isManualBooking && !isPackageBalanceBooking && (
+                  {isManualBooking && !isPackageBalanceBooking && (
                     <div className="px-4 md:px-4 mt-6">
                       <div className=" space-y-4">
                         <div className="flex flex-col md:flex-row md:items-end gap-4">
@@ -554,19 +586,14 @@ if (
                                 min="0"
                                 step="0.01"
                                 value={overridePrice}
-                                onChange={(e) => setOverridePrice(e.target.value)}
-                                placeholder={
-                                  selectedBooking
-                                    ? ``
-                                    : ""
+                                onChange={(e) =>
+                                  setOverridePrice(e.target.value)
                                 }
+                                placeholder={selectedBooking ? `` : ""}
                                 className="w-full border border-border-color rounded-lg pl-8 pr-3 py-2.5 outline-none focus:ring-2 focus:ring-primary/20"
                               />
                             </div>
-                            
                           </div>
-
-                         
                         </div>
                       </div>
                     </div>
@@ -575,17 +602,17 @@ if (
               )}
 
               <div className="mt-6 mb-6 md:px-8 px-2">
-              <PrimaryBtn
-  className="w-full md:w-auto text-center! justify-center!"
-  onClick={handleConfirmBooking}
-  disabled={submitting}
->
-  {submitting
-    ? "Confirming..."
-    : isPackageBalanceBooking
-      ? `Confirm & Deduct $${Number(finalPrice || 0).toFixed(2)}`
-      : "Proceed"}
-</PrimaryBtn>
+                <PrimaryBtn
+                  className="w-full md:w-auto text-center! justify-center!"
+                  onClick={handleConfirmBooking}
+                  disabled={submitting}
+                >
+                  {submitting
+                    ? "Confirming..."
+                    : isPackageBalanceBooking
+                      ? `Confirm & Deduct $${Number(finalPrice || 0).toFixed(2)}`
+                      : "Proceed"}
+                </PrimaryBtn>
               </div>
             </div>
           </div>
@@ -642,7 +669,12 @@ function ServiceRow({
   );
 }
 
-function DesktopTable({ services, durations, selectedBooking, setSelectedBooking }) {
+function DesktopTable({
+  services,
+  durations,
+  selectedBooking,
+  setSelectedBooking,
+}) {
   return (
     <div className="px-4 overflow-x-auto">
       <table className="w-full min-w-[700px] border border-border-color text-sm">
@@ -675,7 +707,12 @@ function DesktopTable({ services, durations, selectedBooking, setSelectedBooking
   );
 }
 
-function MobileTable({ services, durations, selectedBooking, setSelectedBooking }) {
+function MobileTable({
+  services,
+  durations,
+  selectedBooking,
+  setSelectedBooking,
+}) {
   return (
     <div className="px-2 overflow-x-auto ">
       <table className="w-full  border border-border-color text-[11px]">

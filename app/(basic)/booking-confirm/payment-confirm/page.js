@@ -30,8 +30,8 @@ export default function PaymentConfirmPage() {
 
 function calculateStripeTotal(baseAmount) {
   const STRIPE_PERCENT = 0.017;
-  const STRIPE_FIXED = 0.20;
-  const GST_RATE = 0.10;
+  const STRIPE_FIXED = 0.2;
+  const GST_RATE = 0.1;
 
   let totalCents = Math.round(baseAmount * 100);
 
@@ -79,7 +79,7 @@ function PaymentForm() {
 
     setBooking(bookingData);
     setAddress(bookingData.clientAddress ?? bookingData.userAddress ?? "");
-    setPhone(bookingData.clientPhone || bookingData.userPhone || "");
+    setPhone(bookingData.clientPhone?bookingData.clientPhone:bookingData.userPhone ||  "");
     setSuburb(
       bookingData.location
         ? bookingData.location
@@ -98,24 +98,21 @@ function PaymentForm() {
 
   if (!booking) return <LoadingSpinner />;
 
-const baseAmount = Number(booking.price || 0);
+  const baseAmount = Number(booking.price || 0);
 
-const feeData =
-  booking.bookingType === "website"
-    ? calculateStripeTotal(baseAmount)
-    : {
-        totalAmount: baseAmount,
-        processingFee: 0,
-        stripeFee: 0,
-        tax: 0,
-        netAmount: baseAmount,
-      };
+  const feeData =
+    booking.bookingType === "website"
+      ? calculateStripeTotal(baseAmount)
+      : {
+          totalAmount: baseAmount,
+          processingFee: 0,
+          stripeFee: 0,
+          tax: 0,
+          netAmount: baseAmount,
+        };
 
-const totalAmount = feeData.totalAmount;
-const processingFee = feeData.processingFee;
-
-
-
+  const totalAmount = feeData.totalAmount;
+  const processingFee = feeData.processingFee;
 
   const handleConfirmPayment = async () => {
     if (!acceptedTerms) {
@@ -128,37 +125,39 @@ const processingFee = feeData.processingFee;
     setLoading(true);
 
     try {
-     const clientId = String(booking?.clientId);
+      const clientId = String(booking?.clientId);
 
       // ✅ MANUAL booking => NO payment
       if (booking.bookingType === "manual") {
         if (clientId) {
-          await axios.patch(`/api/clients/${clientId}`, {address, suburb,mobile:phone});
+          await axios.patch(`/api/clients/${clientId}`, {
+            address,
+            suburb,
+            mobile: phone,
+          });
         }
 
         await axios.post("/api/bookings", {
           ...booking,
           address,
           suburb,
-         
 
-  price: booking.price,
-totalPaidAmount: booking.price,
-processingFee: 0,
+          price: booking.price,
+          totalPaidAmount: booking.price,
+          processingFee: 0,
           status: "pending",
           paymentStatus: "unpaid",
           paymentIntentId: null,
-          
         });
 
         const returnPath =
-  booking?.returnPath ||
-  (booking?.flowSource === "admin"
-    ? "/dashboard/admin/manage-instructors-slots"
-    : "/instructor-bookings");
+          booking?.returnPath ||
+          (booking?.flowSource === "admin"
+            ? "/dashboard/admin/manage-instructors-slots"
+            : "/instructor-bookings");
         sessionStorage.removeItem("pendingBooking");
         toast.success("Booking created (Unpaid) ✅");
-      router.push(returnPath);
+        router.push(returnPath);
         return;
       } else {
         // ✅ WEBSITE booking => Stripe payment required
@@ -189,24 +188,21 @@ processingFee: 0,
           toast.error(result.error.message);
           return;
         }
-const clientId = String(booking?.clientId);
+        const clientId = String(booking?.clientId);
         await axios.post("/api/bookings", {
           ...booking,
           phone,
           address,
           suburb,
 
-         
-          
+          totalPaidAmount: data.totalAmount,
+          processingFee: data.processingFee,
 
-totalPaidAmount: data.totalAmount,
-processingFee: data.processingFee,
-  
-  price: baseAmount,          
-             
-  paymentIntentId: result.paymentIntent.id,
-  status: "pending",
-  paymentStatus: "paid",
+          price: baseAmount,
+
+          paymentIntentId: result.paymentIntent.id,
+          status: "pending",
+          paymentStatus: "paid",
         });
         await axios.patch(`/api/users`, {
           email: booking.userEmail,
@@ -220,7 +216,6 @@ processingFee: data.processingFee,
         router.push("/dashboard/user/my-bookings");
       }
     } catch (err) {
-    
       toast.error("Failed to Booking");
     } finally {
       setLoading(false);
@@ -246,29 +241,28 @@ processingFee: data.processingFee,
             <p>
               <strong>Duration:</strong> {booking.duration}
             </p>
-           <p>
-  <strong>Price:</strong> ${baseAmount.toFixed(2)}
-</p>
-<p>
-  <strong>Card Processing Fee:</strong> ${processingFee.toFixed(2)}
-</p>
-<p className="text-lg font-bold">
-  Total: <span className="text-primary">${totalAmount.toFixed(2)}</span>
-</p>
+            <p>
+              <strong>Price:</strong> ${baseAmount.toFixed(2)}
+            </p>
+            <p>
+              <strong>Card Processing Fee:</strong> ${processingFee.toFixed(2)}
+            </p>
+            <p className="text-lg font-bold">
+              Total:{" "}
+              <span className="text-primary">${totalAmount.toFixed(2)}</span>
+            </p>
           </div>
 
           {/* Phone */}
           <div className="space-y-2">
             <label className="font-medium">Phone</label>
             <input
-              type="number"
+              type="text"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="input-class"
+              className="input-class "
               required
             />
-         
-           
           </div>
           {/* Address */}
           <div className="space-y-2">
@@ -335,7 +329,7 @@ processingFee: data.processingFee,
                 disabled={loading}
                 className="w-full justify-center py-3 text-lg"
               >
-              {loading ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
+                {loading ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
               </PrimaryBtn>
             </>
           ) : (

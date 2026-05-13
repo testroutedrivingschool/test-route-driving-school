@@ -308,6 +308,8 @@ function buildAdminDigestHtml(bookings) {
   `;
 }
 
+
+
 export async function GET(req) {
   try {
     assertCron(req);
@@ -318,22 +320,34 @@ export async function GET(req) {
     const usersCol = await usersCollection();
     const clientsCol = await clientsCollection();
     const emailCol = await emailsCollection();
+
     // 1) Users (admin/instructor/user)
     const userReceivers = await usersCol
       .find({
         emailScheduleTime: nowHHMM,
-        role: {$in: ["user", "instructor", "admin"]},
+        role: { $in: ["user", "instructor", "admin"] },
       })
-      .project({email: 1, name: 1, role: 1})
+      .project({ email: 1, name: 1, role: 1 })
       .toArray();
 
-    // 2) Clients (roleType: client)
+    // 2) Clients (roleType: client), but only those who have bookings for today
     const clientReceivers = await clientsCol
-      .find({
-        emailScheduleTime: nowHHMM,
-        roleType: "client",
-      })
-      .project({email: 1, name: 1, roleType: 1})
+      .aggregate([
+        {
+          $match: { emailScheduleTime: nowHHMM, roleType: "client" },
+        },
+        {
+          $lookup: {
+            from: "bookings",
+            localField: "email",
+            foreignField: "userEmail",
+            as: "bookingsToday",
+          },
+        },
+        { $unwind: { path: "$bookingsToday", preserveNullAndEmptyArrays: true } },
+        { $match: { "bookingsToday.bookingDate": { $gte: new Date() } } },
+        { $project: { email: 1, name: 1, roleType: 1 } },
+      ])
       .toArray();
 
     // Normalize + de-duplicate receivers
@@ -341,9 +355,7 @@ export async function GET(req) {
 
     // users/admin/instructors
     for (const u of userReceivers) {
-      const email = String(u.email || "")
-        .trim()
-        .toLowerCase();
+      const email = String(u.email || "").trim().toLowerCase();
       if (!email) continue;
 
       const key = `${email}__${u.role}`;
@@ -356,16 +368,14 @@ export async function GET(req) {
       }
     }
 
-    // clients
+    // clients with bookings
     for (const c of clientReceivers) {
-      const email = String(c.email || "")
-        .trim()
-        .toLowerCase();
+      const email = String(c.email || "").trim().toLowerCase();
       if (!email) continue;
 
       // if same email already exists in users collection, don't add as client again
       const alreadyExistsAsUserLike = [...receiverMap.keys()].some((k) =>
-        k.startsWith(`${email}__`),
+        k.startsWith(`${email}__`)
       );
       if (alreadyExistsAsUserLike) continue;
 
@@ -392,9 +402,7 @@ export async function GET(req) {
     let sent = 0;
 
     for (const u of receivers) {
-      const to = String(u.email || "")
-        .trim()
-        .toLowerCase();
+      const to = String(u.email || "").trim().toLowerCase();
       if (!to) continue;
 
       // prevent duplicate same day using DB lock row
@@ -432,7 +440,6 @@ export async function GET(req) {
         actorType = "INSTRUCTOR";
         text = `Hi ${u.name || "Instructor"}, you have ${bookings.length} booking(s) today.`;
       } else if (u.role === "user" || u.role === "client") {
-        // ✅ clients use the same logic as user (bookings by userEmail)
         const bookings = await getTodaysBookingsByUser(to);
         actorType = "USER";
         html = buildUserDigestHtml(u.name, bookings);
@@ -448,7 +455,7 @@ export async function GET(req) {
       let errorMsg = null;
 
       try {
-        await sendMail({to, subject, html, text});
+        await sendMail({ to, subject, html, text });
       } catch (e) {
         status = "FAILED";
         errorMsg = String(e?.message || e);
@@ -472,19 +479,19 @@ export async function GET(req) {
             hasAttachment: false,
             sentAt: new Date(),
           },
-        },
+        }
       );
 
       if (status === "SENT") sent += 1;
     }
 
-    return NextResponse.json({ok: true, sent, scheduledAt: nowHHMM, dayKey});
+    return NextResponse.json({ ok: true, sent, scheduledAt: nowHHMM, dayKey });
   } catch (e) {
     console.error("DAILY DIGEST CRON ERROR:", e);
     const code = e?.message === "FORBIDDEN" ? 403 : 500;
     return NextResponse.json(
-      {ok: false, error: e?.message || "Server error"},
-      {status: code},
+      { ok: false, error: e?.message || "Server error" },
+      { status: code }
     );
   }
 }

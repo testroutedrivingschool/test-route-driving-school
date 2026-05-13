@@ -240,7 +240,7 @@ export default function SentEmailsPage() {
 
                         <td className="whitespace-nowrap px-3 md:px-4 py-3 min-w-[220px] md:min-w-[280px]">
                           <div className="space-y-1">
-                            <p className="text-black break-words">
+                            <p className="text-black wrap-break-word">
                               To:{" "}
                               <span className="text-primary break-all">
                                 {item.to || "-"}
@@ -252,9 +252,9 @@ export default function SentEmailsPage() {
                           </div>
                         </td>
 
-                        <td className="whitespace-nowrap px-3 md:px-4 py-3 min-w-[240px] md:min-w-[460px]">
+                        <td className="whitespace-nowrap px-3 md:px-4 py-3 min-w-60 md:min-w-[460px]">
                           <div className="space-y-1">
-                            <p className="text-black text-sm md:text-[15px] break-words">
+                            <p className="text-black text-sm md:text-[15px] wrap-break-word">
                               {item.subject || "-"}{" "}
                               {item.hasAttachment ? (
                                 <span className="inline-block text-black">📎</span>
@@ -271,16 +271,16 @@ export default function SentEmailsPage() {
                           </div>
                         </td>
 
-                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-[80px]">
+                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-20">
                           <StatusTick show={getDelivered(item)} />
                         </td>
-                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-[80px]">
+                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-20">
                           <StatusTick show={getOpened(item)} />
                         </td>
-                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-[80px]">
+                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-20">
                           <StatusTick show={getBounced(item)} />
                         </td>
-                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-[80px]">
+                        <td className="px-3 md:px-4 py-3 text-center align-middle min-w-20">
                           <StatusTick show={getJunked(item)} />
                         </td>
                       </tr>
@@ -332,7 +332,7 @@ export default function SentEmailsPage() {
           <div className="bg-white rounded-t-xl md:rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden">
             <div className="flex items-start justify-between gap-3 px-4 md:px-5 py-4 border-b border-border-color">
               <div className="min-w-0">
-                <h3 className="text-base md:text-lg font-bold text-black break-words">
+                <h3 className="text-base md:text-lg font-bold text-black wrap-break-word">
                   {selectedEmail.subject || "Email Preview"}
                 </h3>
                 <p className="text-sm text-gray-500 mt-1 break-all">
@@ -362,13 +362,13 @@ export default function SentEmailsPage() {
               )}
 
               {selectedEmail.hasAttachment ? (
-                <div className="mt-5 pt-4 border-t border-border-color text-sm text-gray-700 break-words">
+                <div className="mt-5 pt-4 border-t border-border-color text-sm text-gray-700 wrap-break-word">
                   Attachment: {selectedEmail.attachmentName || "Attached file"}
                 </div>
               ) : null}
 
               {selectedEmail.error ? (
-                <div className="mt-3 text-sm text-red-600 break-words">
+                <div className="mt-3 text-sm text-red-600 wrap-break-word">
                   Error: {selectedEmail.error}
                 </div>
               ) : null}
