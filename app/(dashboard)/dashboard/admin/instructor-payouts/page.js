@@ -16,7 +16,74 @@ import {
 } from "react-icons/fa";
 import { FiMail } from "react-icons/fi";
 import { FaArrowTrendUp, FaCircleXmark } from "react-icons/fa6";
+function todayYMD() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
+function currentMonthKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  return `${y}-${m}`;
+}
+
+function parseYMDToUTC(dateStr) {
+  const [y, m, d] = String(dateStr).split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d));
+}
+
+function formatUTCDateYMD(date) {
+  const y = date.getUTCFullYear();
+  const m = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const d = String(date.getUTCDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function startOfWeekMondayYMD(dateStr) {
+  const d = parseYMDToUTC(dateStr);
+
+  // Sun=0, Mon=1
+  const day = d.getUTCDay();
+  const diffToMonday = (day + 6) % 7;
+
+  d.setUTCDate(d.getUTCDate() - diffToMonday);
+
+  return formatUTCDateYMD(d);
+}
+
+function startOfFortnightYMD(dateStr) {
+  const weekStart = parseYMDToUTC(startOfWeekMondayYMD(dateStr));
+
+  // Same anchor as backend
+  const anchor = new Date(Date.UTC(1970, 0, 5)); // Monday
+  const days = Math.floor((weekStart.getTime() - anchor.getTime()) / 86400000);
+  const fortnightStartOffset = Math.floor(days / 14) * 14;
+
+  const start = new Date(anchor);
+  start.setUTCDate(anchor.getUTCDate() + fortnightStartOffset);
+
+  return formatUTCDateYMD(start);
+}
+
+function buildSelectedPeriod({periodType, periodDate, selectedMonth}) {
+  if (periodType === "daily") {
+    return `daily:${periodDate}`;
+  }
+
+  if (periodType === "weekly") {
+    return `weekly:${startOfWeekMondayYMD(periodDate)}`;
+  }
+
+  if (periodType === "fortnight") {
+    return `fortnight:${startOfFortnightYMD(periodDate)}`;
+  }
+
+  return `monthly:${selectedMonth}`;
+}
 function formatCurrency(value) {
   return new Intl.NumberFormat("en-AU", {
     style: "currency",
@@ -88,7 +155,15 @@ export default function InstructorPayoutsPage() {
   const proofInputRef = useRef(null);
 
   const [selectedPayout, setSelectedPayout] = useState(null);
-  const [selectedMonth, setSelectedMonth] = useState("");
+  const [periodType, setPeriodType] = useState("monthly");
+const [periodDate, setPeriodDate] = useState(todayYMD());
+const [selectedMonth, setSelectedMonth] = useState(currentMonthKey());
+
+const selectedPeriod = buildSelectedPeriod({
+  periodType,
+  periodDate,
+  selectedMonth,
+});
   const [searchText, setSearchText] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
   const [updatingKey, setUpdatingKey] = useState("");
@@ -97,37 +172,51 @@ const [payModalOpen, setPayModalOpen] = useState(false);
 const [payingRow, setPayingRow] = useState(null);
 const [paymentProofFile, setPaymentProofFile] = useState(null);
 const [paymentProofPreviewName, setPaymentProofPreviewName] = useState("");
-  const { data: monthOptions = [], isLoading: monthsLoading } = useQuery({
-    queryKey: ["admin-instructor-payout-months"],
-    queryFn: async () => {
-      const res = await axios.get("/api/admin/instructor-payout-months");
-      return res.data || [];
-    },
-  });
+// const {data: periodOptions = [], isLoading: periodsLoading} = useQuery({
+//   queryKey: ["admin-instructor-payout-periods", periodType],
+//   queryFn: async () => {
+//     const res = await axios.get(
+//       `/api/admin/instructor-payout-months?periodType=${periodType}`,
+//     );
+//     return res.data || [];
+//   },
+// });
 
-  useEffect(() => {
-    if (!selectedMonth && monthOptions.length) {
-      setSelectedMonth(monthOptions[0].value);
-    }
-  }, [monthOptions, selectedMonth]);
+// useEffect(() => {
+//   setSelectedPeriod("");
+// }, [periodType]);
 
-  const {
-    data: payoutData,
-    isLoading: payoutLoading,
-    isFetching: payoutFetching,
-  } = useQuery({
-    queryKey: ["admin-instructor-payouts", selectedMonth, searchText],
-    enabled: !!selectedMonth,
-    queryFn: async () => {
-      const res = await axios.get(
-        `/api/admin/instructor-payouts?month=${selectedMonth}&search=${encodeURIComponent(
-          searchText
-        )}`
-      );
-      return res.data;
-    },
-  });
+// useEffect(() => {
+//   if (!selectedPeriod && periodOptions.length) {
+//     setSelectedPeriod(periodOptions[0].value);
+//   }
+// }, [periodOptions, selectedPeriod]);
 
+ const {
+  data: payoutData,
+  isLoading: payoutLoading,
+  isFetching: payoutFetching,
+} = useQuery({
+  queryKey: ["admin-instructor-payouts", periodType, selectedPeriod, searchText],
+  enabled: !!selectedPeriod,
+  queryFn: async () => {
+    const res = await axios.get(
+      `/api/admin/instructor-payouts?periodType=${periodType}&period=${encodeURIComponent(
+        selectedPeriod,
+      )}&search=${encodeURIComponent(searchText)}`,
+    );
+    return res.data;
+  },
+});
+const payoutQueryKey = [
+  "admin-instructor-payouts",
+  periodType,
+  selectedPeriod,
+  searchText,
+];
+
+const getRowKey = (row) =>
+  `${row.instructorId}-${row.periodKey || row.monthKey}`;
   const payoutRows = payoutData?.rows || [];
   const stats = payoutData?.stats || {
     totalRevenue: 0,
@@ -140,7 +229,7 @@ const [paymentProofPreviewName, setPaymentProofPreviewName] = useState("");
   };
 const openPaidModal = (row) => {
   if (!row.hasBookings) {
-    toast.error("This instructor has no eligible bookings for this month");
+   toast.error("This instructor has no eligible bookings for this period");
     return;
   }
 
@@ -164,7 +253,7 @@ const handleConfirmPaid = async () => {
   }
 
   try {
-    setUpdatingKey(`${payingRow.instructorId}-${payingRow.monthKey}`);
+  setUpdatingKey(getRowKey(payingRow));
     setProofUploading(true);
 
     const folder =
@@ -187,8 +276,12 @@ const handleConfirmPaid = async () => {
       instructorId: payingRow.instructorId,
       instructorEmail: payingRow.instructorEmail,
       instructorName: payingRow.instructorName,
-      monthKey: payingRow.monthKey,
-      monthLabel: payingRow.monthLabel,
+    periodType: payingRow.periodType,
+periodKey: payingRow.periodKey,
+periodLabel: payingRow.periodLabel,
+
+monthKey: payingRow.periodKey || payingRow.monthKey,
+monthLabel: payingRow.periodLabel || payingRow.monthLabel,
       totalRevenue: payingRow.totalRevenue,
       instructorPayout: payingRow.instructorPayout,
       companyCut: payingRow.companyCut,
@@ -201,8 +294,8 @@ const handleConfirmPaid = async () => {
     });
 
     await queryClient.invalidateQueries({
-      queryKey: ["admin-instructor-payouts", selectedMonth, searchText],
-    });
+  queryKey: payoutQueryKey,
+});
 
     if (
       selectedPayout &&
@@ -245,14 +338,19 @@ const handleConfirmPaid = async () => {
       return;
     }
 
-    setUpdatingKey(`${row.instructorId}-${row.monthKey}`);
+    setUpdatingKey(getRowKey(row));
 
     await axios.patch("/api/payouts/update", {
       instructorId: row.instructorId,
       instructorEmail: row.instructorEmail,
       instructorName: row.instructorName,
-      monthKey: row.monthKey,
-      monthLabel: row.monthLabel,
+      periodType: row.periodType,
+periodKey: row.periodKey,
+periodLabel: row.periodLabel,
+
+monthKey: row.periodKey || row.monthKey,
+monthLabel: row.periodLabel || row.monthLabel,
+
       totalRevenue: row.totalRevenue,
       instructorPayout: row.instructorPayout,
       companyCut: row.companyCut,
@@ -265,8 +363,8 @@ const handleConfirmPaid = async () => {
     });
 
     await queryClient.invalidateQueries({
-      queryKey: ["admin-instructor-payouts", selectedMonth, searchText],
-    });
+  queryKey: payoutQueryKey,
+});
 
     setSelectedPayout((prev) =>
       prev
@@ -312,8 +410,12 @@ const handleConfirmPaid = async () => {
         instructorId: selectedPayout.instructorId,
         instructorEmail: selectedPayout.instructorEmail,
         instructorName: selectedPayout.instructorName,
-        monthKey: selectedPayout.monthKey,
-        monthLabel: selectedPayout.monthLabel,
+     periodType: selectedPayout.periodType,
+periodKey: selectedPayout.periodKey,
+periodLabel: selectedPayout.periodLabel,
+
+monthKey: selectedPayout.periodKey || selectedPayout.monthKey,
+monthLabel: selectedPayout.periodLabel || selectedPayout.monthLabel,
         totalRevenue: selectedPayout.totalRevenue,
         instructorPayout: selectedPayout.instructorPayout,
         companyCut: selectedPayout.companyCut,
@@ -326,8 +428,8 @@ const handleConfirmPaid = async () => {
       });
 
       await queryClient.invalidateQueries({
-        queryKey: ["admin-instructor-payouts", selectedMonth, searchText],
-      });
+  queryKey: payoutQueryKey,
+});
 
       setSelectedPayout((prev) =>
         prev
@@ -364,10 +466,9 @@ const handleConfirmPaid = async () => {
       toast.error("Failed to open proof file");
     }
   };
-
-  if (monthsLoading || payoutLoading || !selectedMonth) {
-    return <LoadingSpinner />;
-  }
+if (payoutLoading || !selectedPeriod) {
+  return <LoadingSpinner />;
+}
 
   return (
     <div className="min-h-screen">
@@ -423,21 +524,57 @@ const handleConfirmPaid = async () => {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-border-color p-4 mb-6">
-        <div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
+       <div className="grid gap-4 md:grid-cols-[180px_260px_minmax(0,1fr)]">
           <div>
-            <label className="mb-2 block text-sm font-medium">Month</label>
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full border border-border-color rounded-lg px-3 py-3 text-sm bg-white"
-            >
-              {monthOptions.map((month) => (
-                <option key={month.value} value={month.value}>
-                  {month.label}
-                </option>
-              ))}
-            </select>
-          </div>
+  <label className="mb-2 block text-sm font-medium">Payout Type</label>
+  <select
+    value={periodType}
+    onChange={(e) => setPeriodType(e.target.value)}
+    className="w-full border border-border-color rounded-lg px-3 py-3 text-sm bg-white"
+  >
+    <option value="daily">Daily</option>
+    <option value="weekly">Weekly</option>
+    <option value="fortnight">Fortnight (2 week)</option>
+    <option value="monthly">Monthly</option>
+  </select>
+</div>
+
+{periodType === "monthly" ? (
+  <div>
+    <label className="mb-2 block text-sm font-medium">Month</label>
+    <input
+      type="month"
+      value={selectedMonth}
+      onChange={(e) => setSelectedMonth(e.target.value)}
+      className="w-full border border-border-color rounded-lg px-3 py-3 text-sm bg-white"
+    />
+  </div>
+) : (
+  <div>
+    <label className="mb-2 block text-sm font-medium">
+      {periodType === "daily"
+        ? "Date"
+        : periodType === "weekly"
+          ? "Select Any Date In Week"
+          : "Select Any Date In Fortnight"}
+    </label>
+
+    <input
+      type="date"
+      value={periodDate}
+      onChange={(e) => setPeriodDate(e.target.value)}
+      className="w-full border border-border-color rounded-lg px-3 py-3 text-sm bg-white"
+    />
+
+    <p className="mt-1 text-xs text-gray-500">
+      {periodType === "daily"
+        ? "Payout will calculate this selected date only."
+        : periodType === "weekly"
+          ? "Payout will calculate Monday to Sunday for the selected date."
+          : "Payout will calculate the 2-week period for the selected date."}
+    </p>
+  </div>
+)}
 
           <div>
             <label className="mb-2 block text-sm font-medium">Search Instructor</label>
@@ -465,7 +602,7 @@ const handleConfirmPaid = async () => {
             <thead className="bg-base-300">
               <tr>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Instructor</th>
-                <th className="py-3 px-6 text-left text-xs font-medium uppercase">Month</th>
+                <th className="py-3 px-6 text-left text-xs font-medium uppercase">Period</th>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Total Revenue</th>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Cash</th>
                 <th className="py-3 px-6 text-left text-xs font-medium uppercase">Card</th>
@@ -486,7 +623,7 @@ const handleConfirmPaid = async () => {
                 </tr>
               ) : (
                 payoutRows.map((row) => {
-                  const rowKey = `${row.instructorId}-${row.monthKey}`;
+                 const rowKey = getRowKey(row);
                   const isUpdating = updatingKey === rowKey;
 
                   return (
@@ -503,7 +640,7 @@ const handleConfirmPaid = async () => {
                       </td>
 
                       <td className="py-4 px-6">
-                        <div className="font-medium">{row.monthLabel}</div>
+                        <div className="font-medium">{row.periodLabel || row.monthLabel}</div>
                         {row.paidAt ? (
                           <div className="text-xs text-gray-500 mt-1">
                             Paid at: {formatDate(row.paidAt)}
@@ -592,7 +729,7 @@ const handleConfirmPaid = async () => {
           </div>
         ) : (
           payoutRows.map((row) => {
-            const rowKey = `${row.instructorId}-${row.monthKey}`;
+           const rowKey = getRowKey(row);
             const isUpdating = updatingKey === rowKey;
 
             return (
@@ -607,7 +744,7 @@ const handleConfirmPaid = async () => {
                       <FiMail className="text-gray-400 shrink-0" />
                       <span className="truncate">{row.instructorEmail}</span>
                     </div>
-                    <div className="text-xs text-gray-500 mt-1">{row.monthLabel}</div>
+                    <div className="text-xs text-gray-500 mt-1">{row.periodLabel || row.monthLabel}</div>
                     <div className="text-xs text-gray-500 mt-1">
                       {row.hasBookings ? `${row.bookingsCount} bookings` : "No bookings"}
                     </div>
@@ -700,21 +837,23 @@ const handleConfirmPaid = async () => {
                 </div>
               </div>
               <div className="text-sm text-gray-500">
-                <div><b>Month:</b> {selectedPayout.monthLabel}</div>
+               <div>
+  <b>Period:</b> {selectedPayout.periodLabel || selectedPayout.monthLabel}
+</div>
                 <div><b>Paid At:</b> {selectedPayout.paidAt ? formatDate(selectedPayout.paidAt) : "-"}</div>
               </div>
             </div>
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="border border-border-color rounded-xl p-4 bg-white">
-                <h3 className="font-bold text-lg text-neutral">Monthly Calculation</h3>
+                <h3 className="font-bold text-lg text-neutral">Payout Calculation</h3>
                 <div className="mt-3 space-y-2 text-sm">
                   <p><b>Total Revenue:</b> {formatCurrency(selectedPayout.totalRevenue)}</p>
                   <p><b>Instructor 90%:</b> <span className="text-green-700 font-semibold">{formatCurrency(selectedPayout.instructorPayout)}</span></p>
                   <p><b>Company 10%:</b> <span className="text-blue-700 font-semibold">{formatCurrency(selectedPayout.companyCut)}</span></p>
                   <p><b>Bookings:</b> {selectedPayout.bookingsCount}</p>
                   {!selectedPayout.hasBookings ? (
-                    <p className="text-gray-500">No eligible bookings for this month.</p>
+                    <p className="text-gray-500">No eligible bookings for this period.</p>
                   ) : null}
                 </div>
               </div>
@@ -805,7 +944,7 @@ const handleConfirmPaid = async () => {
     className="bg-red-500 text-sm px-4! py-2!"
     onClick={() => handleUpdatePayout(selectedPayout, false)}
     disabled={
-      updatingKey === `${selectedPayout.instructorId}-${selectedPayout.monthKey}` ||
+     updatingKey === getRowKey(selectedPayout) ||
       !selectedPayout.hasBookings
     }
   >
@@ -833,7 +972,7 @@ const handleConfirmPaid = async () => {
 
               <div className="mt-4 space-y-3 max-h-80 overflow-y-auto">
                 {selectedPayout.bookings.length === 0 ? (
-                  <div className="text-sm text-gray-500">No bookings for this month.</div>
+                  <div className="text-sm text-gray-500">No bookings for this period.</div>
                 ) : (
                   selectedPayout.bookings.map((booking) => (
                     <div
@@ -889,8 +1028,8 @@ const handleConfirmPaid = async () => {
         </div>
 
         <div className="border border-border-color rounded-xl p-4 bg-white">
-          <p className="text-xs text-gray-500 uppercase mb-1">Month</p>
-          <p className="font-semibold">{payingRow.monthLabel}</p>
+          <p className="text-xs text-gray-500 uppercase mb-1">Period</p>
+<p className="font-semibold">{payingRow.periodLabel || payingRow.monthLabel}</p>
           <p className="text-sm text-gray-500">{payingRow.bookingsCount} bookings</p>
         </div>
 
@@ -968,7 +1107,7 @@ const handleConfirmPaid = async () => {
           onClick={handleConfirmPaid}
           disabled={
             proofUploading ||
-            updatingKey === `${payingRow.instructorId}-${payingRow.monthKey}`
+            updatingKey === getRowKey(payingRow)
           }
         >
           {proofUploading ? "Uploading..." : "Confirm Paid"}
