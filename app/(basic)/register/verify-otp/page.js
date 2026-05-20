@@ -28,28 +28,36 @@ export default function VerifyOtp() {
     }
   }, [router]);
 
-  const handleVerify = async () => {
-    if (!otp) return toast.error("Enter OTP");
-    if (!userData) return;
+ const handleVerify = async () => {
+    if (!otp) {
+      toast.error("Enter OTP");
+      return;
+    }
+
+    if (!userData || loading) return;
 
     try {
       setLoading(true);
 
-      // ✅ Verify OTP (this signs in a PHONE user)
+      // 1. Verify phone OTP. This logs in a temporary phone user.
       await verifyOtp(otp);
 
-      // ✅ IMPORTANT: sign out phone user before creating email/password user
-      await logoutUser();
+      // 2. Logout temporary phone user.
+      // Important: do not refresh here.
+      await logoutUser({ refresh: false });
 
-      // ✅ Create Firebase account (email/password)
-      await signUpUserWithCredential(userData.email, userData.password);
+      // 3. Create Firebase email/password account.
+      const credential = await signUpUserWithCredential(
+        userData.email,
+        userData.password
+      );
 
-      // ✅ Update profile
+      // 4. Update Firebase profile.
       await userProfileUpdate({
         displayName: userData.fullName,
       });
 
-      // ✅ Save user to MongoDB
+      // 5. Save user to MongoDB first.
       await axios.post("/api/users", {
         name: userData.fullName,
         email: userData.email,
@@ -61,27 +69,57 @@ export default function VerifyOtp() {
         lastLogin: new Date(),
       });
 
+      // 6. Sync client.
+      await axios.post("/api/clients/sync-from-user", {
+        email: userData.email,
+        provider: "Credential",
+      });
+
+      // 7. Now create middleware cookie after DB user exists.
+      const token = await credential.user.getIdToken(true);
+
+      const sessionRes = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+        credentials: "include",
+        cache: "no-store",
+      });
+
+      if (!sessionRes.ok) {
+        const sessionError = await sessionRes.json().catch(() => null);
+
+        throw new Error(
+          sessionError?.error || "Failed to create login session"
+        );
+      }
+
+      // 8. Refresh React Query user cache.
       await queryClient.invalidateQueries({
         queryKey: ["user", userData.email],
       });
-      await axios.post("/api/clients/sync-from-user", {
-        email:userData?.email,
-        provider: "Credential",
-      });
+
+      // 9. Remove temporary registration data.
       sessionStorage.removeItem("pendingUser");
 
       toast.success("Account created successfully 🎉");
-      router.push("/");
-       router.refresh();
+
+      // 10. Go directly to dashboard.
+      router.replace("/dashboard/user");
+      router.refresh();
     } catch (err) {
+      console.error("OTP registration error:", err);
+
       toast.error(
-        getFirebaseAuthErrorMessage(err) || "Otp Verification Failed",
+        getFirebaseAuthErrorMessage(err) ||
+          err?.message ||
+          "Otp Verification Failed"
       );
     } finally {
       setLoading(false);
     }
   };
-
 
 
   if (!userData) return null; 

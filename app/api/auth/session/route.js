@@ -5,19 +5,26 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     const authHeader = req.headers.get("authorization");
+
     const token = authHeader?.startsWith("Bearer ")
-      ? authHeader.split("Bearer ")[1]
+      ? authHeader.replace("Bearer ", "")
       : null;
 
     if (!token) {
-      return NextResponse.json({ error: "No token provided" }, { status: 401 });
+      return NextResponse.json(
+        { error: "No token provided" },
+        { status: 401 }
+      );
     }
 
     const decoded = await admin.auth().verifyIdToken(token);
     const email = decoded?.email;
 
     if (!email) {
-      return NextResponse.json({ error: "Token has no email" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Token has no email" },
+        { status: 401 }
+      );
     }
 
     const col = await usersCollection();
@@ -25,18 +32,23 @@ export async function POST(req) {
 
     if (!dbUser) {
       return NextResponse.json(
-        { error: `User not found in DB for email: ${email}` },
+        {
+          error: `User not found in DB for email: ${email}`,
+        },
         { status: 404 }
       );
     }
 
     const cookieUser = {
       email: dbUser.email,
-      role: dbUser.role,
+      role: dbUser.role || "user",
       name: dbUser.name || "",
     };
 
-    const res = NextResponse.json({ ok: true, user: cookieUser });
+    const res = NextResponse.json({
+      ok: true,
+      user: cookieUser,
+    });
 
     res.cookies.set("user", encodeURIComponent(JSON.stringify(cookieUser)), {
       httpOnly: true,
@@ -49,8 +61,11 @@ export async function POST(req) {
     return res;
   } catch (err) {
     console.error("SESSION ROUTE ERROR:", err);
+
     return NextResponse.json(
-      { error: err?.message || "Failed to create session" },
+      {
+        error: err?.message || "Failed to create session",
+      },
       { status: 500 }
     );
   }

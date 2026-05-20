@@ -25,7 +25,29 @@ export default function AuthProvider({children}) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const GoogleProvider = new GoogleAuthProvider();
+const createSession = async (firebaseUser) => {
+    if (!firebaseUser?.email) {
+      return;
+    }
 
+    const token = await firebaseUser.getIdToken(true);
+
+    const res = await fetch("/api/auth/session", {
+      method: "POST",
+      headers: {
+        authorization: `Bearer ${token}`,
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => null);
+      throw new Error(errorData?.error || "Session creation failed");
+    }
+
+    return res.json();
+  };
 const loginWithGoogle = async () => {
 
   const result = await signInWithPopup(auth, GoogleProvider);
@@ -154,38 +176,79 @@ const logoutUser = async () => {
     }
   };
 
- useEffect(() => {
-  const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
-    try {
-      if (currentUser) {
-        setUser(currentUser);
+//  useEffect(() => {
+//   const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+//     try {
+//       if (currentUser) {
+//         setUser(currentUser);
 
-        const token = await currentUser.getIdToken(true);
+//         const token = await currentUser.getIdToken(true);
 
-        await fetch("/api/auth/session", {
-          method: "POST",
-          headers: { authorization: `Bearer ${token}` },
-          credentials: "include",
-          cache: "no-store",
-        });
+//         await fetch("/api/auth/session", {
+//           method: "POST",
+//           headers: { authorization: `Bearer ${token}` },
+//           credentials: "include",
+//           cache: "no-store",
+//         });
 
-      } else {
-        setUser(null);
-        await fetch("/api/auth/logout", {
-          method: "POST",
-          credentials: "include",
-        });
-      }
+//       } else {
+//         setUser(null);
+//         await fetch("/api/auth/logout", {
+//           method: "POST",
+//           credentials: "include",
+//         });
+//       }
 
-      setLoading(false);
-    } catch (e) {
+//       setLoading(false);
+//     } catch (e) {
       
-      setLoading(false);
-    }
-  });
+//       setLoading(false);
+//     }
+//   });
 
-  return () => unSubscribe();
-}, []);
+//   return () => unSubscribe();
+// }, []);
+
+  useEffect(() => {
+    const unSubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      try {
+        if (currentUser) {
+          setUser(currentUser);
+
+          // Phone OTP temporary user has no email.
+          // Do not call /api/auth/session for this user.
+          if (!currentUser.email) {
+            return;
+          }
+
+          // During registration, verify-otp page will manually create session
+          // after MongoDB user is created. This prevents race condition.
+          const hasPendingRegistration =
+            typeof window !== "undefined" &&
+            sessionStorage.getItem("pendingUser");
+
+          if (hasPendingRegistration) {
+            return;
+          }
+
+          await createSession(currentUser);
+        } else {
+          setUser(null);
+
+          await fetch("/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+          });
+        }
+      } catch (e) {
+        console.error("Auth session error:", e);
+      } finally {
+        setLoading(false);
+      }
+    });
+
+    return () => unSubscribe();
+  }, []);
 
 
   const authInfo = {

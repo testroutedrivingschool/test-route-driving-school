@@ -19,3 +19,4 @@ export async function GET(req) {
     return NextResponse.json({ exists: false, error: "Server error" }, { status: 500 });
   }
 }
+

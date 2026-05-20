@@ -70,10 +70,11 @@ const handleInvoice = (booking) => {
             </thead>
 
             <tbody className="divide-y divide-border-color">
-              {bookings.map((b) => (
+              {bookings.map((b) => {
+                return(
                 <tr key={b._id} className="hover:bg-gray-50">
                   <td onClick={()=>router.push(`/clients?clientId=${b.clientId}`)} className="py-4 px-6 font-semibold hover:underline hover:text-primary cursor-pointer">
-                    {b.clientName}
+                    {b.clientName?b.clientName:b.userName || ""}
                   </td>
 
                   <td className="py-4 px-6">
@@ -132,7 +133,7 @@ const handleInvoice = (booking) => {
                     </PrimaryBtn>
                   </td>
                 </tr>
-              ))}
+              )})}
             </tbody>
           </table>
         </div>
@@ -145,7 +146,7 @@ const handleInvoice = (booking) => {
             key={b._id}
             className="bg-white rounded-xl border border-border-color shadow-sm p-4"
           >
-            <div className="font-semibold">{b.clientName}</div>
+            <div className="font-semibold">{b.clientName?b.clientName:b.userName || ""}</div>
             <div className="text-sm text-gray-500">
               {b.serviceName}
             </div>
@@ -186,7 +187,7 @@ const handleInvoice = (booking) => {
             <h2 className="text-xl font-bold">Booking Details</h2>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <p><b>Client:</b> {selectedBooking.clientName}</p>
+              <p><b>Client:</b> {selectedBooking.clientName?selectedBooking.clientName:selectedBooking.userName || ""}</p>
               <p><b>Instructor:</b> {selectedBooking.instructorName}</p>
               <p><b>Service:</b> {selectedBooking.serviceName}</p>
               <p><b>Duration:</b> {selectedBooking.duration}</p>
@@ -230,7 +231,7 @@ const handleInvoice = (booking) => {
   </div>
 </div>
               <p><b>Method:</b> {selectedBooking.paymentMethod}</p>
-              <p><b>Phone:</b> {selectedBooking.clientPhone}</p>
+              <p><b>Phone:</b> {selectedBooking.clientPhone ?? selectedBooking.userPhone}</p>
               <p><b>Address:</b> {selectedBooking.address}</p>
              <p>
   <b>Invoice:</b> #{selectedBooking.invoiceNo}{" "}
