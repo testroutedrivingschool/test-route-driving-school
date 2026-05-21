@@ -18,15 +18,25 @@ const ALLOWED_STATUSES = [
 
 const ALLOWED_PAYMENT_STATUSES = ["paid", "partial", "unpaid"];
 
-async function sendStatusChangeEmail({ booking, oldStatus, newStatus }) {
-  const to = booking.userEmail || booking.clientEmail || booking.email || "";
+async function sendStatusChangeEmails({ booking, oldStatus, newStatus }) {
+  const userEmail =
+    booking.userEmail || booking.clientEmail || booking.email || "";
 
-  if (!to) {
-    return {
-      ok: false,
-      skipped: true,
-      error: "Client email not found",
-    };
+  let instructorEmail = booking.instructorEmail || "";
+
+  // Optional fallback: if instructorEmail missing, find from instructors collection
+  if (!instructorEmail && booking.instructorId && ObjectId.isValid(booking.instructorId)) {
+    try {
+      const instructorsCol = await instructorsCollection();
+
+      const instructor = await instructorsCol.findOne({
+        _id: new ObjectId(booking.instructorId),
+      });
+
+      instructorEmail = instructor?.email || "";
+    } catch (error) {
+      console.error("Failed to find instructor email:", error);
+    }
   }
 
   const bookingDateText = booking.bookingDate
@@ -39,58 +49,118 @@ async function sendStatusChangeEmail({ booking, oldStatus, newStatus }) {
       })
     : "—";
 
-  const subject = `Booking Status Changed: ${newStatus}`;
+  const bookingDetailsHtml = `
+    <p><b>Booking details:</b></p>
+    <p><b>Service:</b> ${booking.serviceName || "—"}</p>
+    <p><b>Date:</b> ${bookingDateText}</p>
+    <p><b>Time:</b> ${booking.bookingTime || "—"}</p>
+    <p><b>Client:</b> ${booking.userName || booking.clientName || "—"}</p>
+    <p><b>Instructor:</b> ${booking.instructorName || "—"}</p>
+    <p><b>Old Status:</b> ${oldStatus || "—"}</p>
+    <p><b>New Status:</b> ${newStatus || "—"}</p>
+  `;
 
-  const text = `Your booking has been updated from ${oldStatus || "—"} to ${newStatus}.
-
+  const bookingDetailsText = `
 Booking details:
 Service: ${booking.serviceName || "—"}
 Date: ${bookingDateText}
 Time: ${booking.bookingTime || "—"}
+Client: ${booking.userName || booking.clientName || "—"}
 Instructor: ${booking.instructorName || "—"}
-Status: ${newStatus}
+Old Status: ${oldStatus || "—"}
+New Status: ${newStatus || "—"}
+`;
 
-Thank you for booking with us!`;
+  const jobs = [];
 
-  const html = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-      <p>
-        Your booking has been updated from 
-        <strong>${oldStatus || "—"}</strong> to 
-        <strong>${newStatus}</strong>.
-      </p>
+  if (userEmail) {
+    jobs.push({
+      actorType: "USER",
+      to: userEmail,
+      subject: `Booking Status Changed: ${newStatus}`,
+      text: `Your booking has been updated from ${oldStatus || "—"} to ${newStatus}.
 
-      <p><b>Booking details:</b></p>
-      <p><b>Service:</b> ${booking.serviceName || "—"}</p>
-      <p><b>Date:</b> ${bookingDateText}</p>
-      <p><b>Time:</b> ${booking.bookingTime || "—"}</p>
-      <p><b>Instructor:</b> ${booking.instructorName || "—"}</p>
-      <p><b>Status:</b> ${newStatus}</p>
+${bookingDetailsText}
 
-      <p>Thank you for booking with us!</p>
-    </div>
-  `;
-
-  try {
-    await sendMail({
-      to,
-      subject,
-      html,
-      text,
+Thank you for booking with us!`,
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+          <p>
+            Your booking has been updated from 
+            <strong>${oldStatus || "—"}</strong> to 
+            <strong>${newStatus}</strong>.
+          </p>
+          ${bookingDetailsHtml}
+          <p>Thank you for booking with us!</p>
+        </div>
+      `,
     });
+  }
 
-    return {
-      ok: true,
-      skipped: false,
-      error: null,
-    };
-  } catch (e) {
+  if (instructorEmail) {
+    jobs.push({
+      actorType: "INSTRUCTOR",
+      to: instructorEmail,
+      subject: `Booking Status Updated: ${booking.serviceName || "Booking"} - ${newStatus}`,
+      text: `A booking assigned to you has been updated from ${oldStatus || "—"} to ${newStatus}.
+
+${bookingDetailsText}`,
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+          <p>
+            A booking assigned to you has been updated from 
+            <strong>${oldStatus || "—"}</strong> to 
+            <strong>${newStatus}</strong>.
+          </p>
+          ${bookingDetailsHtml}
+        </div>
+      `,
+    });
+  }
+
+  if (!jobs.length) {
     return {
       ok: false,
-      skipped: false,
-      error: String(e?.message || e),
+      skipped: true,
+      error: "No user or instructor email found",
     };
   }
+
+  const results = await Promise.allSettled(
+    jobs.map(async (job) => {
+      try {
+        await sendMail({
+          to: job.to,
+          subject: job.subject,
+          html: job.html,
+          text: job.text,
+        });
+
+        return {
+          actorType: job.actorType,
+          to: job.to,
+          ok: true,
+          error: null,
+        };
+      } catch (error) {
+        return {
+          actorType: job.actorType,
+          to: job.to,
+          ok: false,
+          error: String(error?.message || error),
+        };
+      }
+    })
+  );
+
+  return results.map((result) =>
+    result.status === "fulfilled"
+      ? result.value
+      : {
+          ok: false,
+          error: String(result.reason?.message || result.reason),
+        }
+  );
 }
 
 export async function GET(req, { params }) {
@@ -340,13 +410,13 @@ export async function PATCH(req, { params }) {
     const oldStatus = oldBooking.status;
     const newStatus = updatedDoc.status;
 
-    if (statusWasProvided && oldStatus !== newStatus) {
-      await sendStatusChangeEmail({
-        booking: updatedDoc,
-        oldStatus,
-        newStatus,
-      });
-    }
+ if (statusWasProvided && oldStatus !== newStatus) {
+  await sendStatusChangeEmails({
+    booking: updatedDoc,
+    oldStatus,
+    newStatus,
+  });
+}
 
     return NextResponse.json(updatedDoc);
   } catch (e) {
