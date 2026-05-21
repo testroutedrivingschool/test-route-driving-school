@@ -5,7 +5,7 @@ import { clientsCollection } from "@/app/libs/mongodb/db";
 
 
 const pickAllowed = (body = {}) => {
-  const allowed = [
+ const allowed = [
     "firstName",
     "lastName",
     "organization",
@@ -24,21 +24,29 @@ const pickAllowed = (body = {}) => {
     "postCode",
     "accountBalance",
     "referredBy",
+
     "activeClient",
     "marketingSubscriber",
     "receiveReminders",
     "loginAccess",
     "onlineBooking",
     "showPhoto",
+
     "actionShot",
     "actionRequired",
+
+    // ✅ assigned instructor fields
     "assignedTo",
+    "assignedInstructorId",
+    "assignedInstructorEmail",
+    "assignedInstructorName",
+
     "actionBy",
     "alerts",
     "clientNote",
     "comments",
-    "licence",
   ];
+
 
   const out = {};
   for (const key of allowed) {
@@ -56,6 +64,23 @@ const normalize = (doc = {}) => {
   if (typeof doc.address === "string") doc.address = doc.address.trim();
   if (typeof doc.clientNote === "string") doc.clientNote = doc.clientNote.trim();
   if (doc.accountBalance !== undefined) doc.accountBalance = Number(doc.accountBalance) || 0;
+  if (doc.assignedInstructorEmail !== undefined) {
+  doc.assignedInstructorEmail = String(doc.assignedInstructorEmail || "")
+    .trim()
+    .toLowerCase();
+}
+
+if (doc.assignedInstructorId !== undefined) {
+  doc.assignedInstructorId = String(doc.assignedInstructorId || "").trim();
+}
+
+if (doc.assignedInstructorName !== undefined) {
+  doc.assignedInstructorName = String(doc.assignedInstructorName || "").trim();
+}
+
+if (doc.assignedTo !== undefined) {
+  doc.assignedTo = String(doc.assignedTo || "Anyone").trim();
+}
   return doc;
 };
 

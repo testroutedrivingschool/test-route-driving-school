@@ -81,7 +81,7 @@ const instructorOptions = [
   ...instructors
     .filter((i) => i?._id && i?.name)
     .map((i) => ({
-      value: i._id,          // ✅ store id
+      value: i._id,          
       label: i.name,
       email: i.email || "",
       name: i.name,

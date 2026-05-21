@@ -1,37 +1,75 @@
-import {sendMail} from "@/app/libs/mail/mailer";
-import {bookingsCollection, instructorsCollection} from "@/app/libs/mongodb/db";
-import {ObjectId} from "mongodb";
-import {NextResponse} from "next/server";
 
-async function sendStatusChangeEmail({booking, oldStatus, newStatus}) {
+
+import { sendMail } from "@/app/libs/mail/mailer";
+import { bookingsCollection, instructorsCollection } from "@/app/libs/mongodb/db";
+import { ObjectId } from "mongodb";
+import { NextResponse } from "next/server";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+const ALLOWED_STATUSES = [
+  "pending",
+  "confirmed",
+  "cancelled",
+  "completed",
+  "unattended",
+];
+
+const ALLOWED_PAYMENT_STATUSES = ["paid", "partial", "unpaid"];
+
+async function sendStatusChangeEmail({ booking, oldStatus, newStatus }) {
   const to = booking.userEmail || booking.clientEmail || booking.email || "";
 
   if (!to) {
-    return {ok: false, skipped: true, error: "Client email not found"};
+    return {
+      ok: false,
+      skipped: true,
+      error: "Client email not found",
+    };
   }
 
-  const subject = `Booking Status Changed: ${newStatus}`;
-  const text = `Your booking has been updated to ${newStatus}.`;
-  const html = `
-    <p>Your booking has been updated to <strong>${newStatus}</strong>.</p>
-    <p><b>Booking details:</b></p>
-    <p>Service: ${booking.serviceName || "—"}</p>
-    <p>Date: ${
-      new Date(booking.bookingDate).toLocaleDateString("en-AU", {
+  const bookingDateText = booking.bookingDate
+    ? new Date(booking.bookingDate).toLocaleDateString("en-AU", {
+        timeZone: "Australia/Sydney",
         weekday: "long",
         day: "2-digit",
         month: "long",
         year: "numeric",
-      }) || "—"
-    }</p>
-    <p>Time: ${booking.bookingTime || "—"}</p>
-    <p>Instructor: ${booking.instructorName || "—"}</p>
-    <p>Status: ${newStatus}</p>
-    <p>Thank you for booking with us!</p>
-  `;
+      })
+    : "—";
 
-  let status = "SENT";
-  let errorMsg = null;
+  const subject = `Booking Status Changed: ${newStatus}`;
+
+  const text = `Your booking has been updated from ${oldStatus || "—"} to ${newStatus}.
+
+Booking details:
+Service: ${booking.serviceName || "—"}
+Date: ${bookingDateText}
+Time: ${booking.bookingTime || "—"}
+Instructor: ${booking.instructorName || "—"}
+Status: ${newStatus}
+
+Thank you for booking with us!`;
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+      <p>
+        Your booking has been updated from 
+        <strong>${oldStatus || "—"}</strong> to 
+        <strong>${newStatus}</strong>.
+      </p>
+
+      <p><b>Booking details:</b></p>
+      <p><b>Service:</b> ${booking.serviceName || "—"}</p>
+      <p><b>Date:</b> ${bookingDateText}</p>
+      <p><b>Time:</b> ${booking.bookingTime || "—"}</p>
+      <p><b>Instructor:</b> ${booking.instructorName || "—"}</p>
+      <p><b>Status:</b> ${newStatus}</p>
+
+      <p>Thank you for booking with us!</p>
+    </div>
+  `;
 
   try {
     await sendMail({
@@ -40,19 +78,30 @@ async function sendStatusChangeEmail({booking, oldStatus, newStatus}) {
       html,
       text,
     });
-  } catch (e) {
-    status = "FAILED";
-    errorMsg = String(e?.message || e);
-  }
 
-  return {ok: status === "SENT", skipped: false, error: errorMsg};
+    return {
+      ok: true,
+      skipped: false,
+      error: null,
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      skipped: false,
+      error: String(e?.message || e),
+    };
+  }
 }
-export async function GET(req, {params}) {
+
+export async function GET(req, { params }) {
   try {
-    const {bookingId} = await params;
+    const { bookingId } = await params;
 
     if (!ObjectId.isValid(bookingId)) {
-      return NextResponse.json({error: "Invalid booking id"}, {status: 400});
+      return NextResponse.json(
+        { error: "Invalid booking id" },
+        { status: 400 }
+      );
     }
 
     const bookingsCol = await bookingsCollection();
@@ -63,10 +112,9 @@ export async function GET(req, {params}) {
     });
 
     if (!booking) {
-      return NextResponse.json({error: "Not found"}, {status: 404});
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    // ✅ Fetch instructor using instructorId from booking
     let instructorPhoto = "";
     let instructorPhotoKey = "";
     let instructorName = booking.instructorName || "";
@@ -83,7 +131,6 @@ export async function GET(req, {params}) {
       }
     }
 
-    // ✅ Attach extra fields
     const enrichedBooking = {
       ...booking,
       instructorPhoto,
@@ -93,16 +140,24 @@ export async function GET(req, {params}) {
 
     return NextResponse.json(enrichedBooking);
   } catch (e) {
-    console.error(e);
-    return NextResponse.json({error: "Failed"}, {status: 500});
+    console.error("GET BOOKING ERROR:", e);
+
+    return NextResponse.json(
+      { error: "Failed to fetch booking" },
+      { status: 500 }
+    );
   }
 }
-export async function PATCH(req, {params}) {
+
+export async function PATCH(req, { params }) {
   try {
-    const {bookingId} = await params;
+    const { bookingId } = await params;
 
     if (!ObjectId.isValid(bookingId)) {
-      return NextResponse.json({error: "Invalid booking id"}, {status: 400});
+      return NextResponse.json(
+        { error: "Invalid booking id" },
+        { status: 400 }
+      );
     }
 
     const body = await req.json();
@@ -130,17 +185,33 @@ export async function PATCH(req, {params}) {
       "isPriceOverridden",
     ];
 
-    const $set = {updatedAt: new Date()};
+    const $set = {
+      updatedAt: new Date(),
+    };
 
-    for (const k of allowed) {
-      if (body[k] !== undefined) $set[k] = body[k];
+    for (const key of allowed) {
+      if (body[key] !== undefined) {
+        $set[key] = body[key];
+      }
+    }
+
+    if (Object.keys($set).length === 1) {
+      return NextResponse.json(
+        { error: "No valid fields provided" },
+        { status: 400 }
+      );
     }
 
     if ($set.bookingDate !== undefined) {
       const d = new Date($set.bookingDate);
+
       if (Number.isNaN(d.getTime())) {
-        return NextResponse.json({error: "Invalid bookingDate"}, {status: 400});
+        return NextResponse.json(
+          { error: "Invalid bookingDate" },
+          { status: 400 }
+        );
       }
+
       $set.bookingDate = d;
     }
 
@@ -149,15 +220,16 @@ export async function PATCH(req, {params}) {
     }
 
     if ($set.paymentStatus !== undefined) {
-      const v = String($set.paymentStatus).toLowerCase();
-      const ok = ["paid", "partial", "unpaid"].includes(v);
-      if (!ok) {
+      const value = String($set.paymentStatus).toLowerCase();
+
+      if (!ALLOWED_PAYMENT_STATUSES.includes(value)) {
         return NextResponse.json(
-          {error: "Invalid paymentStatus"},
-          {status: 400},
+          { error: "Invalid paymentStatus" },
+          { status: 400 }
         );
       }
-      $set.paymentStatus = v;
+
+      $set.paymentStatus = value;
     }
 
     if ($set.paymentMethod !== undefined) {
@@ -165,18 +237,70 @@ export async function PATCH(req, {params}) {
     }
 
     if ($set.status !== undefined) {
-      const v = String($set.status).toLowerCase();
-      const ok = [
-        "pending",
-        "confirmed",
-        "cancelled",
-        "completed",
-        "unattended",
-      ].includes(v);
-      if (!ok) {
-        return NextResponse.json({error: "Invalid status"}, {status: 400});
+      const value = String($set.status).toLowerCase();
+
+      if (!ALLOWED_STATUSES.includes(value)) {
+        return NextResponse.json(
+          { error: "Invalid status" },
+          { status: 400 }
+        );
       }
-      $set.status = v;
+
+      $set.status = value;
+      $set.statusUpdatedAt = new Date();
+
+      if (value === "completed") {
+        $set.completedAt = new Date();
+      }
+
+      if (value === "cancelled") {
+        $set.cancelledAt = new Date();
+      }
+
+      if (value === "unattended") {
+        $set.unattendedAt = new Date();
+      }
+    }
+
+    if ($set.price !== undefined) {
+      $set.price = Number($set.price);
+
+      if (Number.isNaN($set.price) || $set.price < 0) {
+        return NextResponse.json(
+          { error: "Invalid price" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if ($set.originalPrice !== undefined) {
+      $set.originalPrice = Number($set.originalPrice);
+
+      if (Number.isNaN($set.originalPrice) || $set.originalPrice < 0) {
+        return NextResponse.json(
+          { error: "Invalid originalPrice" },
+          { status: 400 }
+        );
+      }
+    }
+
+    if ($set.overridePrice !== undefined) {
+      if ($set.overridePrice === null || $set.overridePrice === "") {
+        $set.overridePrice = null;
+      } else {
+        $set.overridePrice = Number($set.overridePrice);
+
+        if (Number.isNaN($set.overridePrice) || $set.overridePrice < 0) {
+          return NextResponse.json(
+            { error: "Invalid overridePrice" },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
+    if ($set.isPriceOverridden !== undefined) {
+      $set.isPriceOverridden = Boolean($set.isPriceOverridden);
     }
 
     const bookingsCol = await bookingsCollection();
@@ -186,28 +310,38 @@ export async function PATCH(req, {params}) {
     });
 
     if (!oldBooking) {
-      return NextResponse.json({error: "Booking not found"}, {status: 404});
+      return NextResponse.json(
+        { error: "Booking not found" },
+        { status: 404 }
+      );
     }
 
     const update = await bookingsCol.updateOne(
-      {_id: new ObjectId(bookingId)},
-      {$set},
+      { _id: new ObjectId(bookingId) },
+      { $set }
     );
 
     if (update.matchedCount === 0) {
-      return NextResponse.json({error: "Not found"}, {status: 404});
+      return NextResponse.json(
+        { error: "Not found" },
+        { status: 404 }
+      );
     }
 
     const updatedDoc = await bookingsCol.findOne({
       _id: new ObjectId(bookingId),
     });
 
-    // Send email when status changes
-    const oldStatus = oldBooking.status;
-    const newStatus = $set.status;
+    const statusWasProvided = Object.prototype.hasOwnProperty.call(
+      body,
+      "status"
+    );
 
-    if (oldStatus !== newStatus) {
-      const emailResult = await sendStatusChangeEmail({
+    const oldStatus = oldBooking.status;
+    const newStatus = updatedDoc.status;
+
+    if (statusWasProvided && oldStatus !== newStatus) {
+      await sendStatusChangeEmail({
         booking: updatedDoc,
         oldStatus,
         newStatus,
@@ -216,10 +350,11 @@ export async function PATCH(req, {params}) {
 
     return NextResponse.json(updatedDoc);
   } catch (e) {
-    console.error(e);
+    console.error("PATCH BOOKING ERROR:", e);
+
     return NextResponse.json(
-      {error: "Failed to update booking"},
-      {status: 500},
+      { error: "Failed to update booking" },
+      { status: 500 }
     );
   }
 }

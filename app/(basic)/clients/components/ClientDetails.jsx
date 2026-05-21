@@ -24,7 +24,13 @@ export default function ClientDetails({client, onBack}) {
       return res.data;
     },
   });
-
+const { data: instructors = [], isLoading: instructorsLoading } = useQuery({
+  queryKey: ["instructors"],
+  queryFn: async () => {
+    const res = await axios.get("/api/instructors");
+    return res.data;
+  },
+});
   const initial = useMemo(
     () => ({
       firstName: safeStr(client.firstName),
@@ -56,8 +62,13 @@ export default function ClientDetails({client, onBack}) {
 
       actionShot: safeStr(client.actionShot || "No Action Set"),
       actionRequired: safeStr(client.actionRequired),
+
       assignedTo: safeStr(client.assignedTo || "Anyone"),
-      actionBy: safeStr(client.actionBy),
+assignedInstructorId: safeStr(client.assignedInstructorId),
+assignedInstructorEmail: safeStr(client.assignedInstructorEmail),
+assignedInstructorName: safeStr(client.assignedInstructorName),
+actionBy: safeStr(client.actionBy),
+    
       onlineBooking: client.onlineBooking || false,
       activeClient: client.activeClient || false,
       marketingSubscriber: client.marketingSubscriber || false,
@@ -85,7 +96,19 @@ export default function ClientDetails({client, onBack}) {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
-
+const instructorOptions = useMemo(() => {
+  return [
+    { value: "Anyone", label: "Anyone" },
+    ...instructors
+      .filter((i) => i?._id && i?.name)
+      .map((i) => ({
+        value: String(i._id),
+        label: i.name,
+        email: i.email || "",
+        name: i.name,
+      })),
+  ];
+}, [instructors]);
   const onSave = async () => {
     try {
       setSaving(true);
@@ -125,7 +148,10 @@ export default function ClientDetails({client, onBack}) {
         actionShot: form.actionShot,
         actionRequired: form.actionRequired,
         assignedTo: form.assignedTo,
-        actionBy: form.actionBy,
+assignedInstructorId: form.assignedInstructorId,
+assignedInstructorEmail: form.assignedInstructorEmail,
+assignedInstructorName: form.assignedInstructorName,
+actionBy: form.actionBy,
 
         alerts: form.alerts,
         clientNote: form.clientNote,
@@ -529,7 +555,53 @@ export default function ClientDetails({client, onBack}) {
                   </select>
                 }
               />
+<Row2
+  label="Assigned to:"
+  input={
+    <select
+      value={form.assignedInstructorId || "Anyone"}
+      onChange={(e) => {
+        const value = e.target.value;
 
+        if (value === "Anyone") {
+          setForm((prev) => ({
+            ...prev,
+            assignedTo: "Anyone",
+            assignedInstructorId: "",
+            assignedInstructorEmail: "",
+            assignedInstructorName: "",
+          }));
+
+          return;
+        }
+
+        const instructor = instructors.find(
+          (item) => String(item._id) === String(value)
+        );
+
+        setForm((prev) => ({
+          ...prev,
+          assignedTo: instructor?.name || "Anyone",
+          assignedInstructorId: String(instructor?._id || ""),
+          assignedInstructorEmail: (instructor?.email || "").toLowerCase(),
+          assignedInstructorName: instructor?.name || "",
+        }));
+      }}
+      disabled={instructorsLoading}
+      className="input-class py-2!"
+    >
+      {instructorsLoading ? (
+        <option>Loading instructors...</option>
+      ) : (
+        instructorOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))
+      )}
+    </select>
+  }
+/>
               <TextArea
                 label="Action Required:"
                 name="actionRequired"

@@ -18,6 +18,7 @@ import {usePathname} from "next/navigation";
 import {useUserData} from "@/app/hooks/useUserData";
 import {useRouter} from "next/navigation";
 import AvatarDropdown from "./AvatarDropdown";
+import OverdueBookingStatusModal from "./OverdueBookingStatusModal";
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
   {id: 2, label: "Instructors", pathname: "/instructors"},
@@ -215,6 +216,7 @@ const finalNavLinks = dynamicFirstNavItem
   : baseNavLinks;
   
   return (
+    <>
     <nav
       className={`${className}  z-99  transition-all duration-500 ease-out bg-linear-to-b from-white/95 to-white/80 backdrop-blur-lg border-b border-b-border-color  py-1 md:py-2 shadow`}
     >
@@ -474,5 +476,7 @@ const finalNavLinks = dynamicFirstNavItem
         </div>
       </div>
     </nav>
+    {userData?.role === "instructor" && <OverdueBookingStatusModal />}
+    </>
   );
 }
