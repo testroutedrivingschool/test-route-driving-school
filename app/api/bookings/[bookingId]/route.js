@@ -1,7 +1,7 @@
 
 
 import { sendMail } from "@/app/libs/mail/mailer";
-import { bookingsCollection, instructorsCollection } from "@/app/libs/mongodb/db";
+import { bookingsCollection, instructorsCollection,clientsCollection } from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
@@ -219,6 +219,115 @@ export async function GET(req, { params }) {
   }
 }
 
+
+const CREDIT_STATUSES = ["cancelled", "unattended"];
+
+function money(value) {
+  return Math.round(Number(value || 0) * 100) / 100;
+}
+
+function getClientFilterFromBooking(booking) {
+  if (booking?.clientId && ObjectId.isValid(String(booking.clientId))) {
+    return {
+      _id: new ObjectId(String(booking.clientId)),
+    };
+  }
+
+  const email = String(
+    booking?.userEmail || booking?.clientEmail || ""
+  )
+    .trim()
+    .toLowerCase();
+
+  if (!email) return null;
+
+  return {
+    $or: [
+      { email },
+      { linkedUserEmail: email },
+    ],
+  };
+}
+
+async function issueBookingCreditOnce({ booking, bookingId, status }) {
+  const creditAmount = money(
+    booking.price ||
+    booking.originalPrice ||
+    booking.paidAmount ||
+    0
+  );
+
+  if (creditAmount <= 0) {
+    return {
+      issued: false,
+      amount: 0,
+      reason: "No valid credit amount",
+    };
+  }
+
+  const clientFilter = getClientFilterFromBooking(booking);
+
+  if (!clientFilter) {
+    return {
+      issued: false,
+      amount: creditAmount,
+      reason: "No clientId or userEmail found",
+    };
+  }
+
+  const ref = `booking-credit:${bookingId}:${status}`;
+
+  const clientsCol = await clientsCollection();
+
+  const result = await clientsCol.updateOne(
+    {
+      $and: [
+        clientFilter,
+
+        // prevents double credit for same booking/status
+        {
+          $or: [
+            { "balanceLedger.ref": { $ne: ref } },
+            { balanceLedger: { $exists: false } },
+          ],
+        },
+      ],
+    },
+    {
+      $inc: {
+        accountBalance: creditAmount,
+      },
+      $push: {
+        balanceLedger: {
+          ref,
+          type: "booking-credit-issued",
+          bookingId: String(bookingId),
+          amount: creditAmount,
+          note: `Credit issued because booking was ${status}`,
+          createdAt: new Date(),
+        },
+      },
+      $set: {
+        updatedAt: new Date(),
+      },
+    }
+  );
+
+  if (result.modifiedCount !== 1) {
+    return {
+      issued: false,
+      amount: creditAmount,
+      reason: "Credit already issued or client not found",
+    };
+  }
+
+  return {
+    issued: true,
+    amount: creditAmount,
+    reason: "Credit added",
+  };
+}
+
 export async function PATCH(req, { params }) {
   try {
     const { bookingId } = await params;
@@ -410,15 +519,60 @@ export async function PATCH(req, { params }) {
     const oldStatus = oldBooking.status;
     const newStatus = updatedDoc.status;
 
- if (statusWasProvided && oldStatus !== newStatus) {
+//  if (statusWasProvided && oldStatus !== newStatus) {
+//   await sendStatusChangeEmails({
+//     booking: updatedDoc,
+//     oldStatus,
+//     newStatus,
+//   });
+// }
+let creditResult = null;
+
+if (statusWasProvided && oldStatus !== newStatus) {
   await sendStatusChangeEmails({
     booking: updatedDoc,
     oldStatus,
     newStatus,
   });
-}
 
-    return NextResponse.json(updatedDoc);
+  const finalStatus = String(newStatus || "").toLowerCase();
+  const finalPaymentStatus = String(updatedDoc.paymentStatus || "").toLowerCase();
+
+  const shouldIssueCredit =
+    CREDIT_STATUSES.includes(finalStatus) &&
+    finalPaymentStatus === "paid";
+
+  if (shouldIssueCredit) {
+    creditResult = await issueBookingCreditOnce({
+      booking: updatedDoc,
+      bookingId,
+      status: finalStatus,
+    });
+
+    if (creditResult.issued) {
+      await bookingsCol.updateOne(
+        { _id: new ObjectId(bookingId) },
+        {
+          $set: {
+            creditIssued: true,
+            creditIssuedAmount: creditResult.amount,
+            creditIssuedAt: new Date(),
+            creditIssuedReason: finalStatus,
+            updatedAt: new Date(),
+          },
+        }
+      );
+    }
+  }
+}
+    const finalDoc = await bookingsCol.findOne({
+  _id: new ObjectId(bookingId),
+});
+
+return NextResponse.json({
+  ...finalDoc,
+  creditResult,
+});
   } catch (e) {
     console.error("PATCH BOOKING ERROR:", e);
 

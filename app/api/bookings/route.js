@@ -6,13 +6,14 @@ import {
   invoicesCollection,
   emailsCollection,
   jobsCollection,
+  clientsCollection,
 } from "@/app/libs/mongodb/db";
 import {ObjectId} from "mongodb";
 import {NextResponse} from "next/server";
 import {getNextInvoiceNo} from "@/app/libs/invoice/getNextInvoiceNo";
 import Stripe from "stripe";
-import { generateInvoicePdfBuffer } from "@/app/libs/invoice/invoicePdf";
-import { uploadPdfToS3 } from "@/app/libs/storage/uploadPdfToS3";
+import {generateInvoicePdfBuffer} from "@/app/libs/invoice/invoicePdf";
+import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
 
 //get all
 export async function GET(req) {
@@ -46,26 +47,30 @@ export async function GET(req) {
     );
   }
 }
-export async function runInvoiceAndEmails({bookingDoc, bookingId, invoiceNo, reqUrl}) {
+export async function runInvoiceAndEmails({
+  bookingDoc,
+  bookingId,
+  invoiceNo,
+  reqUrl,
+}) {
   // 1) Generate PDF
   const pdfBuffer = await generateInvoicePdfBuffer(
-    {...bookingDoc, bookingId: String(bookingId),  type: "BOOKINGS_CONFIRM",},
+    {...bookingDoc, bookingId: String(bookingId), type: "BOOKINGS_CONFIRM"},
     reqUrl,
-       
   );
 
   // 2) Upload to S3/MinIO
   const filename = `invoice-${invoiceNo}.pdf`;
   const invoiceKey = `invoices/${filename}`;
 
-await uploadPdfToS3({
-  key: invoiceKey,
-  buffer: pdfBuffer,
-  originalName: filename,
-  folder: "invoices",
-  ownerEmail: bookingDoc?.userEmail || bookingDoc?.clientEmail || "",  
-  status: "active",
-});
+  await uploadPdfToS3({
+    key: invoiceKey,
+    buffer: pdfBuffer,
+    originalName: filename,
+    folder: "invoices",
+    ownerEmail: bookingDoc?.userEmail || bookingDoc?.clientEmail || "",
+    status: "active",
+  });
   // 3) Prepare email contents
   const bookingDateText = bookingDoc.bookingDate
     ? new Date(bookingDoc.bookingDate).toLocaleDateString("en-AU", {
@@ -292,6 +297,112 @@ Test Route Driving School
   );
 }
 
+//Credit
+function money(value) {
+  return Math.round(Number(value || 0) * 100) / 100;
+}
+
+function getClientFilter({clientId, userEmail, clientEmail}) {
+  if (clientId && ObjectId.isValid(String(clientId))) {
+    return {
+      _id: new ObjectId(String(clientId)),
+    };
+  }
+
+  const email = String(userEmail || clientEmail || "")
+    .trim()
+    .toLowerCase();
+
+  if (!email) return null;
+
+  return {
+    $or: [{email}, {linkedUserEmail: email}],
+  };
+}
+
+async function useClientCreditOnce({
+  clientId,
+  userEmail,
+  clientEmail,
+  bookingId,
+  amount,
+}) {
+  const creditAmount = money(amount);
+
+  if (creditAmount <= 0) {
+    return {
+      used: false,
+      amount: 0,
+      reason: "No credit used",
+    };
+  }
+
+  const clientFilter = getClientFilter({
+    clientId,
+    userEmail,
+    clientEmail,
+  });
+
+  if (!clientFilter) {
+    return {
+      used: false,
+      amount: creditAmount,
+      reason: "Client not found",
+    };
+  }
+
+  const ref = `booking-credit-used:${bookingId}`;
+
+  const result = await (
+    await clientsCollection()
+  ).updateOne(
+    {
+      $and: [
+        clientFilter,
+        {accountBalance: {$gte: creditAmount}},
+        {
+          $or: [
+            {"balanceLedger.ref": {$ne: ref}},
+            {balanceLedger: {$exists: false}},
+          ],
+        },
+      ],
+    },
+    {
+      $inc: {
+        accountBalance: -creditAmount,
+      },
+      $push: {
+        balanceLedger: {
+          ref,
+          type: "booking-credit-used",
+          bookingId: String(bookingId),
+          amount: -creditAmount,
+          note: "Credit used for booking",
+          createdAt: new Date(),
+        },
+      },
+      $set: {
+        updatedAt: new Date(),
+      },
+    },
+  );
+
+  if (result.modifiedCount !== 1) {
+    return {
+      used: false,
+      amount: creditAmount,
+      reason: "Not enough credit balance",
+    };
+  }
+
+  return {
+    used: true,
+    amount: creditAmount,
+    reason: "Credit used",
+  };
+}
+
 // POST create booking + invoiceNo + PDF + emails + store invoice+email log
 export async function POST(req) {
   try {
@@ -305,81 +416,152 @@ export async function POST(req) {
       address: body.address || body.clientAddress || body.userAddress || "",
       suburb: body.suburb || body.location || "",
     };
+    const totalPrice = money(normalized.price);
+    const requestedCredit = money(normalized.creditToUse);
+    const creditToUse = Math.min(requestedCredit, totalPrice);
+    const payableAmount = money(totalPrice - creditToUse);
 
-    let paymentMethod = "bank";
+    const bookingId = new ObjectId();
+   let paymentMethod = String(normalized.paymentMethod || "bank").toLowerCase();
     let cardBrand = null;
     let cardLast4 = null;
 
     if (normalized.bookingType === "website") {
-      paymentMethod = "card";
+      if (payableAmount > 0) {
+        paymentMethod = creditToUse > 0 ? "card+credit" : "card";
 
-      if (!normalized.paymentIntentId) {
-        return NextResponse.json(
-          {error: "Payment required for website booking"},
-          {status: 400},
-        );
-      }
+        if (!normalized.paymentIntentId) {
+          return NextResponse.json(
+            {error: "Payment required for website booking"},
+            {status: 400},
+          );
+        }
 
-      try {
-        const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
+        try {
+          const stripe = new Stripe(process.env.NEXT_PUBLIC_Stripe_Secret_key);
 
-        const intent = await stripe.paymentIntents.retrieve(
-          normalized.paymentIntentId,
-          {expand: ["charges.data.payment_method_details"]},
-        );
+          const intent = await stripe.paymentIntents.retrieve(
+            normalized.paymentIntentId,
+            {expand: ["charges.data.payment_method_details"]},
+          );
 
-        const charge = intent?.charges?.data?.[0];
-        const card = charge?.payment_method_details?.card;
+          if (intent.status !== "succeeded") {
+            return NextResponse.json(
+              {error: "Stripe payment is not completed"},
+              {status: 400},
+            );
+          }
 
-        cardBrand = card?.brand || null;
-        cardLast4 = card?.last4 || null;
-      } catch (err) {
-        return NextResponse.json(
-          {error: err.message|| "Unable to verify Stripe payment" },
-          {status: 400},
-        );
+          const charge = intent?.charges?.data?.[0];
+          const card = charge?.payment_method_details?.card;
+
+          cardBrand = card?.brand || null;
+          cardLast4 = card?.last4 || null;
+        } catch (err) {
+          return NextResponse.json(
+            {error: err.message || "Unable to verify Stripe payment"},
+            {status: 400},
+          );
+        }
+      } else {
+        paymentMethod = "credit";
       }
     }
 
     const invoiceNo = await getNextInvoiceNo();
+const isPaid =
+  String(normalized.paymentStatus || "").toLowerCase() === "paid";
 
+const actualPaidAmount =
+  normalized.bookingType === "website"
+    ? totalPrice
+    : money(normalized.paidAmount || creditToUse || 0);
+
+const actualOutstanding =
+  isPaid || normalized.bookingType === "website"
+    ? 0
+    : money(totalPrice - actualPaidAmount);
     const bookingDoc = {
+      _id: bookingId,
       ...normalized,
+
+      price: totalPrice,
+      creditUsed: creditToUse,
+      payableAmount,
+
       invoiceNo,
       paymentMethod,
       cardBrand,
       cardLast4,
+
+      paymentStatus:
+        normalized.paymentStatus ||
+        (normalized.bookingType === "website" ? "paid" : "unpaid"),
+
+      paidAmount: actualPaidAmount,
+
+cardAmount:
+  paymentMethod === "card" || paymentMethod === "card+credit"
+    ? payableAmount
+    : 0,
+
+cashAmount:
+  paymentMethod === "cash"
+    ? actualPaidAmount
+    : Number(normalized.cashAmount || 0),
+
+outstanding: actualOutstanding,
+
+      creditIssued: false,
+      status: normalized.status || "pending",
+
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
+    await (await bookingsCollection()).insertOne(bookingDoc);
 
+    if (creditToUse > 0) {
+      const creditResult = await useClientCreditOnce({
+        clientId: normalized.clientId,
+        userEmail: normalized.userEmail,
+        clientEmail: normalized.clientEmail,
+        bookingId,
+        amount: creditToUse,
+      });
 
-    const bookingResult = await (await bookingsCollection()).insertOne(bookingDoc);
-const bookingId = bookingResult.insertedId;
+      if (!creditResult.used) {
+        await (await bookingsCollection()).deleteOne({_id: bookingId});
 
-await (await jobsCollection()).insertOne({
-  type: "BOOKING_CONFIRMATION",
-  bookingId: String(bookingId),
-  invoiceNo,
-  reqUrl: process.env.APP_URL || req.url,
-  status: "pending",
-  attempts: 0,
-  createdAt: new Date(),
-});
+        return NextResponse.json(
+          {
+            error: creditResult.reason || "Unable to use client credit",
+          },
+          {status: 400},
+        );
+      }
+    }
+    await (
+      await jobsCollection()
+    ).insertOne({
+      type: "BOOKING_CONFIRMATION",
+      bookingId: String(bookingId),
+      invoiceNo,
+      reqUrl: process.env.APP_URL || req.url,
+      status: "pending",
+      attempts: 0,
+      createdAt: new Date(),
+    });
 
-return NextResponse.json(
-  {
-    ok: true,
-    bookingId: String(bookingId),
-    invoiceNo,
-    message: "Booking created successfully.",
-  },
-  { status: 201 }
-);
-    
-
-    
-
+    return NextResponse.json(
+      {
+        ok: true,
+        bookingId: String(bookingId),
+        invoiceNo,
+        message: "Booking created successfully.",
+      },
+      {status: 201},
+    );
   } catch (error) {
     return NextResponse.json({error: "Failed to add booking"}, {status: 500});
   }

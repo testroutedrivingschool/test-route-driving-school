@@ -67,7 +67,8 @@ function PaymentForm() {
   const [loading, setLoading] = useState(false);
   const [phone, setPhone] = useState("");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-
+  const [accountBalance, setAccountBalance] = useState(0);
+  const [useCredit, setUseCredit] = useState(false);
   /* Load booking */
   useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
@@ -79,7 +80,11 @@ function PaymentForm() {
 
     setBooking(bookingData);
     setAddress(bookingData.clientAddress ?? bookingData.userAddress ?? "");
-    setPhone(bookingData.clientPhone?bookingData.clientPhone:bookingData.userPhone ||  "");
+    setPhone(
+      bookingData.clientPhone
+        ? bookingData.clientPhone
+        : bookingData.userPhone || "",
+    );
     setSuburb(
       bookingData.location
         ? bookingData.location
@@ -95,20 +100,44 @@ function PaymentForm() {
       setLocations(res.data);
     });
   }, []);
+  useEffect(() => {
+    if (!booking?.clientId) return;
+
+    axios
+      .get(`/api/clients?clientId=${booking.clientId}`)
+      .then((res) => {
+        const client = Array.isArray(res.data) ? res.data[0] : null;
+        setAccountBalance(Number(client?.accountBalance || 0));
+      })
+      .catch(() => {
+        setAccountBalance(0);
+      });
+  }, [booking?.clientId]);
 
   if (!booking) return <LoadingSpinner />;
 
   const baseAmount = Number(booking.price || 0);
 
+  const canUseCredit =
+  booking.bookingType === "website" || booking.bookingType === "manual";
+
+const creditToUse =
+  useCredit && canUseCredit
+    ? Math.min(accountBalance, baseAmount)
+    : 0;
+
+
+const remainingAmount = Number((baseAmount - creditToUse).toFixed(2));
+const cardBaseAmount = remainingAmount;
   const feeData =
-    booking.bookingType === "website"
-      ? calculateStripeTotal(baseAmount)
+    booking.bookingType === "website" && cardBaseAmount > 0
+      ? calculateStripeTotal(cardBaseAmount)
       : {
-          totalAmount: baseAmount,
+          totalAmount: cardBaseAmount,
           processingFee: 0,
           stripeFee: 0,
           tax: 0,
-          netAmount: baseAmount,
+          netAmount: cardBaseAmount,
         };
 
   const totalAmount = feeData.totalAmount;
@@ -124,8 +153,9 @@ function PaymentForm() {
 
     setLoading(true);
 
-    try {
-      const clientId = String(booking?.clientId);
+  
+try {
+  const clientId = booking?.clientId ? String(booking.clientId) : "";
 
       // ✅ MANUAL booking => NO payment
       if (booking.bookingType === "manual") {
@@ -136,19 +166,31 @@ function PaymentForm() {
             mobile: phone,
           });
         }
+const manualPaymentStatus = remainingAmount <= 0 ? "paid" : "unpaid";
+const manualPaymentMethod = creditToUse > 0 ? "credit" : "bank";
+       await axios.post("/api/bookings", {
+  ...booking,
 
-        await axios.post("/api/bookings", {
-          ...booking,
-          address,
-          suburb,
+  // bookingDate: booking.bookingDate,
+  // bookingTime: booking.bookingTime,
 
-          price: booking.price,
-          totalPaidAmount: booking.price,
-          processingFee: 0,
-          status: "pending",
-          paymentStatus: "unpaid",
-          paymentIntentId: null,
-        });
+  address,
+  suburb,
+  phone,
+
+  price: baseAmount,
+  creditToUse,
+
+  totalPaidAmount: creditToUse,
+  paidAmount: creditToUse,
+  outstanding: remainingAmount,
+
+  processingFee: 0,
+  status: "pending",
+  paymentStatus: manualPaymentStatus,
+  paymentMethod: manualPaymentMethod,
+  paymentIntentId: null,
+});
 
         const returnPath =
           booking?.returnPath ||
@@ -161,18 +203,62 @@ function PaymentForm() {
         return;
       } else {
         // ✅ WEBSITE booking => Stripe payment required
-        if (!stripe || !elements) return;
 
+    
+
+if (cardBaseAmount <= 0) {
+  await axios.post("/api/bookings", {
+    ...booking,
+    phone,
+    address,
+    suburb,
+
+    price: baseAmount,
+    creditToUse,
+
+    totalPaidAmount: 0,
+    paidAmount: baseAmount,
+    processingFee: 0,
+
+    paymentIntentId: null,
+    status: "pending",
+    paymentStatus: "paid",
+    paymentMethod: "credit",
+  });
+
+  await axios.patch(`/api/users`, {
+    email: booking.userEmail,
+    address,
+    suburb,
+    phone,
+    clientId,
+  });
+
+  sessionStorage.removeItem("pendingBooking");
+  toast.success("Booking confirmed using credit 🎉");
+  router.push("/dashboard/user/my-bookings");
+  return;
+}
+
+// ✅ CARD OR PARTIAL CREDIT + CARD
+if (!stripe || !elements) {
+  toast.error("Payment system is not ready yet");
+  return;
+}
+        if (!stripe || !elements) return;
+        
         const cardElement = elements.getElement(CardNumberElement);
         if (!cardElement) {
           toast.error("Card input not ready");
           return;
         }
 
+        // const {data} = await axios.post("/api/create-payment-intent", {
+        //   amount: baseAmount,
+        // });
         const {data} = await axios.post("/api/create-payment-intent", {
-          amount: baseAmount,
+          amount: cardBaseAmount,
         });
-
         const result = await stripe.confirmCardPayment(data.clientSecret, {
           payment_method: {
             card: cardElement,
@@ -188,22 +274,23 @@ function PaymentForm() {
           toast.error(result.error.message);
           return;
         }
-        const clientId = String(booking?.clientId);
+      //  const clientId = booking?.clientId ? String(booking.clientId) : "";
         await axios.post("/api/bookings", {
-          ...booking,
-          phone,
-          address,
-          suburb,
+  ...booking,
+  phone,
+  address,
+  suburb,
 
-          totalPaidAmount: data.totalAmount,
-          processingFee: data.processingFee,
+  price: baseAmount,
+  creditToUse,
 
-          price: baseAmount,
+  totalPaidAmount: data.totalAmount,
+  processingFee: data.processingFee,
 
-          paymentIntentId: result.paymentIntent.id,
-          status: "pending",
-          paymentStatus: "paid",
-        });
+  paymentIntentId: result.paymentIntent.id,
+  status: "pending",
+  paymentStatus: "paid",
+});
         await axios.patch(`/api/users`, {
           email: booking.userEmail,
           address,
@@ -215,8 +302,16 @@ function PaymentForm() {
         toast.success("Booking confirmed 🎉");
         router.push("/dashboard/user/my-bookings");
       }
-    } catch (err) {
-      toast.error("Failed to Booking");
+   
+   } catch (err) {
+  console.error("BOOKING ERROR:", err?.response?.data || err);
+
+  toast.error(
+    err?.response?.data?.error ||
+      err?.response?.data?.details ||
+      "Failed to create booking"
+  );
+
     } finally {
       setLoading(false);
     }
@@ -230,6 +325,34 @@ function PaymentForm() {
 
           {/* Booking Summary */}
           <div className="bg-gray-100 rounded-lg p-4 space-y-1">
+           {accountBalance > 0 && canUseCredit && (
+              <div className="mt-3 rounded-lg bg-green-50 border border-green-200 p-3">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={useCredit}
+                    onChange={(e) => setUseCredit(e.target.checked)}
+                  />
+                  <span>
+                    Use credit balance: $
+                    {Math.min(accountBalance, baseAmount).toFixed(2)}
+                  </span>
+                </label>
+                <p className="text-sm text-gray-600 mt-1">
+                  Available credit: ${accountBalance.toFixed(2)}
+                </p>
+              </div>
+            )}
+
+            {creditToUse > 0 && (
+              <p>
+                <strong>Credit Used:</strong> -${creditToUse.toFixed(2)}
+              </p>
+            )}
+
+            <p>
+              <strong>Pay by Card:</strong> ${cardBaseAmount.toFixed(2)}
+            </p>
             <p>
               <strong>Service:</strong> {booking.serviceName}
             </p>
@@ -322,16 +445,21 @@ function PaymentForm() {
             </label>
           </div>
           {booking.bookingType === "website" ? (
-            <>
-              <StripeCardInput />
-              <PrimaryBtn
-                onClick={handleConfirmPayment}
-                disabled={loading}
-                className="w-full justify-center py-3 text-lg"
-              >
-                {loading ? "Processing..." : `Pay $${totalAmount.toFixed(2)}`}
-              </PrimaryBtn>
-            </>
+         <>
+    {cardBaseAmount > 0 && <StripeCardInput />}
+
+    <PrimaryBtn
+      onClick={handleConfirmPayment}
+      disabled={loading}
+      className="w-full justify-center py-3 text-lg"
+    >
+      {loading
+        ? "Processing..."
+        : cardBaseAmount > 0
+          ? `Pay $${totalAmount.toFixed(2)}`
+          : "Confirm Booking with Credit"}
+    </PrimaryBtn>
+  </>
           ) : (
             <PrimaryBtn
               onClick={handleConfirmPayment}

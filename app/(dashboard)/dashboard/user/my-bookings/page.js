@@ -37,7 +37,39 @@ function toBookingDateTime(bookingDate, bookingTime) {
   combined.setHours(hh, mm, 0, 0);
   return combined;
 }
+const getStatusStyle = (status = "") => {
+  const value = String(status).toLowerCase();
 
+  if (value === "completed") {
+    return "bg-green-100 text-green-700 border-green-200";
+  }
+
+  if (value === "cancelled") {
+    return "bg-red-100 text-red-700 border-red-200";
+  }
+
+  if (value === "unattended") {
+    return "bg-orange-500 text-white border-orange-500";
+  }
+
+  if (value === "pending") {
+    return "bg-yellow-100 text-yellow-700 border-yellow-200";
+  }
+
+  if (value === "booked" || value === "confirmed") {
+    return "bg-blue-100 text-blue-700 border-blue-200";
+  }
+
+  return "bg-gray-100 text-gray-700 border-gray-200";
+};
+
+const formatStatus = (status = "") => {
+  if (!status) return "-";
+
+  return String(status)
+    .replaceAll("-", " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
 function canUserReschedule(bookingDate, bookingTime) {
   const dt = toBookingDateTime(bookingDate, bookingTime);
   if (!dt) return false;
@@ -71,8 +103,23 @@ export default function UserBookings() {
     },
     enabled: !!user?.email,
   });
+const { data: clientData, isLoading: isClientLoading } = useQuery({
+  queryKey: ["client-credit", user?.email, user?.clientId],
+  queryFn: async () => {
+    const clientId = user?.clientId ? String(user.clientId) : "";
 
-  if (isUserLoading || isLoading) return <LoadingSpinner />;
+    const url = clientId
+      ? `/api/clients?clientId=${clientId}`
+      : `/api/clients?email=${encodeURIComponent(user.email)}&exactEmail=true`;
+
+    const res = await axios.get(url);
+    return Array.isArray(res.data) ? res.data[0] : null;
+  },
+  enabled: !!user?.email,
+});
+
+const accountBalance = Number(clientData?.accountBalance || 0);
+  if (isUserLoading || isLoading || isClientLoading) return <LoadingSpinner />;
 
   if (!bookings.length) {
     return (
@@ -95,7 +142,12 @@ export default function UserBookings() {
             </p>
           </div>
         </div>
-
+<div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-right min-w-[180px]">
+  <p className="text-xs text-gray-600">Credit Balance</p>
+  <p className="text-2xl font-bold text-green-700">
+    {formatMoney(accountBalance)}
+  </p>
+</div>
         <div className="p-2 md:p-4 space-y-4">
           {bookings.map((b) => {
             const allow = canUserReschedule(b.bookingDate, b.bookingTime);
@@ -136,6 +188,17 @@ export default function UserBookings() {
                       <div className="opacity-85">
                         <b>Duration:</b> {b.duration || "—"}
                       </div>
+                     <div className="flex items-center gap-2">
+  <span className="font-semibold text-gray-700">Status:</span>
+
+  <span
+    className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getStatusStyle(
+      b.status,
+    )}`}
+  >
+    {formatStatus(b.status)}
+  </span>
+</div>
 
                       <div className="opacity-85">
                         <b>Payment Status:</b>{" "}
@@ -295,7 +358,7 @@ function UserPayNowModal({ booking, user, onClose, onSuccess }) {
       await queryClient.invalidateQueries({
         queryKey: ["bookings", user?.email],
       });
-
+await queryClient.invalidateQueries({ queryKey: ["client-credit", user?.email, user?.clientId] });
       onSuccess?.();
     } catch (err) {
       toast.error(
