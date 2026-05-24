@@ -120,21 +120,30 @@ export default function BookingConfirmPage() {
     },
     enabled: !!booking,
   });
-
+const selectedDate = booking?.date || booking?.bookingDate;
+const selectedTime = booking?.time || booking?.bookingTime;
   const selectedSuburb = booking?.suburb || booking?.location || "";
   const isManualBooking = booking?.bookingType === "manual";
   const isPackageBalanceBooking =
     !!booking?.useClientBalance && !!booking?.purchaseId;
   const {data: balanceClient, isLoading: isBalanceClientLoading} = useQuery({
     queryKey: ["balance-client", booking?.clientId, booking?.clientEmail],
-    enabled:
-      !!booking?.useClientBalance &&
-      (!!booking?.clientId || !!booking?.clientEmail),
+   enabled:
+  !!booking &&
+  !!userData &&
+  !!(
+    booking?.clientId ||
+    userData?.clientId ||
+    booking?.clientEmail ||
+    userData?.email
+  ),
     queryFn: async () => {
-      if (booking?.clientId) {
-        const res = await axios.get(`/api/clients/${booking.clientId}`);
-        return res.data;
-      }
+      const clientId = booking?.clientId || userData?.clientId;
+
+if (clientId) {
+  const res = await axios.get(`/api/clients/${clientId}`);
+  return res.data;
+}
 
       const res = await axios.get("/api/clients", {
         params: {
@@ -238,8 +247,8 @@ export default function BookingConfirmPage() {
         overridePrice: null,
         isPriceOverridden: false,
 
-        bookingDate: booking.date,
-        bookingTime: booking.time,
+        bookingDate: selectedDate,
+        bookingTime: selectedTime,
         location: booking.location || "",
         suburb: booking.suburb || booking.location || "",
 
@@ -297,6 +306,10 @@ export default function BookingConfirmPage() {
       return;
     }
     if (booking.bookingType === "website") {
+      const creditToUse = Math.min(
+  latestClientBalance,
+  selectedBooking.price,
+);
       const bookingData = {
         userId: userData._id,
         clientId: userData.clientId,
@@ -318,9 +331,11 @@ export default function BookingConfirmPage() {
         originalPrice: selectedBooking.price,
         overridePrice: null,
         isPriceOverridden: false,
-
-        bookingDate: booking.date,
-        bookingTime: booking.time,
+creditToUse,
+useClientBalance: creditToUse > 0,
+clientAccountBalance: latestClientBalance,
+        bookingDate: selectedDate,
+        bookingTime: selectedTime,
         location: booking.location,
         suburb: booking.suburb || booking.location,
         status: "pending",
@@ -350,8 +365,8 @@ export default function BookingConfirmPage() {
         overridePrice: hasOverride ? finalPrice : null,
         isPriceOverridden: !!hasOverride,
 
-        bookingDate: booking.date,
-        bookingTime: booking.time,
+        bookingDate: selectedDate,
+        bookingTime: selectedTime,
         location: booking.location,
         suburb: booking.suburb || booking.location,
         status: "pending",
@@ -383,8 +398,8 @@ export default function BookingConfirmPage() {
       isPriceOverridden: !!hasOverride,
       flowSource: booking.flowSource || "instructor",
       returnPath: booking.returnPath || "/bookings",
-      bookingDate: booking.date,
-      bookingTime: booking.time,
+      bookingDate: selectedDate,
+      bookingTime: selectedTime,
       location: booking.location,
       suburb: booking.suburb || booking.location,
       status: "pending",
@@ -443,7 +458,7 @@ export default function BookingConfirmPage() {
                         Date:
                       </p>
                       <p className="flex-1 text-sm md:text-base">
-                        {new Date(booking.date).toDateString()}
+                       {selectedDate ? new Date(selectedDate).toDateString() : "-"}
                       </p>
                     </div>
                     <div className="flex justify-start items-center  gap-6">
@@ -451,7 +466,7 @@ export default function BookingConfirmPage() {
                         Time:
                       </p>
                       <p className="flex-1 text-sm md:text-base">
-                        {booking.time}
+                       {selectedTime || "-"}
                       </p>
                     </div>
                     <div className="flex items-center gap-6">

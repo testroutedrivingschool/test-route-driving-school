@@ -8,6 +8,7 @@ import React, {useMemo, useState} from "react";
 import {GoPackage} from "react-icons/go";
 import {FiDownload} from "react-icons/fi";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 function StatusPill({status}) {
   const s = String(status || "").toLowerCase();
@@ -29,6 +30,7 @@ function StatusPill({status}) {
 }
 
 export default function UserPurchase() {
+  const router = useRouter();
   const {data: user, isLoading: isUserLoading} = useUserData();
   const [downloadingId, setDownloadingId] = useState(null);
 
@@ -194,7 +196,15 @@ export default function UserPurchase() {
                       : "Download Invoice"}
                   </button>
 
-                
+                {String(p.status || "").toLowerCase() === "confirmed" && (
+  <button
+    type="button"
+    onClick={() => router.push("/bookings")}
+    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-primary/90 transition"
+  >
+    Book Slot
+  </button>
+)}
                 </div>
               </div>
             </div>

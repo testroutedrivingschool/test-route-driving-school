@@ -214,3 +214,60 @@ export async function PUT(req, { params }) {
     );
   }
 }
+
+export async function DELETE(req, { params }) {
+  try {
+    const { clientId } = await params;
+
+    if (!ObjectId.isValid(clientId)) {
+      return NextResponse.json(
+        { error: "Invalid client id" },
+        { status: 400 }
+      );
+    }
+
+    const clientsCol = await clientsCollection();
+    const client = await clientsCol.findOne({
+      _id: new ObjectId(clientId),
+    });
+
+    if (!client) {
+      return NextResponse.json(
+        { error: "Client not found" },
+        { status: 404 }
+      );
+    }
+
+    if (client.loginAccess === true) {
+      return NextResponse.json(
+        {
+          error:
+            "This client has login access. Please delete the linked user account first.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const result = await clientsCol.deleteOne({
+      _id: new ObjectId(clientId),
+    });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { error: "Client not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ ok: true });
+  } catch (error) {
+    console.error("CLIENT DELETE ERROR:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to delete client",
+        details: error?.message,
+      },
+      { status: 500 }
+    );
+  }
+}

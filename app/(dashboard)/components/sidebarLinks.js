@@ -109,6 +109,12 @@ export const adminSidebarLinks = [
     icon: <FiShield />,
     path: "/dashboard/admin/manage-users",
   },
+  {
+    id: 14,
+    label: "Manage Clients",
+    icon: <FiUsers />,
+    path: "/dashboard/admin/manage-clients",
+  },
  
   {
     id: 8,
