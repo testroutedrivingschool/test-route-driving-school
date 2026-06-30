@@ -12,10 +12,36 @@ import { toast } from "react-toastify";
 import { FaBars } from "react-icons/fa";
 import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import AddOrganisation from "./components/AddOrganisation";
+import { useUserData } from "@/app/hooks/useUserData";
 export default function Clients() {
   const router = useRouter();
   const searchParams = useSearchParams();
+const { data: userData, isLoading: userDataLoading } = useUserData();
 
+const handleBookNow = () => {
+  if (!selectedClient?._id) return;
+
+  if (userDataLoading) {
+    toast.info("Please wait, loading user role...");
+    return;
+  }
+
+  const clientId = encodeURIComponent(selectedClient._id);
+
+  if (userData?.role === "admin") {
+    router.push(
+      `/dashboard/admin/manage-instructors-slots?rebookClientId=${clientId}`
+    );
+    return;
+  }
+
+  if (userData?.role === "instructor") {
+    router.push(`/instructor-bookings?rebookClientId=${clientId}`);
+    return;
+  }
+
+  toast.error("You are not allowed to book for this client.");
+};
  const tabFromUrl = searchParams.get("tab");
  const [activeTab, setActiveTab] = useState(tabFromUrl || "client-search");
   const [selectedClient, setSelectedClient] = useState(null);
@@ -177,7 +203,7 @@ const goTab = (tab) => {
             <button
               type="button"
               onClick={() => {
-                router.push(`/instructor-bookings`);
+               handleBookNow();
                 setMobileMenuOpen(false);
               }}
               className="block w-full text-left py-2"
@@ -247,7 +273,7 @@ const goTab = (tab) => {
                     <TabButton
                       label="Book Now"
                       onClick={() =>
-                        router.push(`/instructor-bookings?rebookClientId=${selectedClient._id}`)
+                       handleBookNow()
                       }
                     />
                   </>

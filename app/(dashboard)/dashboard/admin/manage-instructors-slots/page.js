@@ -147,14 +147,28 @@ const instructor = useMemo(
 
   // Purchases Packages
 
-  const {data: rebookClient} = useQuery({
-    queryKey: ["client", rebookClientId],
-    enabled: !!rebookClientId,
-    queryFn: async () => {
-      const res = await axios.get(`/api/clients/${rebookClientId}`);
-      return res.data;
-    },
-  });
+  const {data: rebookClient, isLoading: rebookClientLoading} = useQuery({
+  queryKey: ["client", rebookClientId],
+  enabled: !!rebookClientId,
+  queryFn: async () => {
+    const res = await axios.get(`/api/clients/${rebookClientId}`);
+    return res.data;
+  },
+});
+
+const adminManagePath = "/dashboard/admin/manage-instructors-slots";
+
+const clientDetailsReturnPath = rebookClientId
+  ? `/clients?clientId=${encodeURIComponent(rebookClientId)}`
+  : "/clients";
+
+const cancelRebookMode = () => {
+  router.push(clientDetailsReturnPath);
+};
+
+const rebookClientName =
+  `${rebookClient?.firstName || ""} ${rebookClient?.lastName || ""}`.trim() ||
+  "Client";
   const tableRef = useRef(null);
   const queryClient = useQueryClient();
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -996,7 +1010,80 @@ const {data: packageClient, isLoading: packageClientLoading} = useQuery({
     if (!movingBooking) return 0;
     return Number(movingBooking.minutes || toMinutes(movingBooking) || 0);
   };
+const autoPrivateSyncRef = useRef(false);
 
+useEffect(() => {
+  if (!instructor?._id) return;
+  if (!bookings?.length) return;
+  if (autoPrivateSyncRef.current) return;
+
+  const syncPrivateBookedAfterBookings = async () => {
+    try {
+      autoPrivateSyncRef.current = true;
+
+      const slotByKey = new Map(
+        (slots || []).map((s) => [`${s.date}__${s.time}`, s])
+      );
+
+      const requests = [];
+
+      for (const b of bookings || []) {
+        const status = String(b.status || "").toLowerCase();
+
+        if (status === "cancelled") continue;
+
+        const dateStr = formatDate(b.bookingDate || b.date);
+        const startTime = b.bookingTime || b.time;
+        const startIdx = timeIndexMap[startTime];
+
+        if (startIdx == null) continue;
+
+        const bookingMinutes = Number(b.minutes || toMinutes(b) || 15);
+        const bookingSteps = Math.max(
+          1,
+          Math.ceil(bookingMinutes / STEP_MIN)
+        );
+
+        const privateBookedTime = times[startIdx + bookingSteps];
+
+        if (!privateBookedTime) continue;
+
+        const key = `${dateStr}__${privateBookedTime}`;
+        const existingSlot = slotByKey.get(key);
+
+        // Do not overwrite hidden / publicNote / existing privateBooked
+        // Only create new one or replace public slot
+        if (existingSlot && existingSlot.visibility !== "public") {
+          continue;
+        }
+
+        requests.push(
+          axios.put("/api/instructor-slots", {
+            instructorId: instructor._id,
+            date: dateStr,
+            time: privateBookedTime,
+            duration: "15 mins",
+            visibility: "privateBooked",
+            privateNote: "",
+            publicNote: "",
+            suburb: "ALL",
+          })
+        );
+      }
+
+      if (requests.length) {
+        await Promise.all(requests);
+        await refetchSlots();
+      }
+    } catch (err) {
+      console.error("Auto privateBooked sync failed:", err);
+    } finally {
+      autoPrivateSyncRef.current = false;
+    }
+  };
+
+  syncPrivateBookedAfterBookings();
+}, [instructor?._id, bookings, slots, weekFrom, weekTo]);
   const canMoveToAvailableRange = (dateStr, startTime) => {
     if (!moveMode || !movingBooking) return false;
 
@@ -1222,7 +1309,9 @@ const handleBooking = (date, slot, time) => {
   if (packageBookingMode && !packageClient) {
     return toast.error("Client not found for this package booking");
   }
-
+if (rebookMode && !rebookClient) {
+  return toast.error("Client not found for rebooking");
+}
   const dateStr = formatDate(date);
   const maxAvailableMinutes = getMaxContinuousAvailableMinutes(dateStr, time);
 
@@ -1300,10 +1389,11 @@ const handleBooking = (date, slot, time) => {
 if (
   slotsLoading ||
   bookingsLoading ||
-  (packageBookingMode && packageClientLoading)
+  (packageBookingMode && packageClientLoading) ||
+  (rebookMode && rebookClientLoading)
 ) {
   return <LoadingSpinner />;
-};
+}
 
   return (
     <>
@@ -1466,6 +1556,33 @@ if (
     )}
   </div>
 )}
+{rebookMode && !packageBookingMode && (
+  <div className="rounded-2xl border border-secondary bg-secondary text-white shadow-sm overflow-hidden">
+    <div className="p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div>
+        <div className="text-xs font-bold uppercase tracking-wide opacity-90">
+          Rebook Mode
+        </div>
+
+        <h2 className="mt-1 text-lg md:text-2xl font-bold">
+          Choose an instructor and slot for {rebookClientName}
+        </h2>
+
+        <p className="mt-1 text-sm opacity-90">
+          Select an instructor first, then choose an available slot from the schedule.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={cancelRebookMode}
+        className="rounded-xl border border-white/30 px-4 py-2 text-sm font-bold bg-primary border-none transition"
+      >
+        Cancel Rebook
+      </button>
+    </div>
+  </div>
+)}
         {/* Empty State */}
         {!selectedInstructorId ? (
 
@@ -1579,22 +1696,20 @@ if (
                         </div>
                       </div>
                     )}
-                    {rebookMode && (
-                      <div className="m-3 p-3 rounded-md border border-secondary bg-secondary text-white text-sm flex justify-between items-center">
-                        <span>
-                          Rebook Mode: choose a slot for{" "}
-                          <b>
-                            {rebookClient?.firstName} {rebookClient?.lastName}
-                          </b>
-                        </span>
-                        <button
-                          className="underline font-semibold"
-                          onClick={() => router.push("/dashboard/admin/manage-instructors-slots")}
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    )}
+                    {rebookMode && !packageBookingMode && (
+  <div className="m-3 p-3 rounded-md border border-secondary bg-secondary text-white text-sm flex justify-between items-center">
+    <span>
+      Rebook Mode: choose a slot for <b>{rebookClientName}</b>
+    </span>
+
+    <button
+      className="underline font-semibold"
+      onClick={cancelRebookMode}
+    >
+      Cancel
+    </button>
+  </div>
+)}
                     {/* table*/}
                     <div className="">
                       <div

@@ -776,7 +776,83 @@ export default function InstructorBookings() {
         : [...prev, weekNo],
     );
   };
+const autoPrivateSyncRef = useRef(false);
 
+useEffect(() => {
+  if (!instructor?._id) return;
+  if (!bookings?.length) return;
+  if (autoPrivateSyncRef.current) return;
+
+  const syncPrivateBookedAfterBookings = async () => {
+    try {
+      autoPrivateSyncRef.current = true;
+
+      const slotByKey = new Map(
+        (slots || []).map((s) => [`${s.date}__${s.time}`, s])
+      );
+
+      const requests = [];
+
+      for (const b of bookings || []) {
+        const status = String(b.status || "").toLowerCase();
+
+        if (status === "cancelled") continue;
+
+        const dateStr = formatDate(b.bookingDate || b.date);
+        const startTime = b.bookingTime || b.time;
+        const startIdx = timeIndexMap[startTime];
+
+        if (startIdx == null) continue;
+
+        const bookingMinutes = Number(b.minutes || toMinutes(b) || 15);
+        const bookingSteps = Math.max(
+          1,
+          Math.ceil(bookingMinutes / STEP_MIN)
+        );
+
+        // Example: 9:15AM + 1 hour = 10:15AM
+        const privateBookedTime = times[startIdx + bookingSteps];
+
+        if (!privateBookedTime) continue;
+
+        const key = `${dateStr}__${privateBookedTime}`;
+        const existingSlot = slotByKey.get(key);
+
+        // Do not overwrite hidden / publicNote / existing privateBooked
+        if (
+          existingSlot &&
+          existingSlot.visibility !== "public"
+        ) {
+          continue;
+        }
+
+        requests.push(
+          axios.put("/api/instructor-slots", {
+            instructorId: instructor._id,
+            date: dateStr,
+            time: privateBookedTime,
+            duration: "15 mins",
+            visibility: "privateBooked",
+            privateNote: "",
+            publicNote: "",
+            suburb: "ALL",
+          })
+        );
+      }
+
+      if (requests.length) {
+        await Promise.all(requests);
+        await refetchSlots();
+      }
+    } catch (err) {
+      console.error("Auto privateBooked sync failed:", err);
+    } finally {
+      autoPrivateSyncRef.current = false;
+    }
+  };
+
+  syncPrivateBookedAfterBookings();
+}, [instructor?._id, bookings, slots, weekFrom, weekTo]);
   const handleClearWeekSchedule = async () => {
     if (!instructor?._id) return toast.error("Instructor not found");
     if (clearWeekLoading) return;

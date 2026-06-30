@@ -24,7 +24,7 @@ export default function ManageClients() {
     },
   });
 
- 
+
 const handleDelete = async (client) => {
   const result = await Swal.fire({
     title: "Delete client?",
@@ -95,7 +95,9 @@ const handleDelete = async (client) => {
     }
     className="text-primary hover:underline"
   >
-    {client.firstName} {client.lastName}
+    {client.firstName || client.lastName
+  ? `${client.firstName ?? ""} ${client.lastName ?? ""}`.trim()
+  : "N/A"}
   </button>
 </td>
                 <td className="p-3">{client.email || "-"}</td>

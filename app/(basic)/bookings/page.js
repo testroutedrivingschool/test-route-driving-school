@@ -375,16 +375,15 @@ export default function BookingsPage() {
       const currentKey = `${dateKey}__${normalizeTime(currentTime)}`;
       const slot = slotsMap[currentKey];
       const isBooked = bookedSlotsMap[currentKey];
-      const isBuffer = bufferSlotsMap[currentKey];
       const isBlockedByTime = isSlotBlockedByTime(startDate, currentTime);
       const vis = slot ? getVisibility(slot) : "";
       const isAvailable =
-        !isBlockedByTime &&
-        !isBooked &&
-        !isBuffer &&
-        !!slot &&
-        slotMatchesLocation(slot) &&
-        vis === "public";
+  !isBlockedByTime &&
+  !isBooked &&
+  !!slot &&
+  slotMatchesLocation(slot) &&
+  vis === "public";
+
 
       if (!isAvailable) break;
 
@@ -578,57 +577,38 @@ export default function BookingsPage() {
     return formatYMD(new Date(bookingDate));
   };
 
-  const BOOKING_BUFFER_MIN = 15;
-
-  const bookingAvailabilityMaps = (bookings || []).reduce(
-    (acc, b) => {
-      // ignore cancelled bookings
-      if ((b?.status || "").toLowerCase() === "cancelled") {
-        return acc;
-      }
-
-      const dateKey = getBookingDateKey(b.bookingDate);
-      const startTime = normalizeTime(b.bookingTime);
-
-      const startIdx = timeIndexMap[startTime];
-      if (startIdx == null) return acc;
-
-      const mins = toMinutes(b);
-      const bookingSpan = Math.max(1, Math.ceil(mins / STEP_MIN));
-
-      // actual booked time
-      for (let k = 0; k < bookingSpan; k++) {
-        const t = normalizeTime(times[startIdx + k]);
-        if (!t) break;
-
-        acc.bookedSlotsMap[`${dateKey}__${t}`] = true;
-      }
-
-      // 15 minute unavailable buffer after booking
-      const bufferSpan = Math.ceil(BOOKING_BUFFER_MIN / STEP_MIN);
-
-      for (let k = 0; k < bufferSpan; k++) {
-        const t = normalizeTime(times[startIdx + bookingSpan + k]);
-        if (!t) break;
-
-        const key = `${dateKey}__${t}`;
-
-        // don't overwrite real booked slot
-        if (!acc.bookedSlotsMap[key]) {
-          acc.bufferSlotsMap[key] = true;
-        }
-      }
-
+ const bookingAvailabilityMaps = (bookings || []).reduce(
+  (acc, b) => {
+    // ignore cancelled bookings
+    if ((b?.status || "").toLowerCase() === "cancelled") {
       return acc;
-    },
-    {
-      bookedSlotsMap: {},
-      bufferSlotsMap: {},
-    },
-  );
+    }
 
-  const bookedSlotsMap = bookingAvailabilityMaps.bookedSlotsMap;
-  const bufferSlotsMap = bookingAvailabilityMaps.bufferSlotsMap;
+    const dateKey = getBookingDateKey(b.bookingDate);
+    const startTime = normalizeTime(b.bookingTime);
+
+    const startIdx = timeIndexMap[startTime];
+    if (startIdx == null) return acc;
+
+    const mins = toMinutes(b);
+    const bookingSpan = Math.max(1, Math.ceil(mins / STEP_MIN));
+
+    // only actual booked time will be blocked
+    for (let k = 0; k < bookingSpan; k++) {
+      const t = normalizeTime(times[startIdx + k]);
+      if (!t) break;
+
+      acc.bookedSlotsMap[`${dateKey}__${t}`] = true;
+    }
+
+    return acc;
+  },
+  {
+    bookedSlotsMap: {},
+  },
+);
+
+const bookedSlotsMap = bookingAvailabilityMaps.bookedSlotsMap;
   useEffect(() => {
     if (instructorId) {
       const selectedInstructor = instructors.find(
@@ -1100,10 +1080,7 @@ export default function BookingsPage() {
                                             bookedSlotsMap[
                                               `${dateKey}__${timeKey}`
                                             ];
-                                          const isBuffer =
-                                            bufferSlotsMap[
-                                              `${dateKey}__${timeKey}`
-                                            ];
+                                         
                                           const slot =
                                             slotsMap[`${dateKey}__${timeKey}`];
 
@@ -1120,16 +1097,7 @@ export default function BookingsPage() {
                                               </td>
                                             );
                                           }
-                                          if (isBuffer) {
-                                            return (
-                                              <td
-                                                key={dayIndex}
-                                                className={tdClass}
-                                              >
-                                                <div className="w-full h-full min-h-11 bg-[#eee]" />
-                                              </td>
-                                            );
-                                          }
+                                       
                                           if (isBooked) {
                                             return (
                                               <td
@@ -1407,10 +1375,7 @@ export default function BookingsPage() {
                                                 bookedSlotsMap[
                                                   `${dateKey}__${timeKey}`
                                                 ];
-                                              const isBuffer =
-                                                bufferSlotsMap[
-                                                  `${dateKey}__${timeKey}`
-                                                ];
+                                             
                                               const key = `${dateKey}__${normalizeTime(time)}`;
                                               const slot = slotsMap[key];
                                               const vis = slot
@@ -1433,16 +1398,7 @@ export default function BookingsPage() {
                                                   </td>
                                                 );
                                               }
-                                              if (isBuffer) {
-                                                return (
-                                                  <td
-                                                    key={dayIndex}
-                                                    className={cellClass}
-                                                  >
-                                                    <div className="w-full min-h-10 bg-[#eee]" />
-                                                  </td>
-                                                );
-                                              }
+                                             
                                               if (isBooked) {
                                                 return (
                                                   <td

@@ -305,9 +305,9 @@ const downloadAttachment = async (key) => {
               <td className="px-4 py-2 text-right">{formatMoney(row.online)}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.voucher)}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.services)}</td>
-              <td className="px-4 py-2 text-right">{formatMoney(row.onlineSurcharge)}</td>
-              <td className="px-4 py-2 text-right">{formatMoney(row.gst)}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.totalIncome)}</td>
+              <td className="px-4 py-2 text-right">{formatMoney(row.gst)}</td>
+              <td className="px-4 py-2 text-right">{formatMoney(row.onlineSurcharge)}</td>
               <td className="px-4 py-2">{row.tracking}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.payout)}</td>
             </tr>

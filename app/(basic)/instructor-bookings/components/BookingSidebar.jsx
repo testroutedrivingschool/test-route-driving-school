@@ -35,6 +35,34 @@ const isPaid =
 
   const clientId = booking?.clientId || booking?.userId || "";
   const bookingId = oid(booking?._id);
+  const adminSchedulePath = "/dashboard/admin/manage-instructors-slots";
+const instructorSchedulePath = "/instructor-bookings";
+
+const instructorIdForQuery = oid(booking?.instructorId);
+
+const getSchedulePath = (paramsObj = {}) => {
+  if (!user?.role) {
+    return "";
+  }
+
+  const basePath =
+    user.role === "admin" ? adminSchedulePath : instructorSchedulePath;
+
+  const params = new URLSearchParams();
+
+  Object.entries(paramsObj).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+  });
+
+  // For admin page, preselect the booking instructor
+  if (user.role === "admin" && instructorIdForQuery) {
+    params.set("instructorId", instructorIdForQuery);
+  }
+
+  const queryString = params.toString();
+
+  return queryString ? `${basePath}?${queryString}` : basePath;
+};
   const downloadAttachment = async (key) => {
     const {data} = await axios.post("/api/storage/download-url", {key});
     window.open(data.url, "_blank", "noopener,noreferrer");
@@ -343,15 +371,26 @@ if (key === "moveBooking") {
   const id = oid(booking?._id);
   if (!id) return toast.error("Booking ID missing");
 
-  // go to schedule page in "move mode"
-  router.push(`/instructor-bookings?moveBookingId=${id}`);
+  const url = getSchedulePath({
+    moveBookingId: id,
+  });
+
+  if (!url) return toast.error("User role not found");
+
+  router.push(url);
   return;
 }
 if (key === "rebook") {
   const cid = oid(booking?.clientId || booking?.userId);
   if (!cid) return toast.error("Client ID missing");
 
-  router.push(`/instructor-bookings?rebookClientId=${cid}`);
+  const url = getSchedulePath({
+    rebookClientId: cid,
+  });
+
+  if (!url) return toast.error("User role not found");
+
+  router.push(url);
   return;
 }
   // default behavior: open modal
