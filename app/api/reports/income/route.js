@@ -73,7 +73,7 @@ export async function GET(req) {
 
       const cash = paymentMethod === "cash" ? totalPaidAmount : 0;
       const credit =
-        paymentMethod === "card" ? Math.max(totalPaidAmount - processingFee, 0) : 0;
+        paymentMethod === "card" ? Math.max(totalPaidAmount, 0) : 0;
 
       // Keep online only for website bookings
       const online =
@@ -88,13 +88,22 @@ export async function GET(req) {
       const tracking = booking.paymentIntentId || "-";
 
       // one total income field only
-     const totalIncome =
-  paymentStatus === "paid"
-    ? Math.max(totalPaidAmount - processingFee, 0)
-    : 0;
+  //    const totalIncome =
+  // paymentStatus === "paid"
+  //   ? Math.max(totalPaidAmount - processingFee, 0)
+  //   : 0;
+const isPaid = paymentStatus === "paid";
+
+const totalIncome = isPaid ? price : 0;
+
+
+
 
 // ✅ payout = service price - 10%
-const payout = price * 0.9;
+const payout =
+  paymentStatus === "paid"
+    ? price * 0.9
+    : 0;
 
       return {
         _id: booking._id.toString(),
@@ -109,7 +118,7 @@ const payout = price * 0.9;
         staff: booking.instructorName || "-",
         client: booking.clientName || booking.userName || "-",
         organisation: booking.organisation || "-",
-        category: "Services",
+        category: "Booking",
         item: [booking.serviceName, booking.duration].filter(Boolean).join(" - ") || "-",
         cash,
         credit,

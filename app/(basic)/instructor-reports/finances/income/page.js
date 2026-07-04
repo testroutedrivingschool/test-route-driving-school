@@ -8,22 +8,42 @@ import LoadingSpinner from "@/app/shared/ui/LoadingSpinner";
 import ReportShell from "../../components/ReportShell";
 import ReportFieldRow from "../../components/ReportFieldRow";
 
-function formatDate(value) {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
+function formatDate(value, fallbackTime = "") {
+  if (!value) return fallbackTime || "-";
 
-  return date.toLocaleDateString("en-AU", {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return fallbackTime || "-";
+
+  const dateText = date.toLocaleDateString("en-AU", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
+
+  const timeText =
+    fallbackTime ||
+    date.toLocaleTimeString("en-AU", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+  return `${dateText} ${timeText}`;
 }
 
 function formatMoney(value) {
   return Number(value || 0).toFixed(2);
 }
+function getStatusColor(status, paymentStatus) {
+  const s = (status || "").toLowerCase();
+  const p = (paymentStatus || "").toLowerCase();
 
+  if (s === "cancelled" || p === "unpaid") {
+    return "text-red-500 font-semibold";
+  }
+
+  return "text-gray-900";
+}
 export default function FinancesIncomePage() {
   const { data: user, isLoading: userLoading } = useUserData();
 
@@ -237,11 +257,11 @@ const downloadAttachment = async (key) => {
   <tr>
     {/* 🔵 Blue columns (no top header, only colored cells) */}
    {[
-  primaryDateLabel, "Type", "Status", "Invoice", "Staff",
+ "Paid Date", primaryDateLabel, "Type", "Status", "Invoice", "Staff",
   "Client", "Organisation", "Category", "Item"
-].map((col) => (
+].map((col,idx) => (
       <th
-        key={col}
+        key={idx}
         style={{ backgroundColor: "#4C68A2" }}
         className="px-4 py-2 text-left font-semibold border-b"
       >
@@ -279,7 +299,7 @@ const downloadAttachment = async (key) => {
         <tbody>
           {reportRows.map((row) => (
             <tr key={row._id} className="border-b border-border-color last:border-b-0 whitespace-nowrap">
-              <td className="px-4 py-2">{formatDate(row.paidDate)}</td>
+              <td className="px-4 py-2">{row.paidDate?formatDate(row.paidDate): "unpaid" }</td>
               <td className="px-4 py-2">{formatDate(row.bookingDate)}</td>
               <td className="px-4 py-2 capitalize">{row.type}</td>
               <td className="px-4 py-2 capitalize">{row.status}</td>
@@ -305,9 +325,10 @@ const downloadAttachment = async (key) => {
               <td className="px-4 py-2 text-right">{formatMoney(row.online)}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.voucher)}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.services)}</td>
-              <td className="px-4 py-2 text-right">{formatMoney(row.totalIncome)}</td>
-              <td className="px-4 py-2 text-right">{formatMoney(row.gst)}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.onlineSurcharge)}</td>
+              <td className="px-4 py-2 text-right">{formatMoney(row.gst)}</td>
+              <td className="px-4 py-2 text-right">{formatMoney(row.totalIncome)}</td>
+              
               <td className="px-4 py-2">{row.tracking}</td>
               <td className="px-4 py-2 text-right">{formatMoney(row.payout)}</td>
             </tr>
