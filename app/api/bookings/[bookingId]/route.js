@@ -17,7 +17,32 @@ const ALLOWED_STATUSES = [
 ];
 
 const ALLOWED_PAYMENT_STATUSES = ["paid", "partial", "unpaid"];
-
+const CANCELLATION_REASONS = {
+  none_given: {
+    category: "client",
+    label: "None Given",
+  },
+  reschedule: {
+    category: "client",
+    label: "Reschedule",
+  },
+  sick: {
+    category: "client",
+    label: "Sick",
+  },
+  other: {
+    category: "client",
+    label: "Other",
+  },
+  instructor_sick: {
+    category: "business",
+    label: "Instructor Sick",
+  },
+  cancelled_by_instructor: {
+    category: "business",
+    label: "Cancelled by Instructor",
+  },
+};
 async function sendStatusChangeEmails({ booking, oldStatus, newStatus }) {
   const userEmail =
     booking.userEmail || booking.clientEmail || booking.email || "";
@@ -49,6 +74,44 @@ async function sendStatusChangeEmails({ booking, oldStatus, newStatus }) {
       })
     : "—";
 
+    const cancellation = booking?.cancellation || {};
+
+const cancellationReasonText =
+  cancellation.reasonCode === "other"
+    ? cancellation.customReason || "Other"
+    : cancellation.reasonLabel || "None Given";
+
+const cancellationDetailsHtml =
+  String(newStatus).toLowerCase() === "cancelled"
+    ? `
+        <p>
+          <b>Cancellation Reason:</b>
+          ${cancellationReasonText}
+        </p>
+
+        <p>
+          <b>Reason Category:</b>
+          ${cancellation.reasonCategory || "client"}
+        </p>
+
+        <p>
+          <b>Client Forfeit:</b>
+          $${money(cancellation.clientForfeit || 0).toFixed(2)}
+        </p>
+      `
+    : "";
+
+const cancellationDetailsText =
+  String(newStatus).toLowerCase() === "cancelled"
+    ? `
+Cancellation Reason: ${cancellationReasonText}
+Reason Category: ${cancellation.reasonCategory || "client"}
+Client Forfeit: $${money(
+        cancellation.clientForfeit || 0
+      ).toFixed(2)}
+`
+    : "";
+
   const bookingDetailsHtml = `
     <p><b>Booking details:</b></p>
     <p><b>Service:</b> ${booking.serviceName || "—"}</p>
@@ -58,6 +121,7 @@ async function sendStatusChangeEmails({ booking, oldStatus, newStatus }) {
     <p><b>Instructor:</b> ${booking.instructorName || "—"}</p>
     <p><b>Old Status:</b> ${oldStatus || "—"}</p>
     <p><b>New Status:</b> ${newStatus || "—"}</p>
+    ${cancellationDetailsHtml}
   `;
 
   const bookingDetailsText = `
@@ -69,6 +133,7 @@ Client: ${booking.userName || booking.clientName || "—"}
 Instructor: ${booking.instructorName || "—"}
 Old Status: ${oldStatus || "—"}
 New Status: ${newStatus || "—"}
+${cancellationDetailsHtml}
 `;
 
   const jobs = [];
@@ -249,13 +314,17 @@ function getClientFilterFromBooking(booking) {
   };
 }
 
-async function issueBookingCreditOnce({ booking, bookingId, status }) {
-  const creditAmount = money(
-    booking.price ||
-    booking.originalPrice ||
-    booking.paidAmount ||
-    0
-  );
+async function issueBookingCreditOnce({   booking,
+  bookingId,
+  status,
+  amount,}) {
+  // const creditAmount = money(
+  //   booking.price ||
+  //   booking.originalPrice ||
+  //   booking.paidAmount ||
+  //   0
+  // );
+  const creditAmount = money(amount);
 
   if (creditAmount <= 0) {
     return {
@@ -494,7 +563,166 @@ export async function PATCH(req, { params }) {
         { status: 404 }
       );
     }
+let cancellationData = null;
 
+if ($set.status === "cancelled") {
+  const cancellation = body?.cancellation;
+
+  if (!cancellation) {
+    return NextResponse.json(
+      {
+        error: "Cancellation reason is required",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
+  const reasonCode = String(
+    cancellation.reasonCode || ""
+  )
+    .trim()
+    .toLowerCase();
+
+  const selectedReason =
+    CANCELLATION_REASONS[reasonCode];
+
+  if (!selectedReason) {
+    return NextResponse.json(
+      {
+        error: "Please select a valid cancellation reason",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
+  const customReason = String(
+    cancellation.customReason || ""
+  ).trim();
+
+  if (
+    reasonCode === "other" &&
+    !customReason
+  ) {
+    return NextResponse.json(
+      {
+        error: "Please enter the cancellation reason",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
+  const sendCustomSms = Boolean(
+    cancellation.sendCustomSms
+  );
+
+  const customSms = String(
+    cancellation.customSms || ""
+  ).trim();
+
+  if (
+    sendCustomSms &&
+    !customSms
+  ) {
+    return NextResponse.json(
+      {
+        error: "Please enter the custom cancellation SMS",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
+  const clientForfeit = money(
+    cancellation.clientForfeit || 0
+  );
+
+  const maximumForfeit = money(
+    oldBooking.paidAmount ||
+      oldBooking.price ||
+      0
+  );
+
+  if (
+    !Number.isFinite(clientForfeit) ||
+    clientForfeit < 0
+  ) {
+    return NextResponse.json(
+      {
+        error: "Invalid client forfeit amount",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
+  if (clientForfeit > maximumForfeit) {
+    return NextResponse.json(
+      {
+        error:
+          "Client forfeit cannot be greater than the booking amount",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
+  cancellationData = {
+    reasonCode,
+
+    // Server determines these values
+    reasonCategory:
+      selectedReason.category,
+
+    reasonLabel:
+      selectedReason.label,
+
+    customReason:
+      reasonCode === "other"
+        ? customReason
+        : "",
+
+    clientForfeit,
+
+    blockClient: Boolean(
+      cancellation.blockClient
+    ),
+
+    sendCustomSms,
+
+    customSms:
+      sendCustomSms
+        ? customSms
+        : "",
+
+    cancelledBy: {
+      userId: String(
+        cancellation.cancelledBy?.userId || ""
+      ),
+
+      name: String(
+        cancellation.cancelledBy?.name || ""
+      ),
+
+      role: String(
+        cancellation.cancelledBy?.role || ""
+      ),
+    },
+
+    cancelledAt: new Date(),
+  };
+
+  $set.cancellation = cancellationData;
+  $set.cancelledAt = new Date();
+}
     const update = await bookingsCol.updateOne(
       { _id: new ObjectId(bookingId) },
       { $set }
@@ -542,12 +770,37 @@ if (statusWasProvided && oldStatus !== newStatus) {
     CREDIT_STATUSES.includes(finalStatus) &&
     finalPaymentStatus === "paid";
 
-  if (shouldIssueCredit) {
-    creditResult = await issueBookingCreditOnce({
+ if (shouldIssueCredit) {
+  const paidAmount = money(
+    updatedDoc.paidAmount ||
+      updatedDoc.price ||
+      0
+  );
+
+  const clientForfeit =
+    finalStatus === "cancelled"
+      ? money(
+          updatedDoc.cancellation
+            ?.clientForfeit || 0
+        )
+      : 0;
+
+  const refundableAmount = money(
+    Math.max(
+      0,
+      paidAmount - clientForfeit
+    )
+  );
+
+  creditResult =
+    await issueBookingCreditOnce({
       booking: updatedDoc,
       bookingId,
       status: finalStatus,
+      amount: refundableAmount,
     });
+
+
 
     if (creditResult.issued) {
       await bookingsCol.updateOne(
@@ -565,13 +818,89 @@ if (statusWasProvided && oldStatus !== newStatus) {
     }
   }
 }
+let clientBlockResult = null;
+let smsWarning = null;
+
+/*
+ * Block the client from online booking
+ */
+if (cancellationData?.blockClient) {
+  const clientFilter =
+    getClientFilterFromBooking(updatedDoc);
+
+  if (!clientFilter) {
+    clientBlockResult = {
+      blocked: false,
+      reason: "Client could not be identified",
+    };
+  } else {
+    const clientsCol =
+      await clientsCollection();
+
+    const blockResult =
+      await clientsCol.updateOne(
+        clientFilter,
+        {
+          $set: {
+            onlineBookingBlocked: true,
+
+            onlineBookingBlockedAt:
+              new Date(),
+
+            onlineBookingBlockedReason:
+              cancellationData.reasonCode === "other"
+                ? cancellationData.customReason
+                : cancellationData.reasonLabel,
+
+            onlineBookingBlockedBy:
+              cancellationData.cancelledBy,
+
+            updatedAt:
+              new Date(),
+          },
+        }
+      );
+
+    clientBlockResult = {
+      blocked:
+        blockResult.matchedCount > 0,
+
+      reason:
+        blockResult.matchedCount > 0
+          ? "Client blocked"
+          : "Client not found",
+    };
+  }
+}
+
+/*
+ * SMS provider is not connected yet
+ */
+if (cancellationData?.sendCustomSms) {
+  smsWarning =
+    "Booking cancelled and custom SMS saved, but SMS provider is not configured.";
+}
+
     const finalDoc = await bookingsCol.findOne({
   _id: new ObjectId(bookingId),
 });
 
 return NextResponse.json({
+  // Keep old response compatibility
   ...finalDoc,
+
+  // New structured response
+  ok: true,
+  booking: finalDoc,
+
   creditResult,
+  clientBlockResult,
+  smsWarning,
+
+  message:
+    String(finalDoc?.status).toLowerCase() === "cancelled"
+      ? "Booking cancelled successfully"
+      : "Booking updated successfully",
 });
   } catch (e) {
     console.error("PATCH BOOKING ERROR:", e);
@@ -582,129 +911,3 @@ return NextResponse.json({
     );
   }
 }
-// export async function PATCH(req, {params}) {
-//   try {
-//     const {bookingId} = await params;
-
-//     if (!ObjectId.isValid(bookingId)) {
-//       return NextResponse.json({error: "Invalid booking id"}, {status: 400});
-//     }
-
-//     const body = await req.json();
-
-//     const allowed = [
-//       "status",
-//       "paymentStatus",
-//       "paymentMethod",
-//       "paymentIntentId",
-//       "paidAmount",
-//       "cashAmount",
-//       "cardAmount",
-//       "outstanding",
-//       "processingFee",
-//       "cardBrand",
-//       "cardLast4",
-//       "userPhone",
-//       "address",
-//       "suburb",
-//       "bookingDate",
-//       "bookingTime",
-
-//       // ✅ cost override fields
-//       "price",
-//       "originalPrice",
-//       "overridePrice",
-//       "isPriceOverridden",
-//     ];
-
-//     const $set = {updatedAt: new Date()};
-
-//     for (const k of allowed) {
-//       if (body[k] !== undefined) $set[k] = body[k];
-//     }
-
-//     if ($set.bookingDate !== undefined) {
-//       const d = new Date($set.bookingDate);
-//       if (Number.isNaN(d.getTime())) {
-//         return NextResponse.json({error: "Invalid bookingDate"}, {status: 400});
-//       }
-//       $set.bookingDate = d;
-//     }
-
-//     if ($set.bookingTime !== undefined) {
-//       $set.bookingTime = String($set.bookingTime).trim();
-//     }
-
-//     if ($set.paymentStatus !== undefined) {
-//       const v = String($set.paymentStatus).toLowerCase();
-//       const ok = ["paid", "partial", "unpaid"].includes(v);
-//       if (!ok) {
-//         return NextResponse.json({error: "Invalid paymentStatus"}, {status: 400});
-//       }
-//       $set.paymentStatus = v;
-//     }
-
-//     if ($set.paymentMethod !== undefined) {
-//       $set.paymentMethod = String($set.paymentMethod).toLowerCase();
-//     }
-
-//     if ($set.status !== undefined) {
-//       const v = String($set.status).toLowerCase();
-//       const ok = ["pending", "confirmed", "cancelled", "completed", "unattended"].includes(v);
-//       if (!ok) {
-//         return NextResponse.json({error: "Invalid status"}, {status: 400});
-//       }
-//       $set.status = v;
-//     }
-
-//     // ✅ normalize numbers
-//     if ($set.price !== undefined) {
-//       $set.price = Number($set.price);
-//       if (Number.isNaN($set.price) || $set.price < 0) {
-//         return NextResponse.json({error: "Invalid price"}, {status: 400});
-//       }
-//     }
-
-//     if ($set.originalPrice !== undefined) {
-//       $set.originalPrice = Number($set.originalPrice);
-//       if (Number.isNaN($set.originalPrice) || $set.originalPrice < 0) {
-//         return NextResponse.json({error: "Invalid originalPrice"}, {status: 400});
-//       }
-//     }
-
-//     if ($set.overridePrice !== undefined) {
-//       if ($set.overridePrice === null || $set.overridePrice === "") {
-//         $set.overridePrice = null;
-//       } else {
-//         $set.overridePrice = Number($set.overridePrice);
-//         if (Number.isNaN($set.overridePrice) || $set.overridePrice < 0) {
-//           return NextResponse.json({error: "Invalid overridePrice"}, {status: 400});
-//         }
-//       }
-//     }
-
-//     if ($set.isPriceOverridden !== undefined) {
-//       $set.isPriceOverridden = !!$set.isPriceOverridden;
-//     }
-
-//     const bookingsCol = await bookingsCollection();
-
-//     const update = await bookingsCol.updateOne(
-//       {_id: new ObjectId(bookingId)},
-//       {$set},
-//     );
-
-//     if (update.matchedCount === 0) {
-//       return NextResponse.json({error: "Not found"}, {status: 404});
-//     }
-
-//     const updatedDoc = await bookingsCol.findOne({_id: new ObjectId(bookingId)});
-//     return NextResponse.json(updatedDoc);
-//   } catch (e) {
-//     console.error(e);
-//     return NextResponse.json(
-//       {error: "Failed to update booking"},
-//       {status: 500},
-//     );
-//   }
-// }

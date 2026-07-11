@@ -79,7 +79,9 @@ export default function BookingConfirmPage() {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [overridePrice, setOverridePrice] = useState("");
   const [submitting, setSubmitting] = useState(false);
-
+const isChangeService =
+  booking?.mode === "change-service" &&
+  Boolean(booking?.editingBookingId);
   
   useEffect(() => {
     if (isUserLoading) return;
@@ -88,17 +90,35 @@ export default function BookingConfirmPage() {
       router.push("/login?redirect=/booking-confirm");
     }
   }, [userData, isUserLoading, router]);
+
+
   useEffect(() => {
-    const data = sessionStorage.getItem("pendingBooking");
+  const data = sessionStorage.getItem("pendingBooking");
 
-    if (!data) {
-      router.push("/bookings");
-      return;
-    }
+  if (!data) {
+    router.push("/bookings");
+    return;
+  }
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setBooking(JSON.parse(data));
-  }, [router]);
+  try {
+    const parsedBooking = JSON.parse(data);
+    setBooking(parsedBooking);
+  } catch {
+    sessionStorage.removeItem("pendingBooking");
+    router.push("/bookings");
+  }
+}, [router]);
+  // useEffect(() => {
+  //   const data = sessionStorage.getItem("pendingBooking");
+
+  //   if (!data) {
+  //     router.push("/bookings");
+  //     return;
+  //   }
+
+  //   // eslint-disable-next-line react-hooks/set-state-in-effect
+  //   setBooking(JSON.parse(data));
+  // }, [router]);
 
   useEffect(() => {
     const checkScreen = () => {
@@ -198,190 +218,145 @@ if (clientId) {
     selectedBooking &&
     Number(parsedOverridePrice) !== Number(selectedBooking.price);
 
-  const handleConfirmBooking = async () => {
-    if (parsedOverridePrice != null && !selectedBooking) {
-      return toast.error("Please select a package first");
+ const handleConfirmBooking = async () => {
+  // Every flow requires a selected service
+  if (!selectedBooking) {
+    return toast.error(
+      isChangeService
+        ? "Please select a different service"
+        : "Please select a service",
+    );
+  }
+
+  /*
+   * =====================================================
+   * CHANGE EXISTING BOOKING SERVICE
+   * =====================================================
+   */
+  if (isChangeService) {
+    const editingBookingId = booking?.editingBookingId;
+
+    if (!editingBookingId) {
+      return toast.error("Booking ID is missing");
     }
 
-    if (!selectedBooking) {
-      return toast.error("Please select a service");
+    const currentServiceName = String(
+      booking?.serviceName || "",
+    )
+      .trim()
+      .toLowerCase();
+
+    const selectedServiceName = String(
+      selectedBooking?.service || "",
+    )
+      .trim()
+      .toLowerCase();
+
+    const currentMinutes = Number(booking?.minutes || 0);
+    const selectedMinutes = Number(
+      selectedBooking?.minutes || 0,
+    );
+
+    const isSameService =
+      currentServiceName === selectedServiceName &&
+      currentMinutes === selectedMinutes;
+
+    if (isSameService) {
+      return toast.error(
+        "This service is already selected. Please choose another service.",
+      );
     }
 
-    if (parsedOverridePrice != null && parsedOverridePrice <= 0) {
-      return toast.error("Override price must be greater than 0");
-    }
-    if (isPackageBalanceBooking) {
-      if (!booking.clientId) {
-        return toast.error("Client is missing for package booking");
-      }
+    try {
+      setSubmitting(true);
 
-      if (!booking.purchaseId) {
-        return toast.error("Purchase is missing for package booking");
-      }
+      const {data} = await axios.patch(
+        `/api/bookings/${editingBookingId}/change-service`,
+        {
+          serviceName: selectedBooking.service,
+          duration: selectedBooking.duration,
+          minutes: selectedBooking.minutes,
 
-      if (latestClientBalance < finalPrice) {
-        return toast.error(
-          `Client balance is not enough. Balance: $${latestClientBalance.toFixed(
-            2,
-          )}, Required: $${Number(finalPrice || 0).toFixed(2)}`,
+        
+          selectedPrice: Number(selectedBooking.price || 0),
+        },
+      );
+
+    
+      sessionStorage.removeItem("pendingBooking");
+
+      if (data?.emailSent) {
+        toast.success(
+          "Service changed, invoice updated and email sent successfully",
+        );
+      } else if (data?.warning) {
+        toast.warning(data.warning);
+      } else {
+        toast.success(
+          data?.message || "Booking service updated successfully",
         );
       }
 
-      const bookingData = {
-        instructorEmail: instructor.email,
-        instructorName: instructor.name,
-        instructorId: instructor._id,
+      const destination =
+        booking?.changeServiceReturnPath ||
+        booking?.returnPath ||
+        `/bookings/${editingBookingId}`;
 
-        flowSource: "admin-purchase",
-        returnPath: booking.returnPath || "/dashboard/admin/purchases",
-
-        purchaseId: booking.purchaseId,
-        useClientBalance: true,
-
-        serviceName: selectedBooking.service,
-        duration: selectedBooking.duration,
-        minutes: selectedBooking.minutes,
-
-        price: finalPrice,
-        originalPrice: selectedBooking.price,
-        overridePrice: null,
-        isPriceOverridden: false,
-
-        bookingDate: selectedDate,
-        bookingTime: selectedTime,
-        location: booking.location || "",
-        suburb: booking.suburb || booking.location || "",
-
-        status: "confirmed",
-        bookingType: "manual",
-
-        paymentStatus: "paid",
-        paymentMethod: "accountBalance",
-        paidAmount: finalPrice,
-        totalPaidAmount: finalPrice,
-        outstanding: 0,
-        processingFee: 0,
-
-        clientId: booking.clientId,
-        clientName: booking.clientName,
-        clientEmail: booking.clientEmail,
-        clientPhone: booking.clientPhone
-          ? booking.clientPhone
-          : booking.userPhone || "",
-        clientAddress: booking.clientAddress,
-
-        userName: booking.clientName
-          ? booking.clientName
-          : booking.userName || "",
-        userEmail: booking.clientEmail
-          ? booking.clientEmail
-          : booking.clientEmail || "",
-        userPhone: booking.clientPhone
-          ? booking.clientPhone
-          : booking.userPhone || "",
-        address: booking.clientAddress?booking.clientAddress:booking.clientAddress || "",
-      };
-
-      try {
-        setSubmitting(true);
-
-        const res = await axios.post("/api/bookings", bookingData);
-
-        toast.success("Booking confirmed using client balance");
-
-        sessionStorage.removeItem("pendingBooking");
-        sessionStorage.removeItem("packageBookingContext");
-
-        router.push(booking.returnPath || "/dashboard/admin/purchases");
-      } catch (err) {
-        toast.error(
-          err?.response?.data?.error ||
-            err?.response?.data?.details ||
-            "Failed to create balance booking",
-        );
-      } finally {
-        setSubmitting(false);
-      }
+      /*
+       * Go directly back to booking details.
+       * It does NOT go to payment-confirm.
+       */
+      router.replace(destination);
 
       return;
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.details ||
+          "Failed to change booking service",
+      );
+
+      return;
+    } finally {
+      setSubmitting(false);
     }
-    if (booking.bookingType === "website") {
-      const creditToUse = Math.min(
-  latestClientBalance,
-  selectedBooking.price,
-);
-      const bookingData = {
-        userId: userData._id,
-        clientId: userData.clientId,
-        userEmail: userData.email,
-        userName: userData.name,
-        userAddress: userData.address,
-        userPhone: userData.phone,
-        instructorEmail: instructor.email,
-        instructorName: instructor.name,
-        instructorId: instructor._id,
+  }
 
-        flowSource: booking.flowSource || "user",
-        returnPath: booking.returnPath || "/bookings",
+  /*
+   * Everything below this point is only for creating
+   * a new booking. Change-service mode can never reach here.
+   */
 
-        serviceName: selectedBooking.service,
-        duration: selectedBooking.duration,
-        minutes: selectedBooking.minutes,
-        price: selectedBooking.price,
-        originalPrice: selectedBooking.price,
-        overridePrice: null,
-        isPriceOverridden: false,
-creditToUse,
-useClientBalance: creditToUse > 0,
-clientAccountBalance: latestClientBalance,
-        bookingDate: selectedDate,
-        bookingTime: selectedTime,
-        location: booking.location,
-        suburb: booking.suburb || booking.location,
-        status: "pending",
-        bookingType: booking.bookingType,
-      };
+  if (parsedOverridePrice != null && parsedOverridePrice <= 0) {
+    return toast.error(
+      "Override price must be greater than 0",
+    );
+  }
 
-      sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
-      router.push("/booking-confirm/payment-confirm");
-      return;
+  /*
+   * =====================================================
+   * PACKAGE BALANCE BOOKING
+   * =====================================================
+   */
+  if (isPackageBalanceBooking) {
+    if (!booking?.clientId) {
+      return toast.error(
+        "Client is missing for package booking",
+      );
     }
 
-    const hasClient = !!(booking?.clientId || booking?.skipClientSelect);
+    if (!booking?.purchaseId) {
+      return toast.error(
+        "Purchase is missing for package booking",
+      );
+    }
 
-    if (hasClient) {
-      const bookingData = {
-        instructorEmail: instructor.email,
-        instructorName: instructor.name,
-        instructorId: instructor._id,
-
-        flowSource: booking.flowSource || "instructor",
-        returnPath: booking.returnPath || "/bookings",
-        serviceName: selectedBooking.service,
-        duration: selectedBooking.duration,
-        minutes: selectedBooking.minutes,
-        price: finalPrice,
-        originalPrice: selectedBooking.price,
-        overridePrice: hasOverride ? finalPrice : null,
-        isPriceOverridden: !!hasOverride,
-
-        bookingDate: selectedDate,
-        bookingTime: selectedTime,
-        location: booking.location,
-        suburb: booking.suburb || booking.location,
-        status: "pending",
-        bookingType: "manual",
-
-        clientId: booking.clientId,
-        clientName: booking.clientName,
-        clientEmail: booking.clientEmail,
-        clientPhone: booking.clientPhone,
-        clientAddress: booking.clientAddress,
-      };
-
-      sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
-      router.push("/booking-confirm/payment-confirm");
-      return;
+    if (latestClientBalance < finalPrice) {
+      return toast.error(
+        `Client balance is not enough. Balance: $${latestClientBalance.toFixed(
+          2,
+        )}, Required: $${Number(finalPrice || 0).toFixed(2)}`,
+      );
     }
 
     const bookingData = {
@@ -389,26 +364,296 @@ clientAccountBalance: latestClientBalance,
       instructorName: instructor.name,
       instructorId: instructor._id,
 
+      flowSource: "admin-purchase",
+      returnPath:
+        booking.returnPath ||
+        "/dashboard/admin/purchases",
+
+      purchaseId: booking.purchaseId,
+      useClientBalance: true,
+
       serviceName: selectedBooking.service,
       duration: selectedBooking.duration,
       minutes: selectedBooking.minutes,
+
       price: finalPrice,
       originalPrice: selectedBooking.price,
-      overridePrice: hasOverride ? finalPrice : null,
-      isPriceOverridden: !!hasOverride,
-      flowSource: booking.flowSource || "instructor",
-      returnPath: booking.returnPath || "/bookings",
+      overridePrice: null,
+      isPriceOverridden: false,
+
       bookingDate: selectedDate,
       bookingTime: selectedTime,
-      location: booking.location,
-      suburb: booking.suburb || booking.location,
-      status: "pending",
+      location: booking.location || "",
+      suburb:
+        booking.suburb ||
+        booking.location ||
+        "",
+
+      status: "confirmed",
       bookingType: "manual",
+
+      paymentStatus: "paid",
+      paymentMethod: "accountBalance",
+      paidAmount: finalPrice,
+      totalPaidAmount: finalPrice,
+      outstanding: 0,
+      processingFee: 0,
+
+      clientId: booking.clientId,
+      clientName: booking.clientName,
+      clientEmail: booking.clientEmail,
+      clientPhone:
+        booking.clientPhone ||
+        booking.userPhone ||
+        "",
+      clientAddress: booking.clientAddress,
+
+      userName:
+        booking.clientName ||
+        booking.userName ||
+        "",
+      userEmail:
+        booking.clientEmail ||
+        booking.userEmail ||
+        "",
+      userPhone:
+        booking.clientPhone ||
+        booking.userPhone ||
+        "",
+      address:
+        booking.clientAddress ||
+        booking.address ||
+        "",
     };
 
-    sessionStorage.setItem("pendingBooking", JSON.stringify(bookingData));
-    router.push("/select-client");
+    try {
+      setSubmitting(true);
+
+      await axios.post("/api/bookings", bookingData);
+
+      toast.success(
+        "Booking confirmed using client balance",
+      );
+
+      sessionStorage.removeItem("pendingBooking");
+      sessionStorage.removeItem(
+        "packageBookingContext",
+      );
+
+      router.push(
+        booking.returnPath ||
+          "/dashboard/admin/purchases",
+      );
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.details ||
+          "Failed to create balance booking",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+
+    return;
+  }
+
+  /*
+   * =====================================================
+   * NEW WEBSITE BOOKING
+   * =====================================================
+   *
+   * Only new website bookings go to payment-confirm.
+   */
+  if (booking?.bookingType === "website") {
+    const creditToUse = Math.min(
+      latestClientBalance,
+      Number(selectedBooking.price || 0),
+    );
+
+    const bookingData = {
+      userId: userData?._id,
+      clientId: userData?.clientId,
+      userEmail: userData?.email,
+      userName: userData?.name,
+      userAddress: userData?.address,
+      userPhone: userData?.phone,
+
+      instructorEmail: instructor.email,
+      instructorName: instructor.name,
+      instructorId: instructor._id,
+
+      flowSource:
+        booking.flowSource || "user",
+      returnPath:
+        booking.returnPath || "/bookings",
+
+      serviceName: selectedBooking.service,
+      duration: selectedBooking.duration,
+      minutes: selectedBooking.minutes,
+
+      price: Number(selectedBooking.price || 0),
+      originalPrice: Number(
+        selectedBooking.price || 0,
+      ),
+      overridePrice: null,
+      isPriceOverridden: false,
+
+      creditToUse,
+      useClientBalance: creditToUse > 0,
+      clientAccountBalance: latestClientBalance,
+
+      bookingDate: selectedDate,
+      bookingTime: selectedTime,
+      location: booking.location || "",
+      suburb:
+        booking.suburb ||
+        booking.location ||
+        "",
+
+      status: "pending",
+      bookingType: "website",
+    };
+
+    sessionStorage.setItem(
+      "pendingBooking",
+      JSON.stringify(bookingData),
+    );
+
+    router.push(
+      "/booking-confirm/payment-confirm",
+    );
+
+    return;
+  }
+
+  /*
+   * =====================================================
+   * NEW MANUAL BOOKING WITH EXISTING CLIENT
+   * =====================================================
+   */
+  const hasClient = Boolean(
+    booking?.clientId ||
+      booking?.skipClientSelect,
+  );
+
+  if (hasClient) {
+    const bookingData = {
+      instructorEmail: instructor.email,
+      instructorName: instructor.name,
+      instructorId: instructor._id,
+
+      flowSource:
+        booking.flowSource || "instructor",
+      returnPath:
+        booking.returnPath || "/bookings",
+
+      serviceName: selectedBooking.service,
+      duration: selectedBooking.duration,
+      minutes: selectedBooking.minutes,
+
+      price: finalPrice,
+      originalPrice: selectedBooking.price,
+      overridePrice: hasOverride
+        ? finalPrice
+        : null,
+      isPriceOverridden: Boolean(hasOverride),
+
+      bookingDate: selectedDate,
+      bookingTime: selectedTime,
+      location: booking.location || "",
+      suburb:
+        booking.suburb ||
+        booking.location ||
+        "",
+
+      status: "pending",
+      bookingType: "manual",
+
+      clientId: booking.clientId,
+      clientName: booking.clientName,
+      clientEmail: booking.clientEmail,
+      clientPhone: booking.clientPhone,
+      clientAddress: booking.clientAddress,
+
+      userName:
+        booking.clientName ||
+        booking.userName ||
+        "",
+      userEmail:
+        booking.clientEmail ||
+        booking.userEmail ||
+        "",
+      userPhone:
+        booking.clientPhone ||
+        booking.userPhone ||
+        "",
+      address:
+        booking.clientAddress ||
+        booking.address ||
+        "",
+    };
+
+    sessionStorage.setItem(
+      "pendingBooking",
+      JSON.stringify(bookingData),
+    );
+
+    /*
+     * This is a new booking, so payment confirmation
+     * is allowed here.
+     */
+    router.push(
+      "/booking-confirm/payment-confirm",
+    );
+
+    return;
+  }
+
+  /*
+   * =====================================================
+   * NEW MANUAL BOOKING WITHOUT CLIENT
+   * =====================================================
+   */
+  const bookingData = {
+    instructorEmail: instructor.email,
+    instructorName: instructor.name,
+    instructorId: instructor._id,
+
+    serviceName: selectedBooking.service,
+    duration: selectedBooking.duration,
+    minutes: selectedBooking.minutes,
+
+    price: finalPrice,
+    originalPrice: selectedBooking.price,
+    overridePrice: hasOverride
+      ? finalPrice
+      : null,
+    isPriceOverridden: Boolean(hasOverride),
+
+    flowSource:
+      booking.flowSource || "instructor",
+    returnPath:
+      booking.returnPath || "/bookings",
+
+    bookingDate: selectedDate,
+    bookingTime: selectedTime,
+    location: booking.location || "",
+    suburb:
+      booking.suburb ||
+      booking.location ||
+      "",
+
+    status: "pending",
+    bookingType: "manual",
   };
+
+  sessionStorage.setItem(
+    "pendingBooking",
+    JSON.stringify(bookingData),
+  );
+
+  router.push("/select-client");
+};
 
   const avatarSrc = instructor?.photo
     ? instructor.photo
@@ -431,9 +676,11 @@ clientAccountBalance: latestClientBalance,
       <Container>
         <div className="border border-border-color rounded shadow bg-white">
           <div className="bg-green-600 text-white text-center py-1 md:py-3 font-semibold text-sm md:text-lg">
-            {booking.bookingType === "manual"
-              ? "Booking User"
-              : `Booking For ${userData?.name || "User"}`}
+             {isChangeService
+    ? "Change Booking Service"
+    : booking.bookingType === "manual"
+      ? "Booking User"
+      : `Booking For ${userData?.name || "User"}`}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 md:gap-5">
@@ -493,7 +740,8 @@ clientAccountBalance: latestClientBalance,
                         Booking Length:
                       </p>
                       <p className="flex-1 text-sm md:text-base">
-                        {selectedBooking ? selectedBooking.duration : "0 mins"}
+                      {selectedBooking?.duration ||
+  (isChangeService ? booking?.duration : "0 mins")}
                       </p>
                     </div>
                   </div>
@@ -570,21 +818,27 @@ clientAccountBalance: latestClientBalance,
                 <>
                   {isMobile ? (
                     <MobileTable
-                      services={services}
-                      durations={DURATIONS}
-                      selectedBooking={selectedBooking}
-                      setSelectedBooking={setSelectedBooking}
-                    />
+  services={services}
+  durations={DURATIONS}
+  selectedBooking={selectedBooking}
+  setSelectedBooking={setSelectedBooking}
+  isChangeService={isChangeService}
+  currentBooking={booking}
+/>
                   ) : (
-                    <DesktopTable
-                      services={services}
-                      durations={DURATIONS}
-                      selectedBooking={selectedBooking}
-                      setSelectedBooking={setSelectedBooking}
-                    />
+                  <DesktopTable
+  services={services}
+  durations={DURATIONS}
+  selectedBooking={selectedBooking}
+  setSelectedBooking={setSelectedBooking}
+  isChangeService={isChangeService}
+  currentBooking={booking}
+/>
                   )}
 
-                  {isManualBooking && !isPackageBalanceBooking && (
+               {isManualBooking &&
+  !isPackageBalanceBooking &&
+  !isChangeService && (
                     <div className="px-4 md:px-4 mt-6">
                       <div className=" space-y-4">
                         <div className="flex flex-col md:flex-row md:items-end gap-4">
@@ -623,10 +877,14 @@ clientAccountBalance: latestClientBalance,
                   disabled={submitting}
                 >
                   {submitting
-                    ? "Confirming..."
-                    : isPackageBalanceBooking
-                      ? `Confirm & Deduct $${Number(finalPrice || 0).toFixed(2)}`
-                      : "Proceed"}
+  ? isChangeService
+    ? "Updating Service..."
+    : "Confirming..."
+  : isChangeService
+    ? "Update Service"
+    : isPackageBalanceBooking
+      ? `Confirm & Deduct $${Number(finalPrice || 0).toFixed(2)}`
+      : "Proceed"}
                 </PrimaryBtn>
               </div>
             </div>
@@ -644,6 +902,9 @@ function ServiceRow({
   onSelect,
   selectedBooking,
   index,
+  isChangeService = false,
+  currentServiceName = "",
+  currentMinutes = 0,
 }) {
   const rowBg = index % 2 === 0 ? "bg-white" : "bg-base-300";
 
@@ -653,33 +914,55 @@ function ServiceRow({
         {name}
       </td>
 
-      {DURATIONS.map((d, i) => (
-        <td key={i} className="text-center py-2">
-          {prices[i] != null && activeDurations[i] ? (
-            <label className="flex flex-col items-center font-medium gap-1 cursor-pointer text-[8px] md:text-sm">
-              <input
-                type="radio"
-                name="servicePick"
-                checked={
-                  selectedBooking?.service === name &&
-                  selectedBooking?.minutes === d.minutes
-                }
-                onChange={() =>
-                  onSelect({
-                    service: name,
-                    duration: d.label,
-                    minutes: d.minutes,
-                    price: prices[i],
-                  })
-                }
-              />
-              <span>${prices[i]}</span>
-            </label>
-          ) : (
-            "--"
-          )}
-        </td>
-      ))}
+      {DURATIONS.map((duration, i) => {
+        const available =
+          prices[i] != null && activeDurations[i];
+
+        const isCurrentService =
+          isChangeService &&
+          String(currentServiceName).trim().toLowerCase() ===
+            String(name).trim().toLowerCase() &&
+          Number(currentMinutes) === Number(duration.minutes);
+
+        return (
+          <td key={duration.minutes} className="text-center py-2">
+            {!available ? (
+              "--"
+            ) : isCurrentService ? (
+              <div className="flex flex-col items-center gap-1">
+                <span className="rounded-full bg-amber-100 px-2 py-1 text-[8px] font-bold text-amber-700 md:text-xs">
+                  Current
+                </span>
+
+                <span className="text-[8px] md:text-sm">
+                  ${Number(prices[i]).toFixed(2)}
+                </span>
+              </div>
+            ) : (
+              <label className="flex cursor-pointer flex-col items-center gap-1 text-[8px] font-medium md:text-sm">
+                <input
+                  type="radio"
+                  name="servicePick"
+                  checked={
+                    selectedBooking?.service === name &&
+                    selectedBooking?.minutes === duration.minutes
+                  }
+                  onChange={() =>
+                    onSelect({
+                      service: name,
+                      duration: duration.label,
+                      minutes: duration.minutes,
+                      price: Number(prices[i]),
+                    })
+                  }
+                />
+
+                <span>${Number(prices[i]).toFixed(2)}</span>
+              </label>
+            )}
+          </td>
+        );
+      })}
     </tr>
   );
 }
@@ -689,6 +972,8 @@ function DesktopTable({
   durations,
   selectedBooking,
   setSelectedBooking,
+  isChangeService,
+  currentBooking,
 }) {
   return (
     <div className="px-4 overflow-x-auto">
@@ -706,15 +991,18 @@ function DesktopTable({
 
         <tbody>
           {services.map((service, index) => (
-            <ServiceRow
-              key={service.name}
-              name={service.name}
-              prices={service.prices}
-              activeDurations={service.activeDurations}
-              selectedBooking={selectedBooking}
-              onSelect={setSelectedBooking}
-              index={index}
-            />
+          <ServiceRow
+  key={service.name}
+  name={service.name}
+  prices={service.prices}
+  activeDurations={service.activeDurations}
+  selectedBooking={selectedBooking}
+  onSelect={setSelectedBooking}
+  index={index}
+  isChangeService={isChangeService}
+  currentServiceName={currentBooking?.serviceName}
+  currentMinutes={currentBooking?.minutes}
+/>
           ))}
         </tbody>
       </table>
@@ -727,6 +1015,8 @@ function MobileTable({
   durations,
   selectedBooking,
   setSelectedBooking,
+  isChangeService,
+  currentBooking,
 }) {
   return (
     <div className="px-2 overflow-x-auto ">
@@ -750,15 +1040,18 @@ function MobileTable({
 
         <tbody>
           {services.map((service, index) => (
-            <ServiceRow
-              key={service.name}
-              name={service.name}
-              prices={service.prices}
-              activeDurations={service.activeDurations}
-              selectedBooking={selectedBooking}
-              onSelect={setSelectedBooking}
-              index={index}
-            />
+         <ServiceRow
+  key={service.name}
+  name={service.name}
+  prices={service.prices}
+  activeDurations={service.activeDurations}
+  selectedBooking={selectedBooking}
+  onSelect={setSelectedBooking}
+  index={index}
+  isChangeService={isChangeService}
+  currentServiceName={currentBooking?.serviceName}
+  currentMinutes={currentBooking?.minutes}
+/>
           ))}
         </tbody>
       </table>

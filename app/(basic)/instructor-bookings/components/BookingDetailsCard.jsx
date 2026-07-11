@@ -128,17 +128,62 @@ const price = b?.price || 0;
   const thisBookingId = oid(b?._id);
   return typeOk && noteBookingId === thisBookingId;
 });
-
 const paymentStatus = String(b?.paymentStatus || "").toLowerCase();
+
+const paidAmount = Number(
+  b?.paidAmount ??
+    b?.amountPaid ??
+    b?.totalPaidAmount ??
+    b?.totalPaid ??
+    0,
+);
+
+const usedCredit = Number(
+  b?.creditUsed ??
+    b?.creditToUse ??
+    0,
+);
+
 const isPaid = paymentStatus === "paid";
 
-const paidAmount =
-  b?.paidAmount ??
-  b?.amountPaid ??
-  b?.totalPaid ??
-  b?.price ??
-  0;
+const canChangeService =
+  paymentStatus === "unpaid" &&
+  paidAmount <= 0 &&
+  usedCredit <= 0;
 
+
+
+  const handleChangeService = () => {
+  if (!canChangeService) {
+    toast.error("Only a completely unpaid booking can change service");
+    return;
+  }
+
+  const returnPath =
+    typeof window !== "undefined"
+      ? `${window.location.pathname}${window.location.search}`
+      : `/bookings/${bookingId}`;
+
+  sessionStorage.setItem(
+    "pendingBooking",
+    JSON.stringify({
+      ...b,
+
+      mode: "change-service",
+      editingBookingId: bookingId,
+      changeServiceReturnPath: returnPath,
+
+      currentService: {
+        serviceName: b?.serviceName || "",
+        duration: b?.duration || "",
+        minutes: Number(b?.minutes || 0),
+        price: Number(b?.price || 0),
+      },
+    }),
+  );
+
+  router.push("/booking-confirm?mode=change-service");
+};
 const processingFee =
   b?.processingFee ??
   b?.cardProcessingFee ??
@@ -376,104 +421,60 @@ bookingTitle: `${serviceName} • ${bookingTime}`,
         </Modal>
       )}
 
-            {/* Service Section */}
-      <div className="p-4">
-        <h3 className="text-xl font-bold text-gray-800 mb-3">Service</h3>
+{/* Service Section */}
+<div className="border-l-12 border-slate-900 bg-white px-4 py-5">
+  <h3 className="mb-4 text-2xl font-bold text-black">
+    Service
+  </h3>
 
-        <div className="rounded-xl p-2 flex justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <FaArrowRight />
-            <div>
-              <p className="text-lg font-semibold">
-                {serviceName} - {duration}
-              </p>
+  {/* Service information */}
+  <div className="flex items-start justify-between gap-4 mb-2">
+    <div className="min-w-0">
+      <p className="md:text-lg font-bold text-black">
+        {serviceName} - {duration}
+      </p>
 
-              {b?.isPriceOverridden && b?.originalPrice != null ? (
-                <div className="mt-1 text-sm text-gray-500">
-                  Previos:{" "}
-                  <span className="line-through">
-                    {formatMoney(b.originalPrice)}
-                  </span>
-                </div>
-              ) : null}
-            </div>
-          </div>
+      {b?.isPriceOverridden && b?.originalPrice != null && (
+        <p className="mt-1 text-sm text-gray-500">
+          Previous:{" "}
+          <span className="line-through">
+            {formatMoney(b.originalPrice)}
+          </span>
+        </p>
+      )}
+    </div>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-base font-semibold">{formatMoney(b?.price || 0)}</p>
-            </div>
-          {String(b?.paymentStatus || "").toLowerCase() !== "paid" && (
+    <div className="flex shrink-0 items-center gap-6">
+      <p className="md:text-lg font-medium text-black">
+        {formatMoney(b?.price || 0)}
+      </p>
+
+      {/* Change Cost icon */}
+      {paymentStatus !== "paid" && (
+        <button
+          type="button"
+          onClick={() => setCostModalOpen(true)}
+          className="flex md:h-9 md:w-9 items-center justify-center text-gray-700 transition hover:text-primary"
+          title="Change Cost"
+          aria-label="Change Cost"
+        >
+          <FaRegEdit size={24} />
+        </button>
+      )}
+    </div>
+  </div>
+
+  {/* Change Service */}
+  {canChangeService && (
   <button
     type="button"
-    onClick={() => setCostModalOpen(true)}
-    className="border-2 border-primary text-primary font-semibold px-3 py-2 rounded-md hover:bg-primary hover:text-white transition"
+    onClick={handleChangeService}
+    className="mt-9! md:text-lg font-medium text-primary transition hover:underline"
   >
-    Change Cost
+    Change Service
   </button>
 )}
-           
-          </div>
-        </div>
-
-        {/* Total */}
-        <div className="mt-6 border-t border-gray-200 pt-4 flex justify-between items-center">
-          <p className="text-base font-semibold">Total:</p>
-          <p className="text-lg font-bold">{formatMoney(b?.price || 0)}</p>
-        </div>
-
-        {/* ✅ PAID UI */}
-        {isPaid ? (
-          <div className="mt-6 border-t border-gray-200 pt-4">
-            <div className="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
-              <div className="md:col-span-3">
-                <p className="text-lg font-bold">Paid:</p>
-              </div>
-
-              <div className="md:col-span-3">
-                <p className="text-lg font-bold">{formatMoney(paidAmount)}</p>
-              </div>
-
-              <div className="md:col-span-3 flex md:justify-center">
-                <button
-                  type="button"
-                  onClick={() => setPaymentModalOpen(true)}
-                  className="border-2 border-primary text-primary font-semibold px-2 py-2 rounded-md hover:bg-primary hover:text-white"
-                >
-                  Show Detail
-                </button>
-              </div>
-
-              <div className="md:col-span-3 md:text-right">
-                <div className="text-sm">
-                  <p className="italic">
-                    Card Transaction:{" "}
-                    <span className="font-semibold">
-                      {formatMoney(paidAmount)}
-                    </span>
-                  </p>
-
-                  {transactionId ? (
-                    <p className="mt-1 italic text-primary break-all text-xs">
-                      {transactionId}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : paymentRequired ? (
-          <div className="mt-4">
-            <button
-              type="button"
-              onClick={openPayNow}
-              className="px-6 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-md"
-            >
-              Pay Now
-            </button>
-          </div>
-        ) : null}
-      </div>
+</div>
       {costModalOpen && (
         <ChangeCostModal
           booking={b}

@@ -24,6 +24,14 @@ export default function BookingSidebar({booking}) {
 const [invoiceNoteText, setInvoiceNoteText] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [cancelForm, setCancelForm] = useState({
+  reasonCode: "none_given",
+  customReason: "",
+  clientForfeit: "0",
+  blockClient: false,
+  sendCustomSms: false,
+  customSms: "",
+});
 const router = useRouter()
   const queryClient = useQueryClient();
   const {data: user} = useUserData();
@@ -290,30 +298,17 @@ queryClient.invalidateQueries({ queryKey: ["bookings"] });
   }
 }
 if (key === "cancelBooking") {
-  try {
-    setSaving(true);
+  setCancelForm({
+    reasonCode: "none_given",
+    customReason: "",
+    clientForfeit: "0",
+    blockClient: false,
+    sendCustomSms: false,
+    customSms: "",
+  });
 
-    const id = oid(booking?._id);
-    if (!id) {
-      toast.error("Booking ID missing");
-      return;
-    }
-
-    await axios.patch(`/api/bookings/${id}`, { status: "cancelled" });
-
-    toast.success("Booking cancelled");
-
-    // refresh booking data
-    queryClient.invalidateQueries({ queryKey: ["booking"] });
-    queryClient.invalidateQueries({ queryKey: ["bookings"] });
-
-    return;
-  } catch (err) {
-    toast.error(err?.response?.data?.error || "Failed to cancel booking");
-    return;
-  } finally {
-    setSaving(false);
-  }
+  setOpenModal("cancelBooking");
+  return;
 }
  if (key === "markCompleted") {
     try {
@@ -438,7 +433,150 @@ await axios.post("/api/email-invoice", {
     setSaving(false);
   }
 };
+const submitCancellation = async () => {
+  const id = oid(booking?._id);
 
+  if (!id) {
+    return toast.error("Booking ID missing");
+  }
+
+  const reasonMap = {
+    none_given: {
+      category: "client",
+      label: "None Given",
+    },
+    reschedule: {
+      category: "client",
+      label: "Reschedule",
+    },
+    sick: {
+      category: "client",
+      label: "Sick",
+    },
+    other: {
+      category: "client",
+      label: "Other",
+    },
+    instructor_sick: {
+      category: "business",
+      label: "Instructor Sick",
+    },
+    cancelled_by_instructor: {
+      category: "business",
+      label: "Cancelled by Instructor",
+    },
+  };
+
+  const selectedReason =
+    reasonMap[cancelForm.reasonCode];
+
+  if (!selectedReason) {
+    return toast.error(
+      "Please select a cancellation reason",
+    );
+  }
+
+  if (
+    cancelForm.reasonCode === "other" &&
+    !cancelForm.customReason.trim()
+  ) {
+    return toast.error(
+      "Please write the cancellation reason",
+    );
+  }
+
+  if (
+    cancelForm.sendCustomSms &&
+    !cancelForm.customSms.trim()
+  ) {
+    return toast.error(
+      "Please write the cancellation SMS",
+    );
+  }
+
+  try {
+    setSaving(true);
+
+    const {data} = await axios.patch(
+      `/api/bookings/${id}`,
+      {
+        status: "cancelled",
+
+        cancellation: {
+          reasonCode:
+            cancelForm.reasonCode,
+
+          reasonCategory:
+            selectedReason.category,
+
+          reasonLabel:
+            selectedReason.label,
+
+          customReason:
+            cancelForm.reasonCode === "other"
+              ? cancelForm.customReason.trim()
+              : "",
+
+          clientForfeit:
+            Number(
+              cancelForm.clientForfeit || 0,
+            ),
+
+          blockClient:
+            Boolean(cancelForm.blockClient),
+
+          sendCustomSms:
+            Boolean(cancelForm.sendCustomSms),
+
+          customSms:
+            cancelForm.sendCustomSms
+              ? cancelForm.customSms.trim()
+              : "",
+
+          cancelledBy: {
+            userId: oid(user?._id),
+            name: user?.name || "",
+            role: user?.role || "",
+          },
+        },
+      },
+    );
+
+    if (data?.smsWarning) {
+      toast.warning(data.smsWarning);
+    } else {
+      toast.success(
+        "Booking cancelled successfully",
+      );
+    }
+
+    setOpenModal(null);
+
+    queryClient.setQueryData(
+      ["booking", id],
+      data?.booking || data,
+    );
+
+    await queryClient.invalidateQueries({
+      queryKey: ["booking", id],
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["bookings"],
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["instructor-bookings"],
+    });
+  } catch (err) {
+    toast.error(
+      err?.response?.data?.error ||
+        "Failed to cancel booking",
+    );
+  } finally {
+    setSaving(false);
+  }
+};
   return (
     <>
       {/* ✅ Mobile Menu */}
@@ -559,10 +697,21 @@ await axios.post("/api/email-invoice", {
               <div className="h-4 w-4 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
               <div className="h-4 w-4 bg-primary rounded-full animate-bounce"></div>
             </div>
-            <p className="text-gray-800 font-semibold text-lg">Sending...</p>
+            <p className="text-gray-800 font-semibold text-lg">  Processing...</p>
           </div>
         </div>
       )}
+
+      {openModal === "cancelBooking" && (
+  <CancelBookingModal
+    booking={booking}
+    form={cancelForm}
+    setForm={setCancelForm}
+    saving={saving}
+    onClose={() => setOpenModal(null)}
+    onConfirm={submitCancellation}
+  />
+)}
     </>
   );
 }
@@ -587,7 +736,303 @@ function MobileItem({label, onClick}) {
     </button>
   );
 }
+function CancelBookingModal({
+  booking,
+  form,
+  setForm,
+  saving,
+  onClose,
+  onConfirm,
+}) {
+  const bookingPrice = Number(
+    booking?.price || 0,
+  );
 
+  const updateField = (field, value) => {
+    setForm((previous) => ({
+      ...previous,
+      [field]: value,
+    }));
+  };
+
+  const reasons = [
+    {
+      value: "none_given",
+      label: "None Given",
+      group: "client",
+    },
+    {
+      value: "reschedule",
+      label: "Reschedule",
+      group: "client",
+    },
+    {
+      value: "sick",
+      label: "Sick",
+      group: "client",
+    },
+    {
+      value: "other",
+      label: "Other",
+      group: "client",
+    },
+    {
+      value: "instructor_sick",
+      label: "Instructor Sick",
+      group: "business",
+    },
+    {
+      value: "cancelled_by_instructor",
+      label: "Cancelled by Instructor",
+      group: "business",
+    },
+  ];
+
+  const clientReasons = reasons.filter(
+    (item) => item.group === "client",
+  );
+
+  const businessReasons = reasons.filter(
+    (item) => item.group === "business",
+  );
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="overflow-hidden rounded-lg bg-white">
+        {/* Header */}
+        
+          <h2 className="bg-red-500 text-lg md:text-2xl font-bold text-black py-2 px-4">
+            Cancel Booking
+          </h2>
+
+         
+
+        {/* Body */}
+        <div className="px-5 py-2">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[100px_1fr]">
+           
+          
+
+            <div>
+              {/* Client reasons */}
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-[180px_1fr]">
+                <p className="font-bold text-gray-900">
+                  Client Reason:
+                </p>
+
+                <div className="space-y-1">
+                  {clientReasons.map((reason) => (
+                    <label
+                      key={reason.value}
+                      className="flex cursor-pointer items-center gap-3 text-base text-gray-900"
+                    >
+                      <input
+                        type="radio"
+                        name="cancelReason"
+                        value={reason.value}
+                        checked={
+                          form.reasonCode ===
+                          reason.value
+                        }
+                        onChange={(event) =>
+                          updateField(
+                            "reasonCode",
+                            event.target.value,
+                          )
+                        }
+                        className="h-4 w-4"
+                      />
+
+                      <span>{reason.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom reason */}
+              {form.reasonCode === "other" && (
+                <div className="mt-4 sm:ml-[180px]">
+                  <textarea
+                    value={form.customReason}
+                    onChange={(event) =>
+                      updateField(
+                        "customReason",
+                        event.target.value,
+                      )
+                    }
+                    placeholder="Write cancellation reason..."
+                    className="min-h-[90px] w-full rounded-md border border-gray-300 p-3 text-sm outline-none focus:ring-2 focus:ring-red-200"
+                  />
+                </div>
+              )}
+
+              {/* Business reasons */}
+              <div className="mt-7 grid grid-cols-1 gap-3 sm:grid-cols-[180px_1fr]">
+                <p className="font-bold text-gray-900">
+                  Business Reason:
+                </p>
+
+                <div className="space-y-2">
+                  {businessReasons.map((reason) => (
+                    <label
+                      key={reason.value}
+                      className="flex cursor-pointer items-center gap-3 text-base text-gray-900"
+                    >
+                      <input
+                        type="radio"
+                        name="cancelReason"
+                        value={reason.value}
+                        checked={
+                          form.reasonCode ===
+                          reason.value
+                        }
+                        onChange={(event) =>
+                          updateField(
+                            "reasonCode",
+                            event.target.value,
+                          )
+                        }
+                        className="h-4 w-4"
+                      />
+
+                      <span>{reason.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="my-3 border-t border-gray-200" />
+
+              {/* Forfeit */}
+              <div className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[180px_1fr]">
+                <label
+                  htmlFor="clientForfeit"
+                  className="font-bold text-gray-900"
+                >
+                  Client Forfeits:
+                </label>
+
+              <select
+  id="clientForfeit"
+  value={form.clientForfeit}
+  onChange={(event) =>
+    updateField("clientForfeit", event.target.value)
+  }
+  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-red-200"
+>
+  {Array.from({length: 21}, (_, index) => index * 5).map(
+    (percent) => {
+      const amount = (
+        bookingPrice *
+        (percent / 100)
+      ).toFixed(2);
+
+      let label = `${percent}% ($${amount})`;
+
+      if (percent === 0) {
+        label = "Nothing ($0.00)";
+      }
+
+      if (percent === 100) {
+        label = `Full Amount ($${amount})`;
+      }
+
+      return (
+        <option key={percent} value={amount}>
+          {label}
+        </option>
+      );
+    },
+  )}
+</select>
+              </div>
+
+              {/* Block client */}
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[180px_1fr]">
+                <p className="font-bold text-gray-900">
+                  Block Client:
+                </p>
+
+                <label className="flex cursor-pointer items-center gap-3">
+                  <input
+                    type="checkbox"
+                    checked={form.blockClient}
+                    onChange={(event) =>
+                      updateField(
+                        "blockClient",
+                        event.target.checked,
+                      )
+                    }
+                    className="h-4 w-4"
+                  />
+
+                  <span>
+                    Block from making online bookings
+                  </span>
+                </label>
+              </div>
+
+              {/* Custom SMS */}
+              <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[180px_1fr]">
+                <p className="font-bold text-gray-900">
+                  Send Custom SMS:
+                </p>
+
+                <div>
+                  <label className="flex cursor-pointer items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={form.sendCustomSms}
+                      onChange={(event) =>
+                        updateField(
+                          "sendCustomSms",
+                          event.target.checked,
+                        )
+                      }
+                      className="h-4 w-4"
+                    />
+
+                    <span>
+                      Send a custom cancellation SMS
+                    </span>
+                  </label>
+
+                  {form.sendCustomSms && (
+                    <textarea
+                      value={form.customSms}
+                      onChange={(event) =>
+                        updateField(
+                          "customSms",
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Write cancellation SMS..."
+                      className="mt-2 min-h-[90px] w-full rounded-md border border-gray-300 p-3 text-sm outline-none focus:ring-2 focus:ring-red-200"
+                    />
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="flex justify-end border-t border-gray-200 px-5 py-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={onConfirm}
+            className=" rounded-md border border-primary bg-primary px-4! md:px-8 py-2 md:text-lg font-bold text-white shadow transition hover:bg-primary disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {saving
+              ? "Cancelling..."
+              : "Cancel Booking"}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 /* ✅ Modal UI (IMPORTANT: update state when defaultValue changes) */
 function SessionModal({title, defaultValue, onClose, onSave, saving}) {
   const [text, setText] = useState(defaultValue || "");
