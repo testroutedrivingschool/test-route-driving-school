@@ -9,7 +9,21 @@ import {NextResponse} from "next/server";
 const TZ = "Australia/Sydney";
 
 const VALID_PERIOD_TYPES = ["daily", "weekly", "fortnight", "monthly"];
+const VALID_COMPANY_SHARE_PERCENTAGES = [5, 10, 15, 20];
 
+function normalizeCompanySharePercent(value) {
+  const percentage = Number(value);
+
+  return VALID_COMPANY_SHARE_PERCENTAGES.includes(percentage)
+    ? percentage
+    : 10;
+}
+
+function roundMoney(value) {
+  const amount = Number(value || 0);
+
+  return Math.round((amount + Number.EPSILON) * 100) / 100;
+}
 function normalizePeriodType(v) {
   return VALID_PERIOD_TYPES.includes(v) ? v : "monthly";
 }
@@ -62,19 +76,32 @@ function getCashCollectedByInstructor(booking, paidServiceAmount) {
   return 0;
 }
 
-function getCardCollected(booking, paidServiceAmount, cashCollected) {
-  const method = String(booking.paymentMethod || "").toLowerCase();
+function getCardCollected(
+  booking,
+  paidServiceAmount,
+  cashCollected,
+) {
+  const method = String(
+    booking.paymentMethod || "",
+  ).toLowerCase();
+
   const cardAmount = num(booking.cardAmount);
 
-  if (cardAmount > 0) return cardAmount;
+  const remainingAmount = Math.max(
+    0,
+    paidServiceAmount - cashCollected,
+  );
+
+  if (cardAmount > 0) {
+    return Math.min(cardAmount, remainingAmount);
+  }
 
   if (method === "card") {
-    return Math.max(0, paidServiceAmount - cashCollected);
+    return remainingAmount;
   }
 
   return 0;
 }
-
 function getSydneyDateParts(dateValue) {
   const date = new Date(dateValue);
   if (Number.isNaN(date.getTime())) return null;
@@ -261,6 +288,11 @@ export async function GET(req) {
     const periodType = normalizePeriodType(
       searchParams.get("periodType") || "monthly",
     );
+const companySharePercent = normalizeCompanySharePercent(
+  searchParams.get("companySharePercent"),
+);
+
+const instructorSharePercent = 100 - companySharePercent;
 
     const rawPeriod = searchParams.get("period") || searchParams.get("month");
 
@@ -346,12 +378,9 @@ export async function GET(req) {
         const instructorBookings = bookingMap.get(instructorId) || [];
 
         let totalRevenue = 0;
-        let instructorPayout = 0;
-        let companyCut = 0;
-
-        let cashTotal = 0;
-        let cardTotal = 0;
-        let processingFees = 0;
+let cashTotal = 0;
+let cardTotal = 0;
+let processingFees = 0;
 
         for (const booking of instructorBookings) {
           const paidServiceAmount = getPaidServiceAmount(booking);
@@ -374,60 +403,108 @@ export async function GET(req) {
           cardTotal += cardCollected;
           processingFees += fee;
 
-          const instructorEarned = paidServiceAmount * 0.9;
-
-          // ✅ cash already collected by instructor
-          const payoutDue = Math.max(0, instructorEarned - cashCollected);
-
-          instructorPayout += payoutDue;
-
-          companyCut += paidServiceAmount * 0.1;
+          
         }
+totalRevenue = roundMoney(totalRevenue);
+cashTotal = roundMoney(cashTotal);
+cardTotal = roundMoney(cardTotal);
+processingFees = roundMoney(processingFees);
 
+const companyCut = roundMoney(
+  totalRevenue * (companySharePercent / 100),
+);
+
+const instructorEntitlement = roundMoney(
+  totalRevenue - companyCut,
+);
+
+const payoutBalance = roundMoney(
+  instructorEntitlement - cashTotal,
+);
+
+const instructorPayout = Math.max(0, payoutBalance);
+
+const instructorOwesCompany = Math.max(
+  0,
+  roundMoney(-payoutBalance),
+);
         const payout =
           payoutMap.get(`${instructorId}-${periodKey}`) ||
           payoutMap.get(`${instructorId}-${baseKey}`);
 
         const savedKey = payout?.monthKey || periodKey;
-
+const payoutMatchesCurrentShare =
+  !payout ||
+  normalizeCompanySharePercent(
+    payout.companySharePercent,
+  ) === companySharePercent;
         return {
-          instructorId,
-          instructorName: ins.name || "-",
-          instructorEmail: ins.email || "-",
+  instructorId,
+  instructorName: ins.name || "-",
+  instructorEmail: ins.email || "-",
 
-          periodType: selectedPeriod.periodType,
-          periodKey: savedKey,
-          periodLabel,
+  periodType: selectedPeriod.periodType,
+  periodKey: savedKey,
+  periodLabel,
 
-          // ✅ aliases for old frontend/update API
-          monthKey: savedKey,
-          monthLabel: periodLabel,
+  // Backward-compatible aliases
+  monthKey: savedKey,
+  monthLabel: periodLabel,
 
-          bookingsCount: instructorBookings.length,
-          totalRevenue,
-          instructorPayout,
-          companyCut,
+  bookingsCount: instructorBookings.length,
 
-          cashTotal,
-          cardTotal,
-          processingFees,
+  totalRevenue,
 
-          hasBookings: instructorBookings.length > 0,
+  companySharePercent,
+  instructorSharePercent,
+  companyCut,
+  instructorEntitlement,
 
-          isPaid: payout?.isPaid || false,
-          paidAt: payout?.paidAt || null,
-          paymentNote: payout?.paymentNote || "",
-          paymentProofKey: payout?.paymentProofKey || "",
-          paymentProofName: payout?.paymentProofName || "",
-          paymentProofSize: payout?.paymentProofSize || 0,
-          paymentProofUploadedAt: payout?.paymentProofUploadedAt || null,
+  cashTotal,
+  cardTotal,
+  processingFees,
 
-          financial: financialMap.get(instructorId) || null,
+  payoutBalance,
+  instructorPayout,
+  instructorOwesCompany,
 
-          bookings: instructorBookings.sort(
-            (a, b) => new Date(b.bookingDate) - new Date(a.bookingDate),
-          ),
-        };
+  hasBookings: instructorBookings.length > 0,
+
+  isPaid: payoutMatchesCurrentShare
+    ? Boolean(payout?.isPaid)
+    : false,
+
+  paidAt: payoutMatchesCurrentShare
+    ? payout?.paidAt || null
+    : null,
+
+  paymentNote: payoutMatchesCurrentShare
+    ? payout?.paymentNote || ""
+    : "",
+
+  paymentProofKey: payoutMatchesCurrentShare
+    ? payout?.paymentProofKey || ""
+    : "",
+
+  paymentProofName: payoutMatchesCurrentShare
+    ? payout?.paymentProofName || ""
+    : "",
+
+  paymentProofSize: payoutMatchesCurrentShare
+    ? payout?.paymentProofSize || 0
+    : 0,
+
+  paymentProofUploadedAt: payoutMatchesCurrentShare
+    ? payout?.paymentProofUploadedAt || null
+    : null,
+
+  financial: financialMap.get(instructorId) || null,
+
+  bookings: instructorBookings.sort(
+    (a, b) =>
+      new Date(b.bookingDate) - new Date(a.bookingDate),
+  ),
+};
       });
 
     const stats = rows.reduce(
@@ -458,7 +535,8 @@ export async function GET(req) {
       periodType: selectedPeriod.periodType,
       periodKey,
       periodLabel,
-
+  companySharePercent,
+  instructorSharePercent,
       // aliases
       month: periodKey,
       monthLabel: periodLabel,

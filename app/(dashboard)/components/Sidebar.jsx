@@ -121,7 +121,7 @@ const isActiveLink = (currentPath, linkPath) => {
             className={`
           fixed lg:sticky top-0 left-0 h-screen bg-white border-r border-border-color 
           transition-all duration-300 ease-in-out
-          flex flex-col z-3000 md:z-1
+          flex flex-col z-3000 lg:z-1
           ${
             isMobile
               ? sidebarOpen

@@ -5,6 +5,7 @@ import TopHeader from "../shared/ui/TopHeader";
 import Header from "../shared/ui/Header";
 import ScrollToTopButton from "../shared/ui/ScrollToTop";
 import Footer from "../shared/ui/Footer";
+import InstructorOverdueModalGate from "../shared/ui/InstructorOverdueModalGate";
 
 export const metadata = {
   title: "Test Route Driving School",
@@ -23,6 +24,7 @@ export default function BasicLayout({children}) {
           <ToastContainer style={{ zIndex: 9999999999999999999 }} />
           <TopHeader />
           <Header />
+          <InstructorOverdueModalGate />
           <main className="min-h-[90vh]">{children}</main>
         
           <ScrollToTopButton />

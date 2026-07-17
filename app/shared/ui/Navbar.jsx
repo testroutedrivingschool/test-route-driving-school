@@ -18,7 +18,6 @@ import {usePathname} from "next/navigation";
 import {useUserData} from "@/app/hooks/useUserData";
 import {useRouter} from "next/navigation";
 import AvatarDropdown from "./AvatarDropdown";
-import OverdueBookingStatusModal from "./OverdueBookingStatusModal";
 const navlinks = [
   {id: 1, label: "Home", pathname: "/"},
   {id: 2, label: "Instructors", pathname: "/instructors"},
@@ -476,7 +475,7 @@ const finalNavLinks = dynamicFirstNavItem
         </div>
       </div>
     </nav>
-    {userData?.role === "instructor" && <OverdueBookingStatusModal />}
+   
     </>
   );
 }
