@@ -17,7 +17,63 @@ function formatDateAU(dateLike) {
   if (Number.isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("en-AU", { day: "2-digit", month: "short", year: "numeric" });
 }
+function normalizeServiceName(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
 
+function isDrivingTestPackage(serviceName) {
+  return (
+    normalizeServiceName(serviceName) ===
+    "driving test package"
+  );
+}
+
+function formatTestTime(time) {
+  if (!time) return "—";
+
+  const match = String(time)
+    .trim()
+    .match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+
+  if (!match) return time;
+
+  const hours = Number(match[1]);
+  const minutes = match[2];
+  const period = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 || 12;
+
+  return `${displayHour}:${minutes}${period}`;
+}
+
+function getTestResultStyle(result = "") {
+  const value = String(result)
+    .trim()
+    .toLowerCase();
+
+  if (value === "passed") {
+    return "bg-green-100 text-green-700 border-green-300";
+  }
+
+  if (value === "failed") {
+    return "bg-red-100 text-red-700 border-red-300";
+  }
+
+  return "bg-gray-100 text-gray-600 border-gray-300";
+}
+
+function formatTestResult(result = "") {
+  const value = String(result)
+    .trim()
+    .toLowerCase();
+
+  if (value === "passed") return "Passed";
+  if (value === "failed") return "Failed";
+
+  return "Pending";
+}
 function toBookingDateTime(bookingDate, bookingTime) {
   const d = new Date(bookingDate);
   if (Number.isNaN(d.getTime())) return null;
@@ -153,7 +209,18 @@ const accountBalance = Number(clientData?.accountBalance || 0);
             const allow = canUserReschedule(b.bookingDate, b.bookingTime);
             const when = `${formatDateAU(b.bookingDate)} • ${b.bookingTime || "—"}`;
             const where = [b.address, b.suburb].filter(Boolean).join(", ");
+const isTestPackage =
+  isDrivingTestPackage(b.serviceName);
 
+const testResult = String(
+  b?.testResult || ""
+)
+  .trim()
+  .toLowerCase();
+
+const testDate = b?.testDate
+  ? formatDateAU(b.testDate)
+  : "—";
             const paymentStatus = String(b?.paymentStatus || "").toLowerCase();
             const isPaid = paymentStatus === "paid";
             const paidAmount = Number(b?.paidAmount || 0);
@@ -184,7 +251,83 @@ const accountBalance = Number(clientData?.accountBalance || 0);
                         <FiMapPin className="text-xl md:text-lg hidden sm:block" />
                         <span><b>Location:</b> {where || "—"}</span>
                       </div>
+{isTestPackage && (
+  <div className="mt-3 rounded-xl border border-gray-200 bg-gray-50 p-4">
+    <p className="mb-3 font-bold text-gray-900">
+      Driving Test Information
+    </p>
 
+    <div className="space-y-2 text-sm">
+      <div className="grid grid-cols-[130px_1fr] gap-3">
+        <span className="font-semibold text-gray-700">
+          Test Location:
+        </span>
+
+        <span className="text-gray-900">
+          {b?.testLocation || "—"}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-[130px_1fr] gap-3">
+        <span className="font-semibold text-gray-700">
+          Test Time:
+        </span>
+
+        <span className="text-gray-900">
+          {formatTestTime(b?.testTime)}
+        </span>
+      </div>
+
+      {b?.bookingRefNo ? (
+        <div className="grid grid-cols-[130px_1fr] gap-3">
+          <span className="font-semibold text-gray-700">
+            Booking Ref #:
+          </span>
+
+          <span className="wrap-break-word text-gray-900">
+            {b.bookingRefNo}
+          </span>
+        </div>
+      ) : null}
+
+      <div className="grid grid-cols-[130px_1fr] gap-3">
+        <span className="font-semibold text-gray-700">
+          Pass / Fail Date:
+        </span>
+
+        <span className="text-gray-900">
+          {testDate}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-[130px_1fr] items-center gap-3">
+        <span className="font-semibold text-gray-700">
+          Test Result:
+        </span>
+
+        <span
+          className={`inline-flex w-fit items-center rounded-full border px-3 py-1 text-xs font-bold ${getTestResultStyle(
+            testResult
+          )}`}
+        >
+          {formatTestResult(testResult)}
+        </span>
+      </div>
+
+      {b?.testResultComment ? (
+        <div className="grid grid-cols-[130px_1fr] gap-3">
+          <span className="font-semibold text-gray-700">
+            Comment:
+          </span>
+
+          <span className="wrap-break-word text-gray-900">
+            {b.testResultComment}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  </div>
+)}
                       <div className="opacity-85">
                         <b>Duration:</b> {b.duration || "—"}
                       </div>

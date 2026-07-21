@@ -19,7 +19,42 @@ import Link from "next/link";
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_Stripe_Publishable_key,
 );
-
+const DRIVING_TEST_LOCATIONS = [
+  "Bankstown",
+  "Bathurst",
+  "Blacktown",
+  "Bondi",
+  "Bondi Junction",
+  "Botany",
+  "Castle Hill",
+  "Chatswood",
+  "Eastgarden",
+  "Edmondson Park",
+  "Engadine",
+  "Glenmore Park",
+  "Gregory Hills",
+  "Lidcombe",
+  "Liverpool",
+  "Macquarie Fields",
+  "Macquarie Park",
+  "Marrickville",
+  "Merrylands",
+  "Miranda",
+  "North Rocks",
+  "North Ryde",
+  "Parramatta",
+  "Penrith",
+  "Revesby",
+  "Rhodes",
+  "Richmond",
+  "Rockdale",
+  "Roseland",
+  "Ryde",
+  "Silverwater",
+  "St. Marys",
+  "Warrawong",
+  "Wetherill Park",
+];
 export default function PaymentConfirmPage() {
   return (
     <Elements stripe={stripePromise}>
@@ -69,6 +104,10 @@ function PaymentForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [accountBalance, setAccountBalance] = useState(0);
   const [useCredit, setUseCredit] = useState(false);
+
+  const [testLocation, setTestLocation] = useState("");
+const [testTime, setTestTime] = useState("");
+const [bookingRefNo, setBookingRefNo] = useState("");
   /* Load booking */
   useEffect(() => {
     const data = sessionStorage.getItem("pendingBooking");
@@ -79,6 +118,10 @@ function PaymentForm() {
     const bookingData = JSON.parse(data);
 
     setBooking(bookingData);
+
+    setTestLocation(bookingData.testLocation || "");
+setTestTime(bookingData.testTime || "");
+setBookingRefNo(bookingData.bookingRefNo || "");
     setAddress(bookingData.clientAddress ?? bookingData.userAddress ?? "");
     setPhone(
       bookingData.clientPhone
@@ -115,7 +158,24 @@ function PaymentForm() {
   }, [booking?.clientId]);
 
   if (!booking) return <LoadingSpinner />;
+const normalizedServiceName = String(
+  booking?.serviceName || "",
+)
+  .trim()
+  .toLowerCase();
 
+const isManualDrivingTestPackage =
+  normalizedServiceName === "driving test package" &&
+  booking.bookingType === "manual";
+
+const drivingTestPackageDetails =
+  isManualDrivingTestPackage
+    ? {
+        testLocation: testLocation.trim(),
+        testTime: testTime.trim(),
+        bookingRefNo: bookingRefNo.trim(),
+      }
+    : {};
   const baseAmount = Number(booking.price || 0);
 
   const canUseCredit =
@@ -148,8 +208,27 @@ const cardBaseAmount = remainingAmount;
       toast.error("Please accept the terms and conditions");
       return;
     }
-    if (!address || !suburb)
-      return toast.error("Please complete address details");
+  if (!address.trim() || !suburb) {
+  return toast.error(
+    "Please complete address details",
+  );
+}
+
+if (isManualDrivingTestPackage) {
+  if (!testLocation.trim()) {
+    return toast.error(
+      "Please select the test location",
+    );
+  }
+
+  if (!testTime.trim()) {
+    return toast.error(
+      "Please enter the test time",
+    );
+  }
+
+ 
+}
 
     setLoading(true);
 
@@ -170,7 +249,7 @@ const manualPaymentStatus = remainingAmount <= 0 ? "paid" : "unpaid";
 const manualPaymentMethod = creditToUse > 0 ? "credit" : "bank";
        await axios.post("/api/bookings", {
   ...booking,
-
+ ...drivingTestPackageDetails,
   // bookingDate: booking.bookingDate,
   // bookingTime: booking.bookingTime,
 
@@ -416,6 +495,93 @@ if (!stripe || !elements) {
               ))}
             </select>
           </div>
+          {/* Only for Driving Test Package */}
+{isManualDrivingTestPackage && (
+  <div className="rounded-xl border border-gray-200 bg-white p-4 md:p-5">
+    <h3 className="mb-6 text-xl font-bold text-gray-900">
+      Additional Information
+    </h3>
+
+    <div className="space-y-4">
+      {/* Test Location */}
+      <div className="grid grid-cols-1 items-center gap-2 md:grid-cols-[150px_1fr]">
+        <label
+          htmlFor="testLocation"
+          className="font-medium text-gray-900"
+        >
+          Test Location:
+        </label>
+
+       <select
+  id="testLocation"
+  value={testLocation}
+  onChange={(event) =>
+    setTestLocation(event.target.value)
+  }
+  className="input-class"
+  required
+>
+  <option value="">
+    Select test location
+  </option>
+
+  {DRIVING_TEST_LOCATIONS.map((location) => (
+    <option
+      key={location}
+      value={location}
+    >
+      {location}
+    </option>
+  ))}
+</select>
+      </div>
+
+      {/* Test Time */}
+      <div className="grid grid-cols-1 items-center gap-2 md:grid-cols-[150px_1fr]">
+        <label
+          htmlFor="testTime"
+          className="font-medium text-gray-900"
+        >
+          Test Time:
+        </label>
+
+        <input
+          id="testTime"
+          type="time"
+          value={testTime}
+          onChange={(event) =>
+            setTestTime(
+              event.target.value,
+            )
+          }
+          className="input-class"
+          required
+        />
+      </div>
+
+      {/* Booking reference */}
+      <div className="grid grid-cols-1 items-center gap-2 md:grid-cols-[150px_1fr]">
+        <label
+          htmlFor="bookingRefNo"
+          className="font-medium text-gray-900"
+        >
+          Booking Ref #:
+        </label>
+
+        <input
+  id="bookingRefNo"
+  type="text"
+  value={bookingRefNo}
+  onChange={(event) =>
+    setBookingRefNo(event.target.value)
+  }
+  placeholder="Enter booking reference (optional)"
+  className="input-class"
+/>
+      </div>
+    </div>
+  </div>
+)}
           {/* Terms and Conditions Checkbox */}
           <div className="flex items-start gap-2">
             <input

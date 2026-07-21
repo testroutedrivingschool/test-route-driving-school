@@ -49,7 +49,86 @@ function oid(v) {
   if (typeof v === "object" && v.$oid) return v.$oid;
   return String(v);
 }
+const DRIVING_TEST_LOCATIONS = [
+  "Bankstown",
+  "Bathurst",
+  "Blacktown",
+  "Bondi",
+  "Bondi Junction",
+  "Botany",
+  "Castle Hill",
+  "Chatswood",
+  "Eastgarden",
+  "Edmondson Park",
+  "Engadine",
+  "Glenmore Park",
+  "Gregory Hills",
+  "Lidcombe",
+  "Liverpool",
+  "Macquarie Fields",
+  "Macquarie Park",
+  "Marrickville",
+  "Merrylands",
+  "Miranda",
+  "North Rocks",
+  "North Ryde",
+  "Parramatta",
+  "Penrith",
+  "Revesby",
+  "Rhodes",
+  "Richmond",
+  "Rockdale",
+  "Roseland",
+  "Ryde",
+  "Silverwater",
+  "St. Marys",
+  "Warrawong",
+  "Wetherill Park",
+];
 
+function formatTestTime(time) {
+  if (!time) return "—";
+
+  const match = String(time).match(
+    /^([01]\d|2[0-3]):([0-5]\d)$/
+  );
+
+  if (!match) return time;
+
+  const hours = Number(match[1]);
+  const minutes = match[2];
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 || 12;
+
+  return `${displayHour}:${minutes}${suffix}`;
+}
+
+function formatShortDate(date) {
+  if (!date) return "—";
+
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return String(date);
+  }
+
+  return parsed.toLocaleDateString("en-AU", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function capitalize(value) {
+  const text = String(value || "").trim();
+
+  if (!text) return "";
+
+  return (
+    text.charAt(0).toUpperCase() +
+    text.slice(1).toLowerCase()
+  );
+}
 export default function BookingDetailsCard() {
   const router = useRouter();
   const booking = useBooking();
@@ -59,6 +138,20 @@ export default function BookingDetailsCard() {
     open: false,
     initialText: "",
   });
+  const [testFieldModal, setTestFieldModal] =
+  useState({
+    open: false,
+    field: "",
+    label: "",
+    value: "",
+    type: "text",
+  });
+
+const [passFailModalOpen, setPassFailModalOpen] =
+  useState(false);
+
+const [testDetailsSaving, setTestDetailsSaving] =
+  useState(false);
   const [saving, setSaving] = useState(false);
   const clientId = booking?.clientId || booking?.userId;
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -112,7 +205,26 @@ const bookingTime = safe(b?.bookingTime);
 const serviceName = safe(b?.serviceName);
 const duration = safe(b?.duration);
 const price = b?.price || 0;
+const normalizedServiceName = String(
+  b?.serviceName || ""
+)
+  .replace(/\s+/g, " ")
+  .trim()
+  .toLowerCase();
 
+const isDrivingTestPackage =
+  normalizedServiceName ===
+  "driving test package";
+
+const passFailValue = b?.testResult
+  ? `${capitalize(b.testResult)}${
+      b?.testDate
+        ? ` - ${formatShortDate(b.testDate)}`
+        : ""
+    }`
+  : b?.testDate
+    ? formatShortDate(b.testDate)
+    : "—";
   const avatarSrc = b?.instructorPhoto
   ? b.instructorPhoto
   : b?.instructorPhotoKey
@@ -152,7 +264,115 @@ const canChangeService =
   usedCredit <= 0;
 
 
+const openTestFieldEditor = ({
+  field,
+  label,
+  value,
+  type = "text",
+}) => {
+  setTestFieldModal({
+    open: true,
+    field,
+    label,
+    value: value || "",
+    type,
+  });
+};
 
+const saveTestField = async (value) => {
+  if (!bookingId || !testFieldModal.field) {
+    return;
+  }
+
+  try {
+    setTestDetailsSaving(true);
+
+    await axios.patch(
+      `/api/bookings/${bookingId}`,
+      {
+        [testFieldModal.field]:
+          String(value || "").trim(),
+      }
+    );
+
+    await queryClient.invalidateQueries({
+      queryKey: ["booking", bookingId],
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["bookings"],
+    });
+
+    toast.success(
+      `${testFieldModal.label} updated`
+    );
+
+    setTestFieldModal({
+      open: false,
+      field: "",
+      label: "",
+      value: "",
+      type: "text",
+    });
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.error ||
+        "Failed to update test information"
+    );
+  } finally {
+    setTestDetailsSaving(false);
+  }
+};
+
+const savePassFail = async ({
+  result,
+  date,
+  comment,
+}) => {
+  if (!bookingId) return;
+
+  if (!result) {
+    toast.error("Select Passed or Failed");
+    return;
+  }
+
+  if (!date) {
+    toast.error("Select the pass/fail date");
+    return;
+  }
+
+  try {
+    setTestDetailsSaving(true);
+
+    await axios.patch(
+      `/api/bookings/${bookingId}`,
+      {
+        testResult: result,
+        testDate: date,
+        testResultComment:
+          String(comment || "").trim(),
+      }
+    );
+
+    await queryClient.invalidateQueries({
+      queryKey: ["booking", bookingId],
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["bookings"],
+    });
+
+    toast.success("Pass / fail result updated");
+    setPassFailModalOpen(false);
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.error ||
+        "Failed to update pass / fail result"
+    );
+  } finally {
+    setTestDetailsSaving(false);
+  }
+};
   const handleChangeService = () => {
   if (!canChangeService) {
     toast.error("Only a completely unpaid booking can change service");
@@ -387,7 +607,59 @@ bookingTitle: `${serviceName} • ${bookingTime}`,
           </div>
         </div>
       </div>
+{/* Driving Test Package information */}
+{isDrivingTestPackage && (
+  <div className="border-t border-gray-200 px-4 py-6">
+    <div className="max-w-3xl space-y-5">
+      <TestInformationRow
+        label="Test Location:"
+        value={b?.testLocation || "—"}
+        onEdit={() =>
+          openTestFieldEditor({
+            field: "testLocation",
+            label: "Test Location",
+            value: b?.testLocation,
+            type: "location",
+          })
+        }
+      />
 
+      <TestInformationRow
+        label="Test Time:"
+        value={formatTestTime(b?.testTime)}
+        onEdit={() =>
+          openTestFieldEditor({
+            field: "testTime",
+            label: "Test Time",
+            value: b?.testTime,
+            type: "time",
+          })
+        }
+      />
+
+      <TestInformationRow
+        label="Booking Ref #:"
+        value={b?.bookingRefNo || "—"}
+        onEdit={() =>
+          openTestFieldEditor({
+            field: "bookingRefNo",
+            label: "Booking Ref #",
+            value: b?.bookingRefNo,
+            type: "text",
+          })
+        }
+      />
+
+      <TestInformationRow
+        label="Pass / Fail Date:"
+        value={passFailValue}
+        onEdit={() =>
+          setPassFailModalOpen(true)
+        }
+      />
+    </div>
+  </div>
+)}
       {/* ✅ Note Modal */}
       {noteModal.open ? (
         <NoteModal
@@ -422,7 +694,7 @@ bookingTitle: `${serviceName} • ${bookingTime}`,
       )}
 
 {/* Service Section */}
-<div className="border-l-12 border-slate-900 bg-white px-4 py-5">
+<div className="border-l-5 border-slate-900 bg-white px-4 py-5">
   <h3 className="mb-4 text-2xl font-bold text-black">
     Service
   </h3>
@@ -486,6 +758,39 @@ bookingTitle: `${serviceName} • ${bookingTime}`,
           }}
         />
       )}
+      {testFieldModal.open && (
+  <TestFieldModal
+    label={testFieldModal.label}
+    type={testFieldModal.type}
+    defaultValue={testFieldModal.value}
+    saving={testDetailsSaving}
+    onClose={() =>
+      setTestFieldModal({
+        open: false,
+        field: "",
+        label: "",
+        value: "",
+        type: "text",
+      })
+    }
+    onSave={saveTestField}
+  />
+)}
+
+{passFailModalOpen && (
+  <PassFailModal
+    defaultResult={b?.testResult || ""}
+    defaultDate={b?.testDate || ""}
+    defaultComment={
+      b?.testResultComment || ""
+    }
+    saving={testDetailsSaving}
+    onClose={() =>
+      setPassFailModalOpen(false)
+    }
+    onSave={savePassFail}
+  />
+)}
       {paymentModalOpen && (
         <PaymentDetailModal
           onClose={() => setPaymentModalOpen(false)}
@@ -567,6 +872,245 @@ function SmallLink({text}) {
   );
 }
 
+function TestInformationRow({
+  label,
+  value,
+  onEdit,
+}) {
+  return (
+    <div className="grid grid-cols-12 items-center gap-4">
+      <div className="col-span-5 text-base font-medium text-gray-900 md:col-span-4">
+        {label}
+      </div>
+
+      <div className="col-span-7 flex items-center gap-3 md:col-span-8">
+        <span className="min-w-0 wrap-break-word text-base font-medium text-gray-900">
+          {value || "—"}
+        </span>
+
+        <button
+          type="button"
+          onClick={onEdit}
+          className="flex h-8 w-8 shrink-0 items-center justify-center text-gray-600 transition hover:text-primary"
+          title={`Edit ${label}`}
+          aria-label={`Edit ${label}`}
+        >
+          <FaRegEdit size={22} />
+        </button>
+      </div>
+    </div>
+  );
+}
+function TestFieldModal({
+  label,
+  type,
+  defaultValue,
+  saving,
+  onClose,
+  onSave,
+}) {
+  const [value, setValue] = useState(
+    defaultValue || ""
+  );
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="p-3">
+        <h3 className="text-xl font-bold text-gray-900">
+          Edit {label}
+        </h3>
+
+        <div className="mt-5">
+          <label className="mb-2 block text-sm font-semibold text-gray-700">
+            {label}
+          </label>
+
+          {type === "location" ? (
+            <select
+              value={value}
+              onChange={(event) =>
+                setValue(event.target.value)
+              }
+              className="input-class w-full"
+            >
+              <option value="">
+                Select test location
+              </option>
+
+              {DRIVING_TEST_LOCATIONS.map(
+                (location) => (
+                  <option
+                    key={location}
+                    value={location}
+                  >
+                    {location}
+                  </option>
+                )
+              )}
+            </select>
+          ) : (
+            <input
+              type={
+                type === "time"
+                  ? "time"
+                  : "text"
+              }
+              value={value}
+              onChange={(event) =>
+                setValue(event.target.value)
+              }
+              placeholder={
+                type === "text"
+                  ? `Enter ${label.toLowerCase()}`
+                  : ""
+              }
+              className="input-class w-full"
+            />
+          )}
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md border border-gray-300 px-4 py-2"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => onSave(value)}
+            className="rounded-md bg-primary px-5 py-2 font-semibold text-white disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function PassFailModal({
+  defaultResult,
+  defaultDate,
+  defaultComment,
+  saving,
+  onClose,
+  onSave,
+}) {
+  const [result, setResult] = useState(
+    String(defaultResult || "").toLowerCase()
+  );
+
+  const [date, setDate] = useState(() => {
+    if (!defaultDate) return "";
+
+    const parsed = new Date(defaultDate);
+
+    if (Number.isNaN(parsed.getTime())) {
+      return String(defaultDate).slice(0, 10);
+    }
+
+    return parsed.toISOString().slice(0, 10);
+  });
+
+  const [comment, setComment] = useState(
+    defaultComment || ""
+  );
+
+  return (
+    <Modal onClose={onClose}>
+      <div className="p-2">
+        <h3 className="text-3xl font-bold text-gray-900">
+          Set Pass / Fail
+        </h3>
+
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          <button
+            type="button"
+            onClick={() => setResult("passed")}
+            className={`min-h-28 text-xl font-semibold text-white transition ${
+              result === "passed"
+                ? "bg-green-700 ring-4 ring-green-200"
+                : "bg-green-600 hover:bg-green-700"
+            }`}
+          >
+            Passed
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setResult("failed")}
+            className={`min-h-28 text-xl font-semibold text-white transition ${
+              result === "failed"
+                ? "bg-red-700 ring-4 ring-red-200"
+                : "bg-red-600 hover:bg-red-700"
+            }`}
+          >
+            Failed
+          </button>
+        </div>
+
+        <div className="mt-6">
+          <label className="mb-2 block text-base font-medium text-gray-900">
+            Pass / Fail Date:
+          </label>
+
+          <input
+            type="date"
+            value={date}
+            onChange={(event) =>
+              setDate(event.target.value)
+            }
+            className="input-class w-full"
+          />
+        </div>
+
+        <div className="mt-5">
+          <label className="mb-2 block text-base font-medium text-gray-900">
+            Comment:
+          </label>
+
+          <textarea
+            value={comment}
+            onChange={(event) =>
+              setComment(event.target.value)
+            }
+            className="min-h-32 w-full rounded-md border border-gray-300 p-3 outline-none focus:ring-2 focus:ring-primary/20"
+            placeholder="Add a comment..."
+          />
+        </div>
+
+        <div className="mt-6 flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-md border border-gray-300 px-5 py-2"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() =>
+              onSave({
+                result,
+                date,
+                comment,
+              })
+            }
+            className="rounded-md bg-primary px-6 py-2 font-semibold text-white disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Save"}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
 function NoteModal({title, defaultValue, onClose, onSave, saving}) {
   const [text, setText] = useState(defaultValue || "");
 

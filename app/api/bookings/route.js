@@ -14,6 +14,19 @@ import {getNextInvoiceNo} from "@/app/libs/invoice/getNextInvoiceNo";
 import Stripe from "stripe";
 import {generateInvoicePdfBuffer} from "@/app/libs/invoice/invoicePdf";
 import {uploadPdfToS3} from "@/app/libs/storage/uploadPdfToS3";
+function normalizeServiceName(serviceName) {
+  return String(serviceName || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function isDrivingTestPackage(serviceName) {
+  return (
+    normalizeServiceName(serviceName) ===
+    "driving test package"
+  );
+}
 
 //get all
 export async function GET(req) {
@@ -90,38 +103,129 @@ export async function runInvoiceAndEmails({
   const bookingTitle =
     `${bookingDoc.serviceName || ""} ${bookingDoc.duration || ""}`.trim();
 
-  const instructorText = `Hi ${instructorName},
+
+const isManualTestPackage =
+  isDrivingTestPackage(
+    bookingDoc.serviceName,
+  ) &&
+  String(bookingDoc.bookingType || "")
+    .trim()
+    .toLowerCase() === "manual";
+
+const hasTestPackageDetails = Boolean(
+  String(bookingDoc.testLocation || "").trim() ||
+  String(bookingDoc.testTime || "").trim() ||
+  String(bookingDoc.testDate || "").trim() ||
+  String(bookingDoc.bookingRefNo || "").trim()
+);
+
+const showTestPackageDetails =
+  isManualTestPackage &&
+  hasTestPackageDetails;
+
+const testPackageText = showTestPackageDetails
+  ? `
+Test Location: ${bookingDoc.testLocation || ""}
+Test Time: ${bookingDoc.testTime || ""}
+Booking Ref #: ${bookingDoc.bookingRefNo || ""}
+`
+  : "";
+
+const testPackageInstructorHtml = showTestPackageDetails
+  ? `
+      <p><b>Test Location:</b> ${
+        bookingDoc.testLocation || ""
+      }</p>
+      <p><b>Test Time:</b> ${
+        bookingDoc.testTime || ""
+      }</p>
+      <p><b>Booking Ref #:</b> ${
+        bookingDoc.bookingRefNo || ""
+      }</p>
+    `
+  : "";
+
+const testPackageUserHtml = showTestPackageDetails
+  ? `
+      <li>
+        <b>Test Location:</b>
+        ${bookingDoc.testLocation || ""}
+      </li>
+      <li>
+        <b>Test Time:</b>
+        ${bookingDoc.testTime || ""}
+      </li>
+      <li>
+        <b>Booking Ref #:</b>
+        ${bookingDoc.bookingRefNo || ""}
+      </li>
+    `
+  : "";
+const instructorText = `Hi ${instructorName},
 
 You have a new booking:
+
 Name: ${bookingDoc.userName}
 Booking: ${bookingTitle}
 Date: ${bookingDateText}
 Time: ${bookingTimeText}
 Address: ${addressLine}
+${testPackageText}
 Email: ${bookingDoc.userEmail}
 Mobile: ${bookingDoc.userPhone}
 `;
 
-  const instructorHtml = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-      <p>Hi ${instructorName},</p>
-      <p><b>You have a new booking:</b></p>
-      <p><b>Name:</b> ${bookingDoc.userName}</p>
-      <p><b>Booking:</b> ${bookingTitle}</p>
-      <p><b>Date:</b> ${bookingDateText}</p>
-      <p><b>Time:</b> ${bookingTimeText}</p>
-      <p><b>Address:</b> ${addressLine}</p>
-      <p><b>Email:</b> ${bookingDoc.userEmail}</p>
-      <p><b>Mobile:</b> ${bookingDoc.userPhone}</p>
-    </div>
-  `;
+const instructorHtml = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+    <p>Hi ${instructorName},</p>
+
+    <p><b>You have a new booking:</b></p>
+
+    <p>
+      <b>Name:</b>
+      ${bookingDoc.userName}
+    </p>
+
+    <p>
+      <b>Booking:</b>
+      ${bookingTitle}
+    </p>
+
+    <p>
+      <b>Date:</b>
+      ${bookingDateText}
+    </p>
+
+    <p>
+      <b>Time:</b>
+      ${bookingTimeText}
+    </p>
+
+    <p>
+      <b>Address:</b>
+      ${addressLine}
+    </p>
+
+    ${testPackageInstructorHtml}
+
+    <p>
+      <b>Email:</b>
+      ${bookingDoc.userEmail}
+    </p>
+
+    <p>
+      <b>Mobile:</b>
+      ${bookingDoc.userPhone}
+    </p>
+  </div>
+`;
 
   const userSubject =
     bookingDoc.paymentStatus === "paid"
       ? `Payment Confirmed - Invoice #${invoiceNo}`
       : `Booking Confirmed - Invoice #${invoiceNo}`;
 
-  const userText = `Hi ${bookingDoc.userName || "there"},
+const userText = `Hi ${bookingDoc.userName || "there"},
 
 Your booking is confirmed.
 
@@ -129,6 +233,7 @@ Service: ${bookingDoc.serviceName || ""}
 Date: ${bookingDateText}
 Time: ${bookingTimeText}
 Duration: ${bookingDoc.duration || ""}
+${testPackageText}
 Total: $${bookingDoc.price || 0}
 Payment: ${bookingDoc.paymentStatus || "unpaid"}
 
@@ -138,26 +243,65 @@ Thanks,
 Test Route Driving School
 `;
 
-  const userHtml = `
-    <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-      <h2>${
+const userHtml = `
+  <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+    <h2>
+      ${
         bookingDoc.paymentStatus === "paid"
           ? "Payment Confirmed 🎉"
           : "Booking Confirmed ✅"
-      }</h2>
-      <p>Hi ${bookingDoc.userName || "there"},</p>
-      <p>Your booking is confirmed. Invoice attached (PDF).</p>
-      <ul>
-        <li><b>Service:</b> ${bookingDoc.serviceName || ""}</li>
-        <li><b>Date:</b> ${bookingDateText}</li>
-        <li><b>Time:</b> ${bookingTimeText}</li>
-        <li><b>Duration:</b> ${bookingDoc.duration || ""}</li>
-        <li><b>Total:</b> $${bookingDoc.price || 0}</li>
-        <li><b>Payment:</b> ${bookingDoc.paymentStatus || "unpaid"}</li>
-      </ul>
-      <p>Thanks,<br/>Test Route Driving School</p>
-    </div>
-  `;
+      }
+    </h2>
+
+    <p>
+      Hi ${bookingDoc.userName || "there"},
+    </p>
+
+    <p>
+      Your booking is confirmed.
+      Invoice attached (PDF).
+    </p>
+
+    <ul>
+      <li>
+        <b>Service:</b>
+        ${bookingDoc.serviceName || ""}
+      </li>
+
+      <li>
+        <b>Date:</b>
+        ${bookingDateText}
+      </li>
+
+      <li>
+        <b>Time:</b>
+        ${bookingTimeText}
+      </li>
+
+      <li>
+        <b>Duration:</b>
+        ${bookingDoc.duration || ""}
+      </li>
+
+      ${testPackageUserHtml}
+
+      <li>
+        <b>Total:</b>
+        $${bookingDoc.price || 0}
+      </li>
+
+      <li>
+        <b>Payment:</b>
+        ${bookingDoc.paymentStatus || "unpaid"}
+      </li>
+    </ul>
+
+    <p>
+      Thanks,<br/>
+      Test Route Driving School
+    </p>
+  </div>
+`;
 
   // 4) Send emails + log results
   const mailLog = {
@@ -264,23 +408,52 @@ Test Route Driving School
   await Promise.all([sendUser(), sendInstructor()]);
 
   // 5) Save invoice doc
-  await (
-    await invoicesCollection()
-  ).insertOne({
-    invoiceNo,
-    bookingId,
-    createdAt: new Date(),
-    paymentStatus: bookingDoc.paymentStatus || "unpaid",
-    paymentMethod: bookingDoc.paymentMethod || "bank",
-    cardBrand: bookingDoc.cardBrand || null,
-    cardLast4: bookingDoc.cardLast4 || null,
-    invoiceKey,
-    filename,
-    userEmail: bookingDoc.userEmail,
-    instructorEmail: bookingDoc.instructorEmail || null,
-    mailLog,
-    total: bookingDoc.price || 0,
-  });
+ await (
+  await invoicesCollection()
+).insertOne({
+  invoiceNo,
+  bookingId,
+
+  testLocation:
+    bookingDoc.testLocation || "",
+
+  testTime:
+    bookingDoc.testTime || "",
+
+  testDate:
+    bookingDoc.testDate || "",
+
+  bookingRefNo:
+    bookingDoc.bookingRefNo || "",
+
+  createdAt: new Date(),
+
+  paymentStatus:
+    bookingDoc.paymentStatus || "unpaid",
+
+  paymentMethod:
+    bookingDoc.paymentMethod || "bank",
+
+  cardBrand:
+    bookingDoc.cardBrand || null,
+
+  cardLast4:
+    bookingDoc.cardLast4 || null,
+
+  invoiceKey,
+  filename,
+
+  userEmail:
+    bookingDoc.userEmail,
+
+  instructorEmail:
+    bookingDoc.instructorEmail || null,
+
+  mailLog,
+
+  total:
+    bookingDoc.price || 0,
+});
 
   // (optional) update booking with invoiceKey so UI has it
   await (
@@ -408,14 +581,109 @@ export async function POST(req) {
   try {
     const body = await req.json();
 
+    const isTestPackage = isDrivingTestPackage(
+      body.serviceName
+    );
+
+    const isManualTestPackage =
+      isTestPackage &&
+      String(body.bookingType || "")
+        .trim()
+        .toLowerCase() === "manual";
+
     const normalized = {
       ...body,
-      userName: body.userName || body.clientName || "",
-      userEmail: body.userEmail || body.clientEmail || "",
-      userPhone: body.userPhone || body.clientPhone || body.phone || "",
-      address: body.address || body.clientAddress || body.userAddress || "",
-      suburb: body.suburb || body.location || "",
+
+      userName:
+        body.userName ||
+        body.clientName ||
+        "",
+
+      userEmail:
+        body.userEmail ||
+        body.clientEmail ||
+        "",
+
+      userPhone:
+        body.userPhone ||
+        body.clientPhone ||
+        body.phone ||
+        "",
+
+      address:
+        body.address ||
+        body.clientAddress ||
+        body.userAddress ||
+        "",
+
+      suburb:
+        body.suburb ||
+        body.location ||
+        "",
+
+      /*
+       * These fields exist on every booking.
+       * They contain values only for a manual
+       * Driving Test Package.
+       */
+      testLocation: isManualTestPackage
+        ? String(body.testLocation || "").trim()
+        : "",
+
+      testTime: isManualTestPackage
+        ? String(body.testTime || "").trim()
+        : "",
+
+      testDate: isManualTestPackage
+        ? String(body.testDate || "").trim()
+        : "",
+
+      bookingRefNo: isManualTestPackage
+        ? String(body.bookingRefNo || "").trim()
+        : "",
     };
+
+    /*
+     * Only location and time are required.
+     * Test date and booking reference are optional.
+     */
+    if (isManualTestPackage) {
+      if (!normalized.testLocation) {
+        return NextResponse.json(
+          {
+            error:
+              "Test location is required for a manual Driving Test Package",
+          },
+          {status: 400}
+        );
+      }
+
+      if (!normalized.testTime) {
+        return NextResponse.json(
+          {
+            error:
+              "Test time is required for a manual Driving Test Package",
+          },
+          {status: 400}
+        );
+      }
+
+      const validTime =
+        /^([01]\d|2[0-3]):[0-5]\d$/.test(
+          normalized.testTime
+        );
+
+      if (!validTime) {
+        return NextResponse.json(
+          {
+            error:
+              "Test time must use HH:MM format",
+          },
+          {status: 400}
+        );
+      }
+    }
+
     const totalPrice = money(normalized.price);
     const requestedCredit = money(normalized.creditToUse);
     const creditToUse = Math.min(requestedCredit, totalPrice);

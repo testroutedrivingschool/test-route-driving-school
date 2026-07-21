@@ -3,18 +3,38 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { ObjectId } from "mongodb";
-import { jobsCollection, bookingsCollection } from "@/app/libs/mongodb/db";
+import {
+  jobsCollection,
+  bookingsCollection,
+} from "@/app/libs/mongodb/db";
 import { runInvoiceAndEmails } from "@/app/api/bookings/route";
 
 const MAX_ATTEMPTS = 3;
 const BATCH_SIZE = 5;
+
+function normalizeServiceName(serviceName) {
+  return String(serviceName || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function isDrivingTestPackage(serviceName) {
+  return (
+    normalizeServiceName(serviceName) ===
+    "driving test package"
+  );
+}
 
 export async function POST(req) {
   try {
     const secret = req.headers.get("x-cron-secret");
 
     if (secret !== process.env.CRON_SECRET) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
     }
 
     const jobsCol = await jobsCollection();
@@ -25,7 +45,10 @@ export async function POST(req) {
         type: "BOOKING_CONFIRMATION",
         $or: [
           { status: "pending" },
-          { status: "failed", attempts: { $lt: MAX_ATTEMPTS } },
+          {
+            status: "failed",
+            attempts: { $lt: MAX_ATTEMPTS },
+          },
         ],
       })
       .sort({ createdAt: 1 })
@@ -36,6 +59,8 @@ export async function POST(req) {
     let failed = 0;
     let skipped = 0;
 
+    const results = [];
+
     for (const job of jobs) {
       try {
         const lockResult = await jobsCol.updateOne(
@@ -43,7 +68,10 @@ export async function POST(req) {
             _id: job._id,
             $or: [
               { status: "pending" },
-              { status: "failed", attempts: { $lt: MAX_ATTEMPTS } },
+              {
+                status: "failed",
+                attempts: { $lt: MAX_ATTEMPTS },
+              },
             ],
           },
           {
@@ -57,50 +85,108 @@ export async function POST(req) {
 
         if (lockResult.modifiedCount === 0) {
           skipped++;
+
+          results.push({
+            jobId: String(job._id),
+            status: "skipped",
+            reason: "Job already locked or processed",
+          });
+
           continue;
         }
 
-        if (!job.bookingId || !ObjectId.isValid(job.bookingId)) {
-          await jobsCol.updateOne(
-            { _id: job._id },
-            {
-              $set: {
-                status: "failed",
-                error: "Invalid bookingId in job",
-                finishedAt: new Date(),
-              },
-              $inc: { attempts: 1 },
-            }
-          );
-          failed++;
-          continue;
+        if (
+          !job.bookingId ||
+          !ObjectId.isValid(String(job.bookingId))
+        ) {
+          throw new Error("Invalid bookingId in job");
         }
+
+        const bookingObjectId = new ObjectId(
+          String(job.bookingId)
+        );
 
         const bookingDoc = await bookingsCol.findOne({
-          _id: new ObjectId(job.bookingId),
+          _id: bookingObjectId,
         });
 
         if (!bookingDoc) {
-          await jobsCol.updateOne(
-            { _id: job._id },
-            {
-              $set: {
-                status: "failed",
-                error: "Booking not found",
-                finishedAt: new Date(),
-              },
-              $inc: { attempts: 1 },
-            }
+          throw new Error("Booking not found");
+        }
+
+        const testPackage = isDrivingTestPackage(
+          bookingDoc.serviceName
+        );
+
+        console.log("BOOKING CONFIRMATION JOB DATA:", {
+          jobId: String(job._id),
+          bookingId: String(bookingDoc._id),
+          invoiceNo:
+            bookingDoc.invoiceNo || job.invoiceNo,
+          serviceName: bookingDoc.serviceName,
+          isDrivingTestPackage: testPackage,
+          testLocation: bookingDoc.testLocation,
+          testTime: bookingDoc.testTime,
+          bookingRefNo: bookingDoc.bookingRefNo,
+        });
+
+        /*
+         * Prevent sending an incomplete Driving Test Package
+         * email or PDF.
+         */
+        if (testPackage) {
+          const missingFields = [];
+
+          if (
+            !String(
+              bookingDoc.testLocation || ""
+            ).trim()
+          ) {
+            missingFields.push("testLocation");
+          }
+
+          if (
+            !String(
+              bookingDoc.testTime || ""
+            ).trim()
+          ) {
+            missingFields.push("testTime");
+          }
+
+          if (
+            !String(
+              bookingDoc.bookingRefNo || ""
+            ).trim()
+          ) {
+            missingFields.push("bookingRefNo");
+          }
+
+          if (missingFields.length > 0) {
+            throw new Error(
+              `Driving Test Package is missing: ${missingFields.join(
+                ", "
+              )}`
+            );
+          }
+        }
+
+        const resolvedInvoiceNo =
+          bookingDoc.invoiceNo || job.invoiceNo;
+
+        if (!resolvedInvoiceNo) {
+          throw new Error(
+            "Invoice number is missing"
           );
-          failed++;
-          continue;
         }
 
         await runInvoiceAndEmails({
           bookingDoc,
           bookingId: bookingDoc._id,
-          invoiceNo: job.invoiceNo,
-          reqUrl: job.reqUrl,
+          invoiceNo: resolvedInvoiceNo,
+          reqUrl:
+            job.reqUrl ||
+            process.env.APP_URL ||
+            req.url,
         });
 
         await jobsCol.updateOne(
@@ -115,20 +201,49 @@ export async function POST(req) {
         );
 
         processed++;
-      } catch (err) {
+
+        results.push({
+          jobId: String(job._id),
+          bookingId: String(bookingDoc._id),
+          invoiceNo: resolvedInvoiceNo,
+          status: "done",
+        });
+      } catch (error) {
+        const errorMessage = String(
+          error?.message || error
+        );
+
+        console.error(
+          "BOOKING CONFIRMATION JOB FAILED:",
+          {
+            jobId: String(job._id),
+            bookingId: job.bookingId || null,
+            error: errorMessage,
+          }
+        );
+
         await jobsCol.updateOne(
           { _id: job._id },
           {
             $set: {
               status: "failed",
-              error: String(err?.message || err),
+              error: errorMessage,
               finishedAt: new Date(),
             },
-            $inc: { attempts: 1 },
+            $inc: {
+              attempts: 1,
+            },
           }
         );
 
         failed++;
+
+        results.push({
+          jobId: String(job._id),
+          bookingId: job.bookingId || null,
+          status: "failed",
+          error: errorMessage,
+        });
       }
     }
 
@@ -139,12 +254,20 @@ export async function POST(req) {
       failed,
       skipped,
       maxAttempts: MAX_ATTEMPTS,
+      results,
     });
   } catch (error) {
-    console.error("CRON PROCESS BOOKINGS ERROR:", error);
+    console.error(
+      "CRON PROCESS BOOKINGS ERROR:",
+      error
+    );
 
     return NextResponse.json(
-      { error: error?.message || "Failed to process booking jobs" },
+      {
+        error:
+          error?.message ||
+          "Failed to process booking jobs",
+      },
       { status: 500 }
     );
   }

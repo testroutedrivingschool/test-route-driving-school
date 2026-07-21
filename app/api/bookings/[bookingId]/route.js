@@ -43,6 +43,424 @@ const CANCELLATION_REASONS = {
     label: "Cancelled by Instructor",
   },
 };
+
+function normalizeServiceName(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function isDrivingTestPackage(serviceName) {
+  return (
+    normalizeServiceName(serviceName) ===
+    "driving test package"
+  );
+}
+
+function normalizeTestValue(value) {
+  return String(value ?? "").trim();
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatTestTimeForEmail(time) {
+  const value = normalizeTestValue(time);
+
+  if (!value) return "—";
+
+  const match = value.match(
+    /^([01]\d|2[0-3]):([0-5]\d)$/
+  );
+
+  if (!match) return value;
+
+  const hours = Number(match[1]);
+  const minutes = match[2];
+  const period = hours >= 12 ? "PM" : "AM";
+  const displayHour = hours % 12 || 12;
+
+  return `${displayHour}:${minutes}${period}`;
+}
+
+function formatTestDateForEmail(date) {
+  const value = normalizeTestValue(date);
+
+  if (!value) return "—";
+
+  const match = value.match(
+    /^(\d{4})-(\d{2})-(\d{2})$/
+  );
+
+  if (!match) return value;
+
+  const parsed = new Date(
+    Date.UTC(
+      Number(match[1]),
+      Number(match[2]) - 1,
+      Number(match[3])
+    )
+  );
+
+  return parsed.toLocaleDateString("en-AU", {
+    timeZone: "UTC",
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+function formatTestResult(value) {
+  const result = normalizeTestValue(
+    value
+  ).toLowerCase();
+
+  if (result === "passed") return "Passed";
+  if (result === "failed") return "Failed";
+
+  return "Pending";
+}
+
+async function sendDrivingTestUpdateEmail({
+  booking,
+  changedFields,
+}) {
+  if (
+    !isDrivingTestPackage(
+      booking?.serviceName
+    )
+  ) {
+    return {
+      ok: false,
+      skipped: true,
+      reason:
+        "Booking is not a Driving Test Package",
+    };
+  }
+
+  const userEmail =
+    booking?.userEmail ||
+    booking?.clientEmail ||
+    booking?.email ||
+    "";
+
+  if (!userEmail) {
+    return {
+      ok: false,
+      skipped: true,
+      reason: "User email not found",
+    };
+  }
+
+  const userName =
+    booking?.userName ||
+    booking?.clientName ||
+    "there";
+
+  const result = normalizeTestValue(
+    booking?.testResult
+  ).toLowerCase();
+
+  const resultText =
+    formatTestResult(result);
+
+  const resultColor =
+    result === "passed"
+      ? "#15803d"
+      : result === "failed"
+        ? "#dc2626"
+        : "#4b5563";
+
+  const resultBackground =
+    result === "passed"
+      ? "#dcfce7"
+      : result === "failed"
+        ? "#fee2e2"
+        : "#f3f4f6";
+
+  const resultBorder =
+    result === "passed"
+      ? "#86efac"
+      : result === "failed"
+        ? "#fca5a5"
+        : "#d1d5db";
+
+  const resultWasChanged =
+    changedFields.includes("testResult");
+
+  let subject =
+    "Driving Test Information Updated";
+
+  if (
+    resultWasChanged &&
+    result === "passed"
+  ) {
+    subject =
+      "Driving Test Result: Passed";
+  }
+
+  if (
+    resultWasChanged &&
+    result === "failed"
+  ) {
+    subject =
+      "Driving Test Result: Failed";
+  }
+
+  const changedLabels = {
+    testLocation: "Test Location",
+    testTime: "Test Time",
+    bookingRefNo: "Booking Reference",
+    testDate: "Pass / Fail Date",
+    testResult: "Test Result",
+    testResultComment: "Comment",
+  };
+
+  const changedText = changedFields
+    .map(
+      (field) =>
+        changedLabels[field] || field
+    )
+    .join(", ");
+
+  const bookingDateText =
+    booking?.bookingDate
+      ? new Date(
+          booking.bookingDate
+        ).toLocaleDateString("en-AU", {
+          timeZone: "Australia/Sydney",
+          weekday: "long",
+          day: "2-digit",
+          month: "long",
+          year: "numeric",
+        })
+      : "—";
+
+  const bookingRefHtml =
+    booking?.bookingRefNo
+      ? `
+        <tr>
+          <td style="padding:8px 12px;font-weight:700">
+            Booking Ref #:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(
+              booking.bookingRefNo
+            )}
+          </td>
+        </tr>
+      `
+      : "";
+
+  const commentHtml =
+    booking?.testResultComment
+      ? `
+        <tr>
+          <td style="padding:8px 12px;font-weight:700;vertical-align:top">
+            Comment:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(
+              booking.testResultComment
+            )}
+          </td>
+        </tr>
+      `
+      : "";
+
+  const html = `
+    <div
+      style="
+        font-family:Arial,sans-serif;
+        line-height:1.6;
+        color:#111827;
+        max-width:650px;
+        margin:0 auto;
+      "
+    >
+      <h2 style="margin-bottom:8px">
+        ${escapeHtml(subject)}
+      </h2>
+
+      <p>
+        Hi ${escapeHtml(userName)},
+      </p>
+
+      <p>
+        Your Driving Test Package information has been updated.
+      </p>
+
+      <p style="color:#4b5563">
+        <b>Updated:</b>
+        ${escapeHtml(changedText)}
+      </p>
+
+      <table
+        style="
+          width:100%;
+          border-collapse:collapse;
+          margin-top:20px;
+          border:1px solid #e5e7eb;
+        "
+      >
+        <tr style="background:#f9fafb">
+          <td style="padding:8px 12px;font-weight:700">
+            Service:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(
+              booking?.serviceName || "—"
+            )}
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:8px 12px;font-weight:700">
+            Booking Date:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(bookingDateText)}
+          </td>
+        </tr>
+
+        <tr style="background:#f9fafb">
+          <td style="padding:8px 12px;font-weight:700">
+            Test Location:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(
+              booking?.testLocation || "—"
+            )}
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:8px 12px;font-weight:700">
+            Test Time:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(
+              formatTestTimeForEmail(
+                booking?.testTime
+              )
+            )}
+          </td>
+        </tr>
+
+        ${bookingRefHtml}
+
+        <tr style="background:#f9fafb">
+          <td style="padding:8px 12px;font-weight:700">
+            Pass / Fail Date:
+          </td>
+          <td style="padding:8px 12px">
+            ${escapeHtml(
+              formatTestDateForEmail(
+                booking?.testDate
+              )
+            )}
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding:8px 12px;font-weight:700">
+            Test Result:
+          </td>
+          <td style="padding:8px 12px">
+            <span
+              style="
+                display:inline-block;
+                padding:4px 12px;
+                border-radius:999px;
+                font-weight:700;
+                color:${resultColor};
+                background:${resultBackground};
+                border:1px solid ${resultBorder};
+              "
+            >
+              ${escapeHtml(resultText)}
+            </span>
+          </td>
+        </tr>
+
+        ${commentHtml}
+      </table>
+
+      <p style="margin-top:24px">
+        Thanks,<br/>
+        Test Route Driving School
+      </p>
+    </div>
+  `;
+
+  const bookingRefText =
+    booking?.bookingRefNo
+      ? `Booking Ref #: ${booking.bookingRefNo}\n`
+      : "";
+
+  const commentText =
+    booking?.testResultComment
+      ? `Comment: ${booking.testResultComment}\n`
+      : "";
+
+  const text = `Hi ${userName},
+
+Your Driving Test Package information has been updated.
+
+Updated: ${changedText}
+
+Service: ${booking?.serviceName || "—"}
+Booking Date: ${bookingDateText}
+Test Location: ${booking?.testLocation || "—"}
+Test Time: ${formatTestTimeForEmail(
+    booking?.testTime
+  )}
+${bookingRefText}Pass / Fail Date: ${formatTestDateForEmail(
+    booking?.testDate
+  )}
+Test Result: ${resultText}
+${commentText}
+Thanks,
+Test Route Driving School`;
+
+  try {
+    await sendMail({
+      to: userEmail,
+      subject,
+      html,
+      text,
+    });
+
+    return {
+      ok: true,
+      skipped: false,
+      to: userEmail,
+      subject,
+      changedFields,
+    };
+  } catch (error) {
+    console.error(
+      "DRIVING TEST UPDATE EMAIL ERROR:",
+      error
+    );
+
+    return {
+      ok: false,
+      skipped: false,
+      to: userEmail,
+      error: String(
+        error?.message || error
+      ),
+    };
+  }
+}
 async function sendStatusChangeEmails({ booking, oldStatus, newStatus }) {
   const userEmail =
     booking.userEmail || booking.clientEmail || booking.email || "";
@@ -119,8 +537,7 @@ Client Forfeit: $${money(
     <p><b>Time:</b> ${booking.bookingTime || "—"}</p>
     <p><b>Client:</b> ${booking.userName || booking.clientName || "—"}</p>
     <p><b>Instructor:</b> ${booking.instructorName || "—"}</p>
-    <p><b>Old Status:</b> ${oldStatus || "—"}</p>
-    <p><b>New Status:</b> ${newStatus || "—"}</p>
+    
     ${cancellationDetailsHtml}
   `;
 
@@ -131,8 +548,7 @@ Date: ${bookingDateText}
 Time: ${booking.bookingTime || "—"}
 Client: ${booking.userName || booking.clientName || "—"}
 Instructor: ${booking.instructorName || "—"}
-Old Status: ${oldStatus || "—"}
-New Status: ${newStatus || "—"}
+
 ${cancellationDetailsHtml}
 `;
 
@@ -410,28 +826,36 @@ export async function PATCH(req, { params }) {
 
     const body = await req.json();
 
-    const allowed = [
-      "status",
-      "paymentStatus",
-      "paymentMethod",
-      "paymentIntentId",
-      "paidAmount",
-      "cashAmount",
-      "cardAmount",
-      "outstanding",
-      "processingFee",
-      "cardBrand",
-      "cardLast4",
-      "userPhone",
-      "address",
-      "suburb",
-      "bookingDate",
-      "bookingTime",
-      "price",
-      "originalPrice",
-      "overridePrice",
-      "isPriceOverridden",
-    ];
+   const allowed = [
+  "status",
+  "paymentStatus",
+  "paymentMethod",
+  "paymentIntentId",
+  "paidAmount",
+  "cashAmount",
+  "cardAmount",
+  "outstanding",
+  "processingFee",
+  "cardBrand",
+  "cardLast4",
+  "userPhone",
+  "address",
+  "suburb",
+  "bookingDate",
+  "bookingTime",
+  "price",
+  "originalPrice",
+  "overridePrice",
+  "isPriceOverridden",
+
+  // Driving Test Package fields
+  "testLocation",
+  "testTime",
+  "bookingRefNo",
+  "testDate",
+  "testResult",
+  "testResultComment",
+];
 
     const $set = {
       updatedAt: new Date(),
@@ -466,6 +890,129 @@ export async function PATCH(req, { params }) {
     if ($set.bookingTime !== undefined) {
       $set.bookingTime = String($set.bookingTime).trim();
     }
+
+    /*
+ * Driving Test Package fields
+ */
+
+if ($set.testLocation !== undefined) {
+  $set.testLocation = String(
+    $set.testLocation || ""
+  ).trim();
+}
+
+if ($set.testTime !== undefined) {
+  $set.testTime = String(
+    $set.testTime || ""
+  ).trim();
+
+  /*
+   * Empty value is allowed.
+   * Otherwise the format must be HH:MM.
+   */
+  if (
+    $set.testTime &&
+    !/^([01]\d|2[0-3]):[0-5]\d$/.test(
+      $set.testTime
+    )
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Test time must use HH:MM format",
+      },
+      {status: 400}
+    );
+  }
+}
+
+if ($set.bookingRefNo !== undefined) {
+  /*
+   * Booking reference is optional.
+   */
+  $set.bookingRefNo = String(
+    $set.bookingRefNo || ""
+  ).trim();
+}
+
+if ($set.testDate !== undefined) {
+  $set.testDate = String(
+    $set.testDate || ""
+  ).trim();
+
+  /*
+   * Empty date is allowed.
+   * Otherwise it must use YYYY-MM-DD.
+   */
+  if (
+    $set.testDate &&
+    !/^\d{4}-\d{2}-\d{2}$/.test(
+      $set.testDate
+    )
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Pass / Fail date must use YYYY-MM-DD format",
+      },
+      {status: 400}
+    );
+  }
+
+  if ($set.testDate) {
+    const parsedTestDate = new Date(
+      `${$set.testDate}T00:00:00`
+    );
+
+    if (
+      Number.isNaN(
+        parsedTestDate.getTime()
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid Pass / Fail date",
+        },
+        {status: 400}
+      );
+    }
+  }
+}
+
+if ($set.testResult !== undefined) {
+  $set.testResult = String(
+    $set.testResult || ""
+  )
+    .trim()
+    .toLowerCase();
+
+  const allowedTestResults = [
+    "",
+    "passed",
+    "failed",
+  ];
+
+  if (
+    !allowedTestResults.includes(
+      $set.testResult
+    )
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Test result must be passed or failed",
+      },
+      {status: 400}
+    );
+  }
+}
+
+if ($set.testResultComment !== undefined) {
+  $set.testResultComment = String(
+    $set.testResultComment || ""
+  ).trim();
+}
 
     if ($set.paymentStatus !== undefined) {
       const value = String($set.paymentStatus).toLowerCase();
@@ -563,6 +1110,52 @@ export async function PATCH(req, { params }) {
         { status: 404 }
       );
     }
+
+    /*
+ * Validate the final Pass / Fail information
+ * using both existing and newly submitted values.
+ */
+const finalTestResult =
+  $set.testResult !== undefined
+    ? $set.testResult
+    : String(
+        oldBooking.testResult || ""
+      )
+        .trim()
+        .toLowerCase();
+
+const finalTestDate =
+  $set.testDate !== undefined
+    ? $set.testDate
+    : String(
+        oldBooking.testDate || ""
+      ).trim();
+
+if (
+  finalTestResult &&
+  !finalTestDate
+) {
+  return NextResponse.json(
+    {
+      error:
+        "Pass / Fail date is required when a result is selected",
+    },
+    {status: 400}
+  );
+}
+
+if (
+  finalTestDate &&
+  !finalTestResult
+) {
+  return NextResponse.json(
+    {
+      error:
+        "Select Passed or Failed when entering a Pass / Fail date",
+    },
+    {status: 400}
+  );
+}
 let cancellationData = null;
 
 if ($set.status === "cancelled") {
@@ -738,7 +1331,54 @@ if ($set.status === "cancelled") {
     const updatedDoc = await bookingsCol.findOne({
       _id: new ObjectId(bookingId),
     });
+const testEmailFields = [
+  "testLocation",
+  "testTime",
+  "bookingRefNo",
+  "testDate",
+  "testResult",
+  "testResultComment",
+];
 
+const changedTestFields =
+  testEmailFields.filter((field) => {
+    /*
+     * Only inspect fields included in this
+     * specific PATCH request.
+     */
+    const wasSubmitted =
+      Object.prototype.hasOwnProperty.call(
+        body,
+        field
+      );
+
+    if (!wasSubmitted) {
+      return false;
+    }
+
+    const oldValue =
+      normalizeTestValue(
+        oldBooking?.[field]
+      );
+
+    const newValue =
+      normalizeTestValue(
+        updatedDoc?.[field]
+      );
+
+    return oldValue !== newValue;
+  });
+
+let testUpdateEmailResult = null;
+
+if (changedTestFields.length > 0) {
+  testUpdateEmailResult =
+    await sendDrivingTestUpdateEmail({
+      booking: updatedDoc,
+      changedFields:
+        changedTestFields,
+    });
+}
     const statusWasProvided = Object.prototype.hasOwnProperty.call(
       body,
       "status"
@@ -896,7 +1536,7 @@ return NextResponse.json({
   creditResult,
   clientBlockResult,
   smsWarning,
-
+  testUpdateEmailResult,
   message:
     String(finalDoc?.status).toLowerCase() === "cancelled"
       ? "Booking cancelled successfully"

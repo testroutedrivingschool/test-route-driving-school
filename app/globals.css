@@ -111,3 +111,28 @@ strong{
   z-index: 9999999999999999 !important;
 }
 
+
+.test-details {
+  margin-top: 16px;
+  border: 1px solid #d8d8d8;
+  border-radius: 6px;
+  padding: 12px;
+  background: #f7f7f7;
+}
+
+.test-details-title {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.test-details-row {
+  display: flex;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+.test-details-label {
+  width: 110px;
+  font-weight: 700;
+}

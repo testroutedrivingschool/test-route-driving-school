@@ -1,60 +1,162 @@
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-import {sendMail} from "@/app/libs/mail/mailer";
+import { sendMail } from "@/app/libs/mail/mailer";
 import {
   bookingsCollection,
   emailsCollection,
   usersCollection,
   clientsCollection,
 } from "@/app/libs/mongodb/db";
-import {NextResponse} from "next/server";
+import { NextResponse } from "next/server";
 
-// ---- CONFIG ----
 const TZ = "Australia/Sydney";
 
-// Security: call with header x-cron-secret
 function assertCron(req) {
   const secret = req.headers.get("x-cron-secret");
-  if (!secret || secret !== process.env.CRON_SECRET) {
+
+  if (
+    !secret ||
+    secret !== process.env.CRON_SECRET
+  ) {
     throw new Error("FORBIDDEN");
   }
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+/*
+ * Returns Sydney time in HH:MM format.
+ *
+ * hourCycle: "h23" ensures midnight is 00:00,
+ * not 24:00.
+ */
 function hhmmNow() {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: TZ,
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  }).formatToParts(new Date());
+  const parts = new Intl.DateTimeFormat(
+    "en-GB",
+    {
+      timeZone: TZ,
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }
+  ).formatToParts(new Date());
 
-  const h = parts.find((p) => p.type === "hour")?.value ?? "00";
-  const m = parts.find((p) => p.type === "minute")?.value ?? "00";
-  return `${h}:${m}`;
+  let hour =
+    parts.find(
+      (part) => part.type === "hour"
+    )?.value || "00";
+
+  const minute =
+    parts.find(
+      (part) => part.type === "minute"
+    )?.value || "00";
+
+  /*
+   * Additional protection for environments
+   * that still return 24 at midnight.
+   */
+  if (hour === "24") {
+    hour = "00";
+  }
+
+  return `${hour}:${minute}`;
 }
 
-function todayKey() {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: TZ,
-    year: "numeric",
-    month: "2-digit",
+/*
+ * Creates a Sydney calendar date key.
+ *
+ * offsetDays:
+ * 0 = today
+ * 1 = tomorrow
+ */
+function getSydneyDayKey(offsetDays = 0) {
+  const parts = new Intl.DateTimeFormat(
+    "en-AU",
+    {
+      timeZone: TZ,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }
+  ).formatToParts(new Date());
+
+  const year = Number(
+    parts.find(
+      (part) => part.type === "year"
+    )?.value
+  );
+
+  const month = Number(
+    parts.find(
+      (part) => part.type === "month"
+    )?.value
+  );
+
+  const day = Number(
+    parts.find(
+      (part) => part.type === "day"
+    )?.value
+  );
+
+  /*
+   * UTC arithmetic is used only to move between
+   * calendar dates. MongoDB still compares dates
+   * using the Australia/Sydney timezone.
+   */
+  const shiftedDate = new Date(
+    Date.UTC(
+      year,
+      month - 1,
+      day + offsetDays
+    )
+  );
+
+  return shiftedDate
+    .toISOString()
+    .slice(0, 10);
+}
+
+function formatDayLabel(dayKey) {
+  const [year, month, day] = String(
+    dayKey
+  )
+    .split("-")
+    .map(Number);
+
+  if (!year || !month || !day) {
+    return dayKey;
+  }
+
+  const date = new Date(
+    Date.UTC(year, month - 1, day)
+  );
+
+  return date.toLocaleDateString("en-AU", {
+    timeZone: "UTC",
+    weekday: "long",
     day: "2-digit",
-  }).formatToParts(new Date());
-
-  const y = parts.find((p) => p.type === "year")?.value;
-  const mo = parts.find((p) => p.type === "month")?.value;
-  const d = parts.find((p) => p.type === "day")?.value;
-  return `${y}-${mo}-${d}`;
+    month: "long",
+    year: "numeric",
+  });
 }
 
-// Mongo: match bookingDate belongs to "today" in TZ
-function todayMatchExpr() {
+/*
+ * Matches a booking to a specific Sydney date.
+ */
+function bookingDayMatchExpr(dayKey) {
   return {
     $expr: {
       $eq: [
         {
-          $dateTrunc: {
+          $dateToString: {
             date: {
               $convert: {
                 input: "$bookingDate",
@@ -63,28 +165,54 @@ function todayMatchExpr() {
                 onNull: null,
               },
             },
-            unit: "day",
+            format: "%Y-%m-%d",
             timezone: TZ,
+            onNull: "",
           },
         },
-        {
-          $dateTrunc: {
-            date: "$$NOW",
-            unit: "day",
-            timezone: TZ,
-          },
-        },
+        dayKey,
       ],
     },
   };
 }
 
-async function getTodaysBookingsByInstructor(instructorEmail) {
-  const col = await bookingsCollection();
-  return col
+function activeBookingMatch() {
+  return {
+    status: {
+      $nin: ["cancelled"],
+    },
+  };
+}
+
+async function getBookingsByInstructor(
+  instructorEmail,
+  targetDayKey
+) {
+  const bookingsCol =
+    await bookingsCollection();
+
+  return bookingsCol
     .aggregate([
-      {$match: {instructorEmail, ...todayMatchExpr()}},
-      {$sort: {bookingDate: 1, createdAt: 1}},
+      {
+        $match: {
+          $and: [
+            {
+              instructorEmail,
+            },
+            bookingDayMatchExpr(
+              targetDayKey
+            ),
+            activeBookingMatch(),
+          ],
+        },
+      },
+      {
+        $sort: {
+          bookingDate: 1,
+          bookingTime: 1,
+          createdAt: 1,
+        },
+      },
       {
         $project: {
           serviceName: 1,
@@ -108,24 +236,63 @@ async function getTodaysBookingsByInstructor(instructorEmail) {
     .toArray();
 }
 
-async function getTodaysBookingsByUser(userEmail) {
-  const col = await bookingsCollection();
+async function getBookingsByUser(
+  userEmail,
+  targetDayKey
+) {
+  const bookingsCol =
+    await bookingsCollection();
 
-  return col
+  return bookingsCol
     .aggregate([
-      {$match: {userEmail, ...todayMatchExpr()}},
-      {$sort: {bookingDate: 1, createdAt: 1}},
+      {
+        $match: {
+          $and: [
+            {
+              $or: [
+                {
+                  userEmail,
+                },
+                {
+                  clientEmail: userEmail,
+                },
+              ],
+            },
+            bookingDayMatchExpr(
+              targetDayKey
+            ),
+            activeBookingMatch(),
+          ],
+        },
+      },
+      {
+        $sort: {
+          bookingDate: 1,
+          bookingTime: 1,
+          createdAt: 1,
+        },
+      },
 
-      // ✅ join instructor info from users collection
+      /*
+       * Get the instructor's telephone number
+       * from the users collection.
+       */
       {
         $lookup: {
           from: "users",
-          localField: "instructorEmail",
+          localField:
+            "instructorEmail",
           foreignField: "email",
           as: "instructorUser",
         },
       },
-      {$unwind: {path: "$instructorUser", preserveNullAndEmptyArrays: true}},
+      {
+        $unwind: {
+          path: "$instructorUser",
+          preserveNullAndEmptyArrays:
+            true,
+        },
+      },
 
       {
         $project: {
@@ -133,15 +300,12 @@ async function getTodaysBookingsByUser(userEmail) {
           duration: 1,
           bookingTime: 1,
           bookingDate: 1,
-
           instructorName: 1,
           instructorEmail: 1,
-
           userPhone: 1,
           clientPhone: 1,
-
-          instructorPhone: "$instructorUser.phone",
-
+          instructorPhone:
+            "$instructorUser.phone",
           address: 1,
           suburb: 1,
           status: 1,
@@ -152,12 +316,30 @@ async function getTodaysBookingsByUser(userEmail) {
     .toArray();
 }
 
-async function getTodaysBookingsAll() {
-  const col = await bookingsCollection();
-  return col
+async function getAllBookings(
+  targetDayKey
+) {
+  const bookingsCol =
+    await bookingsCollection();
+
+  return bookingsCol
     .aggregate([
-      {$match: {...todayMatchExpr()}},
-      {$sort: {instructorEmail: 1, bookingTime: 1}},
+      {
+        $match: {
+          $and: [
+            bookingDayMatchExpr(
+              targetDayKey
+            ),
+            activeBookingMatch(),
+          ],
+        },
+      },
+      {
+        $sort: {
+          instructorEmail: 1,
+          bookingTime: 1,
+        },
+      },
       {
         $project: {
           instructorName: 1,
@@ -165,6 +347,7 @@ async function getTodaysBookingsAll() {
           serviceName: 1,
           duration: 1,
           bookingTime: 1,
+          bookingDate: 1,
           clientName: 1,
           userName: 1,
           userEmail: 1,
@@ -178,20 +361,63 @@ async function getTodaysBookingsAll() {
     .toArray();
 }
 
-function buildInstructorDigestHtml(name, bookings) {
+function buildInstructorDigestHtml(
+  name,
+  bookings,
+  targetDayLabel
+) {
   const rows = bookings
-    .map((b) => {
-      const student = b.userName || b.clientName || "—";
-      const phone = b.userPhone || b.clientPhone || "—";
-      const address = `${b.address || ""}${b.suburb ? `, ${b.suburb}` : ""}`;
+    .map((booking) => {
+      const student =
+        booking.userName ||
+        booking.clientName ||
+        "—";
+
+      const phone =
+        booking.userPhone ||
+        booking.clientPhone ||
+        "—";
+
+      const address = [
+        booking.address,
+        booking.suburb,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
       return `
         <tr>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.bookingTime || "—"}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.serviceName || ""} ${b.duration || ""}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${student}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${phone}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${address || "—"}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.status || "—"}</td>
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              booking.bookingTime || "—"
+            )}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              `${booking.serviceName || ""} ${
+                booking.duration || ""
+              }`.trim()
+            )}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(student)}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(phone)}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(address || "—")}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              booking.status || "—"
+            )}
+          </td>
         </tr>
       `;
     })
@@ -199,47 +425,111 @@ function buildInstructorDigestHtml(name, bookings) {
 
   return `
     <div style="font-family:Arial,sans-serif;color:#111;line-height:1.6">
-      <h2>Today's Bookings</h2>
-      <p>Hi ${name || "Instructor"}, here are your bookings for today.</p>
+      <h2>Tomorrow's Bookings</h2>
+
+      <p>
+        Hi ${escapeHtml(
+          name || "Instructor"
+        )},
+      </p>
+
+      <p>
+        Here are your bookings for
+        <b>${escapeHtml(
+          targetDayLabel
+        )}</b>.
+      </p>
+
       ${
         bookings.length
           ? `
-        <table style="width:100%;border-collapse:collapse">
-          <thead>
-            <tr style="background:#f3f3f3">
-              <th style="text-align:left;padding:8px;">Time</th>
-              <th style="text-align:left;padding:8px;">Service</th>
-              <th style="text-align:left;padding:8px;">Student</th>
-              <th style="text-align:left;padding:8px;">Phone</th>
-              <th style="text-align:left;padding:8px;">Address</th>
-              <th style="text-align:left;padding:8px;">Status</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      `
-          : `<p><b>No bookings today.</b></p>`
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="background:#f3f3f3">
+                  <th style="text-align:left;padding:8px;">Time</th>
+                  <th style="text-align:left;padding:8px;">Service</th>
+                  <th style="text-align:left;padding:8px;">Student</th>
+                  <th style="text-align:left;padding:8px;">Phone</th>
+                  <th style="text-align:left;padding:8px;">Address</th>
+                  <th style="text-align:left;padding:8px;">Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                ${rows}
+              </tbody>
+            </table>
+          `
+          : `
+            <p>
+              <b>No bookings tomorrow.</b>
+            </p>
+          `
       }
     </div>
   `;
 }
 
-function buildUserDigestHtml(name, bookings) {
+function buildUserDigestHtml(
+  name,
+  bookings,
+  targetDayLabel
+) {
   const rows = bookings
-    .map((b) => {
-      const address = `${b.address || ""}${b.suburb ? `, ${b.suburb}` : ""}`;
-      const yourPhone = b.userPhone || b.clientPhone || "—";
-      const instructorPhone = b.instructorPhone || "—";
+    .map((booking) => {
+      const address = [
+        booking.address,
+        booking.suburb,
+      ]
+        .filter(Boolean)
+        .join(", ");
+
+      const yourPhone =
+        booking.userPhone ||
+        booking.clientPhone ||
+        "—";
+
+      const instructorPhone =
+        booking.instructorPhone ||
+        "—";
 
       return `
         <tr>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.bookingTime || "—"}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.serviceName || ""} ${b.duration || ""}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${yourPhone}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${b.instructorName || "—"}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${instructorPhone}</td>
-          <td style="padding:8px;border-bottom:1px solid #eee;">${address || "—"}</td>
-          
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              booking.bookingTime || "—"
+            )}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              `${booking.serviceName || ""} ${
+                booking.duration || ""
+              }`.trim()
+            )}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(yourPhone)}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              booking.instructorName || "—"
+            )}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              instructorPhone
+            )}
+          </td>
+
+          <td style="padding:8px;border-bottom:1px solid #eee;">
+            ${escapeHtml(
+              address || "—"
+            )}
+          </td>
         </tr>
       `;
     })
@@ -247,226 +537,510 @@ function buildUserDigestHtml(name, bookings) {
 
   return `
     <div style="font-family:Arial,sans-serif;color:#111;line-height:1.6">
-      <h2>Today's Lesson(s)</h2>
-      <p>Hi ${name || "there"}, here are your bookings for today.</p>
+      <h2>Tomorrow's Lesson Reminder</h2>
 
-      ${
-        bookings.length
-          ? `
-        <table style="width:100%;border-collapse:collapse">
-          <thead>
-            <tr style="background:#f3f3f3">
-              <th style="text-align:left;padding:8px;">Time</th>
-              <th style="text-align:left;padding:8px;">Service</th>
-              <th style="text-align:left;padding:8px;">Your Phone</th>
-              <th style="text-align:left;padding:8px;">Instructor</th>
-              <th style="text-align:left;padding:8px;">Instructor Phone</th>
-              <th style="text-align:left;padding:8px;">Address</th>
-            
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      `
-          : `<p><b>No bookings today.</b></p>`
-      }
+      <p>
+        Hi ${escapeHtml(name || "there")},
+      </p>
+
+      <p>
+        You have the following booking${
+          bookings.length === 1 ? "" : "s"
+        } on
+        <b>${escapeHtml(
+          targetDayLabel
+        )}</b>.
+      </p>
+
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr style="background:#f3f3f3">
+            <th style="text-align:left;padding:8px;">Time</th>
+            <th style="text-align:left;padding:8px;">Service</th>
+            <th style="text-align:left;padding:8px;">Your Phone</th>
+            <th style="text-align:left;padding:8px;">Instructor</th>
+            <th style="text-align:left;padding:8px;">Instructor Phone</th>
+            <th style="text-align:left;padding:8px;">Address</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rows}
+        </tbody>
+      </table>
+
+      <p style="margin-top:20px">
+        Test Route Driving School
+      </p>
     </div>
   `;
 }
 
-function buildAdminDigestHtml(bookings) {
-  const map = new Map();
-  for (const b of bookings) {
-    const key = b.instructorEmail || "info@testroutedrivingschool.com.au";
-    if (!map.has(key))
-      map.set(key, {name: b.instructorName || "Instructor", items: []});
-    map.get(key).items.push(b);
+function buildAdminDigestHtml(
+  bookings,
+  targetDayLabel
+) {
+  const instructorMap = new Map();
+
+  for (const booking of bookings) {
+    const key =
+      booking.instructorEmail ||
+      "info@testroutedrivingschool.com.au";
+
+    if (!instructorMap.has(key)) {
+      instructorMap.set(key, {
+        name:
+          booking.instructorName ||
+          "Instructor",
+        items: [],
+      });
+    }
+
+    instructorMap
+      .get(key)
+      .items.push(booking);
   }
 
-  const blocks = Array.from(map.entries())
+  const blocks = Array.from(
+    instructorMap.entries()
+  )
     .map(([email, group]) => {
       const rows = group.items
-        .map((b) => {
-          const student = b.userName || b.clientName || "—";
-          const address = `${b.address || ""}${b.suburb ? `, ${b.suburb}` : ""}`;
-          return `<li>${b.bookingTime || "—"} — ${b.serviceName || ""} ${b.duration || ""} — ${student} — ${address} — ${b.status || "—"}</li>`;
+        .map((booking) => {
+          const student =
+            booking.userName ||
+            booking.clientName ||
+            "—";
+
+          const address = [
+            booking.address,
+            booking.suburb,
+          ]
+            .filter(Boolean)
+            .join(", ");
+
+          return `
+            <li>
+              ${escapeHtml(
+                booking.bookingTime || "—"
+              )}
+              —
+              ${escapeHtml(
+                `${booking.serviceName || ""} ${
+                  booking.duration || ""
+                }`.trim()
+              )}
+              —
+              ${escapeHtml(student)}
+              —
+              ${escapeHtml(
+                address || "—"
+              )}
+              —
+              ${escapeHtml(
+                booking.status || "—"
+              )}
+            </li>
+          `;
         })
         .join("");
 
       return `
-        <h3 style="margin-top:16px;">${group.name} (${email})</h3>
-        <ul style="margin:6px 0 0 18px;">${rows || "<li>No bookings</li>"}</ul>
+        <h3 style="margin-top:16px;">
+          ${escapeHtml(group.name)}
+          (${escapeHtml(email)})
+        </h3>
+
+        <ul style="margin:6px 0 0 18px;">
+          ${rows}
+        </ul>
       `;
     })
     .join("");
 
   return `
     <div style="font-family:Arial,sans-serif;color:#111;line-height:1.6">
-      <h2>Today's Bookings (All Instructors)</h2>
-      ${bookings.length ? blocks : "<p><b>No bookings today.</b></p>"}
+      <h2>Tomorrow's Bookings — All Instructors</h2>
+
+      <p>
+        Booking date:
+        <b>${escapeHtml(
+          targetDayLabel
+        )}</b>
+      </p>
+
+      ${
+        bookings.length
+          ? blocks
+          : `
+            <p>
+              <b>No bookings tomorrow.</b>
+            </p>
+          `
+      }
     </div>
   `;
 }
-
-
 
 export async function GET(req) {
   try {
     assertCron(req);
 
     const nowHHMM = hhmmNow();
-    const dayKey = todayKey();
 
-    const usersCol = await usersCollection();
-    const clientsCol = await clientsCollection();
-    const emailCol = await emailsCollection();
+    /*
+     * The digest runs today but contains
+     * tomorrow's bookings.
+     *
+     * Example:
+     * Cron runs 14 February at 00:00.
+     * It sends bookings for 15 February.
+     */
+    const sendDayKey =
+      getSydneyDayKey(0);
 
-    // 1) Users (admin/instructor/user)
+    const targetDayKey =
+      getSydneyDayKey(1);
+
+    const targetDayLabel =
+      formatDayLabel(targetDayKey);
+
+    const usersCol =
+      await usersCollection();
+
+    const clientsCol =
+      await clientsCollection();
+
+    const emailCol =
+      await emailsCollection();
+
+    /*
+     * Use <= rather than an exact time match.
+     *
+     * This allows the next cron execution to
+     * catch up if the exact configured minute
+     * was missed.
+     *
+     * The email lock prevents duplicate sending.
+     */
+    const scheduleMatch = {
+      $gte: "00:00",
+      $lte: nowHHMM,
+    };
+
     const userReceivers = await usersCol
       .find({
-        emailScheduleTime: nowHHMM,
-        role: { $in: ["user", "instructor", "admin"] },
+        emailScheduleTime:
+          scheduleMatch,
+        role: {
+          $in: [
+            "user",
+            "instructor",
+            "admin",
+          ],
+        },
       })
-      .project({ email: 1, name: 1, role: 1 })
+      .project({
+        email: 1,
+        name: 1,
+        role: 1,
+      })
       .toArray();
 
-    // 2) Clients (roleType: client), but only those who have bookings for today
-    const clientReceivers = await clientsCol
-      .aggregate([
-        {
-          $match: { emailScheduleTime: nowHHMM, roleType: "client" },
-        },
-        {
-          $lookup: {
-            from: "bookings",
-            localField: "email",
-            foreignField: "userEmail",
-            as: "bookingsToday",
-          },
-        },
-        { $unwind: { path: "$bookingsToday", preserveNullAndEmptyArrays: true } },
-        { $match: { "bookingsToday.bookingDate": { $gte: new Date() } } },
-        { $project: { email: 1, name: 1, roleType: 1 } },
-      ])
-      .toArray();
+    /*
+     * Do not join bookings here.
+     *
+     * Each client's exact tomorrow bookings
+     * are checked later before sending.
+     */
+    const clientReceivers =
+      await clientsCol
+        .find({
+          emailScheduleTime:
+            scheduleMatch,
+          roleType: "client",
+        })
+        .project({
+          email: 1,
+          linkedUserEmail: 1,
+          name: 1,
+          firstName: 1,
+          lastName: 1,
+          roleType: 1,
+        })
+        .toArray();
 
-    // Normalize + de-duplicate receivers
     const receiverMap = new Map();
 
-    // users/admin/instructors
-    for (const u of userReceivers) {
-      const email = String(u.email || "").trim().toLowerCase();
+    for (const user of userReceivers) {
+      const email = String(
+        user.email || ""
+      )
+        .trim()
+        .toLowerCase();
+
       if (!email) continue;
 
-      const key = `${email}__${u.role}`;
+      const key =
+        `${email}__${user.role}`;
+
       if (!receiverMap.has(key)) {
         receiverMap.set(key, {
           email,
-          name: u.name,
-          role: u.role, // user | instructor | admin
+          name: user.name || "",
+          role: user.role,
         });
       }
     }
 
-    // clients with bookings
-    for (const c of clientReceivers) {
-      const email = String(c.email || "").trim().toLowerCase();
+    for (const client of clientReceivers) {
+      const email = String(
+        client.email ||
+          client.linkedUserEmail ||
+          ""
+      )
+        .trim()
+        .toLowerCase();
+
       if (!email) continue;
 
-      // if same email already exists in users collection, don't add as client again
-      const alreadyExistsAsUserLike = [...receiverMap.keys()].some((k) =>
-        k.startsWith(`${email}__`)
-      );
-      if (alreadyExistsAsUserLike) continue;
+      /*
+       * Do not add the same email as both a
+       * user and a client.
+       */
+      const alreadyAdded =
+        Array.from(
+          receiverMap.values()
+        ).some(
+          (receiver) =>
+            receiver.email === email
+        );
 
-      const key = `${email}__client`;
-      if (!receiverMap.has(key)) {
-        receiverMap.set(key, {
+      if (alreadyAdded) {
+        continue;
+      }
+
+      const clientName =
+        client.name ||
+        [
+          client.firstName,
+          client.lastName,
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+      receiverMap.set(
+        `${email}__client`,
+        {
           email,
-          name: c.name,
+          name:
+            clientName || "there",
           role: "client",
-        });
-      }
+        }
+      );
     }
 
-    const receivers = [...receiverMap.values()];
+    const receivers = Array.from(
+      receiverMap.values()
+    );
 
     if (!receivers.length) {
       return NextResponse.json({
         ok: true,
         sent: 0,
-        note: "No schedules at this minute",
+        skippedNoBookings: 0,
+        note:
+          "No email schedules are due",
+        scheduledAt: nowHHMM,
+        sendDayKey,
+        targetDayKey,
       });
     }
 
     let sent = 0;
+    let failed = 0;
+    let duplicateSkipped = 0;
+    let skippedNoBookings = 0;
 
-    for (const u of receivers) {
-      const to = String(u.email || "").trim().toLowerCase();
+    for (const receiver of receivers) {
+      const to = String(
+        receiver.email || ""
+      )
+        .trim()
+        .toLowerCase();
+
       if (!to) continue;
 
-      // prevent duplicate same day using DB lock row
+      let bookings = [];
+      let subject = "";
+      let html = "";
+      let text = "";
+      let actorType = "";
+
+      if (
+        receiver.role ===
+        "instructor"
+      ) {
+        bookings =
+          await getBookingsByInstructor(
+            to,
+            targetDayKey
+          );
+
+        subject =
+          `Tomorrow's Bookings - ${targetDayLabel}`;
+
+        html =
+          buildInstructorDigestHtml(
+            receiver.name,
+            bookings,
+            targetDayLabel
+          );
+
+        text =
+          `Hi ${
+            receiver.name ||
+            "Instructor"
+          }, you have ${
+            bookings.length
+          } booking(s) on ${targetDayLabel}.`;
+
+        actorType = "INSTRUCTOR";
+      } else if (
+        receiver.role === "user" ||
+        receiver.role === "client"
+      ) {
+        bookings =
+          await getBookingsByUser(
+            to,
+            targetDayKey
+          );
+
+        /*
+         * Critical fix:
+         *
+         * Never send a user/client digest when
+         * there are no bookings tomorrow.
+         */
+        if (bookings.length === 0) {
+          skippedNoBookings += 1;
+          continue;
+        }
+
+        subject =
+          `Tomorrow's Lesson Reminder - ${targetDayLabel}`;
+
+        html = buildUserDigestHtml(
+          receiver.name,
+          bookings,
+          targetDayLabel
+        );
+
+        text =
+          `Hi ${
+            receiver.name || "there"
+          }, you have ${
+            bookings.length
+          } booking(s) on ${targetDayLabel}.`;
+
+        actorType = "USER";
+      } else if (
+        receiver.role === "admin"
+      ) {
+        bookings =
+          await getAllBookings(
+            targetDayKey
+          );
+
+        subject =
+          `Tomorrow's Bookings - ${targetDayLabel}`;
+
+        html = buildAdminDigestHtml(
+          bookings,
+          targetDayLabel
+        );
+
+        text =
+          `Admin digest: ${
+            bookings.length
+          } booking(s) on ${targetDayLabel}.`;
+
+        actorType = "ADMIN";
+      } else {
+        continue;
+      }
+
+      /*
+       * Admin and instructors still receive
+       * the digest even when bookings.length
+       * is zero.
+       *
+       * Users and clients were skipped above.
+       */
+
       try {
         await emailCol.insertOne({
           type: "DAILY_DIGEST",
-          actorType: null,
+          actorType,
           to,
-          subject: "",
-          html: "",
-          text: "",
+          subject,
+          html,
+          text,
           status: "PROCESSING",
           error: null,
           hasAttachment: false,
           sentAt: null,
           createdAt: new Date(),
-          digestDay: dayKey,
-          digestRole: u.role,
+
+          /*
+           * digestDay is the booking date being
+           * reported, not the day the cron runs.
+           */
+          digestDay:
+            targetDayKey,
+
+          digestSendDay:
+            sendDayKey,
+
+          digestRole:
+            receiver.role,
         });
-      } catch (e) {
-        if (e?.code === 11000) {
+      } catch (error) {
+        /*
+         * Duplicate unique-index error:
+         * this digest was already processed.
+         */
+        if (error?.code === 11000) {
+          duplicateSkipped += 1;
           continue;
         }
-        throw e;
-      }
 
-      let subject = `Today's Bookings - ${dayKey}`;
-      let html = "";
-      let text = "";
-      let actorType = "";
-
-      if (u.role === "instructor") {
-        const bookings = await getTodaysBookingsByInstructor(to);
-        html = buildInstructorDigestHtml(u.name, bookings);
-        actorType = "INSTRUCTOR";
-        text = `Hi ${u.name || "Instructor"}, you have ${bookings.length} booking(s) today.`;
-      } else if (u.role === "user" || u.role === "client") {
-        const bookings = await getTodaysBookingsByUser(to);
-        actorType = "USER";
-        html = buildUserDigestHtml(u.name, bookings);
-        text = `Hi ${u.name || "there"}, you have ${bookings.length} booking(s) today.`;
-      } else if (u.role === "admin") {
-        const bookings = await getTodaysBookingsAll();
-        html = buildAdminDigestHtml(bookings);
-        actorType = "ADMIN";
-        text = `Admin digest: ${bookings.length} booking(s) today.`;
+        throw error;
       }
 
       let status = "SENT";
-      let errorMsg = null;
+      let errorMessage = null;
 
       try {
-        await sendMail({ to, subject, html, text });
-      } catch (e) {
+        await sendMail({
+          to,
+          subject,
+          html,
+          text,
+        });
+      } catch (error) {
         status = "FAILED";
-        errorMsg = String(e?.message || e);
+        errorMessage = String(
+          error?.message || error
+        );
       }
 
       await emailCol.updateOne(
         {
           type: "DAILY_DIGEST",
           to,
-          digestDay: dayKey,
-          digestRole: u.role,
+          digestDay: targetDayKey,
+          digestRole: receiver.role,
         },
         {
           $set: {
@@ -475,23 +1049,67 @@ export async function GET(req) {
             html,
             text,
             status,
-            error: errorMsg,
+            error: errorMessage,
             hasAttachment: false,
-            sentAt: new Date(),
+            sentAt:
+              status === "SENT"
+                ? new Date()
+                : null,
+            finishedAt: new Date(),
           },
         }
       );
 
-      if (status === "SENT") sent += 1;
+      if (status === "SENT") {
+        sent += 1;
+      } else {
+        failed += 1;
+      }
     }
 
-    return NextResponse.json({ ok: true, sent, scheduledAt: nowHHMM, dayKey });
-  } catch (e) {
-    console.error("DAILY DIGEST CRON ERROR:", e);
-    const code = e?.message === "FORBIDDEN" ? 403 : 500;
+    return NextResponse.json({
+      ok: true,
+
+      sent,
+      failed,
+
+      skippedNoBookings,
+      duplicateSkipped,
+
+      scheduledAt: nowHHMM,
+
+      /*
+       * Cron execution date.
+       */
+      sendDayKey,
+
+      /*
+       * Date of bookings included in digest.
+       */
+      targetDayKey,
+      targetDayLabel,
+    });
+  } catch (error) {
+    console.error(
+      "DAILY DIGEST CRON ERROR:",
+      error
+    );
+
+    const status =
+      error?.message === "FORBIDDEN"
+        ? 403
+        : 500;
+
     return NextResponse.json(
-      { ok: false, error: e?.message || "Server error" },
-      { status: code }
+      {
+        ok: false,
+        error:
+          error?.message ||
+          "Server error",
+      },
+      {
+        status,
+      }
     );
   }
 }

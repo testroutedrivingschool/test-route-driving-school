@@ -2,7 +2,21 @@ import {getBrowser} from "@/app/libs/puppeteer/browser";
 function safe(v) {
   return v ?? "";
 }
+function normalizeServiceName(serviceName) {
+  return String(serviceName || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
 
+
+function isDrivingTestPackage(serviceName) {
+  return (
+    String(serviceName || "")
+      .trim()
+      .toLowerCase() === "driving test package"
+  );
+}
 function formatAUDate(dateLike) {
   const d = new Date(dateLike);
   if (Number.isNaN(d.getTime())) return "";
@@ -69,7 +83,53 @@ const isBooking = !isPurchase;
     .map((x) => String(x).trim())
     .filter(Boolean)
     .join(", ");
+const hasTestPackageDetails = Boolean(
+  String(data.testLocation || "").trim() ||
+  String(data.testTime || "").trim() ||
+  String(data.bookingRefNo || "").trim()
+);
 
+const showTestPackageDetails =
+  isDrivingTestPackage(data.serviceName) ||
+  hasTestPackageDetails;
+
+const testPackageDetailsHtml =
+  showTestPackageDetails
+    ? `
+      <div class="test-details">
+        <div class="test-details-title">
+          Driving Test Information
+        </div>
+
+        <div class="test-details-row">
+          <span class="test-details-label">
+            Test Location:
+          </span>
+          <span>
+            ${safe(data.testLocation) || "—"}
+          </span>
+        </div>
+
+        <div class="test-details-row">
+          <span class="test-details-label">
+            Test Time:
+          </span>
+          <span>
+            ${safe(data.testTime) || "—"}
+          </span>
+        </div>
+
+        <div class="test-details-row">
+          <span class="test-details-label">
+            Booking Ref #:
+          </span>
+          <span>
+            ${safe(data.bookingRefNo) || "—"}
+          </span>
+        </div>
+      </div>
+    `
+    : "";
   const paidByCardLine =
     isPaid && method === "card"
       ? `Paid by Card (${brand || "CARD"} •••• ${last4 || "----"})`
@@ -163,6 +223,8 @@ const isBooking = !isPurchase;
         </tr>
       </tbody>
     </table>
+    ${testPackageDetailsHtml}
+
     <div class="split">
       <div class="box">
         <div><b>Instructor:</b> ${safe(data.instructorName) || "—"}</div>
