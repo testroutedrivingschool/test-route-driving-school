@@ -44,9 +44,76 @@ export async function POST(req) {
         {status: 400},
       );
     }
+const totalAmount = Number(
+  booking.price ??
+    booking.payableAmount ??
+    0,
+);
 
-   const userEmail = to || booking.userEmail;
-const instructorEmail = booking.instructorEmail;
+const paidAmount = Number(
+  booking.paidAmount ??
+    booking.totalPaidAmount ??
+    booking.amountPaid ??
+    0,
+);
+
+const outstandingAmount = Math.max(
+  0,
+  Number(
+    booking.outstanding ??
+      totalAmount - paidAmount,
+  ),
+);
+
+const normalizedPaymentStatus =
+  outstandingAmount <= 0 &&
+  paidAmount >= totalAmount
+    ? "paid"
+    : paidAmount > 0
+      ? "partial"
+      : "unpaid";
+
+const invoiceBooking = {
+  ...booking,
+
+  // Service total
+  price: totalAmount,
+  totalAmount,
+  invoiceTotal: totalAmount,
+
+  // Amount received
+  paidAmount,
+  amountPaid: paidAmount,
+  totalPaidAmount: paidAmount,
+
+  // Remaining balance
+  outstanding: outstandingAmount,
+  outstandingAmount,
+  balanceDue: outstandingAmount,
+
+  // Correct status
+  paymentStatus: normalizedPaymentStatus,
+
+  invoiceNo,
+  bookingId: String(booking._id),
+  type: "BOOKINGS_CONFIRM",
+};
+   const userEmail =
+  [
+    to,
+    booking.userEmail,
+    booking.clientEmail,
+  ]
+    .map((value) =>
+      String(value || "").trim(),
+    )
+    .find((value) => isEmail(value)) ||
+  "";
+
+const instructorEmail = String(
+  booking.instructorEmail || "",
+).trim();
+
 
 if (!isEmail(userEmail) && !isEmail(instructorEmail)) {
   return NextResponse.json(
@@ -56,15 +123,11 @@ if (!isEmail(userEmail) && !isEmail(instructorEmail)) {
 }
 
     // ✅ Generate updated PDF using SAME invoiceNo
-    const pdfBuffer = await generateInvoicePdfBuffer(
-      {
-        ...booking,
-        invoiceNo,
-        bookingId: String(booking._id),
-        type: "BOOKINGS_CONFIRM",
-      },
-      req.url,
-    );
+   const pdfBuffer =
+  await generateInvoicePdfBuffer(
+    invoiceBooking,
+    req.url,
+  );
 
     const filename = `invoice-${invoiceNo}.pdf`;
     const invoiceKey = `invoices/${filename}`; // ✅ SAME KEY
@@ -81,15 +144,24 @@ if (!isEmail(userEmail) && !isEmail(instructorEmail)) {
    
 
     // ✅ send email (optional)
-    const ps = String(booking.paymentStatus || "").toLowerCase();
-    const subject =
-      ps === "paid"
-        ? `Payment Confirmed - Invoice #${invoiceNo}`
-        : `Invoice Updated - Invoice #${invoiceNo}`;
-
+  const ps = normalizedPaymentStatus;
+  const subject =
+  ps === "paid"
+    ? `Payment Confirmed - Invoice #${invoiceNo}`
+    : ps === "partial"
+      ? `Partial Payment Received - Invoice #${invoiceNo}`
+      : `Invoice Updated - Invoice #${invoiceNo}`;
     const userHtml = `
   <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-    <h2>${ps === "paid" ? "Payment Confirmed 🎉" : "Invoice Updated ✅"}</h2>
+   <h2>
+  ${
+    ps === "paid"
+      ? "Payment Confirmed 🎉"
+      : ps === "partial"
+        ? "Partial Payment Received ✅"
+        : "Invoice Updated ✅"
+  }
+</h2>
     <p>Hi ${booking.userName || "there"},</p>
     <p>Please find your updated invoice attached.</p>
   </div>
@@ -100,24 +172,101 @@ const userText = `Hi ${booking.userName || "there"},
 Please find your updated invoice attached.
 
 Invoice #${invoiceNo}
+Invoice Total: $${totalAmount.toFixed(2)}
+Paid: $${paidAmount.toFixed(2)}
+Balance Due: $${outstandingAmount.toFixed(2)}
+Payment Status: ${
+  ps === "paid"
+    ? "Paid"
+    : ps === "partial"
+      ? "Partial Paid"
+      : "Unpaid"
+}
 `;
-
 const instructorHtml = `
   <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
-    <h2>${ps === "paid" ? "Payment Confirmed 🎉" : "Invoice Updated ✅"}</h2>
-    <p>Hi ${booking.instructorName || "Instructor"},</p>
-    <p>An updated invoice for this booking is attached.</p>
-    <p><b>Customer:</b> ${booking.userName || "-"}</p>
-    <p><b>Invoice #:</b> ${invoiceNo}</p>
+    <h2>
+      ${
+        ps === "paid"
+          ? "Payment Confirmed 🎉"
+          : ps === "partial"
+            ? "Partial Payment Received ✅"
+            : "Invoice Updated ✅"
+      }
+    </h2>
+
+    <p>
+      Hi ${
+        booking.instructorName ||
+        "Instructor"
+      },
+    </p>
+
+    <p>
+      An updated invoice for this booking is attached.
+    </p>
+
+    <p>
+      <b>Customer:</b>
+      ${booking.userName || booking.clientName || "-"}
+    </p>
+
+    <p>
+      <b>Invoice #:</b>
+      ${invoiceNo}
+    </p>
+
+    <p>
+      <b>Invoice Total:</b>
+      $${totalAmount.toFixed(2)}
+    </p>
+
+    <p>
+      <b>Paid:</b>
+      $${paidAmount.toFixed(2)}
+    </p>
+
+    <p>
+      <b>Balance Due:</b>
+      $${outstandingAmount.toFixed(2)}
+    </p>
+
+    <p>
+      <b>Status:</b>
+      ${
+        ps === "paid"
+          ? "Paid in Full"
+          : ps === "partial"
+            ? "Partial Paid"
+            : "Unpaid"
+      }
+    </p>
   </div>
 `;
 
-const instructorText = `Hi ${booking.instructorName || "Instructor"},
+const instructorText = `Hi ${
+  booking.instructorName ||
+  "Instructor"
+},
 
 An updated invoice for this booking is attached.
 
-Customer: ${booking.userName || "-"}
-Invoice #${invoiceNo}
+Customer: ${
+  booking.userName ||
+  booking.clientName ||
+  "-"
+}
+Invoice #: ${invoiceNo}
+Invoice Total: $${totalAmount.toFixed(2)}
+Paid: $${paidAmount.toFixed(2)}
+Balance Due: $${outstandingAmount.toFixed(2)}
+Payment Status: ${
+  ps === "paid"
+    ? "Paid in Full"
+    : ps === "partial"
+      ? "Partial Paid"
+      : "Unpaid"
+}
 `;
 
   
@@ -229,16 +378,47 @@ const [userMailResult, instructorMailResult] = await Promise.all([
       {bookingId: new ObjectId(bookingId), invoiceNo},
       {
         $set: {
-          paymentStatus: booking.paymentStatus || "unpaid",
-          paymentMethod: booking.paymentMethod || "bank",
-          cardBrand: booking.cardBrand || null,
-          cardLast4: booking.cardLast4 || null,
-          invoiceKey,
-          filename,
-          userEmail: booking.userEmail || null,
-          instructorEmail: booking.instructorEmail || null,
-          total: booking.price || 0,
-          updatedAt: new Date(),
+          paymentStatus:
+    normalizedPaymentStatus,
+
+  paymentMethod:
+    booking.paymentMethod || "bank",
+
+  total: totalAmount,
+  paidAmount,
+  outstanding: outstandingAmount,
+  balanceDue: outstandingAmount,
+
+  cashAmount: Number(
+    booking.cashAmount || 0,
+  ),
+
+  cardAmount: Number(
+    booking.cardAmount || 0,
+  ),
+
+  processingFee: Number(
+    booking.processingFee || 0,
+  ),
+
+  cardBrand:
+    booking.cardBrand || null,
+
+  cardLast4:
+    booking.cardLast4 || null,
+
+  invoiceKey,
+  filename,
+
+  userEmail:
+    booking.userEmail ||
+    booking.clientEmail ||
+    null,
+
+  instructorEmail:
+    booking.instructorEmail || null,
+
+  updatedAt: new Date(),
         },
         $setOnInsert: {createdAt: new Date()},
       },

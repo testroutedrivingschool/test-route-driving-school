@@ -1,7 +1,7 @@
 
 
 import { sendMail } from "@/app/libs/mail/mailer";
-import { bookingsCollection, instructorsCollection,clientsCollection } from "@/app/libs/mongodb/db";
+import { bookingsCollection, instructorsCollection,clientsCollection,instructorSlotsCollection } from "@/app/libs/mongodb/db";
 import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 
@@ -546,10 +546,16 @@ Booking details:
 Service: ${booking.serviceName || "—"}
 Date: ${bookingDateText}
 Time: ${booking.bookingTime || "—"}
-Client: ${booking.userName || booking.clientName || "—"}
-Instructor: ${booking.instructorName || "—"}
+Client: ${
+  booking.userName ||
+  booking.clientName ||
+  "—"
+}
+Instructor: ${
+  booking.instructorName || "—"
+}
 
-${cancellationDetailsHtml}
+${cancellationDetailsText}
 `;
 
   const jobs = [];
@@ -706,7 +712,376 @@ const CREDIT_STATUSES = ["cancelled", "unattended"];
 function money(value) {
   return Math.round(Number(value || 0) * 100) / 100;
 }
+const BOOKING_TIMEZONE =
+  "Australia/Sydney";
 
+function getBookingDurationMinutes(
+  booking
+) {
+  const directMinutes = Number(
+    booking?.minutes
+  );
+
+  if (
+    Number.isFinite(directMinutes) &&
+    directMinutes > 0
+  ) {
+    return directMinutes;
+  }
+
+  const duration = String(
+    booking?.duration || ""
+  )
+    .trim()
+    .toLowerCase();
+
+  let totalMinutes = 0;
+
+  const hourMatch = duration.match(
+    /(\d+(?:\.\d+)?)\s*(?:h|hr|hrs|hour|hours)/
+  );
+
+  const minuteMatch = duration.match(
+    /(\d+)\s*(?:m|min|mins|minute|minutes)/
+  );
+
+  if (hourMatch) {
+    totalMinutes +=
+      Number(hourMatch[1]) * 60;
+  }
+
+  if (minuteMatch) {
+    totalMinutes += Number(
+      minuteMatch[1]
+    );
+  }
+
+  return totalMinutes > 0
+    ? Math.round(totalMinutes)
+    : 15;
+}
+
+function parseBookingTime(value) {
+  const match = String(value || "")
+    .trim()
+    .match(
+      /^(\d{1,2}):(\d{2})(AM|PM)$/i
+    );
+
+  if (!match) {
+    return null;
+  }
+
+  let hours = Number(match[1]);
+  const minutes = Number(match[2]);
+
+  const period =
+    match[3].toUpperCase();
+
+  if (
+    period === "PM" &&
+    hours !== 12
+  ) {
+    hours += 12;
+  }
+
+  if (
+    period === "AM" &&
+    hours === 12
+  ) {
+    hours = 0;
+  }
+
+  return {
+    hours,
+    minutes,
+  };
+}
+
+function formatBookingTime(
+  totalMinutes
+) {
+  const normalized =
+    ((totalMinutes % 1440) + 1440) %
+    1440;
+
+  const hours24 = Math.floor(
+    normalized / 60
+  );
+
+  const minutes =
+    normalized % 60;
+
+  const period =
+    hours24 >= 12 ? "PM" : "AM";
+
+  const hours12 =
+    hours24 % 12 || 12;
+
+  return `${hours12}:${String(
+    minutes
+  ).padStart(2, "0")}${period}`;
+}
+
+function getSydneyDateKey(
+  dateLike,
+  dayOffset = 0
+) {
+  const date = new Date(dateLike);
+
+  if (
+    Number.isNaN(date.getTime())
+  ) {
+    return "";
+  }
+
+  const parts =
+    new Intl.DateTimeFormat(
+      "en-AU",
+      {
+        timeZone:
+          BOOKING_TIMEZONE,
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      }
+    ).formatToParts(date);
+
+  const year = Number(
+    parts.find(
+      (part) =>
+        part.type === "year"
+    )?.value
+  );
+
+  const month = Number(
+    parts.find(
+      (part) =>
+        part.type === "month"
+    )?.value
+  );
+
+  const day = Number(
+    parts.find(
+      (part) =>
+        part.type === "day"
+    )?.value
+  );
+
+  if (!year || !month || !day) {
+    return "";
+  }
+
+  return new Date(
+    Date.UTC(
+      year,
+      month - 1,
+      day + dayOffset
+    )
+  )
+    .toISOString()
+    .slice(0, 10);
+}
+
+function getBookingEndSlot(
+  booking
+) {
+  const startTime =
+    booking?.bookingTime ||
+    booking?.time;
+
+  const parsedTime =
+    parseBookingTime(startTime);
+
+  if (!parsedTime) {
+    return null;
+  }
+
+  const durationMinutes =
+    getBookingDurationMinutes(
+      booking
+    );
+
+  const startMinutes =
+    parsedTime.hours * 60 +
+    parsedTime.minutes;
+
+  const endMinutes =
+    startMinutes +
+    durationMinutes;
+
+  const dayOffset = Math.floor(
+    endMinutes / 1440
+  );
+
+  const date = getSydneyDateKey(
+    booking?.bookingDate ||
+      booking?.date,
+    dayOffset
+  );
+
+  if (!date) {
+    return null;
+  }
+
+  return {
+    date,
+    time: formatBookingTime(
+      endMinutes
+    ),
+  };
+}
+
+function getInstructorIdValues(
+  instructorId
+) {
+  const value = String(
+    instructorId || ""
+  ).trim();
+
+  if (!value) {
+    return [];
+  }
+
+  const values = [value];
+
+  if (ObjectId.isValid(value)) {
+    values.push(
+      new ObjectId(value)
+    );
+  }
+
+  return values;
+}
+
+async function releaseCancelledBookingPrivateSlot({
+  booking,
+  bookingId,
+}) {
+  try {
+    const instructorIds =
+      getInstructorIdValues(
+        booking?.instructorId
+      );
+
+    if (!instructorIds.length) {
+      return {
+        released: false,
+        reason:
+          "Booking instructorId is missing",
+      };
+    }
+
+    const endSlot =
+      getBookingEndSlot(booking);
+
+    if (!endSlot) {
+      return {
+        released: false,
+        reason:
+          "Could not calculate booking end slot",
+      };
+    }
+
+    const slotsCol =
+      await instructorSlotsCollection();
+
+    const result =
+      await slotsCol.updateOne(
+        {
+          instructorId: {
+            $in: instructorIds,
+          },
+
+          date: endSlot.date,
+          time: endSlot.time,
+
+          visibility:
+            "privateBooked",
+
+          /*
+           * Match a slot specifically linked
+           * to this booking, or support older
+           * automatically generated records
+           * without metadata.
+           */
+          $or: [
+            {
+              autoGeneratedForBookingId:
+                String(bookingId),
+            },
+
+            {
+              autoGeneratedForBookingId: {
+                $exists: false,
+              },
+
+              duration: {
+                $in: [
+                  "15 mins",
+                  "15 min",
+                  "15 minutes",
+                ],
+              },
+
+              privateNote: {
+                $in: ["", null],
+              },
+
+              publicNote: {
+                $in: ["", null],
+              },
+            },
+          ],
+        },
+
+        {
+          $set: {
+            visibility: "public",
+            privateNote: "",
+            publicNote: "",
+            updatedAt: new Date(),
+          },
+
+          $unset: {
+            autoGenerated: "",
+            autoGeneratedType: "",
+            autoGeneratedForBookingId:
+              "",
+          },
+        }
+      );
+
+    return {
+      released:
+        result.modifiedCount === 1,
+
+      matched:
+        result.matchedCount === 1,
+
+      date: endSlot.date,
+      time: endSlot.time,
+
+      reason:
+        result.modifiedCount === 1
+          ? "Private booking buffer changed to public"
+          : "Matching privateBooked slot was not found",
+    };
+  } catch (error) {
+    console.error(
+      "RELEASE PRIVATE BOOKED SLOT ERROR:",
+      error
+    );
+
+    return {
+      released: false,
+
+      error: String(
+        error?.message || error
+      ),
+    };
+  }
+}
 function getClientFilterFromBooking(booking) {
   if (booking?.clientId && ObjectId.isValid(String(booking.clientId))) {
     return {
@@ -1379,13 +1754,46 @@ if (changedTestFields.length > 0) {
         changedTestFields,
     });
 }
-    const statusWasProvided = Object.prototype.hasOwnProperty.call(
-      body,
-      "status"
-    );
+ const statusWasProvided =
+  Object.prototype.hasOwnProperty.call(
+    body,
+    "status"
+  );
 
-    const oldStatus = oldBooking.status;
-    const newStatus = updatedDoc.status;
+const oldStatus = String(
+  oldBooking?.status || ""
+)
+  .trim()
+  .toLowerCase();
+
+const newStatus = String(
+  updatedDoc?.status || ""
+)
+  .trim()
+  .toLowerCase();
+
+let releasedPrivateSlot = null;
+
+const bookingWasJustCancelled =
+  statusWasProvided &&
+  oldStatus !== "cancelled" &&
+  newStatus === "cancelled";
+
+if (bookingWasJustCancelled) {
+  releasedPrivateSlot =
+    await releaseCancelledBookingPrivateSlot(
+      {
+        /*
+         * Use oldBooking because its
+         * original booking date, time and
+         * duration identify the buffer
+         * that must be released.
+         */
+        booking: oldBooking,
+        bookingId,
+      }
+    );
+}
 
 //  if (statusWasProvided && oldStatus !== newStatus) {
 //   await sendStatusChangeEmails({
@@ -1537,6 +1945,7 @@ return NextResponse.json({
   clientBlockResult,
   smsWarning,
   testUpdateEmailResult,
+    releasedPrivateSlot,
   message:
     String(finalDoc?.status).toLowerCase() === "cancelled"
       ? "Booking cancelled successfully"

@@ -231,8 +231,7 @@ const passFailValue = b?.testResult
     ? `/api/storage/proxy?key=${encodeURIComponent(b.instructorPhotoKey)}`
     : "/profile-avatar.png";
 
-  const paymentRequired =
-  String(b?.paymentStatus || "").toLowerCase() !== "paid";
+
 
  const bookingNotes = (notes || []).filter((n) => {
   const typeOk = String(n?.type || "").toLowerCase() === "booking";
@@ -240,23 +239,36 @@ const passFailValue = b?.testResult
   const thisBookingId = oid(b?._id);
   return typeOk && noteBookingId === thisBookingId;
 });
-const paymentStatus = String(b?.paymentStatus || "").toLowerCase();
+const paymentStatus = String(
+  b?.paymentStatus || ""
+).toLowerCase();
 
 const paidAmount = Number(
   b?.paidAmount ??
     b?.amountPaid ??
     b?.totalPaidAmount ??
     b?.totalPaid ??
-    0,
+    0
 );
 
 const usedCredit = Number(
   b?.creditUsed ??
     b?.creditToUse ??
-    0,
+    0
 );
 
 const isPaid = paymentStatus === "paid";
+
+const outstandingAmount = Number(
+  b?.outstanding ??
+    Math.max(
+      0,
+      Number(b?.price || 0) - paidAmount
+    )
+);
+
+const paymentRequired =
+  !isPaid && outstandingAmount > 0;
 
 const canChangeService =
   paymentStatus === "unpaid" &&
@@ -747,6 +759,102 @@ bookingTitle: `${serviceName} • ${bookingTime}`,
   </button>
 )}
 </div>
+
+{/* Payment Section */}
+<div className="border-t border-gray-200 px-4 py-5">
+  {/* Total */}
+  <div className="flex items-center justify-between">
+    <p className="text-base font-semibold">
+      Total:
+    </p>
+
+    <p className="text-lg font-bold">
+      {formatMoney(b?.price || 0)}
+    </p>
+  </div>
+
+  {/* Paid booking */}
+  {isPaid ? (
+    <div className="mt-6 border-t border-gray-200 pt-4">
+      <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-12">
+        <div className="md:col-span-3">
+          <p className="text-lg font-bold">
+            Paid:
+          </p>
+        </div>
+
+        <div className="md:col-span-3">
+          <p className="text-lg font-bold text-green-600">
+            {formatMoney(paidAmount)}
+          </p>
+        </div>
+
+        <div className="flex md:col-span-3 md:justify-center">
+          <button
+            type="button"
+            onClick={() =>
+              setPaymentModalOpen(true)
+            }
+            className="rounded-md border-2 border-primary px-3 py-2 font-semibold text-primary transition hover:bg-primary hover:text-white"
+          >
+            Show Detail
+          </button>
+        </div>
+
+        <div className="md:col-span-3 md:text-right">
+          <div className="text-sm">
+            {isCard && (
+              <p className="italic">
+                Card Transaction:{" "}
+                <span className="font-semibold">
+                  {formatMoney(paidAmount)}
+                </span>
+              </p>
+            )}
+
+            {isCash && (
+              <p className="italic">
+                Cash Payment:{" "}
+                <span className="font-semibold">
+                  {formatMoney(paidAmount)}
+                </span>
+              </p>
+            )}
+
+            {transactionId ? (
+              <p className="mt-1 break-all text-xs italic text-primary">
+                {transactionId}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  ) : paymentRequired ? (
+    <div className="mt-6 border-t border-gray-200 pt-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <p className="text-sm text-gray-600">
+            Outstanding Payment
+          </p>
+
+          <p className="text-xl font-bold text-red-600">
+            {formatMoney(outstandingAmount)}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={openPayNow}
+          className="rounded-md bg-primary px-6 py-2 text-sm font-semibold text-white transition hover:bg-primary/90"
+        >
+          Pay Now
+        </button>
+      </div>
+    </div>
+  ) : null}
+</div>
+
       {costModalOpen && (
         <ChangeCostModal
           booking={b}

@@ -8,7 +8,23 @@ function normalizeServiceName(serviceName) {
     .trim()
     .toLowerCase();
 }
+function getPaymentStatusLabel(paymentStatus) {
+  const status = String(
+    paymentStatus || "",
+  )
+    .trim()
+    .toLowerCase();
 
+  if (status === "paid") {
+    return "PAID IN FULL";
+  }
+
+  if (status === "partial") {
+    return "PARTIAL PAID";
+  }
+
+  return "UNPAID";
+}
 
 function isDrivingTestPackage(serviceName) {
   return (
@@ -34,12 +50,60 @@ function toPublicFileUrl(reqUrl, filePathInPublic) {
 }
 
 function invoiceHtml(data, logoUrl) {
-  const bookingDateText = formatAUDate(data.bookingDate);
-  const isPaid = String(safe(data.paymentStatus)).toLowerCase() === "paid"; 
-  const paidLabel = isPaid ? "PAID IN FULL" : "UNPAID";
+  const bookingDateText = formatAUDate(
+  data.bookingDate,
+);
 
-  const total = Number(String(data.price ?? 0).replace(/[^\d.-]/g, "")) || 0;
-  const gst = Number((total * 0.10).toFixed(2));
+const paymentStatus = String(
+  safe(data.paymentStatus),
+)
+  .trim()
+  .toLowerCase();
+
+const total =
+  Number(
+    String(
+      data.totalAmount ??
+        data.invoiceTotal ??
+        data.price ??
+        0,
+    ).replace(/[^\d.-]/g, ""),
+  ) || 0;
+
+const paidAmount =
+  Number(
+    String(
+      data.paidAmount ??
+        data.totalPaidAmount ??
+        data.amountPaid ??
+        0,
+    ).replace(/[^\d.-]/g, ""),
+  ) || 0;
+
+const balanceDue = Math.max(
+  0,
+  Number(
+    String(
+      data.balanceDue ??
+        data.outstandingAmount ??
+        data.outstanding ??
+        total - paidAmount,
+    ).replace(/[^\d.-]/g, ""),
+  ) || 0,
+);
+
+const isPaid =
+  paymentStatus === "paid";
+
+const isPartial =
+  paymentStatus === "partial";
+
+const paymentStatusLabel =
+  getPaymentStatusLabel(paymentStatus);
+
+const gst = Number(
+  (total * 0.1).toFixed(2),
+);
   // const isBooking = data?.type === "BOOKINGS_CONFIRM";
   // const isPurchase = data?.type === "PURCHASE_CONFIRM";  
 
@@ -130,10 +194,12 @@ const testPackageDetailsHtml =
       </div>
     `
     : "";
-  const paidByCardLine =
-    isPaid && method === "card"
-      ? `Paid by Card (${brand || "CARD"} •••• ${last4 || "----"})`
-      : "";
+const paidByCardLine =
+  paidAmount > 0 && method === "card"
+    ? `Paid by Card (${brand || "CARD"} •••• ${
+        last4 || "----"
+      }) - $${paidAmount.toFixed(2)}`
+    : "";
  
   // Handle package details only for purchases
   const packagesHtml = isPurchase
@@ -230,15 +296,29 @@ const testPackageDetailsHtml =
         <div><b>Instructor:</b> ${safe(data.instructorName) || "—"}</div>
         ${paidByCardLine ? `<div class="section">${paidByCardLine}</div>` : ""}
       </div>
-      <div class="box totals">
+     <div class="box totals">
+  <div class="grand">
+    TOTAL&nbsp;&nbsp;&nbsp;&nbsp;$${total.toFixed(2)}
+  </div>
 
-        
-        <div class="grand">TOTAL&nbsp;&nbsp;&nbsp;&nbsp;$${total.toFixed(2)}</div>
-        <div class="paid">
-          ${paidLabel} <br/>
-          <small>on ${today}</small>
-        </div>
-      </div>
+  <div class="section">
+    <b>PAID AMOUNT</b>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    $${paidAmount.toFixed(2)}
+  </div>
+
+  <div class="section">
+    <b>BALANCE DUE</b>
+    &nbsp;&nbsp;&nbsp;&nbsp;
+    $${balanceDue.toFixed(2)}
+  </div>
+
+  <div class="paid">
+    ${paymentStatusLabel}
+    <br />
+    <small>on ${today}</small>
+  </div>
+</div>
     </div>
     <div class="footer">
       Terms & Conditions: https://testroutedrivingschool.com.au/terms

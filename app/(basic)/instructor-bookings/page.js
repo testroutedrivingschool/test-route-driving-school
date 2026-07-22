@@ -187,8 +187,17 @@ export default function InstructorBookings() {
     if (!movingBooking || !slotBooking) return false;
     if (String(movingBooking._id) === String(slotBooking._id)) return false;
 
-    const movingMinutes = Number(movingBooking.minutes || 0);
-    const slotMinutes = Number(slotBooking.minutes || 0);
+   const movingMinutes = Number(
+  movingBooking.minutes ||
+    toMinutes(movingBooking) ||
+    0,
+);
+
+const slotMinutes = Number(
+  slotBooking.minutes ||
+    toMinutes(slotBooking) ||
+    0,
+);
 
     if (!movingMinutes || !slotMinutes) return false;
     if (movingMinutes !== slotMinutes) return false;
@@ -231,7 +240,10 @@ export default function InstructorBookings() {
       const bookingCell = bookingCoverage?.[dateStr]?.[t];
       if (bookingCell?.booking || bookingCell?.skip) break;
 
-      const slot = slotMap[`${dateStr}__${t}`];
+      const slot = getSlotAtTime(
+  dateStr,
+  t,
+);
       if (!slot) break;
 
       // for manual booking, all saved slot types should behave same
@@ -466,9 +478,76 @@ export default function InstructorBookings() {
     acc[t] = i;
     return acc;
   }, {});
+const isMovingSourceBooking = (bookingItem) => {
+  return (
+    moveMode &&
+    String(bookingItem?._id || "") ===
+      String(moveBookingId || "")
+  );
+};
 
+const bookingsForCoverage = moveMode
+  ? bookings.filter(
+      (bookingItem) =>
+        !isMovingSourceBooking(bookingItem),
+    )
+  : bookings;
+
+  const movingSourceCoverage = {};
+
+if (moveMode && movingBooking) {
+  const sourceDateKey = formatDate(
+    movingBooking.bookingDate ||
+      movingBooking.date,
+  );
+
+  const sourceStartTime =
+    movingBooking.bookingTime ||
+    movingBooking.time;
+
+  const sourceStartIndex =
+    timeIndexMap[sourceStartTime];
+
+  const sourceMinutes = Number(
+    movingBooking.minutes ||
+      toMinutes(movingBooking) ||
+      15,
+  );
+
+  const sourceSteps = Math.max(
+    1,
+    Math.ceil(sourceMinutes / STEP_MIN),
+  );
+
+  if (sourceStartIndex != null) {
+    movingSourceCoverage[
+      sourceDateKey
+    ] ??= {};
+
+    for (
+      let offset = 0;
+      offset < sourceSteps;
+      offset++
+    ) {
+      const coveredTime =
+        times[sourceStartIndex + offset];
+
+      if (!coveredTime) break;
+
+      movingSourceCoverage[
+        sourceDateKey
+      ][coveredTime] = {
+        isSource: true,
+        isStart: offset === 0,
+        offset,
+      };
+    }
+  }
+}
   const bookingCoverage = {};
-  const bookingsSorted = [...bookings].sort((a, b) => {
+const bookingsSorted = [
+  ...bookingsForCoverage,
+].sort((a, b) => {
     const da = formatDate(a.bookingDate || a.date);
     const db = formatDate(b.bookingDate || b.date);
     if (da !== db) return da.localeCompare(db);
@@ -545,45 +624,9 @@ export default function InstructorBookings() {
     return !!slotMap[`${dateStr}__${time}`];
   };
 
-  const getBookingDateStr = (b) => formatDate(b.bookingDate || b.date);
-  const getBookingTime = (b) => b.bookingTime || b.time;
+ 
 
-  const bookingStartMap = {}; // key => booking (only at start time)
 
-  const sortedBookings = [...bookings].sort((a, b) => {
-    const da = getBookingDateStr(a);
-    const db = getBookingDateStr(b);
-    if (da !== db) return da.localeCompare(db);
-    return (
-      (timeIndexMap[getBookingTime(a)] ?? 0) -
-      (timeIndexMap[getBookingTime(b)] ?? 0)
-    );
-  });
-
-  for (const b of sortedBookings) {
-    const dateKey = getBookingDateStr(b);
-    const time = getBookingTime(b);
-    const startIdx = timeIndexMap[time];
-    if (startIdx == null) continue;
-
-    const durMin = durationToMinutes(b.duration || "15 mins");
-    const span = Math.max(1, Math.ceil(durMin / STEP_MIN));
-
-    bookingCoverage[dateKey] ??= {};
-
-    // ignore overlap (optional)
-    if (bookingCoverage[dateKey][time]) continue;
-
-    bookingCoverage[dateKey][time] = {rowSpan: span};
-    bookingStartMap[`${dateKey}__${time}`] = b;
-
-    for (let k = 1; k < span; k++) {
-      const t = times[startIdx + k];
-      if (!t) break;
-      if (!bookingCoverage[dateKey][t])
-        bookingCoverage[dateKey][t] = {skip: true};
-    }
-  }
 
   // how many minutes we can extend while NEXT slots are empty
   const getMaxEmptyExtendMinutes = (dateStr, startTime) => {
@@ -609,46 +652,104 @@ export default function InstructorBookings() {
     : "";
 
   // coverage[dateKey][time] = { skip: true }  OR { rowSpan: n } on start
-  const coverage = {};
+const coverage = {};
+const slotCoverageMap = {};
 
   const sortedSlots = [...slots].sort((a, b) => {
     if (a.date !== b.date) return a.date.localeCompare(b.date);
     return (timeIndexMap[a.time] ?? 0) - (timeIndexMap[b.time] ?? 0);
   });
 
-  for (const s of sortedSlots) {
-    const dateKey = s.date;
-    const startIdx = timeIndexMap[s.time];
-    if (startIdx == null) continue;
+ for (const s of sortedSlots) {
+  const dateKey = s.date;
+  const startIdx = timeIndexMap[s.time];
 
-    const durMin = durationToMinutes(s.duration || "15 mins");
-    const span = Math.max(1, Math.ceil(durMin / STEP_MIN));
+  if (startIdx == null) continue;
 
-    coverage[dateKey] ??= {};
+  const durMin = durationToMinutes(
+    s.duration || "15 mins",
+  );
 
-    // ✅ If this start time is already covered by an earlier slot, ignore this slot
-    if (coverage[dateKey][s.time]) {
-      console.warn("Overlapping slot ignored:", s);
-      continue;
-    }
+  const span = Math.max(
+    1,
+    Math.ceil(durMin / STEP_MIN),
+  );
 
-    // mark start
-    coverage[dateKey][s.time] = {rowSpan: span};
+  coverage[dateKey] ??= {};
+  slotCoverageMap[dateKey] ??= {};
 
-    // mark covered times to skip (but don't overwrite an existing start cell)
-    for (let k = 1; k < span; k++) {
-      const t = times[startIdx + k];
-      if (!t) break;
+  /*
+   * Make every covered 15-minute position
+   * resolve to its parent availability slot.
+   *
+   * Example:
+   * 10:00AM slot with 1-hour duration covers:
+   * 10:00, 10:15, 10:30 and 10:45.
+   */
+  for (let k = 0; k < span; k++) {
+    const coveredTime =
+      times[startIdx + k];
 
-      if (!coverage[dateKey][t]) {
-        coverage[dateKey][t] = {skip: true};
-      } else {
-        // another slot already starts here -> overlap conflict
-        console.warn("Overlap conflict at", dateKey, t);
-      }
+    if (!coveredTime) break;
+
+    if (
+      !slotCoverageMap[dateKey][
+        coveredTime
+      ]
+    ) {
+      slotCoverageMap[dateKey][
+        coveredTime
+      ] = {
+        slot: s,
+        startTime: s.time,
+        offset: k,
+      };
     }
   }
 
+  if (coverage[dateKey][s.time]) {
+    console.warn(
+      "Overlapping slot ignored:",
+      s,
+    );
+
+    continue;
+  }
+
+  coverage[dateKey][s.time] = {
+    rowSpan: span,
+  };
+
+  for (let k = 1; k < span; k++) {
+    const t = times[startIdx + k];
+
+    if (!t) break;
+
+    if (!coverage[dateKey][t]) {
+      coverage[dateKey][t] = {
+        skip: true,
+      };
+    } else {
+      console.warn(
+        "Overlap conflict at",
+        dateKey,
+        t,
+      );
+    }
+  }
+}
+const getSlotAtTime = (
+  dateStr,
+  time,
+) => {
+  return (
+    slotMap[`${dateStr}__${time}`] ||
+    slotCoverageMap?.[dateStr]?.[
+      time
+    ]?.slot ||
+    null
+  );
+};
   const parseBulkMinutes = (bulkAction) => {
     if (!bulkAction) return 0;
     if (bulkAction === "restOfDay") return -1;
@@ -977,44 +1078,133 @@ useEffect(() => {
     }
   };
 
-  const isAvailableSlot = (slot) => {
-    return slot?.visibility === "public";
-  };
+  const MOVE_AVAILABLE_VISIBILITIES =
+  new Set([
+    "public",
+    "privatebooked",
+    "publicnote",
+    "hidden",
+  ]);
+
+const isAvailableSlot = (slot) => {
+  const visibility = String(
+    slot?.visibility || "",
+  )
+    .trim()
+    .toLowerCase();
+
+  return MOVE_AVAILABLE_VISIBILITIES.has(
+    visibility,
+  );
+};
 
   const getMovingBookingMinutes = () => {
     if (!movingBooking) return 0;
     return Number(movingBooking.minutes || toMinutes(movingBooking) || 0);
   };
 
-  const canMoveToAvailableRange = (dateStr, startTime) => {
-    if (!moveMode || !movingBooking) return false;
+ const canMoveToAvailableRange = (
+  dateStr,
+  startTime,
+) => {
+  if (!moveMode || !movingBooking) {
+    return false;
+  }
 
-    // do not allow past datetime
-    if (isPastSlotDateTime(dateStr, startTime)) return false;
+  if (
+    isPastSlotDateTime(
+      dateStr,
+      startTime,
+    )
+  ) {
+    return false;
+  }
 
-    const neededMinutes = getMovingBookingMinutes();
-    if (!neededMinutes) return false;
+  const neededMinutes =
+    getMovingBookingMinutes();
 
-    const stepsNeeded = Math.ceil(neededMinutes / STEP_MIN);
-    const startIdx = timeIndexMap[startTime];
-    if (startIdx == null) return false;
+  if (!neededMinutes) {
+    return false;
+  }
 
-    for (let i = 0; i < stepsNeeded; i++) {
-      const t = times[startIdx + i];
-      if (!t) return false;
+  const stepsNeeded = Math.ceil(
+    neededMinutes / STEP_MIN,
+  );
 
-      // optional but safer: every covered 15-min block must also not be in past
-      if (isPastSlotDateTime(dateStr, t)) return false;
+  const startIdx =
+    timeIndexMap[startTime];
 
-      const bookingCell = bookingCoverage?.[dateStr]?.[t];
-      if (bookingCell?.booking || bookingCell?.skip) return false;
+  if (startIdx == null) {
+    return false;
+  }
 
-      const slot = slotMap[`${dateStr}__${t}`];
-      if (!isAvailableSlot(slot)) return false;
+  for (
+    let i = 0;
+    i < stepsNeeded;
+    i++
+  ) {
+    const t = times[startIdx + i];
+
+    if (!t) {
+      return false;
     }
 
-    return true;
-  };
+    if (
+      isPastSlotDateTime(dateStr, t)
+    ) {
+      return false;
+    }
+
+    /*
+     * bookingCoverage no longer contains
+     * the booking currently being moved.
+     *
+     * Therefore only a different booking
+     * can block this range.
+     */
+    const bookingCell =
+      bookingCoverage?.[dateStr]?.[t];
+
+    if (
+      bookingCell?.booking ||
+      bookingCell?.skip
+    ) {
+      return false;
+    }
+
+    /*
+     * Use the slot covering this exact
+     * 15-minute position, even when the
+     * original slot started earlier.
+     */
+    const isCurrentMovingTime =
+  Boolean(
+    movingSourceCoverage?.[dateStr]?.[
+      t
+    ],
+  );
+
+/*
+ * The current booking's own time is
+ * considered available while moving.
+ *
+ * Any extra time outside the current
+ * booking must have a public slot.
+ */
+if (!isCurrentMovingTime) {
+  const slot = getSlotAtTime(
+    dateStr,
+    t,
+  );
+
+  if (!isAvailableSlot(slot)) {
+    return false;
+  }
+}
+  }
+
+  return true;
+};
   const handleSchedule = async () => {
     if (scheduleLoading) return;
     try {
@@ -1136,13 +1326,35 @@ useEffect(() => {
       toast.error("Remove failed");
     }
   };
-  const handleMoveToEmptySlot = async (date, time) => {
-    const dateStr = formatDate(date);
+  
+ const handleMoveToEmptySlot = async (
+  date,
+  time,
+) => {
+  const dateStr = formatDate(date);
 
-    if (isPastSlotDateTime(dateStr, time)) {
-      toast.error("Cannot move booking to a past date or time");
-      return;
-    }
+  if (
+    isPastSlotDateTime(dateStr, time)
+  ) {
+    toast.error(
+      "Cannot move booking to a past date or time",
+    );
+
+    return;
+  }
+
+  if (
+    !canMoveToAvailableRange(
+      dateStr,
+      time,
+    )
+  ) {
+    toast.error(
+      "The complete lesson time is not available",
+    );
+
+    return;
+  }
 
     try {
       setSaving(true);
@@ -1164,6 +1376,33 @@ useEffect(() => {
       setSaving(false);
     }
   };
+  const movingBookingDate =
+  movingBooking?.bookingDate ||
+  movingBooking?.date;
+
+useEffect(() => {
+  if (
+    !moveMode ||
+    !movingBookingDate
+  ) {
+    return;
+  }
+
+  const date = new Date(
+    movingBookingDate,
+  );
+
+  if (
+    Number.isNaN(date.getTime())
+  ) {
+    return;
+  }
+
+  setSelectedDate(date);
+}, [
+  moveMode,
+  movingBookingDate,
+]);
   const handleSwapBooking = async (targetBooking) => {
     const movingDateStr = formatDate(
       movingBooking?.bookingDate || movingBooking?.date,
@@ -1415,12 +1654,29 @@ useEffect(() => {
 
                                 {weekDates.map((date, dayIndex) => {
                                   const dateKey = formatDate(date);
-                                  const key = `${dateKey}__${time}`;
-                                  const slot = slotMap[key];
-                                  const canMoveHere = shouldShowMovingBlock(
-                                    dateKey,
-                                    time,
-                                  );
+
+const slot = getSlotAtTime(
+  dateKey,
+  time,
+);
+
+const canMoveHere =
+  shouldShowMovingBlock(
+    dateKey,
+    time,
+  );
+
+const movingSourceCell =
+  movingSourceCoverage?.[dateKey]?.[
+    time
+  ];
+
+const canSelectMovingCell =
+  Boolean(
+    movingSourceCell &&
+      canMoveHere &&
+      !movingSourceCell.isStart,
+  );
                                   const suburbLabel =
                                     slot?.suburb === "ALL" ? (
                                       ""
@@ -1431,7 +1687,47 @@ useEffect(() => {
                                     ) : (
                                       ""
                                     );
+if (movingSourceCell) {
+  return (
+    <td
+      key={dayIndex}
+      rowSpan={1}
+      className="p-0 align-stretch"
+    >
+      <button
+        type="button"
+        disabled={
+          !canSelectMovingCell ||
+          saving
+        }
+        onClick={() => {
+          if (!canSelectMovingCell) {
+            return;
+          }
 
+          handleMoveToEmptySlot(
+            date,
+            time,
+          );
+        }}
+        title={
+          movingSourceCell.isStart
+            ? "Current booking start time"
+            : canSelectMovingCell
+              ? `Move booking to ${time}`
+              : "The complete lesson time is not available"
+        }
+        className={`flex min-h-11 h-full w-full items-center justify-center border border-dashed border-white/60 px-2 py-2 text-center font-bold text-white ${
+          canSelectMovingCell
+            ? "cursor-pointer bg-red-600 hover:bg-red-700"
+            : "cursor-default bg-red-600"
+        }`}
+      >
+        Moving
+      </button>
+    </td>
+  );
+}
                                   const bCov =
                                     bookingCoverage?.[dateKey]?.[time];
                                   if (bCov?.skip) return null;
@@ -1446,25 +1742,7 @@ useEffect(() => {
                                     );
                                     const canSwap =
                                       moveMode && canSwapWith(movingBooking, b);
-                                    const isMovingSource =
-                                      moveMode &&
-                                      String(b._id) === String(moveBookingId);
-
-                                    if (isMovingSource) {
-                                      return (
-                                        <td
-                                          key={dayIndex}
-                                          rowSpan={bCov.rowSpan}
-                                          className="p-0 align-stretch"
-                                        >
-                                          <div className="w-full h-full min-h-11 bg-red-600 border border-border-color px-2 py-2 flex items-center justify-center text-center">
-                                            <div className="text-white font-bold text-sm md:text-base">
-                                              Moving
-                                            </div>
-                                          </div>
-                                        </td>
-                                      );
-                                    }
+                                   
 
                                     return (
                                       <td
@@ -1533,10 +1811,24 @@ useEffect(() => {
                                     );
                                   }
 
-                                  const cov = coverage?.[dateKey]?.[time];
-                                  if (cov?.skip) return null;
+                                  const cov =
+  coverage?.[dateKey]?.[time];
 
-                                  const rowSpan = cov?.rowSpan || 1;
+/*
+ * Normal mode:
+ * keep the original rowSpan layout.
+ *
+ * Move mode:
+ * show each 15-minute position
+ * separately so 10:30AM is clickable.
+ */
+if (!moveMode && cov?.skip) {
+  return null;
+}
+
+const rowSpan = moveMode
+  ? 1
+  : cov?.rowSpan || 1;
                                   const visibility =
                                     slot?.visibility || "empty";
 
@@ -1573,114 +1865,268 @@ useEffect(() => {
                                           </span>
                                         </button>
                                       ) : visibility === "hidden" ? (
-                                        <button
-                                          type="button"
-                                          disabled={moveMode}
-                                          onClick={() => {
-                                            if (moveMode) return;
-                                            return handleBooking(
-                                              date,
-                                              slot,
-                                              time,
-                                            );
-                                          }}
-                                          className="w-full h-full min-h-11 bg-[#d3d3d3] hover:bg-[#E7E7E7] border border-border-color px-2 py-2 flex flex-col justify-between items-stretch"
-                                        >
-                                          <div className="flex items-start justify-between gap-1">
-                                            <FaEyeSlash className="h-3 w-3 md:h-4 md:w-4 text-primary shrink-0 mt-0.5" />
+  <button
+    type="button"
+    disabled={
+      saving ||
+      (moveMode && !canMoveHere)
+    }
+    onClick={() => {
+      if (moveMode) {
+        if (!canMoveHere) return;
 
-                                            {!!suburbLabel && (
-                                              <span className="text-[10px] opacity-90 text-gray-700 shrink-0">
-                                                {suburbLabel}
-                                              </span>
-                                            )}
+        handleMoveToEmptySlot(
+          date,
+          time,
+        );
 
-                                            <IoMdAdd
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (moveMode) return;
-                                                openSlotModal({date, time});
-                                              }}
-                                              className="h-4 w-4 md:h-5 md:w-5 text-primary shrink-0"
-                                            />
-                                          </div>
+        return;
+      }
 
-                                          {slot?.privateNote && (
-                                            <div className="mt-2 text-xs text-center wrap-break-word whitespace-normal">
-                                              {slot.privateNote}
-                                            </div>
-                                          )}
-                                        </button>
-                                      ) : visibility === "privateBooked" ? (
-                                        <button
-                                          type="button"
-                                          disabled={moveMode}
-                                          onClick={() => {
-                                            if (moveMode) return;
-                                            return handleBooking(
-                                              date,
-                                              slot,
-                                              time,
-                                            );
-                                          }}
-                                          className="w-full h-full min-h-11 bg-[#8d8d8d] hover:bg-[#B2B2B2] border border-red-100 px-2 py-2 flex flex-col justify-between items-stretch"
-                                        >
-                                          <div className="flex items-start justify-between gap-1">
-                                            <FaCalendarPlus className="h-3 w-3 md:h-4 md:w-4 text-white shrink-0 mt-0.5" />
+      handleBooking(
+        date,
+        slot,
+        time,
+      );
+    }}
+    title={
+      moveMode
+        ? canMoveHere
+          ? `Move booking to ${time}`
+          : "The complete lesson time is not available"
+        : "Book this hidden slot"
+    }
+    className={`w-full h-full min-h-11 border border-border-color px-2 py-2 flex flex-col justify-between items-stretch transition ${
+      moveMode
+        ? canMoveHere
+          ? "bg-[#7DA730] hover:bg-[#96C83A] text-white cursor-pointer"
+          : "bg-[#d3d3d3] text-gray-500 opacity-60 cursor-not-allowed"
+        : "bg-[#d3d3d3] hover:bg-[#E7E7E7]"
+    }`}
+  >
+    <div className="flex items-start justify-between gap-1">
+      <FaEyeSlash
+        className={`h-3 w-3 md:h-4 md:w-4 shrink-0 mt-0.5 ${
+          moveMode && canMoveHere
+            ? "text-white"
+            : "text-primary"
+        }`}
+      />
 
-                                            {!!suburbLabel && (
-                                              <span className="text-[10px] opacity-90 text-white shrink-0">
-                                                {suburbLabel}
-                                              </span>
-                                            )}
+      {moveMode && (
+        <span className="text-xs font-semibold">
+          {canMoveHere
+            ? "Available"
+            : "Hidden"}
+        </span>
+      )}
 
-                                            <IoMdAdd
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                if (moveMode) return;
-                                                openSlotModal({date, time});
-                                              }}
-                                              className="h-3 w-3 md:h-5 md:w-5 text-white shrink-0"
-                                            />
-                                          </div>
+      {!!suburbLabel && (
+        <span className="text-[10px] opacity-90 shrink-0">
+          {suburbLabel}
+        </span>
+      )}
 
-                                          {slot?.privateNote && (
-                                            <div className="mt-2 text-xs text-center text-white wrap-break-word whitespace-normal">
-                                              {slot.privateNote}
-                                            </div>
-                                          )}
-                                        </button>
-                                      ) : visibility === "publicNote" ? (
-                                        <button
-                                          type="button"
-                                          disabled={moveMode}
-                                          onClick={() => {
-                                            if (moveMode) return;
-                                            return handleBooking(
-                                              date,
-                                              slot,
-                                              time,
-                                            );
-                                          }}
-                                          className="w-full h-full min-h-11 bg-[#FF9933] text-black font-bold border border-border-color hover:bg-[#FFB83D] px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2"
-                                        >
-                                          <span className="text-xs text-center leading-snug break-all">
-                                            {slot?.publicNote}{" "}
-                                            {!!suburbLabel && (
-                                              <span className="text-[10px] opacity-90">
-                                                {suburbLabel}
-                                              </span>
-                                            )}
-                                          </span>
-                                          <IoMdAdd
-                                            onClick={(e) => {
-                                              e.stopPropagation();
-                                              if (moveMode) return;
-                                              openSlotModal({date, time});
-                                            }}
-                                            className="h-5 w-5 text-black shrink-0"
-                                          />
-                                        </button>
+      <IoMdAdd
+        onClick={(e) => {
+          e.stopPropagation();
+
+          if (moveMode) {
+            if (!canMoveHere) return;
+
+            handleMoveToEmptySlot(
+              date,
+              time,
+            );
+
+            return;
+          }
+
+          openSlotModal({
+            date,
+            time,
+          });
+        }}
+        className={`h-4 w-4 md:h-5 md:w-5 shrink-0 ${
+          moveMode && canMoveHere
+            ? "text-white"
+            : "text-primary"
+        }`}
+      />
+    </div>
+
+    {slot?.privateNote && (
+      <div className="mt-2 text-xs text-center wrap-break-word whitespace-normal">
+        {slot.privateNote}
+      </div>
+    )}
+  </button>
+                                    ) : visibility === "privateBooked" ? (
+  <button
+    type="button"
+    disabled={
+      saving ||
+      (moveMode && !canMoveHere)
+    }
+    onClick={() => {
+      if (moveMode) {
+        if (!canMoveHere) return;
+
+        handleMoveToEmptySlot(
+          date,
+          time,
+        );
+
+        return;
+      }
+
+      handleBooking(
+        date,
+        slot,
+        time,
+      );
+    }}
+    title={
+      moveMode
+        ? canMoveHere
+          ? `Move booking to ${time}`
+          : "The complete lesson time is not available"
+        : "Book this private slot"
+    }
+    className={`w-full h-full min-h-11 border border-red-100 px-2 py-2 flex flex-col justify-between items-stretch transition ${
+      moveMode
+        ? canMoveHere
+          ? "bg-[#7DA730] hover:bg-[#96C83A] text-white cursor-pointer"
+          : "bg-[#8d8d8d] text-white opacity-60 cursor-not-allowed"
+        : "bg-[#8d8d8d] hover:bg-[#B2B2B2] text-white cursor-pointer"
+    }`}
+  >
+    <div className="flex items-start justify-between gap-1">
+      <FaCalendarPlus className="h-3 w-3 md:h-4 md:w-4 text-white shrink-0 mt-0.5" />
+
+      {moveMode && (
+        <span className="text-xs font-semibold text-white">
+          {canMoveHere
+            ? "Available"
+            : "Private"}
+        </span>
+      )}
+
+      {!!suburbLabel && (
+        <span className="text-[10px] opacity-90 text-white shrink-0">
+          {suburbLabel}
+        </span>
+      )}
+
+      <IoMdAdd
+        onClick={(e) => {
+          e.stopPropagation();
+
+          if (moveMode) {
+            if (!canMoveHere) return;
+
+            handleMoveToEmptySlot(
+              date,
+              time,
+            );
+
+            return;
+          }
+
+          openSlotModal({
+            date,
+            time,
+          });
+        }}
+        className="h-3 w-3 md:h-5 md:w-5 text-white shrink-0"
+      />
+    </div>
+
+    {slot?.privateNote && (
+      <div className="mt-2 text-xs text-center text-white wrap-break-word whitespace-normal">
+        {slot.privateNote}
+      </div>
+    )}
+  </button>
+                                     ) : visibility === "publicNote" ? (
+  <button
+    type="button"
+    disabled={
+      saving ||
+      (moveMode && !canMoveHere)
+    }
+    onClick={() => {
+      if (moveMode) {
+        if (!canMoveHere) return;
+
+        handleMoveToEmptySlot(
+          date,
+          time,
+        );
+
+        return;
+      }
+
+      handleBooking(
+        date,
+        slot,
+        time,
+      );
+    }}
+    title={
+      moveMode
+        ? canMoveHere
+          ? `Move booking to ${time}`
+          : "The complete lesson time is not available"
+        : "Book this public-note slot"
+    }
+    className={`w-full h-full min-h-11 border border-border-color px-2 py-2 flex flex-col md:flex-row wrap-break-word items-center justify-center gap-2 font-bold transition ${
+      moveMode
+        ? canMoveHere
+          ? "bg-[#7DA730] hover:bg-[#96C83A] text-white cursor-pointer"
+          : "bg-[#FF9933] text-black opacity-60 cursor-not-allowed"
+        : "bg-[#FF9933] hover:bg-[#FFB83D] text-black"
+    }`}
+  >
+    <span className="text-xs text-center leading-snug break-all">
+      {moveMode && canMoveHere
+        ? "Available"
+        : slot?.publicNote}
+
+      {!!suburbLabel && (
+        <span className="ml-1 text-[10px] opacity-90">
+          {suburbLabel}
+        </span>
+      )}
+    </span>
+
+    <IoMdAdd
+      onClick={(e) => {
+        e.stopPropagation();
+
+        if (moveMode) {
+          if (!canMoveHere) return;
+
+          handleMoveToEmptySlot(
+            date,
+            time,
+          );
+
+          return;
+        }
+
+        openSlotModal({
+          date,
+          time,
+        });
+      }}
+      className={`h-5 w-5 shrink-0 ${
+        moveMode && canMoveHere
+          ? "text-white"
+          : "text-black"
+      }`}
+    />
+  </button>
                                       ) : (
                                         <button
                                           onClick={() => {
